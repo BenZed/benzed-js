@@ -9,7 +9,6 @@
   "author": "BenZed",
   "license": "ISC",
   "devDependencies": {
-    "flow-bin": "^0.64.0",
     "lerna": "^2.8.0"
   },
   "dependencies": {}

@@ -1,5 +1,9 @@
-/******************************************************************************/
-// define entry point
-/******************************************************************************/
+// @flow
 
-// this project has no api, so it's assumed to be a library.
+import Integer from '@benzed/array'
+
+const i = new Integer(0)
+
+const v = new Integer(1)
+
+console.log(i.value + v.value)

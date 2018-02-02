@@ -1,6 +1,8 @@
 {
   "name": "@benzed/sorted-array",
   "version": "0.0.1",
+  "main": "src",
+  "source": "src",
   "scripts": {
     "test": "mocha --opts .mocha.opts",
     "test:dev": "npm run test -- --watch",
@@ -17,6 +19,7 @@
   "license": "ISC",
   "description": "created by BenZeds scaffolder",
   "devDependencies": {
+
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-polyfill": "^6.26.0",
