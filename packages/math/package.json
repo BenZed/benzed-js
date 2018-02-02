@@ -17,7 +17,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "My own personal Math module, extending Math with overridden or custom functionality.",
   "devDependencies": {
 
     "babel-cli": "^6.26.0",

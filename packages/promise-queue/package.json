@@ -17,9 +17,8 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "My own promise queue implementation. More lightweight than others I've seen.",
   "devDependencies": {
-
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-polyfill": "^6.26.0",

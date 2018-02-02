@@ -17,7 +17,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "Experimental psuedo Value type for js. It's a standard I'll play around with for my other projects.",
   "devDependencies": {
 
     "babel-cli": "^6.26.0",

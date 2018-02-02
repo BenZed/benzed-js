@@ -16,7 +16,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "Adaptation of define-utility, that works as a decorator",
   "devDependencies": {
     "@benzed/array": "*",
     "babel-cli": "^6.26.0",

@@ -17,7 +17,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "My own Vector2 implementation",
   "devDependencies": {
 
     "babel-cli": "^6.26.0",

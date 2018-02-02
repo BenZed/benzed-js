@@ -17,7 +17,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "My own SortedArray implementation. Inherits from array with all the Symbolic bells and whistles.",
   "devDependencies": {
 
     "babel-cli": "^6.26.0",

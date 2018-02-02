@@ -17,7 +17,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "created by BenZeds scaffolder",
+  "description": "Series of string utility methods.",
   "devDependencies": {
 
     "babel-cli": "^6.26.0",
