@@ -1,18 +1,19 @@
-// @flow
+import adjacent from './adjacent'
+import shuffle from './shuffle'
+import isArrayLike from './is-array-like'
+import isIterable from './is-iterable'
 
-class Integer {
+import SortedArray, { UnsafeSortError } from './sorted-array'
 
-  static new (n: number) {
+export {
+  adjacent,
+  shuffle,
 
-    return new Integer(n)
-  }
+  isArrayLike,
+  isArrayLike as hasNumericLength,
+  isIterable,
 
-  value: number
-
-  constructor (n: number) {
-    this.value = Math.round(n)
-  }
+  SortedArray,
+  UnsafeSortError
 
 }
-
-export default Integer

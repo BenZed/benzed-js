@@ -1,5 +1,8 @@
+
 /******************************************************************************/
-// sorted-array entry point
+// Spread from Math object
 /******************************************************************************/
 
-// this project has no api, so it's assumed to be a library.
+const { E, LN2, LN10, LOG2E, LOG10E, PI, SQRT1_2, SQRT2 } = Math
+
+export { E, LN2, LN10, LOG2E, LOG10E, PI, SQRT1_2, SQRT2 }
