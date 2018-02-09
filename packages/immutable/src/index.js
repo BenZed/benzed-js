@@ -1,5 +1,13 @@
+import Struct from './Struct'
+
+import ValueSymbols from './symbols'
+
+import copy from './copy'
+
 /******************************************************************************/
-// struct entry point
+// Exports
 /******************************************************************************/
 
-// this project has no api, so it's assumed to be a library.
+export default ValueSymbols
+
+export { Struct, copy }

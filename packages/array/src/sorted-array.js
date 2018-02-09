@@ -4,7 +4,7 @@
 
 const STRICT = Symbol('return-(-1)-if-missing')
 const COMPARER = Symbol('compare-function')
-const UNSAFE = Symbol('array-could-be-unsorted')
+const UNSORTED = Symbol('is-not-sorted')
 
 /******************************************************************************/
 // Helper
@@ -38,43 +38,71 @@ function binarySearch (arr, value, strict) {
   return strict === STRICT ? -1 : min
 }
 
-function createSortedArrayWith (comparer, unsafe, items) {
-
-  const to = new SortedArray()
-
-  to.comparer = comparer
-  to.push(...items)
-  to[UNSAFE] = unsafe
-
-  return to
-}
-
 /******************************************************************************/
 // Errors
 /******************************************************************************/
 
-class UnsafeSortError extends Error {
+class UnsortedArrayError extends Error {
 
   constructor (methodName) {
-    super(`${methodName}() cannot be called on this SortedArray. It is potentially out of order. Call sort() before ${methodName}().`)
+    super(`${methodName}() cannot be called on an SortedArray that is out of order. Call sort() before ${methodName}().`)
     this.name = 'UnsafeSortError'
   }
 
 }
 
 /******************************************************************************/
+// Proxy
+/******************************************************************************/
+
+const PROXY_CONFIGURATION = {
+  set (array, index, value) {
+
+    const i = parseInt(index)
+
+    const { unsorted } = array
+    const isSettingIndex = !Number.isNaN(i)
+    if (isSettingIndex && !unsorted && array.length > 1) {
+
+      const { length, ascending } = array
+      const lastIndex = length - 1
+
+      const next = array[i + 1]
+      const prev = array[i - 1]
+      if (i < lastIndex && (ascending ? value > next : value < next))
+        array[UNSORTED] = true
+
+      else if (i > 0 && (ascending ? value < prev : value > prev))
+        array[UNSORTED] = true
+
+      else if (i > length || i < 0)
+        array[UNSORTED] = true
+    }
+
+    array[index] = value
+    return true
+  }
+}
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
-class SortedArray extends Array {
+// TODO make SortedArray derive from FastSortedArray and add all the unsort
+// checking. (Alternatively, make SafeSortedArray derive from SortedArray)
+//  class FastSortedArray {}
 
-  static get [Symbol.species] () {
-    return Array
-  }
+class SortedArray extends Array {
 
   constructor (...args) {
     super(...args)
+
+    Object.defineProperty(this, UNSORTED, { writable: true, value: false })
+    Object.defineProperty(this, COMPARER, { writable: true, value: ascending })
+
     this.sort()
+
+    return new Proxy(this, PROXY_CONFIGURATION)
   }
 
   // Insertion sort
@@ -95,7 +123,7 @@ class SortedArray extends Array {
       this[ii + 1] = item
     }
 
-    this[UNSAFE] = false
+    this[UNSORTED] = false
 
     return this
   }
@@ -104,62 +132,56 @@ class SortedArray extends Array {
 
   filter (...args) {
     const filtered = super.filter(...args)
-    return createSortedArrayWith(this.comparer, this.unsafe, filtered)
+    filtered.comparer = this.comparer
+
+    return filtered
   }
 
   map (...args) {
     const mapped = super.map(...args)
-    return createSortedArrayWith(this.comparer, true, mapped)
+    mapped.comparer = this.comparer
+
+    return mapped
   }
 
   slice (...args) {
     const sliced = super.slice(...args)
-    return createSortedArrayWith(this.comparer, this.unsafe, sliced)
-  }
+    sliced.comparer = this.comparer
 
-  // reduce() does not need extending as it does not return an Array
-
-  // UNSAFE FUNCTIONS
-
-  push (...args) {
-    this[UNSAFE] = true
-    return super.push(...args)
-  }
-
-  unshift (...args) {
-    this[UNSAFE] = true
-    return super.unshift(...args)
-  }
-
-  splice (...args) {
-    this[UNSAFE] = true
-    return super.splice(...args)
-  }
-
-  copyWithin (...args) {
-    this[UNSAFE] = true
-    return super.copyWithin(...args)
-  }
-
-  reverse (...args) {
-    this[UNSAFE] = true
-    return super.reverse(...args)
+    return sliced
   }
 
   concat (arr) {
     const concated = super.concat(arr)
-    return createSortedArrayWith(this.comparer, true, concated)
-  }
+    concated.comparer = this.comparer
 
-  // pop, shift and fill do not need to be extended as they cannot
-  // cause an array to become unsorted
+    let unsorted = this.unsorted
+
+    const { ascending } = this
+
+    const clen = concated.length
+    const tlen = this.length
+
+    if (!unsorted && clen > tlen) for (let i = tlen; i < clen; i++) {
+      const prev = concated[i - 1]
+      const curr = concated[i]
+      if (ascending ? curr < prev : curr > prev) {
+        unsorted = true
+        break
+      }
+    }
+
+    concated[UNSORTED] = unsorted
+
+    return concated
+  }
 
   // REQUIRES SAFE
 
   lastIndexOf (value) {
 
-    if (this[UNSAFE])
-      throw new UnsafeSortError('lastIndexOf')
+    if (this[UNSORTED])
+      throw new UnsortedArrayError('lastIndexOf')
 
     const index = binarySearch(this, value, STRICT)
     return index
@@ -167,8 +189,8 @@ class SortedArray extends Array {
 
   indexOf (value) {
 
-    if (this[UNSAFE])
-      throw new UnsafeSortError('indexOf')
+    if (this[UNSORTED])
+      throw new UnsortedArrayError('indexOf')
 
     let index = binarySearch(this, value, STRICT)
 
@@ -184,12 +206,12 @@ class SortedArray extends Array {
 
   insert (value) {
 
-    if (this[UNSAFE])
-      throw new UnsafeSortError('insert')
+    if (this[UNSORTED])
+      throw new UnsortedArrayError('insert')
 
     const index = binarySearch(this, value, null)
 
-    // super.splice because this.splice will set unsafe, which is unecessary
+    // super.splice because this.splice will set unsorted, which is unecessary
     // because this function cannot pollute the order
     super.splice(index, 0, value)
 
@@ -198,12 +220,12 @@ class SortedArray extends Array {
 
   remove (value) {
 
-    if (this[UNSAFE])
-      throw new UnsafeSortError('remove')
+    if (this[UNSORTED])
+      throw new UnsortedArrayError('remove')
 
     const index = binarySearch(this, value, STRICT)
     if (index > -1)
-    // super.splice because this.splice will set unsafe, which is unecessary
+    // super.splice because this.splice will set unsorted, which is unecessary
     // because this function cannot pollute the order
       super.splice(index, 1)
 
@@ -211,8 +233,6 @@ class SortedArray extends Array {
   }
 
   // NEW PROPERTIES
-
-  [COMPARER] = ascending
 
   get comparer () {
     return this[COMPARER]
@@ -225,10 +245,12 @@ class SortedArray extends Array {
     this[COMPARER] = compareFunc
   }
 
-  [UNSAFE] = false
+  get unsorted () {
+    return this[UNSORTED]
+  }
 
-  get unsafe () {
-    return this[UNSAFE]
+  get ascending () {
+    return this.length > 1 && this[0] < this[this.length - 1]
   }
 
 }
@@ -239,4 +261,4 @@ class SortedArray extends Array {
 
 export default SortedArray
 
-export { SortedArray, UnsafeSortError, UNSAFE }
+export { SortedArray, UnsortedArrayError, UNSORTED }

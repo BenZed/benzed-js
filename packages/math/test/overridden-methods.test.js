@@ -76,7 +76,7 @@ describe('overridden methods', () => {
         const results = {}
         const iterations = 100000
 
-        const testObj = Symbol.iterator in input
+        const testObj = typeof input !== 'string' && Symbol.iterator in input
           ? [ ...input ]
           : input
 

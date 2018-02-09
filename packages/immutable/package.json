@@ -1,5 +1,5 @@
 {
-  "name": "@benzed/struct",
+  "name": "@benzed/immutable",
   "version": "0.0.1",
   "main": "lib",
   "scripts": {
@@ -16,7 +16,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "Experimental psuedo Value type for js. It's a standard I'll play around with for my other projects.",
+  "description": "My own library for manipulating objects immutably.",
   "devDependencies": {
 
     "babel-cli": "^6.26.0",

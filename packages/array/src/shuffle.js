@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto'
 import isArrayLike from './is-array-like'
-import SortedArray, { UNSAFE } from './SortedArray'
+import SortedArray, { UNSAFE } from './sorted-array'
 
 /******************************************************************************/
 // Main
@@ -18,9 +18,6 @@ function shuffle (array) {
     array = this
 
   let index = array.length
-
-  if (array instanceof SortedArray)
-    array[UNSAFE] = true
 
   const buffer = randomBytes(array.length)
 

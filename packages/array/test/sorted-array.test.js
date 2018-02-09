@@ -1,12 +1,12 @@
 import { expect } from 'chai'
-import SortedArray, { UnsafeSortError } from '../src/modules/simulation/util/sorted-array'
+import SortedArray, { UnsafeSortError } from '../src/sorted-array'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
 const descending = (a, b) => a > b ? -1 : a < b ? 1 : 0
 
-describe('Sorted Array', () => {
+describe.only('Sorted Array', () => {
 
   it('is a class', () => {
     expect(() => SortedArray())
@@ -61,18 +61,17 @@ describe('Sorted Array', () => {
       expect(arr).to.deep.equal([0, 1, 2, 3, 5, 10])
     })
 
-    it('sets unsafe flag to false', () => {
+    it('sets unsorted flag to false', () => {
 
       const arr = new SortedArray()
-      arr.push(5)
-      arr.push(3)
+      arr.push(5, 3, 6)
 
-      expect(arr).to.have.property('unsafe', true)
-      expect(arr).to.deep.equal([5, 3])
+      expect(arr).to.have.property('unsorted', true)
+      expect(arr).to.deep.equal([5, 3, 6])
 
       arr.sort()
-      expect(arr).to.deep.equal([3, 5])
-      expect(arr).to.have.property('unsafe', false)
+      expect(arr).to.deep.equal([3, 5, 6])
+      expect(arr).to.have.property('unsorted', false)
 
     })
 
@@ -136,7 +135,7 @@ describe('Sorted Array', () => {
       expect(filtered).to.be.instanceof(SortedArray)
     })
 
-    it('retains unsafe flag from filteree')
+    it('retains unsorted flag from filteree')
 
     it('custom comparers are passed to filtered arrays', () => {
       const arr2 = new SortedArray(...arr)
@@ -158,7 +157,7 @@ describe('Sorted Array', () => {
       expect(sliced).to.deep.equal([ 1, 2, 3 ])
     })
 
-    it('retains unsafe flag from slicee')
+    it('retains unsorted flag from slicee')
 
     it('returns a SortedArray', () => {
       expect(sliced).to.be.instanceof(SortedArray)
@@ -178,7 +177,7 @@ describe('Sorted Array', () => {
       expect(mapped).to.be.instanceof(SortedArray)
     })
 
-    it('sets unsafe flag on returned array')
+    it('sets unsorted flag on returned array')
 
     it('custom comparers are passed to mapped arrays', () => {
       const arr2 = new SortedArray(...arr)
@@ -195,7 +194,7 @@ describe('Sorted Array', () => {
     const arr = new SortedArray(0, 2, 4, 6)
     const concated = arr.concat([1, 7])
 
-    it('merges to arrays', () => {
+    it('merges two arrays', () => {
       expect(concated).to.deep.equal([0, 2, 4, 6, 1, 7])
     })
 
@@ -203,8 +202,8 @@ describe('Sorted Array', () => {
       expect(concated).to.be.instanceof(SortedArray)
     })
 
-    it('sets unsafe flag on returned array', () =>
-      expect(concated.unsafe).to.be.true
+    it('sets unsorted flag on returned array', () =>
+      expect(concated.unsorted).to.be.true
     )
 
   })
@@ -218,7 +217,7 @@ describe('Sorted Array', () => {
       expect(arr.lastIndexOf(3)).to.be.equal(5)
     })
 
-    it('throws if array is unsafe', () => {
+    it('throws if array is unsorted', () => {
       const arr = new SortedArray(4, 5)
       arr.push(0)
       expect(() => arr.indexOf(0)).to.throw(UnsafeSortError)
@@ -239,7 +238,7 @@ describe('Sorted Array', () => {
       expect(arr.indexOf(3)).to.be.equal(4)
     })
 
-    it('throws if array is unsafe', () => {
+    it('throws if array is unsorted', () => {
       const arr = new SortedArray(4, 5)
 
       arr.push(0)
@@ -262,7 +261,7 @@ describe('Sorted Array', () => {
       expect(arr.indexOf(4)).to.be.equal(4)
     })
 
-    it('throws if array is unsafe', () => {
+    it('throws if array is unsorted', () => {
       const arr = new SortedArray(0, 5)
       arr.push(3)
       expect(() => arr.insert(2)).to.throw(UnsafeSortError)
@@ -283,7 +282,7 @@ describe('Sorted Array', () => {
       expect(arr.indexOf(4)).to.be.equal(-1)
     })
 
-    it('throws if array is unsafe', () => {
+    it('throws if array is unsorted', () => {
       const arr = new SortedArray(1, 2, 3)
       arr.push(0)
       expect(() => arr.remove(1)).to.throw(UnsafeSortError)
@@ -304,8 +303,15 @@ describe('Sorted Array', () => {
       expect(arr).to.deep.equal([0, 1, 2, 3, 10, 8, 10])
     })
 
-    it('sets unsafe flag to true', () =>
-      expect(arr.unsafe).to.be.true
+    it('sets unsorted flag to true if pushes leave array out of order', () =>
+      expect(arr.unsorted).to.be.true
+    )
+
+    const arr2 = new SortedArray(0, 1, 2, 3, 4)
+    arr2.push(5, 6, 7)
+
+    it('doesnt set unsorted if array pushes are not out of order', () =>
+      expect(arr2.unsorted).to.be.false
     )
   })
 
@@ -318,8 +324,8 @@ describe('Sorted Array', () => {
       expect(arr).to.deep.equal([10, 8, 10, 0, 1, 2, 3])
     })
 
-    it('sets unsafe flag to true', () =>
-      expect(arr.unsafe).to.be.true
+    it('sets unsorted flag to true', () =>
+      expect(arr.unsorted).to.be.true
     )
   })
 
@@ -331,8 +337,8 @@ describe('Sorted Array', () => {
       expect(arr).to.deep.equal([0, 1, 10, 8, 10, 2, 3])
     })
 
-    it('sets unsafe flag to true', () =>
-      expect(arr.unsafe).to.be.true
+    it('sets unsorted flag to true', () =>
+      expect(arr.unsorted).to.be.true
     )
   })
 
@@ -344,8 +350,8 @@ describe('Sorted Array', () => {
       expect(arr).to.deep.equal([3, 2, 1, 0])
     })
 
-    it('sets unsafe flag to true', () =>
-      expect(arr.unsafe).to.be.true
+    it('sets unsorted flag to true', () =>
+      expect(arr.unsorted).to.be.true
     )
   })
 
@@ -357,16 +363,25 @@ describe('Sorted Array', () => {
       expect(arr).to.deep.equal([0, 1, 0, 1])
     })
 
-    it('sets unsafe flag to true', () =>
-      expect(arr.unsafe).to.be.true
+    it('sets unsorted flag to true', () =>
+      expect(arr.unsorted).to.be.true
     )
   })
 
-  describe('.unsafe', () => {
+  describe('.unsorted', () => {
     it('is read only', () => {
       const arr = new SortedArray(0, 1, 2, 3)
-      expect(() => { arr.unsafe = true }).to.throw('has only a getter')
+      expect(() => { arr.unsorted = true }).to.throw('has only a getter')
     })
+  })
+
+  describe('ascending', () => {
+    it('is read only', () => {
+      const arr = new SortedArray(0, 1, 2, 3)
+      expect(() => { arr.ascending = true }).to.throw('has only a getter')
+    })
+
+    it('is true if array is ascending')
   })
 
   describe(`Symbol('compare-function') property`, () => {
@@ -383,7 +398,21 @@ describe('Sorted Array', () => {
 
   describe('::shuffle', () => {
 
-    it('sets unsafe')
+    it('sets unsorted')
+
+  })
+
+  describe('sortedArray[i] = value', () => {
+
+    it('sets unsorted if placed value puts array out of order', () => {
+      const arr = new SortedArray(4, 8, 1, 4, 0, 11)
+
+      console.log(arr)
+      arr[2] = 5
+
+      return expect(arr.unsorted).to.be.true
+
+    })
 
   })
 
