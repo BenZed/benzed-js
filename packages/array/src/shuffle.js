@@ -1,6 +1,5 @@
 import { randomBytes } from 'crypto'
 import isArrayLike from './is-array-like'
-import SortedArray, { UNSAFE } from './sorted-array'
 
 /******************************************************************************/
 // Main

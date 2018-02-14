@@ -1,4 +1,4 @@
-import VALUE from './symbols'
+import { COPY } from './symbols'
 
 /******************************************************************************/
 // Shortcuts
@@ -11,38 +11,13 @@ const {
   defineProperty
 } = Object
 
-const { copy : copy_ } = VALUE
-
-const { iterator, species } = Symbol
-
 /******************************************************************************/
-// Main
+// Helper
 /******************************************************************************/
 
-function copy (...args) {
+function copyPlainObject (object) {
 
-  let object
-
-  if (typeof this !== 'undefined')
-    object = this
-  else
-    object = args.shift()
-
-  if (object == null || typeof object !== 'object')
-    return object
-
-  if (copy_ in object)
-    return object[copy_](...args)
-  //
-  // if (iterator in object) {
-  //   const { constructor } = object
-  //   const type = constructor[species] || constructor
-  //
-  //   if (type)
-  //     return new type(...object)
-  // }
-
-  const clone = {}
+  const clone = { }
 
   const names = getOwnPropertyNames(object)
   const symbols = getOwnPropertySymbols(object)
@@ -50,11 +25,39 @@ function copy (...args) {
   const keys = names.concat(symbols)
 
   for (const key of keys) {
+
     const descriptor = getOwnPropertyDescriptor(object, key)
+
+    if ('value' in descriptor)
+      descriptor.value = copy(descriptor.value)
+
     defineProperty(clone, key, descriptor)
+
   }
 
   return clone
+}
+
+/******************************************************************************/
+// Main
+/******************************************************************************/
+
+function copy (...args) {
+
+  const value = typeof this !== 'undefined'
+    ? this
+    : args.shift()
+
+  if (value === null || typeof value !== 'object')
+    return value
+
+  if (typeof value[COPY] === 'function')
+    return value[COPY]()
+
+  if (value instanceof Array)
+    return value.map(copy)
+
+  return copyPlainObject(value)
 }
 
 /******************************************************************************/

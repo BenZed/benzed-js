@@ -33,13 +33,32 @@ describe('copy()', () => {
 
     it('works on plain objects', () => {
 
-      const KEY = Symbol('key')
       const obj = {
         key: 'value'
       }
 
+      const obj2 = obj::copy()
+
+      expect(obj2).to.deep.equal(obj)
+
+    })
+
+    it('works on arrays', () => {
+
+      const arr = [ 1, 2, 3, 4, 5 ]
+
+      expect(copy(arr)).to.deep.equal(arr)
+
+    })
+
+    it('copies symbolic properties', () => {
+
+      const KEY = Symbol('key')
+
+      const obj = {}
+
       Object.defineProperty(obj, KEY, {
-        value: 'this-is-insane',
+        value: 'foo',
         writable: true,
         enumerable: false,
         configurable: false
@@ -47,32 +66,52 @@ describe('copy()', () => {
 
       const obj2 = obj::copy()
 
-      expect(obj2).to.deep.equal(obj)
-
       expect(obj2).to.have.property(KEY)
 
-      expect(obj).to.deep.equal(obj2)
+    })
 
-      const arr = [ 1, 2, 3, 4, 5 ]
+    it('is recursive', () => {
 
-      expect(copy(arr)).to.deep.equal(arr)
-      expect(arr::copy()).to.deep.equal(arr)
-
-      const iObj = {
-        kira: 0,
-        i: 1,
-        love: 2,
-        you: 3,
-
-        * [Symbol.iterator] () {
-          for (const key in this)
-            yield this[key]
+      const obj = {
+        foo: {
+          bar: true
         }
       }
 
-      expect(iObj::copy()).to.deep.equal(iObj)
+      const obj2 = obj::copy()
 
-      console.log(iObj)
+      expect(obj2.foo).to.not.equal(obj.foo)
+      expect(obj).to.deep.equal(obj2)
+
+    })
+
+  })
+
+  describe('copies iterables', () => {
+
+    it('arrays', () => {
+
+      const arr = [ 1, 2, 3, 4, 5 ]
+      const arr2 = arr::copy()
+
+      expect(arr2).to.deep.equal(arr)
+      expect(arr2).to.not.equal(arr)
+
+    })
+
+    it('arrays recursively', () => {
+
+      const arr = [ { foo: false }, 1, 2, 3, 4 ]
+      const arr2 = arr::copy()
+
+      expect(arr2[0]).to.deep.equal(arr[0])
+      expect(arr2[0]).to.not.equal(arr[0])
+
+    })
+
+    it('sets', () => {
+
+      const set = new Set([ 1, 2, 3, 4, 5 ])
 
     })
 

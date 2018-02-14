@@ -3,29 +3,18 @@
 // Symbols for pseudo javascript valuetype operators
 /******************************************************************************/
 
-const copy = Symbol('=')
+const COPY = Symbol('=')
 
-const equals = Symbol('===')
+const EQUALS = Symbol('==')
 
-const add = Symbol('+')
-
-const subtract = Symbol('-')
-
-const multiply = Symbol('*')
-
-const divide = Symbol('/')
-
-const VALUE = Object.freeze({
-  copy, equals, add, subtract, multiply, divide
-})
+const KEYOF = Symbol('key-of')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default VALUE
-
 export {
-  VALUE,
-  equals, add, subtract, multiply, divide
+  COPY,
+  EQUALS,
+  KEYOF
 }

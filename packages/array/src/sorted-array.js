@@ -1,3 +1,10 @@
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const { defineProperty } = Object
+
 /******************************************************************************/
 // Symbols
 /******************************************************************************/
@@ -88,17 +95,15 @@ const PROXY_CONFIGURATION = {
 // Main
 /******************************************************************************/
 
-// TODO make SortedArray derive from FastSortedArray and add all the unsort
-// checking. (Alternatively, make SafeSortedArray derive from SortedArray)
-//  class FastSortedArray {}
+// TODO make SortedArray derive from UnsafeSortedArray and add all the unsort stuff
 
 class SortedArray extends Array {
 
   constructor (...args) {
     super(...args)
 
-    Object.defineProperty(this, UNSORTED, { writable: true, value: false })
-    Object.defineProperty(this, COMPARER, { writable: true, value: ascending })
+    defineProperty(this, UNSORTED, { writable: true, value: false })
+    defineProperty(this, COMPARER, { writable: true, value: ascending })
 
     this.sort()
 
@@ -250,7 +255,9 @@ class SortedArray extends Array {
   }
 
   get ascending () {
-    return this.length > 1 && this[0] < this[this.length - 1]
+    const { length } = this
+
+    return length > 1 && this[0] < this[length - 1]
   }
 
 }
