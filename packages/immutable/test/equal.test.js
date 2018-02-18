@@ -37,9 +37,13 @@ describe('equals()', () => {
         it(`${inspect(a)} equals ${inspect(b)} : ${output}`, () => {
           expect(a::equals(b)).to.equal(output)
         })
-
     })
 
+    describe('works on arrays', () =>
+      it('[1,2,3]::equals([1,2,3])', () =>
+        expect([1, 2, 3]::equals([1, 2, 3])).to.be.true
+      )
+    )
   })
 
 })

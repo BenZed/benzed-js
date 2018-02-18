@@ -14,7 +14,7 @@ function isArrayLike (object) {
   if (arguments.length === 0)
     object = this
 
-  return object != null &&
+  return object !== null &&
     typeof object.length === 'number'
 }
 

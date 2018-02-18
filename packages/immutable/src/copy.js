@@ -54,8 +54,17 @@ function copy (...args) {
   if (typeof value[COPY] === 'function')
     return value[COPY]()
 
-  if (value instanceof Array)
-    return value.map(copy)
+  // if (typeof value.copy === 'function')
+  //   return value.copy()
+
+  const isArray = value instanceof Array
+
+  if (isArray || value instanceof Set || value instanceof Map) {
+    const Type = value.constructor
+    const args = [...value].map(copy)
+
+    return isArray ? new Type(...args) : new Type(args)
+  }
 
   return copyPlainObject(value)
 }

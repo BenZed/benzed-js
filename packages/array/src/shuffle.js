@@ -25,6 +25,7 @@ function shuffle (array) {
     const byte = buffer[index - 1]
 
     const randomIndex = Math.floor((byte / 255) * index)
+
     index--
 
     const temp = array[index]

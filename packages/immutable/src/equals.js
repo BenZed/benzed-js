@@ -42,11 +42,10 @@ function equals (...args) {
 
   let a, b
 
-  if (args.length >= 2) {
-    a = args[0]
-    b = args[1]
-  } else {
-    b = args[0]
+  if (args.length >= 2)
+    ([ a, b ] = args)
+  else {
+    ([ b ] = args)
     a = this
   }
 
@@ -75,7 +74,7 @@ function equals (...args) {
     return false
 
   for (const key of akeys)
-    if (!equals(akeys[key], bkeys[key]))
+    if (!equals(a[key], b[key]))
       return false
 
   return true

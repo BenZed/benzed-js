@@ -12,17 +12,48 @@ function set (...args) {
 
   const clone = copy(obj)
 
-  // for (let i = 0; i < args.length; i++)
+  setMutate(clone, ...args)
 
+  return clone
 }
 
 function setMutate (...args) {
 
-  const obj = typeof this !== 'undefined'
+  const obj = this !== undefined
     ? this
     : args.shift()
 
+  // if (obj != null && typeof obj.set === 'function')
+  //   return obj.set(...args)
 
+  if (args.length < 2)
+    throw new Error('cannot set without at least one key and value')
+
+  const value = args.pop()
+  const keys = args
+
+  let ref = obj
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i]
+
+    const atFinalKey = i === keys.length - 1
+    if (!atFinalKey && key in obj === false)
+      ref[key] = typeof keys[i + 1] === 'number' ? [] : {}
+
+    if (!atFinalKey) {
+      ref = ref[key]
+      continue
+    }
+
+    const type = typeof ref
+    if (type !== 'object')
+      throw new TypeError(`Cant set property '${key}' of ${type}`)
+
+    ref[key] = value
+  }
+
+  return obj
 }
 
 /******************************************************************************/

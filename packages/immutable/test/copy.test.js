@@ -99,10 +99,26 @@ describe('copy()', () => {
 
     })
 
+    it('array subclasses', () => {
+
+      class MyArray extends Array { }
+
+      let myArray = new MyArray(0, 1, 2, 3, 4)
+
+      myArray = myArray.map(v => v ** 2)
+
+      const myArray2 = myArray::copy()
+
+      expect(myArray2).to.not.equal(myArray)
+      expect(myArray2).to.deep.equal(myArray)
+      expect(myArray2).to.be.instanceof(MyArray)
+
+    })
+
     it('arrays recursively', () => {
 
       const arr = [ { foo: false }, 1, 2, 3, 4 ]
-      const arr2 = arr::copy()
+      const arr2 = copy(arr)
 
       expect(arr2[0]).to.deep.equal(arr[0])
       expect(arr2[0]).to.not.equal(arr[0])
@@ -112,9 +128,43 @@ describe('copy()', () => {
     it('sets', () => {
 
       const set = new Set([ 1, 2, 3, 4, 5 ])
+      const set2 = copy(set)
+
+      expect(set2).to.be.instanceof(Set)
+      expect(set2).to.deep.equal(set)
 
     })
 
-  })
+    it('sets recursively', () => {
 
+      const set = new Set([ { foo: false }, 2, 3, 4, 5 ])
+      const set2 = copy(set)
+
+      expect(set2).to.be.instanceof(Set)
+      expect(set2).to.deep.equal(set)
+      expect([...set2][0]).to.not.equal([...set][0])
+
+    })
+
+    it('maps', () => {
+
+      const map = new Map([[ 'one', 1 ], ['two', 2]])
+      const map2 = copy(map)
+
+      expect(map2).to.be.instanceof(Map)
+      expect(map2).to.deep.equal(map)
+
+    })
+
+    it('maps recursively', () => {
+
+      const map = new Map([[ 'one', { foo: false } ], ['two', 2]])
+      const map2 = copy(map)
+
+      expect(map2).to.be.instanceof(Map)
+      expect(map2).to.deep.equal(map)
+      expect(map2.get('one')).to.not.equal(map.get('one'))
+
+    })
+  })
 })

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ValueMap, EQUALS } from '../src'
+import { copy, equals, ValueMap, COPY, EQUALS } from '../src'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -200,20 +200,16 @@ describe('ValueMap', () => {
         )
       })
 
-      describe('equivalent object ids pass', () => {
-        forEachPair((k, v) => {
-          if (typeof k !== 'object')
-            return
-          it(`gets copy of ${k.toString()}: ${v}`, () => {
-            const ki = new k.constructor(k.id)
-            expect(map.get(ki)).to.equal(v)
-          })
-        })
-      })
-
-      it('throws if id is not provided', () => {
-        expect(() => map.get()).to.throw('undefined is not a valid id.')
-      })
+      // describe('equivalent object ids pass', () => {
+      //   forEachPair((k, v) => {
+      //     if (typeof k !== 'object')
+      //       return
+      //     it(`gets copy of ${k.toString()}: ${v}`, () => {
+      //       const ki = new k.constructor(k.id)
+      //       expect(map.get(ki)).to.equal(v)
+      //     })
+      //   })
+      // })
 
     })
 
@@ -336,8 +332,8 @@ describe('ValueMap', () => {
 
     describe('#forEach', () => {
 
-      it('key and value come in first argument as array', () => {
-        map.forEach(([k, v]) => {
+      it('value and key come as first two arguments', () => {
+        map.forEach((v, k) => {
           expect(map.has(k)).to.equal(true)
           expect(map.get(k)).to.equal(v)
         })
@@ -345,23 +341,21 @@ describe('ValueMap', () => {
 
       it('runs a function through each key value', () => {
         let length = 0
-        map.forEach(([k, v]) => length++)
+        map.forEach((v, k) => length++)
         expect(length).to.equal(map.size)
       })
 
       it('values arnt mutated from last set', () => {
-        map.forEach(([k, v]) => {
+        map.forEach((v, k) => {
           expect(pairs.includes(k)).to.equal(true)
           expect(pairs.includes(v)).to.equal(true)
         })
       })
 
-      it('index as second argument', () => {
-        let index = 0
-        map.forEach((arr, i) => {
-          expect(i).to.equal(index)
-          index++
-        })
+      it('map as third argument', () => {
+        map.forEach((v, k, m) =>
+          expect(m).to.equal(map)
+        )
       })
 
       it('map as third argument', () => {
@@ -417,5 +411,35 @@ describe('ValueMap', () => {
         expect(map.size).to.equal(pairs.length * 0.5)
       })
     })
+  })
+
+  describe.only('immutable symbols', () => {
+
+    let map1, map2
+
+    before(() => {
+      map1 = new ValueMap('one', 1)
+      map2 = copy(map1)
+    })
+
+    it('implements COPY', () => {
+      expect(typeof map1[COPY]).to.be.equal('function')
+      expect(map2).to.be.instanceof(ValueMap)
+      expect(map1.size).to.be.equal(map2.size)
+
+      for (const [key, value] of map1)
+        expect(map2.get(key)).to.be.equal(value)
+    })
+
+    it('implements EQUALS', () => {
+      expect(typeof map1[EQUALS]).to.be.equal('function')
+
+      const map3 = new ValueMap()
+
+      expect(map1::equals(map2)).to.be.equal(true)
+      expect(map2::equals(map1)).to.be.equal(true)
+      expect(map3::equals(map1)).to.be.equal(false)
+    })
+
   })
 })

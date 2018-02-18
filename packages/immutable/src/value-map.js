@@ -1,5 +1,6 @@
 import equals from './equals'
 import copy from './copy'
+import { indexOf } from './includes'
 
 import { COPY, EQUALS } from './symbols'
 
@@ -10,22 +11,6 @@ import { COPY, EQUALS } from './symbols'
 const KEYS = Symbol('map-keys')
 
 const VALUES = Symbol('map-values')
-
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-function getIndex (idA, map) {
-
-  for (let index = 0; index < map[KEYS].length; index++) {
-    const idB = map[KEYS][index]
-
-    if (equals(idA, idB))
-      return index
-  }
-
-  return undefined
-}
 
 /******************************************************************************/
 // Types
@@ -53,11 +38,8 @@ class ValueMap {
 
   get (key) {
 
-    if (key === undefined)
-      throw new Error('undefined is not a valid id.')
-
-    const index = getIndex(key, this)
-    if (index === undefined)
+    const index = indexOf(this[KEYS], key)
+    if (index === -1)
       throw new Error(`Does not have item with id ${key}`)
 
     return this[VALUES][index]
@@ -65,11 +47,8 @@ class ValueMap {
 
   set (key, value) {
 
-    if (key === undefined)
-      throw new Error('undefined is not a valid id.')
-
-    let index = getIndex(key, this)
-    if (index === undefined)
+    let index = indexOf(this[KEYS], key)
+    if (index === -1)
       index = this[KEYS].length
 
     this[KEYS][index] = key
@@ -83,20 +62,19 @@ class ValueMap {
     if (key === undefined)
       throw new Error('undefined is not a valid id.')
 
-    const index = getIndex(key, this)
-    return index !== undefined
+    const index = indexOf(this[KEYS], key)
+    return index > -1
   }
 
   delete (key) {
 
-    if (key === undefined)
-      throw new Error('undefined is not a valid id.')
+    const index = indexOf(this[KEYS], key)
 
-    const index = getIndex(key, this)
-    const exists = index !== undefined
-
-    this[KEYS].splice(index, 1)
-    this[VALUES].splice(index, 1)
+    const exists = index > -1
+    if (exists) {
+      this[KEYS].splice(index, 1)
+      this[VALUES].splice(index, 1)
+    }
 
     return exists
   }
@@ -108,10 +86,10 @@ class ValueMap {
 
   forEach (func) {
     for (let i = 0; i < this.size; i++) {
-      const id = this[KEYS][i]
+      const key = this[KEYS][i]
       const value = this[VALUES][i]
 
-      func([id, value], i, this)
+      func(value, key, this)
     }
   }
 
@@ -148,35 +126,27 @@ class ValueMap {
 
   [COPY] () {
 
-    const valueMap = new ValueMap()
+    const map = new ValueMap()
 
-    for (const key of this.keys()) {
-      const value = this.get(key)
-      valueMap.set(
-        copy(key),
-        copy(value)
-      )
-    }
+    for (const [key, value] of this)
+      map.set(copy(key), copy(value))
 
-    return valueMap
+    return map
   }
 
   [EQUALS] (to) {
 
-    if (to instanceof ValueMap === false)
+    if (typeof to !== 'object' || to instanceof ValueMap === false)
       return false
 
     if (to.size !== this.size)
       return false
 
-    for (const [ toKey, toValue ] of to) {
-      const value = this.get(toKey)
-      if (!equals(value, toValue))
+    for (const [ key, value ] of to)
+      if (!equals(value, this.get(key)))
         return false
-    }
 
     return true
-
   }
 
   [KEYS] = [];

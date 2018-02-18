@@ -63,6 +63,7 @@ class UnsortedArrayError extends Error {
 /******************************************************************************/
 
 const PROXY_CONFIGURATION = {
+
   set (array, index, value) {
 
     const i = parseInt(index)
@@ -87,6 +88,7 @@ const PROXY_CONFIGURATION = {
     }
 
     array[index] = value
+
     return true
   }
 }
