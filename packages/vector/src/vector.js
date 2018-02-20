@@ -226,15 +226,15 @@ class Vector {
     return this.x ** 2 + this.y ** 2
   }
 
-  copy () {
-    return new Vector(this.x, this.y)
-  }
-
   set (vector) {
     this.x = vector.x
     this.y = vector.y
 
     return this
+  }
+
+  copy () {
+    return new Vector(this.x, this.y)
   }
 
   equals (vector) {

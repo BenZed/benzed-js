@@ -54,8 +54,8 @@ function copy (...args) {
   if (typeof value[COPY] === 'function')
     return value[COPY]()
 
-  // if (typeof value.copy === 'function')
-  //   return value.copy()
+  if (typeof value.copy === 'function')
+    return value.copy()
 
   const isArray = value instanceof Array
 

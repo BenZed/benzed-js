@@ -30,7 +30,6 @@ function get (...args) {
 
     else
       ref = ref[key]
-
   }
 
   return value

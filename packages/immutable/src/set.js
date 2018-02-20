@@ -23,9 +23,6 @@ function setMutate (...args) {
     ? this
     : args.shift()
 
-  // if (obj != null && typeof obj.set === 'function')
-  //   return obj.set(...args)
-
   if (args.length < 2)
     throw new Error('cannot set without at least one key and value')
 
@@ -50,7 +47,12 @@ function setMutate (...args) {
     if (type !== 'object')
       throw new TypeError(`Cant set property '${key}' of ${type}`)
 
-    ref[key] = value
+    // if (typeof ref.set === 'function')
+    //   ref.set(...args)
+    // else
+    ref[key] = typeof value === 'function'
+      ? value(ref[key])
+      : value
   }
 
   return obj

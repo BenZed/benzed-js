@@ -64,6 +64,12 @@ function equals (...args) {
   if (typeof b[EQUALS] === 'function')
     return b[EQUALS](a)
 
+  if (typeof a.equals === 'function')
+    return a.equals(b)
+
+  if (typeof b.equals === 'function')
+    return b.equals(a)
+
   if (a instanceof Array && b instanceof Array)
     return arraysEqual(a, b)
 
