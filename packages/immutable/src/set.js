@@ -1,42 +1,43 @@
 import copy from './copy'
+import { isArrayLike } from '@benzed/array'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function set (...args) {
+function set (object, path, value) {
 
-  const obj = typeof this !== 'undefined'
-    ? this
-    : args.shift()
+  if (this !== undefined) {
+    object = this
+    path = object
+    value = path
+  }
 
-  const clone = copy(obj)
+  const clone = copy(object)
 
-  setMutate(clone, ...args)
+  setMutate(clone, path, value)
 
   return clone
 }
 
-function setMutate (...args) {
+function setMutate (object, path, value) {
 
-  const obj = this !== undefined
-    ? this
-    : args.shift()
+  if (this !== undefined) {
+    object = this
+    path = object
+    value = path
+  }
 
-  if (args.length < 2)
-    throw new Error('cannot set without at least one key and value')
+  path = isArrayLike(path) ? path : [ path ]
 
-  const value = args.pop()
-  const keys = args
+  let ref = object
 
-  let ref = obj
+  for (let i = 0; i < path.length; i++) {
+    const key = path[i]
 
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i]
-
-    const atFinalKey = i === keys.length - 1
-    if (!atFinalKey && key in obj === false)
-      ref[key] = typeof keys[i + 1] === 'number' ? [] : {}
+    const atFinalKey = i === path.length - 1
+    if (!atFinalKey && key in object === false)
+      ref[key] = typeof path[i + 1] === 'number' ? [] : {}
 
     if (!atFinalKey) {
       ref = ref[key]
@@ -47,15 +48,12 @@ function setMutate (...args) {
     if (type !== 'object')
       throw new TypeError(`Cant set property '${key}' of ${type}`)
 
-    // if (typeof ref.set === 'function')
-    //   ref.set(...args)
-    // else
     ref[key] = typeof value === 'function'
       ? value(ref[key])
       : value
   }
 
-  return obj
+  return object
 }
 
 /******************************************************************************/

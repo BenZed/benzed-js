@@ -1,27 +1,29 @@
+import { isArrayLike } from '@benzed/array'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function get (...args) {
+function get (object, path) {
 
-  const obj = this !== undefined
-    ? this
-    : args.shift()
+  if (this !== undefined) {
+    object = this
+    path = object
+  }
 
-  const keys = args
+  path = isArrayLike(path) ? path : [ path ]
 
   // if (obj != null && typeof obj.get === 'function')
   //   return obj.get(...keys)
 
   let value
-  let ref = obj
+  let ref = object
 
-  for (let i = 0; i < keys.length; i++) {
+  for (let i = 0; i < path.length; i++) {
 
-    const key = keys[i]
+    const key = path[i]
 
-    const atFinalKey = i === keys.length - 1
+    const atFinalKey = i === path.length - 1
     if (atFinalKey)
       value = ref[key]
 
