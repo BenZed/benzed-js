@@ -1,6 +1,6 @@
 import adjacent from './adjacent'
 import shuffle from './shuffle'
-import isArrayLike from './is-array-like'
+import { isArrayLike, hasNumericLength } from './is-array-like'
 import isIterable from './is-iterable'
 import { wrap, unwrap } from './wrap'
 
@@ -14,7 +14,7 @@ export {
   unwrap,
 
   isArrayLike,
-  isArrayLike as hasNumericLength,
+  hasNumericLength,
   isIterable,
 
   SortedArray,

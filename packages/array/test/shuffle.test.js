@@ -38,7 +38,7 @@ describe('shuffle()', function () {
     )
   })
 
-  it('works on array-likes', () => {
+  it('works on numerical length values', () => {
     const arrayLike = {
       length: 6,
       0: 'a',
@@ -51,6 +51,11 @@ describe('shuffle()', function () {
 
     dechancify(
       () => shuffle({...arrayLike}),
+      result => expect(result).to.not.deep.equal(arrayLike)
+    )
+
+    dechancify(
+      () => shuffle('randomly-order-this-string'),
       result => expect(result).to.not.deep.equal(arrayLike)
     )
   })

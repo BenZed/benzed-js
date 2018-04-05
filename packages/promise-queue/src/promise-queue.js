@@ -1,6 +1,3 @@
-import is from 'is-explicit'
-import define from 'define-utility'
-
 /******************************************************************************/
 // What's this?
 /******************************************************************************/
@@ -15,6 +12,7 @@ import define from 'define-utility'
 
 const QUEUE = Symbol('queue')
 const CURRENT = Symbol('current')
+const MAX_CONCURRENT = Symbol('max-concurrent')
 
 const NEXT = Symbol('next')
 const DONE = Symbol('done')
@@ -94,25 +92,28 @@ class PromiseQueueItem {
 
 class PromiseQueue {
 
-  static Item = PromiseQueueItem
+  static Item = PromiseQueueItem;
+
+  [CURRENT] = [];
+  [QUEUE] = [];
+
+  [NEXT] = this::next;
+  [DONE] = this::done;
+
+  [MAX_CONCURRENT] = null
 
   constructor (maxConcurrent = 1) {
 
-    if (!is(maxConcurrent, Number) || maxConcurrent < 1)
+    if (typeof maxConcurrent !== 'number' || !isFinite(maxConcurrent) || maxConcurrent < 1)
       throw new Error('maxConcurrent, if defined, must be a number above zero.')
 
-    define(this)
-      .const('maxConcurrent', maxConcurrent)
-      .const(CURRENT, [])
-      .const(QUEUE, [])
-      .const(NEXT, this::next)
-      .const(DONE, this::done)
+    this[MAX_CONCURRENT] = maxConcurrent
 
   }
 
   add (promiser, ...args) {
 
-    if (!is(promiser, Function))
+    if (typeof promiser !== 'function')
       throw new Error('PromiseQueue.add() takes a function that returns a promise.')
 
     const { Item } = this.constructor
@@ -148,6 +149,10 @@ class PromiseQueue {
 
   get count () {
     return this.length
+  }
+
+  get maxConcurrent () {
+    return this[MAX_CONCURRENT]
   }
 
   get items () {

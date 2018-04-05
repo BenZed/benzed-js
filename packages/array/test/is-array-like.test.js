@@ -4,72 +4,128 @@ import { inspect } from 'util'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
+/******************************************************************************/
+// DATA
+/******************************************************************************/
+
+class CustomTypeWithLength {
+  length = 5
+}
+
+class CustomTypeWithoutLength {
+
+  * [Symbol.iterator] () {
+    for (let i = 0; i < this.size; i++)
+      yield i
+  }
+
+  size = 5
+
+}
+
+const ARRAY_LIKES = [
+  [1, 2, 3],
+  { length: 0 },
+  new Int8Array(5),
+  Buffer.alloc(5, 64),
+  new String('foobar'), // eslint-disable-line
+  new CustomTypeWithLength()
+]
+
+const NUMERICAL_LENGTH_VALUES = [
+  ...ARRAY_LIKES,
+  'foobar'
+]
+
+const ARRAY_UNLIKES = [
+  new Date(),
+  /length-regex/g,
+  5,
+  true,
+  Symbol('symbols-arn\'t-array-like'),
+  { size: 10 },
+  new Map(),
+  new Set(),
+  new CustomTypeWithoutLength()
+]
+
+/******************************************************************************/
+// Tests
+/******************************************************************************/
+
+const arrayLikers = {
+  argument: obj => isArrayLike(obj),
+  bound: obj => obj::isArrayLike()
+}
+
+const numericalLengthers = {
+  argument: obj => hasNumericLength(obj),
+  bound: obj => obj::hasNumericLength()
+}
+
+const describer = {
+  argument: `method(value)`,
+  bound: `value::method()`
+}
+
 describe('isArrayLike()', () => {
 
-  describe('hasNumericLength is an alias', () =>
-    expect(hasNumericLength).to.be.equal(isArrayLike)
-  )
+  for (const method in arrayLikers) {
 
-  describe('returns true if an object is array-like', function () {
+    const arrayLiker = arrayLikers[method]
 
-    class CustomTypeWithLength {
-      length = 5
-    }
+    describe(`${method} syntax: ${describer[method]}`, () => {
 
-    const objs = [
-      [1, 2, 3],
-      'string',
-      { length: 0 },
-      new Int8Array(5),
-      Buffer.alloc(5, 64),
-      arguments,
-      new CustomTypeWithLength()
-    ]
+      describe('returns true if an object is array-like', function () {
 
-    for (const obj of objs)
-      it(
-        `${obj === arguments ? '<arguments>' : inspect(obj)} is array-like`,
-        () => expect(isArrayLike(obj)).to.be.true
-      )
+        for (const value of [ ...ARRAY_LIKES, arguments ])
+          it(
+            `${value === arguments ? '<arguments>' : inspect(value)} is array-like`,
+            () => expect(arrayLiker(value)).to.be.true
+          )
 
-  })
+      })
 
-  describe('returns false if object is not an arraylike', () => {
+      describe('returns false if object is not an arraylike', () => {
 
-    class CustomTypeWithoutLength {
+        for (const value of [ ...ARRAY_UNLIKES, 'foobar' ])
+          it(
+            `${inspect(value)} is not array-like`,
+            () => expect(arrayLiker(value)).to.be.false
+          )
+      })
 
-      * [Symbol.iterator] () {
-        for (let i = 0; i < this.size; i++)
-          yield i
-      }
+    })
+  }
+})
 
-      size = 5
+describe('hasNumericLength()', () => {
 
-    }
+  for (const method in arrayLikers) {
 
-    const objs = [
-      new Date(),
-      /length-regex/g,
-      5,
-      true,
-      Symbol('symbols-arn\'t-array-like'),
-      { size: 10 },
-      new Map(),
-      new Set(),
-      new CustomTypeWithoutLength()
-    ]
+    const numericalLengther = numericalLengthers[method]
 
-    for (const obj of objs)
-      it(
-        `${inspect(obj)} is not array-like`,
-        () => expect(isArrayLike(obj)).to.be.false
-      )
+    describe(`${method} syntax: ${describer[method]}`, () => {
 
-  })
+      describe('returns true if an object has numeric length', function () {
 
-  it('Can be bound', () => {
-    expect([]::isArrayLike()).to.be.equal(true)
-    expect({}::isArrayLike()).to.be.equal(false)
-    expect(null::isArrayLike()).to.be.equal(false)
-  })
+        for (const value of [ ...NUMERICAL_LENGTH_VALUES, arguments ])
+          it(
+            `${value === arguments ? '<arguments>' : inspect(value)} has numeric length`,
+            () => expect(numericalLengther(value)).to.be.true
+          )
+
+      })
+
+      describe('returns false if object does not have a numeric length', () => {
+
+        for (const value of ARRAY_UNLIKES)
+          it(
+            `${inspect(value)} does not have numeric length`,
+            () => expect(numericalLengther(value)).to.be.false
+          )
+      })
+
+    })
+  }
 })

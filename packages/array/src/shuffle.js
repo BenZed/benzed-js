@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto'
-import isArrayLike from './is-array-like'
 
 /******************************************************************************/
 // Main
@@ -13,10 +12,14 @@ import isArrayLike from './is-array-like'
  */
 function shuffle (array) {
 
-  if (isArrayLike(this))
+  if (this !== undefined)
     array = this
 
   let index = array.length
+
+  const inputIsString = typeof array === 'string'
+  if (inputIsString)
+    array = array.split('')
 
   const buffer = randomBytes(array.length)
 
@@ -33,6 +36,9 @@ function shuffle (array) {
     array[randomIndex] = temp
 
   }
+
+  if (inputIsString)
+    array = array.join('')
 
   return array
 

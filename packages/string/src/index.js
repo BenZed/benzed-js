@@ -1,5 +1,5 @@
-/******************************************************************************/
-// string entry point
-/******************************************************************************/
+import capitalize from './capitalize'
+import toCamelCase from './to-camel-case'
+import fromCamelCase from './from-camel-case'
 
-// this project has no api, so it's assumed to be a library.
+export { capitalize, toCamelCase, fromCamelCase }

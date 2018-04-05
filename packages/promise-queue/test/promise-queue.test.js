@@ -87,7 +87,7 @@ describe('Promise Queue', () => {
 
     describe('clear()', () => {
 
-      it('Rejects promises waiting in queue', () => {
+      it('Rejects promises waiting in queue', async () => {
 
         const counter = new PromiseQueue(1)
 
@@ -98,22 +98,37 @@ describe('Promise Queue', () => {
 
         counter.clear()
 
-        expect(one).to.eventually.equal(1)
+        let err
+        try {
+          await two
+        } catch (e) {
+          err = e
+        }
+
+        expect(await one).to.equal(1)
         expect(counter.queuedCount).to.equal(0)
 
-        return expect(two).to.eventually.be.rejectedWith('Cancelled')
+        expect(err).to.have.property('message', 'Cancelled')
 
       })
 
-      it('Optionally takes a custom error message', () => {
+      it('Optionally takes a custom error message', async () => {
 
         const counter = new PromiseQueue(1)
         const one = counter.add(count)
         const two = counter.add(count)
 
         counter.clear('Terminated')
-        expect(one).to.eventually.equal(1)
-        return expect(two).to.eventually.be.rejectedWith('Terminated')
+
+        let err
+        try {
+          await two
+        } catch (e) {
+          err = e
+        }
+
+        expect(await one).to.equal(1)
+        expect(err).to.have.property('message', 'Terminated')
 
       })
 

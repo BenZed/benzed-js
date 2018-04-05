@@ -25,13 +25,21 @@ function ascending (a, b) {
       : 0
 }
 
+function descending (a, b) {
+  return a > b
+    ? -1
+    : a < b
+      ? 1
+      : 0
+}
+
 function binarySearch (arr, value, strict) {
 
   let min = 0
   let max = arr.length
 
-  // in case the array is descending
-  const descending = arr[min] > arr[max - 1]
+  // In case the array is descending
+  const { ascending } = arr
 
   while (min < max) {
     const mid = (min + max) >> 1
@@ -40,13 +48,34 @@ function binarySearch (arr, value, strict) {
     if (_value === value)
       return mid
 
-    if (descending ? _value > value : _value < value)
+    if (ascending ? _value < value : _value > value)
       min = mid + 1
     else
       max = mid
   }
 
   return strict === STRICT ? -1 : min
+}
+
+function testUnsorted (arr, startIndex = 0, endIndex = arr.length - 1) {
+  const { ascending } = arr
+
+  let unsorted = false
+
+  const length = endIndex - startIndex
+  if (length <= 1)
+    return
+
+  for (let i = startIndex; i <= endIndex; i++) {
+    const prev = arr[i - 1]
+    const curr = arr[i]
+    if (ascending ? curr < prev : curr > prev) {
+      unsorted = true
+      break
+    }
+  }
+
+  arr[UNSORTED] = unsorted
 }
 
 /******************************************************************************/
@@ -72,11 +101,11 @@ const PROXY_CONFIGURATION = {
 
     const i = parseInt(index)
 
-    const { unsorted } = array
-    const isSettingIndex = !Number.isNaN(i)
-    if (isSettingIndex && !unsorted && array.length > 1) {
+    const { unsorted, length } = array
 
-      const { length, ascending } = array
+    const isSettingIndex = !Number.isNaN(i)
+    if (isSettingIndex && !unsorted && length > 1) {
+      const { ascending } = array
       const lastIndex = length - 1
 
       const next = array[i + 1]
@@ -101,11 +130,10 @@ const PROXY_CONFIGURATION = {
 // Main
 /******************************************************************************/
 
-// TODO make SortedArray derive from UnsafeSortedArray and add all the unsort stuff
-
 class SortedArray extends Array {
 
   constructor (...args) {
+
     super(...args)
 
     defineProperty(this, UNSORTED, { writable: true, value: false })
@@ -116,19 +144,25 @@ class SortedArray extends Array {
     return new Proxy(this, PROXY_CONFIGURATION)
   }
 
-  // Insertion sort
+  // Insertion Sort
   sort (comparer) {
 
     if (comparer)
       this.comparer = comparer
 
+    // so the nested loop doesn't have to call this.comparer
+    comparer = this.comparer
+
     const { length } = this
+
+    // prevent extra proxy overhead when setting indexes
+    this[UNSORTED] = true
 
     for (let i = 1; i < length; i++) {
       const item = this[i]
 
       // eslint-disable-next-line no-var
-      for (var ii = i - 1; ii >= 0 && this.comparer(this[ii], item) > 0; ii--)
+      for (var ii = i - 1; ii >= 0 && comparer(this[ii], item) > 0; ii--)
         this[ii + 1] = this[ii]
 
       this[ii + 1] = item
@@ -144,7 +178,8 @@ class SortedArray extends Array {
   filter (...args) {
     const filtered = super.filter(...args)
     filtered.comparer = this.comparer
-    filtered[UNSORTED] = this[UNSORTED]
+
+    testUnsorted(filtered)
 
     return filtered
   }
@@ -153,12 +188,16 @@ class SortedArray extends Array {
     const mapped = super.map(...args)
     mapped.comparer = this.comparer
 
+    testUnsorted(mapped)
+
     return mapped
   }
 
   slice (...args) {
     const sliced = super.slice(...args)
     sliced.comparer = this.comparer
+
+    testUnsorted(sliced)
 
     return sliced
   }
@@ -167,23 +206,13 @@ class SortedArray extends Array {
     const concated = super.concat(arr)
     concated.comparer = this.comparer
 
-    let unsorted = this.unsorted
+    const { unsorted } = this
 
-    const { ascending } = this
+    const cmax = concated.length - 1
+    const tmax = this.length - 1
 
-    const clen = concated.length
-    const tlen = this.length
-
-    if (!unsorted && clen > tlen) for (let i = tlen; i < clen; i++) {
-      const prev = concated[i - 1]
-      const curr = concated[i]
-      if (ascending ? curr < prev : curr > prev) {
-        unsorted = true
-        break
-      }
-    }
-
-    concated[UNSORTED] = unsorted
+    if (!unsorted && cmax > tmax)
+      testUnsorted(concated, tmax, cmax)
 
     return concated
   }
@@ -275,4 +304,10 @@ class SortedArray extends Array {
 
 export default SortedArray
 
-export { SortedArray, UnsortedArrayError, UNSORTED }
+export {
+
+  SortedArray, UnsortedArrayError, UNSORTED,
+
+  ascending, descending
+
+}

@@ -1,6 +1,5 @@
 import { expect } from 'chai'
-import PromiseQueue from '../../src'
-import SortablePromiseQueue from '../../src'
+import PromiseQueue from '../src'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -10,11 +9,11 @@ describe('Sortable Promise Queue', () => {
   describe('Setup', () => {
 
     it('is a class', () => {
-      expect(SortablePromiseQueue).to.throw('cannot be invoked without \'new\'')
+      expect(PromiseQueue.Sortable).to.throw('cannot be invoked without \'new\'')
     })
 
     it('extends PromiseQueue', () => {
-      const q = new SortablePromiseQueue(2)
+      const q = new PromiseQueue.Sortable(2)
       expect(q).to.be.instanceof(PromiseQueue)
     })
 
@@ -22,15 +21,15 @@ describe('Sortable Promise Queue', () => {
 
       const sorter = () => {}
 
-      const q = new SortablePromiseQueue(2, sorter)
+      const q = new PromiseQueue.Sortable(2, sorter)
       expect(q.sorter).to.be.equal(sorter)
     })
 
     it('throws if sorter is defined but not a function', () => {
 
-      expect(() => new SortablePromiseQueue()).to.not.throw()
+      expect(() => new PromiseQueue.Sortable()).to.not.throw()
 
-      expect(() => new SortablePromiseQueue(1, 0)).to.throw('must be a function')
+      expect(() => new PromiseQueue.Sortable(1, 0)).to.throw('must be a function')
 
     })
 
@@ -46,7 +45,7 @@ describe('Sortable Promise Queue', () => {
 
       it('now takes an order value that sorts items before being fired next', async () => {
 
-        const queue = new SortablePromiseQueue(1)
+        const queue = new PromiseQueue.Sortable(1)
 
         const five = queue.add(() => dollars(5), 5)
         const one = queue.add(() => dollars(1), 1)
@@ -64,7 +63,7 @@ describe('Sortable Promise Queue', () => {
 
       it('order can also be a function', async function () {
 
-        const queue = new SortablePromiseQueue(1)
+        const queue = new PromiseQueue.Sortable(1)
 
         queue.add(() => dollars(3), () => 1)
         const two = queue.add(() => dollars(2), () => 2)

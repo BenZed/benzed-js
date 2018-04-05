@@ -1,4 +1,8 @@
-import isArrayLike from './is-array-like'
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const { indexOf } = Array.prototype
 
 /******************************************************************************/
 // Main
@@ -17,13 +21,11 @@ import isArrayLike from './is-array-like'
 */
 function adjacent (array, needle, delta = 1) {
 
-  const thisIsArraylike = isArrayLike(this)
-  if (thisIsArraylike) {
+  if (this !== undefined) {
     ([ needle, delta = 1 ] = arguments)
     array = this
   }
 
-  const { indexOf } = Array.prototype
   const { length } = array
 
   const index = array::indexOf(needle) + delta

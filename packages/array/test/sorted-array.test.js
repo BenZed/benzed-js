@@ -1,10 +1,8 @@
 import { expect } from 'chai'
-import SortedArray, { UnsafeSortError, UNSORTED } from '../src/sorted-array'
+import SortedArray, { UnsafeSortError, descending } from '../src/sorted-array'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
-
-const descending = (a, b) => a > b ? -1 : a < b ? 1 : 0
 
 describe('Sorted Array', () => {
 
@@ -135,13 +133,16 @@ describe('Sorted Array', () => {
       expect(filtered).to.be.instanceof(SortedArray)
     })
 
-    it.only('retains unsorted flag from filteree', () => {
+    it('filtree gets tested for sort', () => {
       const arr2 = arr.filter(() => true)
       arr2[1] = 100
-      const arr2filtered = arr2.filter(() => true)
 
-      console.log(arr2, arr2filtered)
-      expect(arr2[UNSORTED]).to.equal(arr2filtered[UNSORTED])
+      const arr3 = arr2.filter(v => v % 2 === 0)
+      const arr4 = arr2.filter(v => v < 100)
+
+      expect(arr2.unsorted).to.equal(true)
+      expect(arr3.unsorted).to.equal(true)
+      expect(arr4.unsorted).to.equal(false)
     })
 
     it('custom comparers are passed to filtered arrays', () => {
@@ -164,7 +165,19 @@ describe('Sorted Array', () => {
       expect(sliced).to.deep.equal([ 1, 2, 3 ])
     })
 
-    it('retains unsorted flag from slicee')
+    it('slicee tests for unsorted', () => {
+
+      const arr2 = new SortedArray(...arr)
+      arr2[0] = 100
+
+      const arr3 = arr2.slice(0, 4)
+      const arr4 = arr2.slice(1, 4)
+
+      expect(arr2.unsorted).to.equal(true)
+      expect(arr3.unsorted).to.equal(true)
+      expect(arr4.unsorted).to.equal(false)
+      expect(sliced.unsorted).to.equal(false)
+    })
 
     it('returns a SortedArray', () => {
       expect(sliced).to.be.instanceof(SortedArray)
@@ -184,7 +197,12 @@ describe('Sorted Array', () => {
       expect(mapped).to.be.instanceof(SortedArray)
     })
 
-    it('sets unsorted flag on returned array')
+    it('tests result array for unsorted', () => {
+      const mappedunsorted = arr.map(v => v % 2 === 0 ? v * 100 : v)
+      expect(arr.unsorted).to.equal(false)
+      expect(mapped.unsorted).to.equal(false)
+      expect(mappedunsorted.unsorted).to.equal(true)
+    })
 
     it('custom comparers are passed to mapped arrays', () => {
       const arr2 = new SortedArray(...arr)
@@ -388,7 +406,18 @@ describe('Sorted Array', () => {
       expect(() => { arr.ascending = true }).to.throw('has only a getter')
     })
 
-    it('is true if array is ascending')
+    it('is true if array is ascending', () => {
+
+      const arr1 = new SortedArray(0, 1, 2, 3, 4)
+      const arr2 = new SortedArray(5, 6, 7, 8, 9)
+
+      arr2.comparer = descending
+      arr2.sort()
+
+      expect(arr1.ascending).to.be.equal(true)
+      expect(arr2.ascending).to.be.equal(false)
+
+    })
   })
 
   describe(`Symbol('compare-function') property`, () => {
@@ -413,7 +442,5 @@ describe('Sorted Array', () => {
       return expect(arr.unsorted).to.be.true
 
     })
-
   })
-
 })

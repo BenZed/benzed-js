@@ -25,7 +25,7 @@ describe('adjacent()', () => {
     expect(array::adjacent('c')).to.equal('d')
   })
 
-  it('works on array-like objects', () => {
+  it('works on numerical-length values', () => {
     const arrayLike = { length: 2, 0: 'a', 1: 'b' }
 
     expect(arrayLike::adjacent('b')).to.equal('a')

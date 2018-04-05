@@ -4,22 +4,20 @@
 /******************************************************************************/
 
 /**
- * Is an object iterable?
+ * capitalizes a string
  *
- * @param  {*} object
- * @return {boolean}   True if input has Symbol.iterator
+ * @param  {string} str description
+ * @return {string}     description
  */
-function isIterable (object) {
+function capitalize (str) {
 
   if (this !== undefined)
-    object = this
+    str = this
 
-  return object != null &&
-    typeof object[Symbol.iterator] === 'function'
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default isIterable
+export default capitalize

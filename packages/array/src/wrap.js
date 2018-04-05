@@ -10,9 +10,8 @@
  */
 function wrap (arr) {
 
-  arr = this === undefined
-    ? arr
-    : this
+  if (this !== undefined)
+    arr = this
 
   return arr instanceof Array ? arr : [ arr ]
 
@@ -26,9 +25,8 @@ function wrap (arr) {
  */
 function unwrap (arr) {
 
-  arr = this === undefined
-    ? arr
-    : this
+  if (this !== undefined)
+    arr = this
 
   return arr instanceof Array ? arr[0] : arr
 
