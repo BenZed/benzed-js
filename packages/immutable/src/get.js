@@ -1,4 +1,4 @@
-import { isArrayLike } from '@benzed/array'
+import copy from './copy'
 
 /******************************************************************************/
 // Main
@@ -7,11 +7,23 @@ import { isArrayLike } from '@benzed/array'
 function get (object, path) {
 
   if (this !== undefined) {
-    object = this
     path = object
+    object = this
   }
 
-  path = isArrayLike(path) ? path : [ path ]
+  const value = getMutable(object, path)
+
+  return copy(value)
+}
+
+function getMutable (object, path) {
+
+  if (this !== undefined && this !== get) {
+    path = object
+    object = this
+  }
+
+  path = path instanceof Array ? path : [ path ]
 
   // if (obj != null && typeof obj.get === 'function')
   //   return obj.get(...keys)
@@ -19,11 +31,14 @@ function get (object, path) {
   let value
   let ref = object
 
-  for (let i = 0; i < path.length; i++) {
+  const { length } = path
+  const finalIndex = length - 1
+
+  for (let i = 0; i < length; i++) {
 
     const key = path[i]
 
-    const atFinalKey = i === path.length - 1
+    const atFinalKey = i === finalIndex
     if (atFinalKey)
       value = ref[key]
 
@@ -40,5 +55,7 @@ function get (object, path) {
 /******************************************************************************/
 // Exports
 /******************************************************************************/
+
+get.mut = getMutable
 
 export default get

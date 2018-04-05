@@ -1,5 +1,4 @@
 import copy from './copy'
-import { isArrayLike } from '@benzed/array'
 
 /******************************************************************************/
 // Main
@@ -8,45 +7,49 @@ import { isArrayLike } from '@benzed/array'
 function set (object, path, value) {
 
   if (this !== undefined) {
-    object = this
-    path = object
     value = path
+    path = object
+    object = this
   }
 
   const clone = copy(object)
 
-  setMutate(clone, path, value)
+  return setMutate(clone, path, value)
 
-  return clone
 }
 
 function setMutate (object, path, value) {
 
-  if (this !== undefined) {
-    object = this
-    path = object
+  if (this !== undefined && this !== set) {
     value = path
+    path = object
+    object = this
   }
 
-  path = isArrayLike(path) ? path : [ path ]
+  path = path instanceof Array ? path : [ path ]
 
   let ref = object
 
-  for (let i = 0; i < path.length; i++) {
+  const { length } = path
+  const finalIndex = length - 1
+
+  for (let i = 0; i < length; i++) {
     const key = path[i]
 
-    const atFinalKey = i === path.length - 1
-    if (!atFinalKey && key in object === false)
+    const refType = typeof ref
+    const refIsObject = refType === 'object' && ref !== null
+
+    const atFinalKey = i === finalIndex
+    if (!atFinalKey && refIsObject && key in ref === false)
       ref[key] = typeof path[i + 1] === 'number' ? [] : {}
 
-    if (!atFinalKey) {
+    if (refIsObject && !atFinalKey) {
       ref = ref[key]
       continue
     }
 
-    const type = typeof ref
-    if (type !== 'object')
-      throw new TypeError(`Cant set property '${key}' of ${type}`)
+    if (!refIsObject)
+      throw new TypeError(`Cant set property '${key}' of ${refType}`)
 
     ref[key] = typeof value === 'function'
       ? value(ref[key])

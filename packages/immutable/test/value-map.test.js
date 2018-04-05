@@ -413,7 +413,7 @@ describe('ValueMap', () => {
     })
   })
 
-  describe.only('immutable symbols', () => {
+  describe('immutable symbols', () => {
 
     let map1, map2
 
