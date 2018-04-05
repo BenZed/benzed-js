@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import SortedArray, { UnsafeSortError } from '../src/sorted-array'
+import SortedArray, { UnsafeSortError, UNSORTED } from '../src/sorted-array'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -135,7 +135,14 @@ describe('Sorted Array', () => {
       expect(filtered).to.be.instanceof(SortedArray)
     })
 
-    it('retains unsorted flag from filteree')
+    it.only('retains unsorted flag from filteree', () => {
+      const arr2 = arr.filter(() => true)
+      arr2[1] = 100
+      const arr2filtered = arr2.filter(() => true)
+
+      console.log(arr2, arr2filtered)
+      expect(arr2[UNSORTED]).to.equal(arr2filtered[UNSORTED])
+    })
 
     it('custom comparers are passed to filtered arrays', () => {
       const arr2 = new SortedArray(...arr)
@@ -396,18 +403,11 @@ describe('Sorted Array', () => {
     })
   })
 
-  describe('::shuffle', () => {
-
-    it('sets unsorted')
-
-  })
-
   describe('sortedArray[i] = value', () => {
 
     it('sets unsorted if placed value puts array out of order', () => {
       const arr = new SortedArray(4, 8, 1, 4, 0, 11)
 
-      console.log(arr)
       arr[2] = 5
 
       return expect(arr.unsorted).to.be.true

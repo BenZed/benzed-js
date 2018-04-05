@@ -11,11 +11,17 @@
  */
 function isArrayLike (object) {
 
-  if (arguments.length === 0)
+  if (this !== undefined)
     object = this
 
-  return object !== null &&
-    typeof object.length === 'number'
+  const type = typeof object
+
+  return type === 'string' ||
+    (
+      type === 'object' &&
+      object !== null &&
+      typeof object.length === 'number'
+    )
 }
 
 /******************************************************************************/

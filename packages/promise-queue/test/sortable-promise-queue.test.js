@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import PromiseQueue from '../../src/modules/promise-queue'
-import SortablePromiseQueue from '../../src/modules/sortable-promise-queue'
+import PromiseQueue from '../../src'
+import SortablePromiseQueue from '../../src'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

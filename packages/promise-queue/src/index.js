@@ -1,5 +1,16 @@
+import PromiseQueue from './promise-queue'
+import SortablePromiseQueue from './sortable-promise-queue'
+
 /******************************************************************************/
-// promise-queue entry point
+// Extend
 /******************************************************************************/
 
-// this project has no api, so it's assumed to be a library.
+PromiseQueue.Sortable = SortablePromiseQueue
+
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
+export default PromiseQueue
+
+export { PromiseQueue, SortablePromiseQueue }

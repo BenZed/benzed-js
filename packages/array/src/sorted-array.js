@@ -144,6 +144,7 @@ class SortedArray extends Array {
   filter (...args) {
     const filtered = super.filter(...args)
     filtered.comparer = this.comparer
+    filtered[UNSORTED] = this[UNSORTED]
 
     return filtered
   }
