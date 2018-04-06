@@ -7,9 +7,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const { DefinePlugin } = webpack
 
-const { ModuleConcatenationPlugin, CommonsChunkPlugin } = webpack.optimize
-
-const pkg = require('../package.json')
+const { ModuleConcatenationPlugin } = webpack.optimize
 
 /******************************************************************************/
 // Data
@@ -21,23 +19,9 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production'
 // Entry
 /******************************************************************************/
 
-const MODULES = Object.keys(pkg.dependencies)
-
-const VENDOR_PREFIXES = [ 'react', 'styled', 'mobx' ]
-
 const entry = {
-  'showcase-editor': path.resolve(__dirname, '../src/webpack/index.js')
+  'benzed-react': path.resolve(__dirname, '../src/webpack/index.js')
 }
-
-const vendor = MODULES.reduce((v, mod) => {
-  if (VENDOR_PREFIXES.some(prefix => mod.includes(prefix)))
-    v.push(mod)
-
-  return v
-}, [])
-
-if (vendor.length > 0)
-  entry.vendor = vendor
 
 /******************************************************************************/
 // Plugins
@@ -57,11 +41,7 @@ let plugins = [
 const entries = Object.keys(entry)
 if (entries.length > 1) plugins = [
 
-  ...plugins,
-
-  new CommonsChunkPlugin({
-    names: entries.filter(key => key !== 'showcase-editor')
-  })
+  ...plugins
 
 ]
 
@@ -77,6 +57,22 @@ if (IS_PRODUCTION) plugins = [
   new UglifyJsPlugin()
 
 ]
+
+/******************************************************************************/
+// Optimization
+/******************************************************************************/
+
+const optimization = {
+  splitChunks: {
+    cacheGroups: {
+      commons: {
+        test: /\/node_modules\//,
+        name: 'vendors',
+        chunks: 'all'
+      }
+    }
+  }
+}
 
 /******************************************************************************/
 // Config
@@ -144,17 +140,21 @@ const config = {
 
   entry,
   output,
+  optimization,
 
   resolve,
   module: _module,
 
   plugins,
 
-  node
+  node,
+  mode: 'production'
 
 }
 
 if (!IS_PRODUCTION) {
+
+  config.mode = 'development'
 
   config.devServer = {
     contentBase: path.resolve(__dirname, '../dist/webpack/public'),

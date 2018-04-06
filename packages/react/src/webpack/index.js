@@ -5,7 +5,7 @@ import { render } from 'react-dom'
 
 import Example from './example'
 
-import { Store } from '../state'
+import { Store, Provider } from '../state'
 
 /******************************************************************************/
 // Test Store
@@ -13,14 +13,20 @@ import { Store } from '../state'
 
 class Counter extends Store {
 
-  number = 0
+  meta = {
+    number: 0,
+    time: null
+  }
 
   constructor () {
     super()
-    setInterval(() => this.setNumber(this.number + 1), 1000)
+    setInterval(this.update, 100 + Math.random() * 300)
   }
 
-  setNumber = value => this.set('number', value)
+  update = () => this.set('meta', {
+    number: this.meta.number + 1,
+    time: new Date()
+  })
 
 }
 
@@ -32,8 +38,14 @@ window.addEventListener('load', () => {
 
   const counter = new Counter()
 
-  const rootComponent = <Example counter={counter} />
+  const stores = { counter }
+
   const rootTag = document.getElementById('benzed-react')
+
+  const rootComponent =
+    <Provider {...stores}>
+      <Example />
+    </Provider>
 
   render(rootComponent, rootTag)
 

@@ -1,61 +1,60 @@
-0 silly input [ 'test' ]
+0 silly input [ 'webpack:dev' ]
 1 silly flags { _: [ 'run' ],
 1 silly flags   'reject-cycles': false,
 1 silly flags   rejectCycles: false,
-1 silly flags   script: 'test',
+1 silly flags   parallel: true,
+1 silly flags   script: 'webpack:dev',
 1 silly flags   args: [] }
-2 verbose rootPath /Users/bengaumond/Projects/benzed-mono
-3 info version 2.8.0
-4 silly existsSync /Users/bengaumond/Projects/benzed-mono/VERSION
+2 verbose rootPath /Users/global/Programming/benzed-mono
+3 info version 2.9.1
+4 silly existsSync /Users/global/Programming/benzed-mono/VERSION
 5 info versioning independent
 6 silly initialize attempt
 7 silly initialize success
 8 silly execute attempt
-9 silly runScriptInDir test [] array
-10 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/array' }
-11 silly runScriptInDir test [] math
-12 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/math' }
-13 silly runScriptInDir test [] promise-queue
-14 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/promise-queue' }
-15 silly runScriptInDir test [] string
-16 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/string' }
-17 silly runScriptInDir test [] vector
-18 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/vector' }
-19 error test Errored while running script in '@benzed/array'
-20 error execute callback with error
-21 error Error: Command failed: npm run test
-21 error npm ERR! code ELIFECYCLE
-21 error npm ERR! errno 1
-21 error npm ERR! @benzed/array@0.0.1 test: `mocha --opts .mocha.opts`
-21 error npm ERR! Exit status 1
-21 error npm ERR!
-21 error npm ERR! Failed at the @benzed/array@0.0.1 test script.
-21 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-21 error
-21 error npm ERR! A complete log of this run can be found in:
-21 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-04-05T08_09_32_007Z-debug.log
-21 error
-21 error > @benzed/array@0.0.1 test /Users/bengaumond/Projects/benzed-mono/packages/array
-21 error > mocha --opts .mocha.opts
-21 error
-21 error
-21 error
-21 error   adjacent()
-21 error     1) returns an adjacent value of a given value and array
-21 error
-21 error
-21 error   0 passing (53ms)
-21 error   1 failing
-21 error
-21 error   1) adjacent()
-21 error        returns an adjacent value of a given value and array:
-21 error      TypeError: Cannot read property 'length' of undefined
-21 error       at isArrayLike (src/is-array-like.js:18:19)
-21 error       at adjacent (src/adjacent.js:20:27)
-21 error       at Context.it (test/adjacent.test.js:13:12)
-21 error
-21 error
-21 error
-21 error
-21 error     at Promise.all.then.arr (/Users/bengaumond/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
-21 error     at <anonymous>
+9 info run in 1 package(s): npm run webpack:dev
+10 silly runScriptInPackageStreaming [ 'webpack:dev', [], '@benzed/react' ]
+11 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/react' }
+12 error execute callback with error
+13 error Error: Command failed: npm run webpack:dev
+13 error (node:58047) DeprecationWarning: Tapable.plugin is deprecated. Use new API on `.hooks` instead
+13 error /Users/global/Programming/benzed-mono/node_modules/webpack/lib/Chunk.js:468
+13 error 		throw new Error(
+13 error 		^
+13 error
+13 error Error: Chunk.entrypoints: Use Chunks.groupsIterable and filter by instanceof Entrypoint instead
+13 error     at Chunk.get (/Users/global/Programming/benzed-mono/node_modules/webpack/lib/Chunk.js:468:9)
+13 error     at /Users/global/Programming/benzed-mono/node_modules/extract-text-webpack-plugin/dist/index.js:176:48
+13 error     at Array.forEach (<anonymous>)
+13 error     at /Users/global/Programming/benzed-mono/node_modules/extract-text-webpack-plugin/dist/index.js:171:18
+13 error     at AsyncSeriesHook.eval [as callAsync] (eval at create (/Users/global/Programming/benzed-mono/node_modules/tapable/lib/HookCodeFactory.js:24:12), <anonymous>:7:1)
+13 error     at AsyncSeriesHook.lazyCompileHook [as _callAsync] (/Users/global/Programming/benzed-mono/node_modules/tapable/lib/Hook.js:35:21)
+13 error     at Compilation.seal (/Users/global/Programming/benzed-mono/node_modules/webpack/lib/Compilation.js:896:27)
+13 error     at hooks.make.callAsync.err (/Users/global/Programming/benzed-mono/node_modules/webpack/lib/Compiler.js:479:17)
+13 error     at _done (eval at create (/Users/global/Programming/benzed-mono/node_modules/tapable/lib/HookCodeFactory.js:24:12), <anonymous>:9:1)
+13 error     at _err1 (eval at create (/Users/global/Programming/benzed-mono/node_modules/tapable/lib/HookCodeFactory.js:24:12), <anonymous>:32:22)
+13 error     at _addModuleChain (/Users/global/Programming/benzed-mono/node_modules/webpack/lib/Compilation.js:764:12)
+13 error     at processModuleDependencies.err (/Users/global/Programming/benzed-mono/node_modules/webpack/lib/Compilation.js:703:9)
+13 error     at process._tickCallback (internal/process/next_tick.js:150:11)
+13 error npm ERR! code ELIFECYCLE
+13 error npm ERR! errno 1
+13 error npm ERR! @benzed/react@0.0.1 webpack:dev: `NODE_ENV=development webpack-dev-server --config config/webpack.js`
+13 error npm ERR! Exit status 1
+13 error npm ERR!
+13 error npm ERR! Failed at the @benzed/react@0.0.1 webpack:dev script.
+13 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+13 error
+13 error npm ERR! A complete log of this run can be found in:
+13 error npm ERR!     /Users/global/.npm/_logs/2018-04-06T03_27_27_954Z-debug.log
+13 error
+13 error
+13 error > @benzed/react@0.0.1 webpack:dev /Users/global/Programming/benzed-mono/packages/react
+13 error > NODE_ENV=development webpack-dev-server --config config/webpack.js
+13 error
+13 error ℹ ｢wds｣: Project is running at [1m[34mhttp://0.0.0.0:5500/[39m[22m
+13 error ℹ ｢wds｣: webpack output is served from [1m[34m/[39m[22m
+13 error ℹ ｢wds｣: Content not from webpack is served from [1m[34m/Users/global/Programming/benzed-mono/packages/react/dist/webpack/public[39m[22m
+13 error ℹ ｢wds｣: 404s will fallback to [1m[34m/index.html[39m[22m
+13 error
+13 error     at Promise.all.then.arr (/Users/global/Programming/benzed-mono/node_modules/execa/index.js:236:11)
+13 error     at <anonymous>
