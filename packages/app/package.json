@@ -1,5 +1,5 @@
 {
-  "name": "@benzed/define",
+  "name": "@benzed/app",
   "version": "0.0.1",
   "main": "lib",
   "scripts": {
