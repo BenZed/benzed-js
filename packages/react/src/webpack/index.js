@@ -5,28 +5,33 @@ import { render } from 'react-dom'
 
 import Example from './example'
 
+import { set } from '@benzed/immutable'
+
 import { Store, Provider } from '../state'
 
 /******************************************************************************/
 // Test Store
 /******************************************************************************/
 
-class Counter extends Store {
+const AVERAGE = Symbol('average')
 
-  meta = {
-    number: 0,
-    time: null
+class Stats extends Store {
+
+  scores = [];
+
+  [AVERAGE] = 0
+  get average () {
+    return this[AVERAGE]
   }
 
-  constructor () {
-    super()
-    setInterval(this.update, 100 + Math.random() * 300)
-  }
+  addScore (value) {
 
-  update = () => this.set('meta', {
-    number: this.meta.number + 1,
-    time: new Date()
-  })
+    const scores = set(this.scores, this.scores.length, value)
+
+    this[AVERAGE] = scores.reduce((a, v) => a + v) / scores.length
+
+    this.set('scores', scores)
+  }
 
 }
 
@@ -36,10 +41,10 @@ class Counter extends Store {
 
 window.addEventListener('load', () => {
 
-  const counter = new Counter()
+  const stats = new Stats()
+  stats.addScore(5)
 
-  const stores = { counter }
-
+  const stores = { stats }
   const rootTag = document.getElementById('benzed-react')
 
   const rootComponent =

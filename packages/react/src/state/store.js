@@ -51,9 +51,9 @@ function notify (store, path, state) {
 
   const { length: pathLength } = path
 
-  const start = Date.now()
+  // const start = Date.now()
 
-  let count = 0
+  // let count = 0
 
   for (let i = 0; i < pathLength; i++) {
     const stateKey = path[i]
@@ -80,7 +80,7 @@ function notify (store, path, state) {
       if (!finished && atMaxSubPathIndex) {
         finished = true
         sub.func(state, sub.path)
-        count++
+        // count++
       }
 
       // subscriber will not be considered for further state calls
@@ -92,7 +92,7 @@ function notify (store, path, state) {
       break
   }
 
-  console.log(Date.now() - start, 'ms to update', count, 'subscribers')
+  // console.log(Date.now() - start, 'ms to update', count, 'subscribers')
 
 }
 

@@ -15,13 +15,20 @@ const Header = styled.h1`
   margin: 0;
 `
 
-const Count = (
+const Stats = (
 
-  ({ counter, path }) =>
-    <h1 key='1'>{counter.meta.number}</h1>
+  ({ stats, path }) =>
+    <div>
+      <h1>Scores: {stats.scores.length}</h1>
+      <h2>Average: {stats.average}</h2>
+      <br/>
+      {[ 1, 2, 3, 4, 5 ].map(v =>
+        <button onClick={() => stats.addScore(v)}>{v}</button>
+      )}
+    </div>
 
 )::observe({
-  counter: []
+  stats: []
 })
 
 /******************************************************************************/
@@ -33,7 +40,7 @@ const Example = () =>
 
     <Header>BenZed React</Header>
 
-    <Count />
+    <Stats />
 
   </Page>
 

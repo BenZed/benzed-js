@@ -76,4 +76,8 @@ describe('shuffle()', function () {
     expect(buffer::shuffle).to.not.throw()
   })
 
+  it('throws on non-numeric-length values', () => {
+    expect({}::shuffle).to.throw('called on a value with numeric length')
+  })
+
 })

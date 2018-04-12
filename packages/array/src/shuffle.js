@@ -1,4 +1,5 @@
 import { randomBytes } from 'crypto'
+import { hasNumericLength } from './is-array-like'
 
 /******************************************************************************/
 // Main
@@ -14,6 +15,9 @@ function shuffle (array) {
 
   if (this !== undefined)
     array = this
+
+  if (!hasNumericLength(array))
+    throw new Error('must be called on a value with numeric length')
 
   let index = array.length
 

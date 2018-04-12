@@ -1,6 +1,6 @@
 import equals from './equals'
 import copy from './copy'
-import { indexOf } from './includes'
+import { indexOf } from './array'
 
 import { COPY, EQUALS } from './symbols'
 

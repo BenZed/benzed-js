@@ -54,6 +54,20 @@ describe('set()', () => {
         expect(obj.array).to.have.property(0, 'CAKE')
       })
 
+      it('sets values in arrays', () => {
+
+        const arr = [ 0, 1, 2, 3, 4 ]
+
+        const arr2 = setter(arr, arr.length, 5)
+        const arr3 = setter(arr2, 0, 6)
+
+        expect(arr2).to.not.equal(arr)
+        expect(arr2).to.deep.equal([ ...arr, 5 ])
+        expect(arr3).to.not.equal(arr2)
+        expect(arr3).to.deep.equal([ 6, 1, 2, 3, 4, 5 ])
+
+      })
+
       describe('throws if input is not an object', () => {
         for (const value of [ null, undefined, 1, true, 'string', Symbol('sup'), function cake () {} ])
           it(`throw if input is ${inspect(value)}`, () => {
