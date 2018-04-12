@@ -4,7 +4,7 @@
   "description": "Mono repo for all of BenZeds util and helper classes for scoped npm distribution.",
   "main": "index.js",
   "scripts": {
-    "test": "lerna run test --parallel",
+    "test": "lerna run test",
     "build:dev": "lerna run build:dev --parallel",
     "webpack:dev": "lerna run webpack:dev --parallel",
     "serve:dev": "lerna run serve:dev --parallel",

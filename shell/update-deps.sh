@@ -4,3 +4,5 @@ do
 done
 npx ncu -u -a
 lerna bootstrap --hoist
+
+npm run test
