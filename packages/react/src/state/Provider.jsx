@@ -11,7 +11,6 @@ const StoreContext = createContext()
 /******************************************************************************/
 
 const StoreProvider = ({ children, ...stores }) =>
-
   <StoreContext.Provider value={stores} >
     { children }
   </StoreContext.Provider>
