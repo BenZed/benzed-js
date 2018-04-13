@@ -17,55 +17,31 @@
 12 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
 13 silly runScriptInDir test [] promise-queue
 14 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/promise-queue' }
-15 silly runScriptInDir test [] string
-16 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/string' }
-17 silly runScriptInDir test [] vector
-18 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/vector' }
-19 silly runScriptInDir test [] immutable
-20 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/immutable' }
-21 silly runScriptInDir test [] app
-22 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/app' }
-23 silly runScriptInDir test [] react
-24 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/react' }
-25 error test Errored while running script in '@benzed/react'
-26 error execute callback with error
-27 error Error: Command failed: npm run test
-27 error npm ERR! code ELIFECYCLE
-27 error npm ERR! errno 1
-27 error npm ERR! @benzed/react@0.0.1 test: `mocha --opts .mocha.opts`
-27 error npm ERR! Exit status 1
-27 error npm ERR!
-27 error npm ERR! Failed at the @benzed/react@0.0.1 test script.
-27 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-27 error
-27 error npm ERR! A complete log of this run can be found in:
-27 error npm ERR!     /Users/global/.npm/_logs/2018-04-12T21_01_37_371Z-debug.log
-27 error
-27 error > @benzed/react@0.0.1 test /Users/global/Programming/benzed-mono/packages/react
-27 error > mocha --opts .mocha.opts
-27 error
-27 error
-27 error
-27 error   state
-27 error     1) should fail
-27 error
-27 error
-27 error   0 passing (143ms)
-27 error   1 failing
-27 error
-27 error   1) state
-27 error        should fail:
-27 error
-27 error       AssertionError: expected true to equal false
-27 error       + expected - actual
-27 error
-27 error       -true
-27 error       +false
-27 error
-27 error       at Context.it (test/state.test.js:9:21)
-27 error
-27 error
-27 error
-27 error
-27 error     at Promise.all.then.arr (/Users/global/Programming/benzed-mono/node_modules/execa/index.js:236:11)
-27 error     at <anonymous>
+15 silly runScriptInDir test [] schema
+16 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/schema' }
+17 silly runScriptInDir test [] string
+18 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/string' }
+19 silly runScriptInDir test [] vector
+20 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/vector' }
+21 error test Errored while running script in '@benzed/vector'
+22 error execute callback with error
+23 error Error: Command failed: npm run test
+23 error Warning: Could not find any test files matching pattern: src/**/*.test.js
+23 error No test files found
+23 error npm ERR! code ELIFECYCLE
+23 error npm ERR! errno 1
+23 error npm ERR! @benzed/vector@0.0.1 test: `mocha --opts .mocha.opts`
+23 error npm ERR! Exit status 1
+23 error npm ERR!
+23 error npm ERR! Failed at the @benzed/vector@0.0.1 test script.
+23 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+23 error
+23 error npm ERR! A complete log of this run can be found in:
+23 error npm ERR!     /Users/global/.npm/_logs/2018-04-13T21_59_09_088Z-debug.log
+23 error
+23 error > @benzed/vector@0.0.1 test /Users/global/Programming/benzed-mono/packages/vector
+23 error > mocha --opts .mocha.opts
+23 error
+23 error
+23 error     at Promise.all.then.arr (/Users/global/Programming/benzed-mono/node_modules/execa/index.js:236:11)
+23 error     at <anonymous>

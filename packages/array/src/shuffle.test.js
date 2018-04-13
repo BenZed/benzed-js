@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { shuffle } from '../src'
+import shuffle from './shuffle'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

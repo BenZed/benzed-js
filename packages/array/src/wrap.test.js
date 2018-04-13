@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { wrap, unwrap } from '../src'
+import { wrap, unwrap } from './wrap'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

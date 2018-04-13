@@ -1,10 +1,4 @@
-.babelrc
-.eslintignore
-.eslintrc.yml
-.gitignore
-.mocha.opts
 
-test
-src
-config
-lib/webpack
+*
+!lib/**/*
+*.test.js

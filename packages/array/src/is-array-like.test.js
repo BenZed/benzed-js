@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { isArrayLike, hasNumericLength } from '../src'
 import { inspect } from 'util'
+import { isArrayLike, hasNumericLength } from './is-array-like'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 

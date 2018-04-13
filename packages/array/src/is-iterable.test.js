@@ -1,6 +1,7 @@
 import { expect } from 'chai'
-import { isIterable } from '../src'
+import isIterable from './is-iterable'
 import { inspect } from 'util'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 

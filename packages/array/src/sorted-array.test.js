@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import SortedArray, { UnsafeSortError, descending } from '../src/sorted-array'
+import SortedArray, { UnsafeSortError, descending } from './sorted-array'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

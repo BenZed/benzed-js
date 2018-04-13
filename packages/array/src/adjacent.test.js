@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import { adjacent } from '../src'
+import adjacent from './adjacent'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
