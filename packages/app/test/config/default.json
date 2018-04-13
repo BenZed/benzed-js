@@ -1,3 +1,4 @@
 {
-  "test-value": "foobar"
+  "test-value": "foobar",
+  "port": 3000
 }
