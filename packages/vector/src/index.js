@@ -1,5 +1,3 @@
-/******************************************************************************/
-// vector entry point
-/******************************************************************************/
+import Vector from './Vector'
 
-// this project has no api, so it's assumed to be a library.
+export default Vector

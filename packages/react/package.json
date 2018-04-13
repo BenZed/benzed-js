@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "mocha --opts .mocha.opts",
-    "build": "rm -rf dist; mkdir dist; babel src --out-dir dist --copy-files",
+    "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
     "webpack": "NODE_ENV=production webpack --config config/webpack.js",
     "webpack:dev": "NODE_ENV=development webpack-dev-server --config config/webpack.js",
