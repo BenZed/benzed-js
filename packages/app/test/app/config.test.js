@@ -1,26 +1,16 @@
 import { expect } from 'chai'
-import { set } from '@benzed/immutable'
+import { get, set } from '@benzed/immutable'
 
 import App from '../../src'
 import path from 'path'
 import fs from 'fs-extra'
+import { CONFIG_OBJ, CONFIG_URL } from '../util'
 
 /******************************************************************************/
 //
 /******************************************************************************/
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
-
-const CONFIG_URL = path.resolve(__dirname, '../config')
-
-const CONFIG_OBJ = {
-  'test-value': 'foobaz',
-  ui: {
-    public: path.join(__dirname, '../public'),
-    favicon: path.join(__dirname, '../public/favicon.ico')
-  },
-  port: 3000
-}
 
 describe('App', () => {
 
@@ -89,7 +79,7 @@ describe('App', () => {
         let app
         expect(() => { app = new App(CONFIG_URL) }).to.not.throw(Error)
 
-        expect(app.feathers.get('test-value')).to.equal('foobar')
+        expect(app.feathers.get('test-value')).to.equal(get(CONFIG_OBJ, 'test-value'))
       })
     })
 

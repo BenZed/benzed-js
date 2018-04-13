@@ -1,12 +1,6 @@
 import is from 'is-explicit'
 
 /******************************************************************************/
-// Main
-/******************************************************************************/
-
-const nullMiddleWare = () => {}
-
-/******************************************************************************/
 //
 /******************************************************************************/
 
@@ -60,9 +54,11 @@ function setupProviders () {
     const socketio = require('@feathersjs/socketio')
     const middleware = is(app.socketio, Function)
       ? ::app.socketio
-      : nullMiddleWare
+      : null
 
-    feathers.configure(socketio(middleware))
+    feathers.configure(socketio({
+      wsEngine: 'uws'
+    }, middleware))
   }
 
 }

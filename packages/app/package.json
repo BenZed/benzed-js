@@ -35,17 +35,19 @@
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
     "feathers-schema": "^0.3.1",
-    "mocha": "^5.0.5"
+    "mocha": "^5.0.5",
+    "socket.io-client": "^2.1.0"
   },
   "dependencies": {
+    "@benzed/array": "*",
+    "@benzed/immutable": "*",
     "@feathersjs/configuration": "^1.0.2",
     "@feathersjs/express": "^1.2.1",
     "@feathersjs/feathers": "^3.1.4",
-    "@benzed/array": "*",
-    "@benzed/immutable": "*",
     "compress": "^0.99.0",
     "cors": "^2.8.4",
     "fs-extra": "^5.0.0",
-    "is-explicit": "^1.4.1"
+    "is-explicit": "^1.4.1",
+    "uws": "^9.14.0"
   }
 }
