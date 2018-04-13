@@ -1,9 +1,8 @@
 import feathers from '@feathersjs/feathers'
-import express from '@feathers/express'
-
 import { get, set } from '@benzed/immutable'
+
 import { validateMode, validateConfig } from './configure'
-import { setupStatic, setupProviders } from './initialize'
+import { setupProviders } from './initialize'
 
 /******************************************************************************/
 // Bens super duper backend class
@@ -44,7 +43,7 @@ class App {
     const config = validateConfig(configInput, mode)
 
     // create feathers app, apply config
-    this.feathers = express(feathers())
+    this.feathers = feathers()
     for (const key in config)
       this.set(key, config[key])
   }
@@ -60,12 +59,22 @@ class App {
   }
 
   initialize () {
-    this::setupStatic()
     this::setupProviders()
   }
 
   start () {
+    const port = this.get('port')
 
+    this.listener = this.feathers.listen(port)
+
+    return new Promise((resolve, reject) => {
+      this.listener.once('listening', () => resolve(this.listener))
+    })
+  }
+
+  end () {
+    if (this.listener)
+      return this.listener.close()
   }
 
 }

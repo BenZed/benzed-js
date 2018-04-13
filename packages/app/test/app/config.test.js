@@ -42,7 +42,7 @@ describe('App', () => {
     it('creates a feathers object', () => {
       const methods = ['get', 'set', 'service']
 
-      expect(app.feathers).to.be.instanceof(Function)
+      expect(typeof app.feathers).to.be.equal('object')
 
       for (const method of methods)
         expect(app.feathers[method]).to.be.instanceof(Function)

@@ -18,6 +18,7 @@
     "webpack-dev-server": "^3.1.3"
   },
   "dependencies": {
+    "@feathersjs/socketio": "^3.2.1",
     "react": "^16.3.1"
   }
 }
