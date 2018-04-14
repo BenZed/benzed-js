@@ -1,11 +1,12 @@
 import { expect } from 'chai'
-import isIterable from './is-iterable'
+import _isIterable from './is-iterable'
 import { inspect } from 'util'
+import Test from '@benzed/test'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('isIterable()', () => {
+Test.optionallyBindableMethod(_isIterable, isIterable => {
 
   describe('returns true if an object is iterable', function () {
 
@@ -62,9 +63,4 @@ describe('isIterable()', () => {
 
   })
 
-  it('Can be bound', () => {
-    expect([]::isIterable()).to.be.equal(true)
-    expect({}::isIterable()).to.be.equal(false)
-    expect(null::isIterable()).to.be.equal(false)
-  })
 })

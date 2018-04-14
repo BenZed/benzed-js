@@ -11,12 +11,12 @@ function get (object, path) {
     object = this
   }
 
-  const value = getMutable(object, path)
+  const value = getMutate(object, path)
 
   return copy(value)
 }
 
-function getMutable (object, path) {
+function getMutate (object, path) {
 
   if (this !== undefined && this !== get) {
     path = object
@@ -56,6 +56,6 @@ function getMutable (object, path) {
 // Exports
 /******************************************************************************/
 
-get.mut = getMutable
+get.mut = getMutate
 
 export default get

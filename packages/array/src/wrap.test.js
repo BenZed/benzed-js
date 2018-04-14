@@ -1,10 +1,12 @@
 import { expect } from 'chai'
-import { wrap, unwrap } from './wrap'
+import { wrap as _wrap, unwrap as _unwrap } from './wrap'
+
+import Test from '@benzed/test'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('wrap', () => {
+Test.optionallyBindableMethod(_wrap, wrap => {
 
   it('ensures an input is an array', () => {
 
@@ -19,18 +21,9 @@ describe('wrap', () => {
     expect(wrap(arr)).to.be.equal(arr)
   })
 
-  it('can be bound', () => {
-
-    const obj = {}
-    const arr = [1, 2, 3, 4, 5]
-
-    expect(obj::wrap()).to.be.deep.equal(wrap(obj))
-    expect(arr::wrap()).to.be.equal(wrap(arr))
-  })
-
 })
 
-describe('unwrap', () => {
+Test.optionallyBindableMethod(_unwrap, unwrap => {
 
   it('ensures an input is not an array', () => {
 
@@ -44,15 +37,6 @@ describe('unwrap', () => {
     const obj = {}
 
     expect(unwrap(obj)).to.be.equal(obj)
-  })
-
-  it('can be bound', () => {
-
-    const obj = {}
-    const arr = [1, 2, 3, 4, 5]
-
-    expect(obj::unwrap()).to.be.deep.equal(unwrap(obj))
-    expect(arr::unwrap()).to.be.equal(unwrap(arr))
   })
 
 })

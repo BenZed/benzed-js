@@ -22,7 +22,8 @@ const { indexOf } = Array.prototype
 function adjacent (array, needle, delta = 1) {
 
   if (this !== undefined) {
-    ([ needle, delta = 1 ] = arguments)
+    delta = needle || 1
+    needle = array
     array = this
   }
 

@@ -1,5 +1,6 @@
 import { expect } from 'chai'
-import shuffle from './shuffle'
+import _shuffle from './shuffle'
+import Test from '@benzed/test'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -25,7 +26,7 @@ function dechancify (doFunc, testFunc) {
   expect(passes).to.be.at.least(THRESHOLD)
 }
 
-describe('shuffle()', function () {
+Test.optionallyBindableMethod(_shuffle, function (shuffle) {
 
   this.slow(1000)
 
@@ -60,24 +61,17 @@ describe('shuffle()', function () {
     )
   })
 
-  it('can be bound', () => {
-    dechancify(
-      () => [...array]::shuffle(),
-      result => expect(result).to.not.deep.equal(array)
-    )
-  })
-
-  it('returns input', () => {
+  it('returns input mutated', () => {
     expect(shuffle(array)).to.equal(array)
   })
 
   it('work on buffers', () => {
     const buffer = Buffer.from(array)
-    expect(buffer::shuffle).to.not.throw()
+    expect(() => shuffle(buffer)).to.not.throw()
   })
 
   it('throws on non-numeric-length values', () => {
-    expect({}::shuffle).to.throw('called on a value with numeric length')
+    expect(() => shuffle({})).to.throw('called on a value with numeric length')
   })
 
 })

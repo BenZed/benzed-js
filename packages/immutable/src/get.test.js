@@ -1,73 +1,52 @@
 import { expect } from 'chai'
 import { get } from '../src'
 
+import Test from '@benzed/test'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-const getters = {}
+Test.optionallyBindableMethod(get, getter => {
 
-getters.argument = (object, keys, value) => get(object, keys, value)
-getters.argument.mut = (object, keys, value) => get.mut(object, keys, value)
+  it('gets values in objects via a path', () => {
 
-getters.bound = (object, keys, value) => object::get(keys, value)
-getters.bound.mut = (object, keys, value) => object::get.mut(keys, value)
+    const obj = { key: 'value' }
 
-const describer = {}
+    expect(getter(obj, 'key'))
+      .to
+      .equal('value')
+  })
 
-describer.argument = `set(obj, key, value)`
-describer.bound = `obj::set(key, value)`
+  it('returns copies of gotten values', () => {
 
-describe('get()', () => {
+    const obj = {
+      nested: {
+        foo: 'bar'
+      }
+    }
 
-  for (const method in getters) {
+    const nested = getter(obj, 'nested')
+    expect(nested).to.deep.equal(obj.nested)
+    expect(nested).to.not.equal(obj.nested)
 
-    const getter = getters[method]
-
-    describe(`${method} syntax: ${describer[method]}`, () => {
-
-      it('gets values in objects via a path', () => {
-
-        const obj = { key: 'value' }
-
-        expect(getter(obj, 'key'))
-          .to
-          .equal('value')
-      })
-
-      it('returns copies of gotten values', () => {
-
-        const obj = {
-          nested: {
-            foo: 'bar'
-          }
-        }
-
-        const nested = getter(obj, 'nested')
-        expect(nested).to.deep.equal(obj.nested)
-        expect(nested).to.not.equal(obj.nested)
-
-      })
-
-      describe('get.mut', () => {
-
-        it('is the mutable version', () => {
-
-          const obj = {
-            nested: {
-              foo: 'bar'
-            }
-          }
-
-          const nested = getter.mut(obj, 'nested')
-          expect(nested).to.deep.equal(obj.nested)
-          expect(nested).to.equal(obj.nested)
-
-        })
-
-      })
-
-    })
-
-  }
+  })
 
 })
+
+Test.optionallyBindableMethod(get.mut, getMutable => {
+
+  it('is the mutable version', () => {
+
+    const obj = {
+      nested: {
+        foo: 'bar'
+      }
+    }
+
+    const nested = getMutable(obj, 'nested')
+    expect(nested).to.deep.equal(obj.nested)
+    expect(nested).to.equal(obj.nested)
+
+  })
+
+}, 'get.mut')

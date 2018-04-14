@@ -1,11 +1,11 @@
 import { expect } from 'chai'
 
-import adjacent from './adjacent'
-
+import _adjacent from './adjacent'
+import Test from '@benzed/test'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('adjacent()', () => {
+Test.optionallyBindableMethod(_adjacent, adjacent => {
 
   const array = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
 
@@ -21,23 +21,19 @@ describe('adjacent()', () => {
     expect(adjacent(array, '1')).to.equal('a')
   })
 
-  it('function can be bound', () => {
-    expect(array::adjacent('c')).to.equal('d')
-  })
-
   it('works on numerical-length values', () => {
     const arrayLike = { length: 2, 0: 'a', 1: 'b' }
 
-    expect(arrayLike::adjacent('b')).to.equal('a')
-    expect('string'::adjacent('r')).to.equal('i')
+    expect(adjacent(arrayLike, 'b')).to.equal('a')
+    expect(adjacent('string', 'r')).to.equal('i')
   })
 
   it('alternatively takes a delta argument', () => {
-    expect(array::adjacent('a', 2)).to.equal('c')
+    expect(adjacent(array, 'a', 2)).to.equal('c')
   })
 
   it('delta argument can be reverse', () => {
-    expect(array::adjacent('b', -3)).to.equal('f')
+    expect(adjacent(array, 'b', -3)).to.equal('f')
   })
 
 })

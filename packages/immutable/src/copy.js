@@ -42,11 +42,21 @@ function copyPlainObject (object) {
 // Main
 /******************************************************************************/
 
-function copy (...args) {
+/**
+ * Returns a recursive duplicate of the input.
+ *
+ * If the input has a symbolic COPY or string 'copy' method, it's out put is returned.
+ * Otherwise, the copy is made by assigning string and symbol properties to new objects.
+ * In the case of arrays, maps and sets, new instances are returned with their iteration
+ * results as arguments.
+ *
+ * @param  {type} value description
+ * @return {type}       description
+ */
+function copy (value) {
 
-  const value = typeof this !== 'undefined'
-    ? this
-    : args.shift()
+  if (this !== undefined)
+    value = this
 
   if (value === null || typeof value !== 'object')
     return value

@@ -1,7 +1,10 @@
 
 import copy from './copy'
 import equals from './equals'
-import { isArrayLike, shuffle as shuffleMutable } from '@benzed/array'
+import {
+  isArrayLike,
+  shuffle as shuffleMutable
+} from '@benzed/array'
 
 /******************************************************************************/
 // Data
@@ -146,6 +149,14 @@ export function shuffle (arr) {
   shuffleMutable(clone)
 
   return clone
+}
+
+/******************************************************************************/
+// Array lookup methods that use value equality rather than reference equality
+/******************************************************************************/
+
+export function unique (arr) {
+  throw new Error('not yet implemented')
 }
 
 /******************************************************************************/

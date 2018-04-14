@@ -2,102 +2,82 @@ import { expect } from 'chai'
 import { set } from '../src'
 import { inspect } from 'util'
 
+import Test from '@benzed/test'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-const setters = {}
+Test.optionallyBindableMethod(set, setter => {
 
-setters.argument = (object, keys, value) => set(object, keys, value)
-setters.argument.mut = (object, keys, value) => set.mut(object, keys, value)
+  let obj1, obj2
+  before(() => {
+    obj1 = {}
 
-setters.bound = (object, keys, value) => object::set(keys, value)
-setters.bound.mut = (object, keys, value) => object::set.mut(keys, value)
+    obj2 = setter(obj1, 'key', 'value')
+  })
 
-const describer = {}
+  it('sets values on an object', () => {
+    expect(obj2).to.have.property('key', 'value')
+  })
 
-describer.argument = `set(obj, key, value)`
-describer.bound = `obj::set(key, value)`
+  it('does not mutate original object', () => {
+    expect(obj2).to.not.equal(obj1)
+    expect(obj1).to.not.have.property('key')
+  })
 
-describe('set()', () => {
+  it('creates nested paths if they do not exist', () => {
+    const obj = setter(obj1, ['foo', 'bar'], 100)
+    expect(obj.foo).to.have.property('bar', 100)
+  })
 
-  for (const method in setters) {
+  it('creates nested paths as arrays if key is numeric', () => {
+    const obj = setter(obj1, [ 'array', 0 ], 'CAKE')
 
-    const setter = setters[method]
+    expect(obj.array).to.be.instanceof(Array)
+    expect(obj.array).to.have.property(0, 'CAKE')
+  })
 
-    describe(`${method} syntax: ${describer[method]}`, () => {
+  it('sets values in arrays', () => {
 
-      let obj1, obj2
-      before(() => {
-        obj1 = {}
+    const arr = [ 0, 1, 2, 3, 4 ]
 
-        obj2 = setter(obj1, 'key', 'value')
+    const arr2 = setter(arr, arr.length, 5)
+    const arr3 = setter(arr2, 0, 6)
+
+    expect(arr2).to.not.equal(arr)
+    expect(arr2).to.deep.equal([ ...arr, 5 ])
+    expect(arr3).to.not.equal(arr2)
+    expect(arr3).to.deep.equal([ 6, 1, 2, 3, 4, 5 ])
+
+  })
+
+  describe('throws if input is not an object', () => {
+    for (const value of [ null, undefined, 1, true, 'string', Symbol('sup'), function cake () {} ])
+      it(`throw if input is ${inspect(value)}`, () => {
+        expect(() => console.log(set(value, 'foo', 'bar'))).to.throw(TypeError)
       })
+  })
 
-      it('sets values on an object', () => {
-        expect(obj2).to.have.property('key', 'value')
-      })
+  it('symbols can be used as keys', () => {
 
-      it('does not mutate original object', () => {
-        expect(obj2).to.not.equal(obj1)
-        expect(obj1).to.not.have.property('key')
-      })
+    const symbol = Symbol('private')
 
-      it('creates nested paths if they do not exist', () => {
-        const obj = setter(obj1, ['foo', 'bar'], 100)
-        expect(obj.foo).to.have.property('bar', 100)
-      })
+    const thing = setter({}, [ symbol, 0 ], 'cake')
 
-      it('creates nested paths as arrays if key is numeric', () => {
-        const obj = setter(obj1, [ 'array', 0 ], 'CAKE')
-
-        expect(obj.array).to.be.instanceof(Array)
-        expect(obj.array).to.have.property(0, 'CAKE')
-      })
-
-      it('sets values in arrays', () => {
-
-        const arr = [ 0, 1, 2, 3, 4 ]
-
-        const arr2 = setter(arr, arr.length, 5)
-        const arr3 = setter(arr2, 0, 6)
-
-        expect(arr2).to.not.equal(arr)
-        expect(arr2).to.deep.equal([ ...arr, 5 ])
-        expect(arr3).to.not.equal(arr2)
-        expect(arr3).to.deep.equal([ 6, 1, 2, 3, 4, 5 ])
-
-      })
-
-      describe('throws if input is not an object', () => {
-        for (const value of [ null, undefined, 1, true, 'string', Symbol('sup'), function cake () {} ])
-          it(`throw if input is ${inspect(value)}`, () => {
-            expect(() => console.log(set(value, 'foo', 'bar'))).to.throw(TypeError)
-          })
-      })
-
-      it('symbols can be used as keys', () => {
-
-        const symbol = Symbol('private')
-
-        const thing = setter({}, [ symbol, 0 ], 'cake')
-
-        expect(thing).to.have.property(symbol)
-        expect(thing[symbol]).to.be.instanceof(Array)
-        expect(thing[symbol][0]).to.equal('cake')
-      })
-
-      describe('set.mut()', () => {
-        it('is the mutable version', () => {
-          const obj = {}
-          const obj2 = setter.mut(obj, [ 'array', 0 ], 'foo')
-
-          expect(obj).to.equal(obj2)
-          expect(obj).to.have.property('array')
-          expect(obj.array[0]).to.be.equal('foo')
-        })
-      })
-
-    })
-  }
+    expect(thing).to.have.property(symbol)
+    expect(thing[symbol]).to.be.instanceof(Array)
+    expect(thing[symbol][0]).to.equal('cake')
+  })
 
 })
+
+Test.optionallyBindableMethod(set.mut, setMutable => {
+  it('is the mutable version', () => {
+    const obj = {}
+    const obj2 = setMutable(obj, [ 'array', 0 ], 'foo')
+
+    expect(obj).to.equal(obj2)
+    expect(obj).to.have.property('array')
+    expect(obj.array[0]).to.be.equal('foo')
+  })
+}, 'set.mut')

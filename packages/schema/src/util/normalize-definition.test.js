@@ -25,8 +25,8 @@ describe('normalize()', () => {
 
   it('does not mutate input', () => {
     const input = copy(SIMPLE_OBJ)
-    const inputOut = normalize(input)
-    expect(input).to.not.equal(inputOut)
+    const result = normalize(input)
+    expect(input).to.not.equal(result)
     expect(input).to.deep.equal(SIMPLE_OBJ)
   })
 

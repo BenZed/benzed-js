@@ -1,8 +1,13 @@
 import { expect } from 'chai'
 import { inspect } from 'util'
-import { isArrayLike, hasNumericLength } from './is-array-like'
+import {
+  isArrayLike as _isArrayLike,
+  hasNumericLength as _hasNumericalLength
+} from './is-array-like'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
+
+import Test from '@benzed/test'
 
 /******************************************************************************/
 // DATA
@@ -53,79 +58,45 @@ const ARRAY_UNLIKES = [
 // Tests
 /******************************************************************************/
 
-const arrayLikers = {
-  argument: obj => isArrayLike(obj),
-  bound: obj => obj::isArrayLike()
-}
+Test.optionallyBindableMethod(_isArrayLike, isArrayLike => {
 
-const numericalLengthers = {
-  argument: obj => hasNumericLength(obj),
-  bound: obj => obj::hasNumericLength()
-}
+  describe('returns true if an object is array-like', function () {
 
-const describer = {
-  argument: `method(value)`,
-  bound: `value::method()`
-}
+    for (const value of [ ...ARRAY_LIKES, arguments ])
+      it(
+        `${value === arguments ? '<arguments>' : inspect(value)} is array-like`,
+        () => expect(isArrayLike(value)).to.be.true
+      )
 
-describe('isArrayLike()', () => {
+  })
 
-  for (const method in arrayLikers) {
+  describe('returns false if object is not an arraylike', () => {
 
-    const arrayLiker = arrayLikers[method]
+    for (const value of [ ...ARRAY_UNLIKES, 'foobar' ])
+      it(
+        `${inspect(value)} is not array-like`,
+        () => expect(isArrayLike(value)).to.be.false
+      )
+  })
 
-    describe(`${method} syntax: ${describer[method]}`, () => {
-
-      describe('returns true if an object is array-like', function () {
-
-        for (const value of [ ...ARRAY_LIKES, arguments ])
-          it(
-            `${value === arguments ? '<arguments>' : inspect(value)} is array-like`,
-            () => expect(arrayLiker(value)).to.be.true
-          )
-
-      })
-
-      describe('returns false if object is not an arraylike', () => {
-
-        for (const value of [ ...ARRAY_UNLIKES, 'foobar' ])
-          it(
-            `${inspect(value)} is not array-like`,
-            () => expect(arrayLiker(value)).to.be.false
-          )
-      })
-
-    })
-  }
 })
 
-describe('hasNumericLength()', () => {
+Test.optionallyBindableMethod(_hasNumericalLength, hasNumericLength => {
 
-  for (const method in arrayLikers) {
+  describe('returns true if an object has numeric length', function () {
+    for (const value of [ ...NUMERICAL_LENGTH_VALUES, arguments ])
+      it(
+        `${value === arguments ? '<arguments>' : inspect(value)} has numeric length`,
+        () => expect(hasNumericLength(value)).to.be.true
+      )
+  })
 
-    const numericalLengther = numericalLengthers[method]
+  describe('returns false if object does not have a numeric length', () => {
+    for (const value of ARRAY_UNLIKES)
+      it(
+        `${inspect(value)} does not have numeric length`,
+        () => expect(hasNumericLength(value)).to.be.false
+      )
+  })
 
-    describe(`${method} syntax: ${describer[method]}`, () => {
-
-      describe('returns true if an object has numeric length', function () {
-
-        for (const value of [ ...NUMERICAL_LENGTH_VALUES, arguments ])
-          it(
-            `${value === arguments ? '<arguments>' : inspect(value)} has numeric length`,
-            () => expect(numericalLengther(value)).to.be.true
-          )
-
-      })
-
-      describe('returns false if object does not have a numeric length', () => {
-
-        for (const value of ARRAY_UNLIKES)
-          it(
-            `${inspect(value)} does not have numeric length`,
-            () => expect(numericalLengther(value)).to.be.false
-          )
-      })
-
-    })
-  }
 })

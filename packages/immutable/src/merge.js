@@ -1,18 +1,44 @@
+import copy from './copy'
 
-// TODO should this be a part of @benzed/immutable?
+/******************************************************************************/
+// Helper
+/******************************************************************************/
 
-// function merge (original, overlay) {
-//
-//   const isOriginalObject = is.plainObject(original)
-//   const isOverlayObject = is.plainObject(overlay)
-//
-//   if (!isOriginalObject || !isOverlayObject)
-//     return overlay
-//
-//   const result = original::copy()
-//   for (const key in overlay)
-//     result[key] = merge(original[key], overlay[key]::copy())
-//
-//   return result
-//
-// }
+function mergeMutate (a, b) {
+
+  const isAObject = typeof a === 'object' && a !== null
+  const isBObject = typeof b === 'object' && b !== null
+
+  if (!isAObject || !isBObject)
+    return b
+
+  for (const key in b)
+    a[key] = mergeMutate(a[key], b[key])
+
+  return a
+}
+
+/******************************************************************************/
+// Main
+/******************************************************************************/
+
+function merge (a, b) {
+
+  if (this !== undefined) {
+    b = a
+    a = this
+  }
+
+  a = copy(a)
+  b = copy(b)
+
+  return mergeMutate(a, b)
+}
+
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
+merge.mut = mergeMutate
+
+export default merge
