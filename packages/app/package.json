@@ -4,7 +4,7 @@
   "main": "lib",
   "scripts": {
     "test": "mocha --opts .mocha.opts",
-    "test:dev": "npm run test -- --watch",
+    "test:dev": "npx watch 'npm run test' src test",
     "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
     "release:patch": "npm version patch && npm publish",
