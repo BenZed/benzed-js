@@ -5,12 +5,9 @@ env:
   node: true
 extends:
   - standard
-  - plugin:flowtype/recommended
 parser: babel-eslint
 parserOptions:
   sourceType: module
-plugins:
-  - flowtype
 rules:
   no-var: error
   prefer-const: error

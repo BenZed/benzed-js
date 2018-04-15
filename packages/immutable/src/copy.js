@@ -50,8 +50,8 @@ function copyPlainObject (object) {
  * In the case of arrays, maps and sets, new instances are returned with their iteration
  * results as arguments.
  *
- * @param  {type} value description
- * @return {type}       description
+ * @param  {*} value object or value to copy
+ * @return {*}       copied value or object
  */
 function copy (value) {
 
