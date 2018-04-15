@@ -156,7 +156,39 @@ export function shuffle (arr) {
 /******************************************************************************/
 
 export function unique (arr) {
-  throw new Error('not yet implemented')
+
+  if (this !== undefined)
+    arr = this
+
+  const clone = copy(arr)
+
+  assertArrayLike(clone, 'unique')
+
+  const cloneSplice = clone::proto.splice
+
+  const spliceIndexes = []
+
+  for (let i = 0; i < clone.length; i++) {
+    const item = arr[i]
+    let exists = false
+
+    for (let c = 0; c < i; c++) {
+      const check = clone[c]
+      if (equals(item, check)) {
+        exists = true
+        break
+      }
+    }
+
+    if (exists)
+      spliceIndexes.push(i)
+  }
+
+  for (let i = spliceIndexes.length - 1; i >= 0; i--)
+    cloneSplice(spliceIndexes[i], 1)
+
+  return clone
+
 }
 
 /******************************************************************************/

@@ -38,37 +38,36 @@ function namesAndSymbols (value) {
 // Main
 /******************************************************************************/
 
-function equals (...args) {
+function equals (a, b) {
 
-  let a, b
-
-  if (args.length >= 2)
-    ([ a, b ] = args)
-  else {
-    ([ b ] = args)
+  if (this !== undefined) {
+    b = a
     a = this
   }
+
+  if (a === b)
+    return true
+
+  const aIsObject = typeof a === 'object' && a !== null
+  const bIsObject = typeof b === 'object' && b !== null
+
+  if (aIsObject && typeof a[EQUALS] === 'function')
+    return a[EQUALS](b)
+
+  if (bIsObject && typeof b[EQUALS] === 'function')
+    return b[EQUALS](a)
+
+  if (aIsObject && typeof a.equals === 'function')
+    return a.equals(b)
+
+  if (bIsObject && typeof b.equals === 'function')
+    return b.equals(a)
 
   if (Number.isNaN(a))
     return Number.isNaN(b)
 
-  if (a === null)
-    return b === null
-
-  if (typeof a !== 'object' || typeof b !== 'object')
-    return a === b
-
-  if (typeof a[EQUALS] === 'function')
-    return a[EQUALS](b)
-
-  if (typeof b[EQUALS] === 'function')
-    return b[EQUALS](a)
-
-  if (typeof a.equals === 'function')
-    return a.equals(b)
-
-  if (typeof b.equals === 'function')
-    return b.equals(a)
+  if (!aIsObject || !bIsObject)
+    return false
 
   if (a instanceof Array && b instanceof Array)
     return arraysEqual(a, b)

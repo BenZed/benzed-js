@@ -5,7 +5,7 @@ import get from './get'
 import set from './set'
 
 import {
-  push, pop, shift, unshift, splice, reverse, sort, shuffle,
+  push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
 
   includes, indexOf, lastIndexOf
 } from './array'
@@ -24,7 +24,7 @@ export {
 
   get, set,
 
-  push, pop, shift, unshift, splice, reverse, sort, shuffle,
+  push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
 
   includes, indexOf, lastIndexOf,
 

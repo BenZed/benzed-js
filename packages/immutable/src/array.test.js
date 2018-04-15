@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
-import { push, pop, shift, unshift, splice, reverse, sort, shuffle,
-  includes, indexOf, lastIndexOf } from '../src'
+import { push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
+  includes, indexOf, lastIndexOf, copy, EQUALS } from '../src'
 
 import Test from '@benzed/test'
 // eslint-disable-next-line no-unused-vars
@@ -114,7 +114,14 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = push(array, 6)
+
+      const array2 = array::copy()
+      const clone = push(array2, 6)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
     it('same behaviour as Array.prototype.push', () => {
@@ -143,7 +150,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = pop(array)
+      const array2 = array::copy()
+      const clone = pop(array2)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
     it('same behaviour as Array.prototype.pop', () => {
@@ -173,7 +186,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = shift(array)
+      const array2 = array::copy()
+      const clone = shift(array2)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
     it('same behaviour as Array.prototype.shift', () => {
@@ -202,7 +221,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = unshift(array, -1)
+      const array2 = array::copy()
+      const clone = unshift(array2, -1)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
     it('same behaviour as Array.prototype.unshift', () => {
@@ -232,7 +257,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = splice(array, 2, 1)
+      const array2 = array::copy()
+      const clone = splice(array2, 2, 1)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
     it('same behaviour as Array.prototype.splice', () => {
@@ -262,7 +293,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = reverse(array)
+      const array2 = array::copy()
+      const clone = reverse(array2)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
     it('same behaviour as Array.prototype.reverse', () => {
@@ -292,7 +329,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 1, 0, 4, 2, 5, 3 ]
-      const clone = sort(array)
+      const array2 = array::copy()
+      const clone = reverse(array2)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
 
@@ -325,7 +368,13 @@ describe('array-like helpers', () => {
 
     it('does not mutate original array', () => {
       const array = [ 0, 1, 2, 3, 4, 5 ]
-      const clone = shuffle(array)
+      const array2 = array::copy()
+      const clone = shuffle(array2)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
       expect(clone).to.not.equal(array)
     })
 
@@ -352,10 +401,105 @@ describe('array-like helpers', () => {
       expect(clone.length).to.be.equal(arraylike.length)
     })
 
-    it('throws on non-numeric-length values', () => {
+    it('throws on non-array-like values', () => {
       for (const badValue of NON_ARRAY_LIKES)
         if (typeof badValue !== 'string')
           expect(() => shuffle(badValue)).to.throw('called on a value with numeric length')
     })
   })
+
+  Test.optionallyBindableMethod(unique, unique => {
+
+    it('outputs a copy of the input with non-duplicated values', () => {
+      const array = [ 0, 0, 0, 1, 1, 1 ]
+      const array2 = array::copy()
+      const clone = unique(array2)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
+      expect(clone).to.not.equal(array)
+    })
+
+    describe('outputs a copy of the input with non-value-equal values', () => {
+
+      const primitives = [ 0, -0, 1, 1, 'string', 'string', true, true, false, false ]
+      const pResults = [0, 1, 'string', true, false]
+
+      it('works on primitives', () => {
+        expect(unique(primitives)).to.deep.equal(pResults)
+      })
+
+      const foo = { foo: 'bar' }
+      const baz = { foo: 'baz' }
+      const cake1 = { cake: { town: true } }
+      const cake2 = { cake: { town: false } }
+
+      const objects = [ cake2, foo, baz, cake1, foo, cake1, baz, cake2 ]
+
+      it('works on plain objects', () => {
+        expect(unique(objects)).to.deep.equal([ cake2, foo, baz, cake1 ])
+      })
+
+      class Foo {
+        constructor (bar) {
+          this.bar = bar
+        }
+        equals (b) {
+          return b.bar === this.bar
+        }
+      }
+
+      const foos = primitives.map(p => new Foo(p))
+
+      it('works on objects with EQUALS method', () => {
+        expect(unique(foos).map(f => f.bar)).to.deep.equal(pResults)
+      })
+
+      class UltraFoo extends Foo {
+        [EQUALS] = Foo.prototype.equals
+      }
+
+      const ultrafoos = primitives.map(p => new UltraFoo(p))
+
+      it('works on objects with \'equals\' method', () => {
+        expect(unique(ultrafoos).map(f => f.bar)).to.deep.equal(pResults)
+      })
+    })
+
+    it('does not mutate original array', () => {
+      const array = [ 0, 0, 0, 1, 1, 1 ]
+      const array2 = array::copy()
+
+      const clone = unique(array)
+
+      // proves unique did not mutate array
+      expect(array2).to.deep.equal(array)
+
+      // proves output is not same as input
+      expect(clone).to.not.equal(array)
+    })
+
+    it('works on array-likes', () => {
+
+      const arraylike = {
+        0: 'base',
+        1: 'ace',
+        length: 2
+      }
+
+      const clone = unique(arraylike)
+
+      expect(clone).to.not.equal(arraylike)
+      expect(clone.length).to.be.equal(arraylike.length)
+    })
+
+    it('throws on non-numeric-length values', () => {
+      for (const badValue of NON_ARRAY_LIKES)
+        if (typeof badValue !== 'string')
+          expect(() => unique(badValue)).to.throw('called on an array-like object')
+    })
+  })
+
 })
