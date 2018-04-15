@@ -1,0 +1,21 @@
+---
+env:
+  browser: false
+  es6: true
+  node: true
+extends: standard
+parser: babel-eslint
+parserOptions:
+  sourceType: module
+rules:
+  no-var: error
+  prefer-const: error
+  padded-blocks: 'off'
+  key-spacing: 'off'
+  require-await: error
+  wrap-iife:
+  - error
+  - inside
+  curly:
+  - error
+  - multi
