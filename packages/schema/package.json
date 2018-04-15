@@ -1,6 +1,6 @@
 {
   "name": "@benzed/schema",
-  "version": "0.1.1-alpha.0",
+  "version": "0.1.1",
   "main": "lib",
   "private": true,
   "scripts": {
@@ -35,7 +35,7 @@
     "mocha": "^5.1.0"
   },
   "dependencies": {
-    "@benzed/immutable": "^1.0.0",
+    "@benzed/immutable": "^1.0.1",
     "is-explicit": "^1.4.1"
   }
 }
