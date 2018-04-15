@@ -1,3 +1,3 @@
 # BenZed Repos Documentation
 
-Testing github pages
+testing github pages
