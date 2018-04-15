@@ -19,7 +19,6 @@
   "license": "ISC",
   "description": "My own personal Math module, extending Math with overridden or custom functionality.",
   "devDependencies": {
-
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-polyfill": "^6.26.0",
@@ -33,7 +32,6 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
-
     "mocha": "^5.1.0"
   }
 }
