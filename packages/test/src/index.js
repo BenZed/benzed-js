@@ -1,11 +1,14 @@
 import testOptionallyBindableMethod from './test-optionally-bindable-method'
+import testPackageOutput from './test-package-output'
 import inspect from './inspect'
+
 /******************************************************************************/
 // Test Object
 /******************************************************************************/
 
 const Test = {
-  optionallyBindableMethod: testOptionallyBindableMethod
+  optionallyBindableMethod: testOptionallyBindableMethod,
+  packageOutput: testPackageOutput
 }
 
 /******************************************************************************/
@@ -19,5 +22,6 @@ export {
 
   inspect,
 
-  testOptionallyBindableMethod
+  testOptionallyBindableMethod,
+  testPackageOutput
 }

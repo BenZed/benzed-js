@@ -1,7 +1,8 @@
 {
   "name": "@benzed/vector",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "lib",
+  "private": true,
   "scripts": {
     "test": "mocha --opts .mocha.opts",
     "test:dev": "npx watch 'npm run test' src test",

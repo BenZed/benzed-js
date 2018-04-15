@@ -1,6 +1,6 @@
 {
   "name": "@benzed/string",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "main": "lib",
   "scripts": {
     "test": "mocha --opts .mocha.opts",
