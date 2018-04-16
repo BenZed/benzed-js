@@ -1,6 +1,6 @@
 {
   "name": "@benzed/app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "lib",
   "private": true,
   "scripts": {
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@benzed/array": "^1.0.1",
-    "@benzed/immutable": "^1.0.1",
+    "@benzed/immutable": "^1.0.2",
     "@feathersjs/configuration": "^1.0.2",
     "@feathersjs/express": "^1.2.2",
     "@feathersjs/feathers": "^3.1.4",
