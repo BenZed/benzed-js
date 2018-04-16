@@ -4,15 +4,21 @@ import {
 
 } from './constants'
 
+import Vector from './vector'
+
 import {
 
   abs, acos, acosh, asin, asinh, atan, atan2, atanh, cbrt, ceil, clz32, cos,
   cosh, exp, expm1, floor, fround, hypot, imul, log, log10, log1p, log2, max, min,
-  pow, random, round, sign, sin, sinh, sqrt, tan, tanh, trunc,
+  pow, random, round, sign, sin, sinh, sqrt, tan, tanh, trunc
 
-  lerp, clamp, isPrime, primes
+} from './overrides'
 
-} from './methods'
+import lerp from './lerp'
+
+import clamp from './clamp'
+
+import { primes, isPrime } from './prime'
 
 /******************************************************************************/
 // Exports
@@ -26,6 +32,8 @@ export {
   cosh, exp, expm1, floor, fround, hypot, imul, log, log10, log1p, log2, max, min,
   pow, random, round, sign, sin, sinh, sqrt, tan, tanh, trunc,
 
-  lerp, clamp, isPrime, primes
+  lerp, clamp, isPrime, primes,
+
+  Vector
 
 }

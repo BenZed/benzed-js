@@ -1,5 +1,7 @@
 import { random, round, floor, ceil, clamp } from '../src'
 import { assert } from 'chai'
+import Test from '@benzed/test'
+
 /* global describe it */
 
 describe('overridden methods', () => {
@@ -120,7 +122,7 @@ describe('overridden methods', () => {
   });
 
   [ round, floor, ceil ].forEach(func => {
-    describe(`${func.name}($value, $place)`, () => {
+    Test.optionallyBindableMethod(func, func => {
 
       it(`${func.name} numbers by a specific place value`, () => {
 
@@ -132,8 +134,8 @@ describe('overridden methods', () => {
       })
 
       it('negative place values are treated as positive', () => {
-        const neg = 5.5::func(-2)
-        const pos = 5.5::func(2)
+        const neg = func(5.5, -2)
+        const pos = func(5.5, 2)
         assert(neg === pos, `5.5 ${func.name}ed by -2 should be ${neg}, is ${pos}`)
       })
 
@@ -143,12 +145,6 @@ describe('overridden methods', () => {
         assert(_in === out, `0 place value makes ${_in} === ${out}`)
       })
 
-      it('can be bound', () => {
-        const result = 0.75::func(0.5)
-        const result2 = func(0.75, 0.5)
-
-        assert(result === result2, `bound value different than regular value: ${result} !== ${result2}`)
-      })
     })
   })
 })

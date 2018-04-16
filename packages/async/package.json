@@ -1,5 +1,5 @@
 {
-  "name": "@benzed/promise-queue",
+  "name": "@benzed/async",
   "version": "0.9.0",
   "main": "lib",
   "publishConfig": {
@@ -19,7 +19,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "My own promise queue implementation. More lightweight than others I've seen.",
+  "description": "My own async utilities.",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",

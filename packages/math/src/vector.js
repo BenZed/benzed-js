@@ -1,4 +1,5 @@
-import { lerp, cos, sin, sqrt, atan2, PI } from '@benzed/math'
+import lerp from './lerp'
+import { cos, sin, sqrt, atan2, PI } from './overrides'
 
 /******************************************************************************/
 // Helper
