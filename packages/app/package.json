@@ -41,12 +41,12 @@
     "@benzed/array": "^1.0.1",
     "@benzed/immutable": "^1.0.1",
     "@feathersjs/configuration": "^1.0.2",
-    "@feathersjs/express": "^1.2.1",
+    "@feathersjs/express": "^1.2.2",
     "@feathersjs/feathers": "^3.1.4",
     "compress": "^0.99.0",
     "cors": "^2.8.4",
     "fs-extra": "^5.0.0",
     "is-explicit": "^1.4.1",
-    "uws": "^9.14.0"
+    "uws": "^9.147.0"
   }
 }

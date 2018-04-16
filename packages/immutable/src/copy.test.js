@@ -87,6 +87,18 @@ Test.optionallyBindableMethod(copy, copier => {
 
     })
 
+    it('ignores circular references', () => {
+
+      const circle = {
+        foo: 'bar'
+      }
+
+      circle.circle = circle
+
+      expect(copier(circle)).to.deep.equal({ foo: 'bar' })
+
+    })
+
   })
 
   describe('copies iterables', () => {

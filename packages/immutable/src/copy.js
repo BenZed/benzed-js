@@ -11,11 +11,13 @@ const {
   defineProperty
 } = Object
 
+const CIRCULAR = Symbol('circular-reference')
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-function copyPlainObject (object) {
+function copyPlainObject (object, refs) {
 
   const clone = { }
 
@@ -29,13 +31,46 @@ function copyPlainObject (object) {
     const descriptor = getOwnPropertyDescriptor(object, key)
 
     if ('value' in descriptor)
-      descriptor.value = copy(descriptor.value)
+      descriptor.value = copyConsideringReferences(descriptor.value, refs)
 
-    defineProperty(clone, key, descriptor)
+    if (descriptor.value !== CIRCULAR)
+      defineProperty(clone, key, descriptor)
 
   }
 
   return clone
+}
+
+function copyConsideringReferences (value, refs) {
+
+  if (value === null || typeof value !== 'object')
+    return value
+
+  if (typeof value[COPY] === 'function')
+    return value[COPY]()
+
+  if (typeof value.copy === 'function')
+    return value.copy()
+
+  if (!refs)
+    refs = []
+
+  if (refs.includes(value))
+    return CIRCULAR
+
+  refs.push(value)
+
+  const isArray = value instanceof Array
+  if (isArray || value instanceof Set || value instanceof Map) {
+    const Type = value.constructor
+    const args = [...value]
+      .map(v => copyConsideringReferences(v, refs))
+      .filter(v => v !== CIRCULAR)
+
+    return isArray ? new Type(...args) : new Type(args)
+  }
+
+  return copyPlainObject(value, refs)
 }
 
 /******************************************************************************/
@@ -58,25 +93,7 @@ function copy (value) {
   if (this !== undefined)
     value = this
 
-  if (value === null || typeof value !== 'object')
-    return value
-
-  if (typeof value[COPY] === 'function')
-    return value[COPY]()
-
-  if (typeof value.copy === 'function')
-    return value.copy()
-
-  const isArray = value instanceof Array
-
-  if (isArray || value instanceof Set || value instanceof Map) {
-    const Type = value.constructor
-    const args = [...value].map(copy)
-
-    return isArray ? new Type(...args) : new Type(args)
-  }
-
-  return copyPlainObject(value)
+  return copyConsideringReferences(value)
 }
 
 /******************************************************************************/

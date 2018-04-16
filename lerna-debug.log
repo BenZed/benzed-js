@@ -1,355 +1,79 @@
-0 silly input [ 'publish' ]
-1 silly flags { _: [ 'publish' ], 'reject-cycles': false, rejectCycles: false }
+0 silly input [ 'test' ]
+1 silly flags { _: [ 'run' ],
+1 silly flags   'reject-cycles': false,
+1 silly flags   rejectCycles: false,
+1 silly flags   script: 'test',
+1 silly flags   args: [] }
 2 verbose rootPath /Users/global/Programming/benzed-mono
-3 info version 2.8.0
-4 silly isInitialized
-5 silly isInitialized true
-6 silly existsSync /Users/global/Programming/benzed-mono/VERSION
-7 info versioning independent
-8 silly initialize attempt
-9 silly isDetachedHead
-10 silly getCurrentBranch
-11 verbose getCurrentBranch master
-12 verbose isDetachedHead false
-13 silly getCurrentBranch
-14 verbose getCurrentBranch master
-15 silly getUpdates
-16 info Checking for updated packages...
-17 silly hasTags
-18 verbose hasTags true
-19 silly getLastTag
-20 verbose getLastTag @benzed/app@0.1.1
-21 info Comparing with @benzed/app@0.1.1.
-22 silly diffSinceIn @benzed/app@0.1.1 packages/app
-23 silly diff
-24 silly diffSinceIn @benzed/app@0.1.1 packages/array
-25 silly diff
-26 silly diffSinceIn @benzed/app@0.1.1 packages/async
-27 silly diff
-28 silly diffSinceIn @benzed/app@0.1.1 packages/immutable
-29 silly diff
-30 silly diffSinceIn @benzed/app@0.1.1 packages/math
-31 silly diff packages/math/.mocha.opts
-31 silly diff packages/math/package.json
-31 silly diff packages/math/src/index.js
-31 silly diff packages/math/src/methods.js
-31 silly diff packages/math/test/bindable-methods.test.js
-31 silly diff packages/math/test/custom-methods.test.js
-31 silly diff packages/math/test/overridden-methods.test.js
-32 silly diffSinceIn @benzed/app@0.1.1 packages/react
-33 silly diff
-34 silly diffSinceIn @benzed/app@0.1.1 packages/scaffolding
-35 silly diff
-36 silly diffSinceIn @benzed/app@0.1.1 packages/schema
-37 silly diff
-38 silly diffSinceIn @benzed/app@0.1.1 packages/string
-39 silly diff
-40 silly diffSinceIn @benzed/app@0.1.1 packages/test
-41 silly diff
-42 verbose updated @benzed/math
-43 info Checking for prereleased packages...
-44 silly collectDependents
-45 silly isPackageDependentOf @benzed/app @benzed/math
-46 silly isPackageDependentOf @benzed/array @benzed/math
-47 silly isPackageDependentOf @benzed/test @benzed/math
-48 silly isPackageDependentOf @benzed/immutable @benzed/math
-49 silly isPackageDependentOf @benzed/test @benzed/math
-50 silly isPackageDependentOf @benzed/array @benzed/math
-51 silly isPackageDependentOf @benzed/array @benzed/math
-52 silly isPackageDependentOf @benzed/async @benzed/math
-53 silly isPackageDependentOf @benzed/immutable @benzed/math
-54 silly isPackageDependentOf @benzed/math @benzed/math
-55 silly isPackageDependentOf @benzed/test @benzed/math
-56 silly isPackageDependentOf @benzed/react @benzed/math
-57 silly isPackageDependentOf @benzed/array @benzed/math
-58 silly isPackageDependentOf @benzed/immutable @benzed/math
-59 silly isPackageDependentOf @benzed/scaffolding @benzed/math
-60 silly isPackageDependentOf @benzed/schema @benzed/math
-61 silly isPackageDependentOf @benzed/immutable @benzed/math
-62 silly isPackageDependentOf @benzed/string @benzed/math
-63 silly isPackageDependentOf @benzed/test @benzed/math
-64 silly collectUpdates
-65 verbose has filtered update @benzed/math
-66 silly initialize success
-67 silly execute attempt
-68 silly runScriptSync preversion benzed-mono
-69 silly runScriptSync preversion @benzed/math
-70 silly runScriptSync version @benzed/math
-71 silly runScriptSync version benzed-mono
-72 silly addFile /Users/global/Programming/benzed-mono/packages/math/package.json
-73 silly commit Publish
-73 silly commit
-73 silly commit  - @benzed/math@1.0.0
-74 verbose commit [ 'commit',
-74 verbose commit   '--no-verify',
-74 verbose commit   '-F',
-74 verbose commit   '/private/var/folders/kw/pgpd5jh56f7b8flz1hhmr9n80000gn/T/2f4081ed-2433-41e1-9e80-a6fde4085649/lerna-commit.txt' ]
-75 silly addTag @benzed/math@1.0.0
-76 silly runScriptSync postversion @benzed/math
-77 silly runScriptSync postversion benzed-mono
-78 info publish Publishing packages to npm...
-79 silly existsSync /Users/global/Programming/benzed-mono/packages/math/scripts/prepublish.js
-80 verbose execScript No prepublish script found at /Users/global/Programming/benzed-mono/packages/math/scripts/prepublish.js
-81 verbose publishing @benzed/math
-82 silly publishTaggedInDir latest math
-83 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
-84 error publish Retrying failed publish: @benzed/math
-85 verbose publish error undefined
-86 verbose publishing @benzed/math
-87 silly publishTaggedInDir latest math
-88 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
-89 error publish Retrying failed publish: @benzed/math
-90 verbose publish error undefined
-91 verbose publishing @benzed/math
-92 silly publishTaggedInDir latest math
-93 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
-94 error publish Retrying failed publish: @benzed/math
-95 verbose publish error undefined
-96 verbose publishing @benzed/math
-97 silly publishTaggedInDir latest math
-98 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
-99 error publish Retrying failed publish: @benzed/math
-100 verbose publish error undefined
-101 verbose publishing @benzed/math
-102 silly publishTaggedInDir latest math
-103 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
-104 error publish Ran out of retries while publishing @benzed/math Error: Command failed: npm publish --tag latest
-104 error publish npm ERR! publish Failed PUT 402
-104 error publish npm ERR! code E402
-104 error publish npm ERR! You must sign up for private packages : @benzed/math
-104 error publish
-104 error publish npm ERR! A complete log of this run can be found in:
-104 error publish npm ERR!     /Users/global/.npm/_logs/2018-04-16T20_37_14_556Z-debug.log
-104 error publish
-104 error publish > @benzed/math@1.0.0 prepublishOnly .
-104 error publish > npm run lint && npm run test && npm run build
-104 error publish
-104 error publish
-104 error publish > @benzed/math@1.0.0 lint /Users/global/Programming/benzed-mono/packages/math
-104 error publish > eslint src --fix
-104 error publish
-104 error publish
-104 error publish > @benzed/math@1.0.0 test /Users/global/Programming/benzed-mono/packages/math
-104 error publish > mocha --opts .mocha.opts
-104 error publish
-104 error publish
-104 error publish
-104 error publish   clamp()
-104 error publish     bound syntax obj::clamp(...args)
-104 error publish       ✓ clamps $num between $min and $max: 		clamp(5,2,4) === 4
-104 error publish       ✓ clamps between 0 and 1 by default: 		clamp(-1) === 0
-104 error publish       ✓ bound values transfer defaults properly: 	clamp(2) === 1
-104 error publish     bound syntax clamp(obj, ...args)
-104 error publish       ✓ clamps $num between $min and $max: 		clamp(5,2,4) === 4
-104 error publish       ✓ clamps between 0 and 1 by default: 		clamp(-1) === 0
-104 error publish       ✓ bound values transfer defaults properly: 	clamp(2) === 1
-104 error publish
-104 error publish   lerp()
-104 error publish     bound syntax obj::lerp(...args)
-104 error publish       ✓ lerps a value from $from $to to by $delta: 	lerp(5,10,0.5) === 7.5
-104 error publish       ✓ works from hi to low: 				lerp(6,2,0.25) === 5
-104 error publish       ✓ works on negative values: 			lerp(0, -10, 0.1) === -1
-104 error publish       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-104 error publish       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-104 error publish     bound syntax lerp(obj, ...args)
-104 error publish       ✓ lerps a value from $from $to to by $delta: 	lerp(5,10,0.5) === 7.5
-104 error publish       ✓ works from hi to low: 				lerp(6,2,0.25) === 5
-104 error publish       ✓ works on negative values: 			lerp(0, -10, 0.1) === -1
-104 error publish       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-104 error publish       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-104 error publish
-104 error publish   overridden methods
-104 error publish     random($min, $max, $alt)
-104 error publish       ✓ creates random numbers between min negative and max positive value (248ms)
-104 error publish       ✓ creates random numbers between min positive and max positive value (225ms)
-104 error publish       ✓ creates random numbers between min negative and max negative value (224ms)
-104 error publish       ✓ numbers can be provided as a third argument to return a seeded random number (444ms)
-104 error publish       ✓ strings can be provided as a third argument to return a random item (311ms)
-104 error publish       ✓ arrays can be provided as a third argument to return a random item (140ms)
-104 error publish       ✓ arrayLikes can be provided as a third argument to return a random item (133ms)
-104 error publish       ✓ sets can be provided as a third argument to return a random item (135ms)
-104 error publish       ✓ maps can be provided as a third argument to return a random item (1335ms)
-104 error publish       ✓ iterables can be provided as a third argument to return a random item (130ms)
-104 error publish       ✓ third arguments can be bound
-104 error publish     round()
-104 error publish       bound syntax obj::round(...args)
-104 error publish         ✓ bound numbers by a specific place value (316ms)
-104 error publish         ✓ negative place values are treated as positive
-104 error publish         ✓ 0 place value has no effect
-104 error publish       bound syntax round(obj, ...args)
-104 error publish         ✓ arg numbers by a specific place value (326ms)
-104 error publish         ✓ negative place values are treated as positive
-104 error publish         ✓ 0 place value has no effect
-104 error publish     floor()
-104 error publish       bound syntax obj::floor(...args)
-104 error publish         ✓ bound numbers by a specific place value (324ms)
-104 error publish         ✓ negative place values are treated as positive
-104 error publish         ✓ 0 place value has no effect
-104 error publish       bound syntax floor(obj, ...args)
-104 error publish         ✓ arg numbers by a specific place value (304ms)
-104 error publish         ✓ negative place values are treated as positive
-104 error publish         ✓ 0 place value has no effect
-104 error publish     ceil()
-104 error publish       bound syntax obj::ceil(...args)
-104 error publish         ✓ bound numbers by a specific place value (299ms)
-104 error publish         ✓ negative place values are treated as positive
-104 error publish         ✓ 0 place value has no effect
-104 error publish       bound syntax ceil(obj, ...args)
-104 error publish         ✓ arg numbers by a specific place value (295ms)
-104 error publish         ✓ negative place values are treated as positive
-104 error publish         ✓ 0 place value has no effect
-104 error publish
-104 error publish   isPrime($value)
-104 error publish     ✓ returns true if a number is prime, false otherwise
-104 error publish     ✓ can be bound:					5::isPrime()
-104 error publish
-104 error publish   *primes($max) -or- *primes($min, $max)
-104 error publish     ✓ generates primes: for (const prime of primes(20))
-104 error publish     ✓ spreads into an array: [...primes(500,1000)]
-104 error publish
-104 error publish   Vector
-104 error publish     ✓ is a class
-104 error publish
-104 error publish
-104 error publish   50 passing (5s)
-104 error publish
-104 error publish
-104 error publish > @benzed/math@1.0.0 build /Users/global/Programming/benzed-mono/packages/math
-104 error publish > rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files
-104 error publish
-104 error publish src/clamp.js -> lib/clamp.js
-104 error publish src/clamp.test.js -> lib/clamp.test.js
-104 error publish src/constants.js -> lib/constants.js
-104 error publish src/index.js -> lib/index.js
-104 error publish src/lerp.js -> lib/lerp.js
-104 error publish src/lerp.test.js -> lib/lerp.test.js
-104 error publish src/overrides.js -> lib/overrides.js
-104 error publish src/overrides.test.js -> lib/overrides.test.js
-104 error publish src/prime.js -> lib/prime.js
-104 error publish src/prime.test.js -> lib/prime.test.js
-104 error publish src/vector.js -> lib/vector.js
-104 error publish src/vector.test.js -> lib/vector.test.js
-104 error publish
-104 error publish     at Promise.all.then.arr (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
-104 error publish     at <anonymous>
-104 error publish     at process._tickCallback (internal/process/next_tick.js:160:7)
-105 error execute callback with error
-106 error Error: Command failed: npm publish --tag latest
-106 error npm ERR! publish Failed PUT 402
-106 error npm ERR! code E402
-106 error npm ERR! You must sign up for private packages : @benzed/math
-106 error
-106 error npm ERR! A complete log of this run can be found in:
-106 error npm ERR!     /Users/global/.npm/_logs/2018-04-16T20_37_14_556Z-debug.log
-106 error
-106 error > @benzed/math@1.0.0 prepublishOnly .
-106 error > npm run lint && npm run test && npm run build
-106 error
-106 error
-106 error > @benzed/math@1.0.0 lint /Users/global/Programming/benzed-mono/packages/math
-106 error > eslint src --fix
-106 error
-106 error
-106 error > @benzed/math@1.0.0 test /Users/global/Programming/benzed-mono/packages/math
-106 error > mocha --opts .mocha.opts
-106 error
-106 error
-106 error
-106 error   clamp()
-106 error     bound syntax obj::clamp(...args)
-106 error       ✓ clamps $num between $min and $max: 		clamp(5,2,4) === 4
-106 error       ✓ clamps between 0 and 1 by default: 		clamp(-1) === 0
-106 error       ✓ bound values transfer defaults properly: 	clamp(2) === 1
-106 error     bound syntax clamp(obj, ...args)
-106 error       ✓ clamps $num between $min and $max: 		clamp(5,2,4) === 4
-106 error       ✓ clamps between 0 and 1 by default: 		clamp(-1) === 0
-106 error       ✓ bound values transfer defaults properly: 	clamp(2) === 1
-106 error
-106 error   lerp()
-106 error     bound syntax obj::lerp(...args)
-106 error       ✓ lerps a value from $from $to to by $delta: 	lerp(5,10,0.5) === 7.5
-106 error       ✓ works from hi to low: 				lerp(6,2,0.25) === 5
-106 error       ✓ works on negative values: 			lerp(0, -10, 0.1) === -1
-106 error       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-106 error       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-106 error     bound syntax lerp(obj, ...args)
-106 error       ✓ lerps a value from $from $to to by $delta: 	lerp(5,10,0.5) === 7.5
-106 error       ✓ works from hi to low: 				lerp(6,2,0.25) === 5
-106 error       ✓ works on negative values: 			lerp(0, -10, 0.1) === -1
-106 error       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-106 error       ✓ $delta is unclamped: 				lerp(-10, 10, 1.5) === 20
-106 error
-106 error   overridden methods
-106 error     random($min, $max, $alt)
-106 error       ✓ creates random numbers between min negative and max positive value (248ms)
-106 error       ✓ creates random numbers between min positive and max positive value (225ms)
-106 error       ✓ creates random numbers between min negative and max negative value (224ms)
-106 error       ✓ numbers can be provided as a third argument to return a seeded random number (444ms)
-106 error       ✓ strings can be provided as a third argument to return a random item (311ms)
-106 error       ✓ arrays can be provided as a third argument to return a random item (140ms)
-106 error       ✓ arrayLikes can be provided as a third argument to return a random item (133ms)
-106 error       ✓ sets can be provided as a third argument to return a random item (135ms)
-106 error       ✓ maps can be provided as a third argument to return a random item (1335ms)
-106 error       ✓ iterables can be provided as a third argument to return a random item (130ms)
-106 error       ✓ third arguments can be bound
-106 error     round()
-106 error       bound syntax obj::round(...args)
-106 error         ✓ bound numbers by a specific place value (316ms)
-106 error         ✓ negative place values are treated as positive
-106 error         ✓ 0 place value has no effect
-106 error       bound syntax round(obj, ...args)
-106 error         ✓ arg numbers by a specific place value (326ms)
-106 error         ✓ negative place values are treated as positive
-106 error         ✓ 0 place value has no effect
-106 error     floor()
-106 error       bound syntax obj::floor(...args)
-106 error         ✓ bound numbers by a specific place value (324ms)
-106 error         ✓ negative place values are treated as positive
-106 error         ✓ 0 place value has no effect
-106 error       bound syntax floor(obj, ...args)
-106 error         ✓ arg numbers by a specific place value (304ms)
-106 error         ✓ negative place values are treated as positive
-106 error         ✓ 0 place value has no effect
-106 error     ceil()
-106 error       bound syntax obj::ceil(...args)
-106 error         ✓ bound numbers by a specific place value (299ms)
-106 error         ✓ negative place values are treated as positive
-106 error         ✓ 0 place value has no effect
-106 error       bound syntax ceil(obj, ...args)
-106 error         ✓ arg numbers by a specific place value (295ms)
-106 error         ✓ negative place values are treated as positive
-106 error         ✓ 0 place value has no effect
-106 error
-106 error   isPrime($value)
-106 error     ✓ returns true if a number is prime, false otherwise
-106 error     ✓ can be bound:					5::isPrime()
-106 error
-106 error   *primes($max) -or- *primes($min, $max)
-106 error     ✓ generates primes: for (const prime of primes(20))
-106 error     ✓ spreads into an array: [...primes(500,1000)]
-106 error
-106 error   Vector
-106 error     ✓ is a class
-106 error
-106 error
-106 error   50 passing (5s)
-106 error
-106 error
-106 error > @benzed/math@1.0.0 build /Users/global/Programming/benzed-mono/packages/math
-106 error > rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files
-106 error
-106 error src/clamp.js -> lib/clamp.js
-106 error src/clamp.test.js -> lib/clamp.test.js
-106 error src/constants.js -> lib/constants.js
-106 error src/index.js -> lib/index.js
-106 error src/lerp.js -> lib/lerp.js
-106 error src/lerp.test.js -> lib/lerp.test.js
-106 error src/overrides.js -> lib/overrides.js
-106 error src/overrides.test.js -> lib/overrides.test.js
-106 error src/prime.js -> lib/prime.js
-106 error src/prime.test.js -> lib/prime.test.js
-106 error src/vector.js -> lib/vector.js
-106 error src/vector.test.js -> lib/vector.test.js
-106 error
-106 error     at Promise.all.then.arr (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
-106 error     at <anonymous>
+3 info version 2.10.2
+4 silly existsSync /Users/global/Programming/benzed-mono/VERSION
+5 info versioning independent
+6 silly initialize attempt
+7 silly initialize success
+8 silly execute attempt
+9 silly runScriptInDir test [] array
+10 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/array' }
+11 silly runScriptInDir test [] async
+12 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/async' }
+13 silly runScriptInDir test [] math
+14 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
+15 silly runScriptInDir test [] scaffolding
+16 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/scaffolding' }
+17 silly runScriptInDir test [] string
+18 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/string' }
+19 silly runScriptInDir test [] immutable
+20 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/immutable' }
+21 silly runScriptInDir test [] app
+22 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/app' }
+23 silly runScriptInDir test [] react
+24 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/react' }
+25 silly runScriptInDir test [] schema
+26 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/schema' }
+27 error test Errored while running script in '@benzed/app'
+28 error execute callback with error
+29 error Error: Command failed: npm run test
+29 error npm ERR! code ELIFECYCLE
+29 error npm ERR! errno 1
+29 error npm ERR! @benzed/app@0.1.1 test: `mocha --opts .mocha.opts`
+29 error npm ERR! Exit status 1
+29 error npm ERR!
+29 error npm ERR! Failed at the @benzed/app@0.1.1 test script.
+29 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+29 error
+29 error npm ERR! A complete log of this run can be found in:
+29 error npm ERR!     /Users/global/.npm/_logs/2018-04-16T23_21_27_763Z-debug.log
+29 error
+29 error > @benzed/app@0.1.1 test /Users/global/Programming/benzed-mono/packages/app
+29 error > mocha --opts .mocha.opts
+29 error
+29 error
+29 error
+29 error   App
+29 error     construction
+29 error       ✓ is a class
+29 error       ✓ creates a feathers object
+29 error       ✓ has a mode property which matches the env.NODE_ENV variable
+29 error     takes config argument
+29 error       1) must be a string or plain object
+29 error
+29 error
+29 error   3 passing (207ms)
+29 error   1 failing
+29 error
+29 error   1) App
+29 error        takes config argument
+29 error          must be a string or plain object:
+29 error
+29 error       AssertionError: expected [Function] to not throw 'Error' but 'Error: config.ui.public does not exist: /Users/bengaumond/Projects/benzed-mono/packages/app/test/public' was thrown
+29 error       + expected - actual
+29 error
+29 error       -Error: config.ui.public does not exist: /Users/bengaumond/Projects/benzed-mono/packages/app/test/public
+29 error       +Error
+29 error
+29 error       at Context.it (test/app/config.test.js:57:9)
+29 error
+29 error
+29 error
+29 error
+29 error     at Promise.all.then.arr (/Users/global/Programming/benzed-mono/node_modules/execa/index.js:236:11)
+29 error     at <anonymous>

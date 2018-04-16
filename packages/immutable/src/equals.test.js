@@ -144,6 +144,19 @@ Test.optionallyBindableMethod(equals, equals => {
 
         expect(() => equals(foo1, foo1)).to.not.throw('don\'t use this method')
       })
+
+      it('handles circular references', () => {
+
+        const circle = {
+          foo: 'bar'
+        }
+
+        circle.circle = circle
+
+        expect(() => equals(circle, circle)).to.not.throw(Error)
+        expect(equals(circle, { foo: 'bar', circle })).to.equal(true)
+
+      })
     })
   })
 
