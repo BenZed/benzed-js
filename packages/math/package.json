@@ -1,8 +1,10 @@
 {
   "name": "@benzed/math",
-  "version": "1.0.3",
+  "version": "1.0.1",
   "main": "lib",
-  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "mocha --opts .mocha.opts",
     "test:dev": "npx watch 'npm run test' src test",
