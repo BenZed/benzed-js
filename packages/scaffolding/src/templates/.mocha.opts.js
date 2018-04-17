@@ -9,6 +9,7 @@ export const devDependencies = [
 export default () => `
 --require babel-register
 --require babel-polyfill
+--require ./test
 --bail
-test/**/*.test.js
+src/**/*.test.js
 `

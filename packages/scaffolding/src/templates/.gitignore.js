@@ -5,5 +5,5 @@ export default ({ has }) => `
 node_modules
 
 ${has.api ? 'dist' : 'lib'}
-$.temp.js
+*.temp.js
 `

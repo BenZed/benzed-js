@@ -7,8 +7,8 @@ import path from 'path'
 
 const fakeArgv = dir => [
   'node', process.cwd(),
-  '--dir', dir || path.resolve(__dirname, '../work-dir'),
-  '--no-install'
+  '--dir', dir || path.resolve(__dirname, '../../work-dir'),
+  // '--no-install'
 ]
 
 describe('scaffold()', function () {
@@ -18,7 +18,12 @@ describe('scaffold()', function () {
     // clearWorkDir()
 
     void await new Scaffold(fakeArgv(), {
-      name: 'poker', ui: true, api: true, socketio: true, auth: true
+      name: 'webpack-4-test',
+      ui: false,
+      api: false,
+      socketio: false,
+      rest: false,
+      auth: false
     })
 
   })

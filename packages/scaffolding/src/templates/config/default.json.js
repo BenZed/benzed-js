@@ -7,5 +7,11 @@ export default ({ has, json }) => has.api && json({
       host: 'localhost',
       port: 5200
     }
+    : '\b',
+  ui: has.ui
+    ? {
+      favicon: '../public/favicon.ico',
+      public: '../public'
+    }
     : '\b'
 })

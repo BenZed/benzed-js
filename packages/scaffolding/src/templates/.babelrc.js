@@ -8,7 +8,6 @@ export default ({ has, iff }) => `
       }
     }],
     ${iff(has.ui)`"react",`}
-    "flow",
     "stage-0"
   ]
   ${iff(has.ui)`,

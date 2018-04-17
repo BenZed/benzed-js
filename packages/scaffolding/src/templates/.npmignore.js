@@ -1,13 +1,7 @@
 
 export default ({ has, iff }) => has.api && `
-src
-test
-
-.babelrc
-.eslintrc.yml
-.eslintignore
-
-*temp.js
-
+*
+${has.api ? 'dist' : 'lib'}/**/*
 ${iff(has.ui)`dist/webpack`}
+*.test.js
 `

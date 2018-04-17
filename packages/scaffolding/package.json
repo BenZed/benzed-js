@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "test": "mocha --opts .mocha.opts",
+    "test:dev": "npx watch 'npm run test' src test",
     "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
     "lint": "eslint src --fix"
@@ -36,6 +37,9 @@
     "nodemon": "^1.17.3"
   },
   "dependencies": {
+    "@benzed/string": "*",
+    "@benzed/app": "*",
+    "@benzed/immutable": "*",
     "args": "^4.0.0",
     "feathers-schema": "^0.3.1",
     "inquirer": "^5.2.0",

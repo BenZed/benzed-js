@@ -7,7 +7,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const { DefinePlugin } = webpack
-const { ModuleConcatenationPlugin, CommonsChunkPlugin } = webpack.optimize
+const { ModuleConcatenationPlugin } = webpack.optimize
 
 const pkg = require('../package.json')
 
@@ -50,15 +50,6 @@ const plugins = [
   }),
   new ExtractTextPlugin('[name].css')
 ]
-
-// Add CommonChunks if there is more than one entry key
-const entries = Object.keys(entry)
-if (entries.length > 1) plugins.push(
-
-  new CommonsChunkPlugin({
-    names: entries.filter(key => key !== '${projectName}')
-  })
-)
 
 // Tells React to use production mode
 if (IS_PRODUCTION) plugins.push(
