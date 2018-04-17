@@ -28,6 +28,10 @@ function setMutate (object, path, value) {
 
   path = path instanceof Array ? path : [ path ]
 
+  const isObject = typeof object === 'object' && object !== null
+  if (!isObject)
+    throw new TypeError(`Cant set property '${path}' of ${object}`)
+
   let ref = object
 
   const { length } = path
@@ -36,20 +40,14 @@ function setMutate (object, path, value) {
   for (let i = 0; i < length; i++) {
     const key = path[i]
 
-    const refType = typeof ref
-    const refIsObject = refType === 'object' && ref !== null
-
     const atFinalKey = i === finalIndex
-    if (!atFinalKey && refIsObject && key in ref === false)
+    if (!atFinalKey && (typeof ref[key] !== 'object' || ref[key] === null))
       ref[key] = typeof path[i + 1] === 'number' ? [] : {}
 
-    if (refIsObject && !atFinalKey) {
+    if (!atFinalKey) {
       ref = ref[key]
       continue
     }
-
-    if (!refIsObject)
-      throw new TypeError(`Cant set property '${key}' of ${ref}`)
 
     ref[key] = typeof value === 'function'
       ? value(ref[key])

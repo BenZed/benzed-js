@@ -37,12 +37,13 @@ Test.optionallyBindableMethod(set, setter => {
     expect(obj.array).to.have.property(0, 'CAKE')
   })
 
-  it('throws if nested paths cannot be created', () => {
+  it('overwrites nested paths', () => {
     const obj = {
       foo: [{ bar: null }]
     }
 
-    expect(() => setter(obj, ['foo', 0, 'bar', 'baz', 'cake'])).to.throw('Cant set property \'baz\' of null')
+    expect(setter(obj, ['foo', 0, 'bar', 'baz'], 'cake'))
+      .to.deep.equal({ foo: [ { bar: { baz: 'cake' } } ] })
   })
 
   it('sets values in arrays', () => {
