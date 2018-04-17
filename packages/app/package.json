@@ -1,6 +1,6 @@
 {
   "name": "@benzed/app",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "lib",
   "private": true,
   "scripts": {
@@ -38,7 +38,7 @@
     "socket.io-client": "^2.1.0"
   },
   "dependencies": {
-    "@benzed/array": "^1.0.1",
+    "@benzed/array": "^1.0.2",
     "@benzed/immutable": "^1.1.0",
     "@feathersjs/configuration": "^1.0.2",
     "@feathersjs/express": "^1.2.2",

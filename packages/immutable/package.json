@@ -38,6 +38,6 @@
     "mocha": "^5.1.0"
   },
   "dependencies": {
-    "@benzed/array": "^1.0.1"
+    "@benzed/array": "^1.0.2"
   }
 }
