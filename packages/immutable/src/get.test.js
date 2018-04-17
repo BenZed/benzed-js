@@ -31,6 +31,24 @@ Test.optionallyBindableMethod(get, getter => {
 
   })
 
+  it('path can be an array', () => {
+    const obj = {
+      foo: {
+        bar: 'baz'
+      }
+    }
+
+    expect(getter(obj, ['foo', 'bar'])).to.equal('baz')
+  })
+
+  it('handles invalid paths', () => {
+    const obj = {
+      foo: null
+    }
+
+    expect(getter(obj, ['foo', 'bar', 'baz'])).to.equal(undefined)
+  })
+
 })
 
 Test.optionallyBindableMethod(get.mut, getMutable => {
@@ -46,6 +64,7 @@ Test.optionallyBindableMethod(get.mut, getMutable => {
     const nested = getMutable(obj, 'nested')
     expect(nested).to.deep.equal(obj.nested)
     expect(nested).to.equal(obj.nested)
+    expect(getMutable(obj, ['nested', 'foo'])).to.equal('bar')
 
   })
 

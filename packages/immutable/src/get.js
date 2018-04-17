@@ -36,14 +36,14 @@ function getMutate (object, path) {
 
   for (let i = 0; i < length; i++) {
 
+    if (typeof ref !== 'object' || ref === null)
+      break
+
     const key = path[i]
 
     const atFinalKey = i === finalIndex
     if (atFinalKey)
       value = ref[key]
-
-    else if (typeof ref[key] !== 'object')
-      break
 
     else
       ref = ref[key]

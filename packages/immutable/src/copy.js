@@ -27,7 +27,6 @@ function copyPlainObject (object, refs) {
   const keys = names.concat(symbols)
 
   for (const key of keys) {
-
     const descriptor = getOwnPropertyDescriptor(object, key)
 
     if ('value' in descriptor)

@@ -37,6 +37,14 @@ Test.optionallyBindableMethod(set, setter => {
     expect(obj.array).to.have.property(0, 'CAKE')
   })
 
+  it('throws if nested paths cannot be created', () => {
+    const obj = {
+      foo: [{ bar: null }]
+    }
+
+    expect(() => setter(obj, ['foo', 0, 'bar', 'baz', 'cake'])).to.throw('Cant set property \'baz\' of null')
+  })
+
   it('sets values in arrays', () => {
 
     const arr = [ 0, 1, 2, 3, 4 ]

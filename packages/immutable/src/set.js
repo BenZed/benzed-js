@@ -49,7 +49,7 @@ function setMutate (object, path, value) {
     }
 
     if (!refIsObject)
-      throw new TypeError(`Cant set property '${key}' of ${refType}`)
+      throw new TypeError(`Cant set property '${key}' of ${ref}`)
 
     ref[key] = typeof value === 'function'
       ? value(ref[key])
