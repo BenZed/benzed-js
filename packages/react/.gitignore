@@ -5,3 +5,5 @@ node_modules
 lib
 *.temp.js
 *.tgz
+*-old
+*-old.*

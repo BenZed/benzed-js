@@ -6,8 +6,6 @@ import Color from 'color'
 
 export default {
 
-  ...defaultTheme,
-
   bg: Color('black'),
   fg: Color('white'),
 

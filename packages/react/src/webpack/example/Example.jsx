@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { observe } from '../../state'
+import { sort } from '@benzed/immutable'
 
 /******************************************************************************/
 // Styles
@@ -15,32 +15,27 @@ const Header = styled.h1`
   margin: 0;
 `
 
-const Stats = (
+const Stats = ({ arr }) => {
 
-  ({ stats, path }) =>
-    <div>
-      <h1>Scores: {stats.scores.length}</h1>
-      <h2>Average: {stats.average}</h2>
-      <br/>
-      {[ 1, 2, 3, 4, 5 ].map(v =>
-        <button onClick={() => stats.addScore(v)}>{v}</button>
-      )}
-    </div>
-
-)::observe({
-  stats: []
-})
+  return <div>
+    {
+      arr
+        ::sort()
+        .map(num => <h1 key={num}>{num}</h1>)
+    }
+  </div>
+}
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const Example = () =>
+const Example = ({ arr }) =>
   <Page>
 
     <Header>BenZed React</Header>
 
-    <Stats />
+    <Stats arr={arr}/>
 
   </Page>
 

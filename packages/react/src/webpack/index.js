@@ -1,57 +1,30 @@
-import './globals'
+import 'normalize.css'
+import './assets/benzed-react.css'
 
-import React from 'react'
-import { render } from 'react-dom'
-
-import Example from './example'
-
-import { set } from '@benzed/immutable'
-
-import { Store, Provider } from '../state'
-
-/******************************************************************************/
-// Test Store
-/******************************************************************************/
-
-const AVERAGE = Symbol('average')
-
-class Stats extends Store {
-
-  scores = [];
-
-  [AVERAGE] = 0
-  get average () {
-    return this[AVERAGE]
-  }
-
-  addScore (value) {
-
-    const scores = set(this.scores, this.scores.length, value)
-
-    this[AVERAGE] = scores.reduce((a, v) => a + v) / scores.length
-
-    this.set('scores', scores)
-  }
-
-}
+const dependencies = Promise.all([
+  import('react'),
+  import('react-dom'),
+  import('./example'),
+  import('@benzed/immutable')
+])
 
 /******************************************************************************/
 // Execute
 /******************************************************************************/
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
 
-  const stats = new Stats()
-  stats.addScore(5)
+  const [
+    React,
+    { render },
+    { default: Example },
+    { unique }
+  ] = await dependencies
 
-  const stores = { stats }
-  const rootTag = document.getElementById('benzed-react')
+  const arr = [ 0, 0, 1, 2, 3, 0, 10, 4, 5, 2, 1 ]::unique()
 
-  const rootComponent =
-    <Provider {...stores}>
-      <Example />
-    </Provider>
+  const tag = document.getElementById('benzed-react')
+  const component = <Example arr={arr}/>
 
-  render(rootComponent, rootTag)
-
+  render(component, tag)
 })
