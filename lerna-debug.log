@@ -1,79 +1,112 @@
-0 silly input [ 'test' ]
-1 silly flags { _: [ 'run' ],
-1 silly flags   'reject-cycles': false,
-1 silly flags   rejectCycles: false,
-1 silly flags   script: 'test',
-1 silly flags   args: [] }
+0 silly input [ 'publish' ]
+1 silly flags { _: [ 'publish' ], 'reject-cycles': false, rejectCycles: false }
 2 verbose rootPath /Users/global/Programming/benzed-mono
-3 info version 2.10.2
-4 silly existsSync /Users/global/Programming/benzed-mono/VERSION
-5 info versioning independent
-6 silly initialize attempt
-7 silly initialize success
-8 silly execute attempt
-9 silly runScriptInDir test [] array
-10 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/array' }
-11 silly runScriptInDir test [] async
-12 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/async' }
-13 silly runScriptInDir test [] math
-14 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
-15 silly runScriptInDir test [] scaffolding
-16 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/scaffolding' }
-17 silly runScriptInDir test [] string
-18 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/string' }
-19 silly runScriptInDir test [] immutable
-20 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/immutable' }
-21 silly runScriptInDir test [] app
-22 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/app' }
-23 silly runScriptInDir test [] react
-24 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/react' }
-25 silly runScriptInDir test [] schema
-26 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/schema' }
-27 error test Errored while running script in '@benzed/app'
-28 error execute callback with error
-29 error Error: Command failed: npm run test
-29 error npm ERR! code ELIFECYCLE
-29 error npm ERR! errno 1
-29 error npm ERR! @benzed/app@0.1.1 test: `mocha --opts .mocha.opts`
-29 error npm ERR! Exit status 1
-29 error npm ERR!
-29 error npm ERR! Failed at the @benzed/app@0.1.1 test script.
-29 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-29 error
-29 error npm ERR! A complete log of this run can be found in:
-29 error npm ERR!     /Users/global/.npm/_logs/2018-04-16T23_21_27_763Z-debug.log
-29 error
-29 error > @benzed/app@0.1.1 test /Users/global/Programming/benzed-mono/packages/app
-29 error > mocha --opts .mocha.opts
-29 error
-29 error
-29 error
-29 error   App
-29 error     construction
-29 error       ✓ is a class
-29 error       ✓ creates a feathers object
-29 error       ✓ has a mode property which matches the env.NODE_ENV variable
-29 error     takes config argument
-29 error       1) must be a string or plain object
-29 error
-29 error
-29 error   3 passing (207ms)
-29 error   1 failing
-29 error
-29 error   1) App
-29 error        takes config argument
-29 error          must be a string or plain object:
-29 error
-29 error       AssertionError: expected [Function] to not throw 'Error' but 'Error: config.ui.public does not exist: /Users/bengaumond/Projects/benzed-mono/packages/app/test/public' was thrown
-29 error       + expected - actual
-29 error
-29 error       -Error: config.ui.public does not exist: /Users/bengaumond/Projects/benzed-mono/packages/app/test/public
-29 error       +Error
-29 error
-29 error       at Context.it (test/app/config.test.js:57:9)
-29 error
-29 error
-29 error
-29 error
-29 error     at Promise.all.then.arr (/Users/global/Programming/benzed-mono/node_modules/execa/index.js:236:11)
-29 error     at <anonymous>
+3 info version 2.8.0
+4 silly isInitialized
+5 silly isInitialized true
+6 silly existsSync /Users/global/Programming/benzed-mono/VERSION
+7 info versioning independent
+8 silly initialize attempt
+9 silly isDetachedHead
+10 silly getCurrentBranch
+11 verbose getCurrentBranch master
+12 verbose isDetachedHead false
+13 silly getCurrentBranch
+14 verbose getCurrentBranch master
+15 silly getUpdates
+16 info Checking for updated packages...
+17 silly hasTags
+18 verbose hasTags true
+19 silly getLastTag
+20 verbose getLastTag @benzed/app@0.1.4
+21 info Comparing with @benzed/app@0.1.4.
+22 silly diffSinceIn @benzed/app@0.1.4 packages/app
+23 silly diff
+24 silly diffSinceIn @benzed/app@0.1.4 packages/array
+25 silly diff packages/array/src/index.js
+26 silly diffSinceIn @benzed/app@0.1.4 packages/async
+27 silly diff
+28 silly diffSinceIn @benzed/app@0.1.4 packages/immutable
+29 silly diff
+30 silly diffSinceIn @benzed/app@0.1.4 packages/math
+31 silly diff
+32 silly diffSinceIn @benzed/app@0.1.4 packages/react
+33 silly diff
+34 silly diffSinceIn @benzed/app@0.1.4 packages/scaffolding
+35 silly diff
+36 silly diffSinceIn @benzed/app@0.1.4 packages/schema
+37 silly diff
+38 silly diffSinceIn @benzed/app@0.1.4 packages/string
+39 silly diff
+40 silly diffSinceIn @benzed/app@0.1.4 packages/test
+41 silly diff
+42 verbose updated @benzed/array
+43 info Checking for prereleased packages...
+44 silly collectDependents
+45 silly isPackageDependentOf @benzed/app @benzed/array
+46 verbose dependent @benzed/app depends on @benzed/array
+47 silly isPackageDependentOf @benzed/array @benzed/array
+48 silly isPackageDependentOf @benzed/test @benzed/array
+49 silly isPackageDependentOf @benzed/async @benzed/array
+50 silly isPackageDependentOf @benzed/immutable @benzed/array
+51 verbose dependent @benzed/immutable depends on @benzed/array
+52 silly isPackageDependentOf @benzed/math @benzed/array
+53 silly isPackageDependentOf @benzed/test @benzed/array
+54 silly isPackageDependentOf @benzed/react @benzed/array
+55 verbose dependent @benzed/react depends on @benzed/array
+56 silly isPackageDependentOf @benzed/scaffolding @benzed/array
+57 silly isPackageDependentOf @benzed/schema @benzed/array
+58 silly isPackageDependentOf @benzed/immutable @benzed/array
+59 verbose dependent @benzed/schema depends on @benzed/array
+60 silly isPackageDependentOf @benzed/string @benzed/array
+61 silly isPackageDependentOf @benzed/test @benzed/array
+62 silly collectUpdates
+63 verbose has filtered update @benzed/app
+64 verbose has filtered update @benzed/array
+65 verbose has filtered update @benzed/immutable
+66 verbose has filtered update @benzed/react
+67 verbose has filtered update @benzed/schema
+68 silly initialize success
+69 silly execute attempt
+70 silly runScriptSync preversion benzed-mono
+71 silly runScriptSync preversion @benzed/app
+72 silly runScriptSync version @benzed/app
+73 silly runScriptSync preversion @benzed/array
+74 silly runScriptSync version @benzed/array
+75 silly runScriptSync preversion @benzed/immutable
+76 silly runScriptSync version @benzed/immutable
+77 silly runScriptSync preversion @benzed/react
+78 silly runScriptSync version @benzed/react
+79 silly runScriptSync preversion @benzed/schema
+80 silly runScriptSync version @benzed/schema
+81 silly runScriptSync version benzed-mono
+82 silly addFile /Users/global/Programming/benzed-mono/packages/app/package.json
+83 silly addFile /Users/global/Programming/benzed-mono/packages/array/package.json
+84 silly addFile /Users/global/Programming/benzed-mono/packages/immutable/package.json
+85 silly addFile /Users/global/Programming/benzed-mono/packages/react/package.json
+86 silly addFile /Users/global/Programming/benzed-mono/packages/schema/package.json
+87 silly commit Publish
+87 silly commit
+87 silly commit  - @benzed/app@0.1.5
+87 silly commit  - @benzed/array@1.0.2
+87 silly commit  - @benzed/immutable@1.1.0
+87 silly commit  - @benzed/react@0.1.5
+87 silly commit  - @benzed/schema@0.1.5
+88 verbose commit [ 'commit',
+88 verbose commit   '--no-verify',
+88 verbose commit   '-F',
+88 verbose commit   '/private/var/folders/kw/pgpd5jh56f7b8flz1hhmr9n80000gn/T/2de349f1-f7c4-4060-8567-cd497b04b5bb/lerna-commit.txt' ]
+89 silly addTag @benzed/app@0.1.5
+90 silly addTag @benzed/array@1.0.2
+91 silly addTag @benzed/immutable@1.1.0
+92 error execute caught error
+93 error Error: fatal: tag '@benzed/immutable@1.1.0' already exists
+93 error
+93 error     at Function.module.exports.sync (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/node_modules/execa/index.js:303:26)
+93 error     at Function.execSync (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/lib/ChildProcessUtilities.js:59:30)
+93 error     at Function.addTag (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/lib/GitUtilities.js:100:39)
+93 error     at /Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/lib/commands/PublishCommand.js:767:39
+93 error     at Array.forEach (<anonymous>)
+93 error     at PublishCommand.gitCommitAndTagVersionForUpdates (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/lib/commands/PublishCommand.js:766:12)
+93 error     at PublishCommand.commitAndTagUpdates (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/lib/commands/PublishCommand.js:738:26)
+93 error     at PublishCommand.execute (/Users/global/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/lib/commands/PublishCommand.js:329:14)
