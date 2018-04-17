@@ -1,6 +1,6 @@
 {
   "name": "@benzed/immutable",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -38,6 +38,6 @@
     "mocha": "^5.1.0"
   },
   "dependencies": {
-    "@benzed/array": "^1.0.2"
+    "@benzed/array": "^1.0.3"
   }
 }
