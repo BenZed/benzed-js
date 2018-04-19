@@ -1,10 +1,10 @@
 import { expect } from 'chai'
 import { get, set } from '@benzed/immutable'
 
-import App from '../../src'
+import App from './app'
 import path from 'path'
 import fs from 'fs-extra'
-import { CONFIG_OBJ, CONFIG_URL } from '../util'
+import { CONFIG_OBJ, CONFIG_URL } from 'test/util'
 
 /******************************************************************************/
 //
@@ -64,7 +64,7 @@ describe('App', () => {
       })
 
       it('must be a directory', () => {
-        const notDir = path.resolve(__dirname, '../_before-any.test.js')
+        const notDir = path.resolve(__dirname, './app.js')
         expect(() => new App(notDir)).to.throw('is not a directory')
       })
 
@@ -176,8 +176,8 @@ describe('App', () => {
       })
       it('must point to an image: png, jpeg, jpg, svg or ico', () => {
         const badValues = [
-          path.join(__dirname, '../config/default.json'),
-          path.join(__dirname, '../config/example.json')
+          path.join(__dirname, '../test/config/default.json'),
+          path.join(__dirname, '../test/config/example.json')
         ]
         for (const badValue of badValues)
           expect(() => new App(CONFIG_OBJ::set([ 'ui', 'favicon' ], badValue))).to.throw('be a file with extension .png,.jpeg,.jpg,.svg,.ico')

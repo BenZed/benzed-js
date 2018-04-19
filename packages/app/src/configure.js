@@ -4,6 +4,8 @@ import is from 'is-explicit'
 
 import { Schema, type, required } from './util/schema'
 
+// TODO Temporary, this will be moved to @benzed/schema
+
 /******************************************************************************/
 // Config Validators
 /******************************************************************************/

@@ -2,6 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import { CONFIG_OBJ, CONFIG_URL } from './util'
 import { equals } from '@benzed/immutable'
+import { addPath } from 'module-alias'
 
 // So we don't have to keep changing the config in serveral places
 
@@ -12,6 +13,8 @@ const defaultJson = require(defaultJsonUrl.replace('.json', ''))
 // is being watched
 if (!equals(defaultJson, CONFIG_OBJ))
   fs.writeJsonSync(defaultJsonUrl, CONFIG_OBJ, { spaces: 2 })
+
+addPath(path.resolve(__dirname, '../'))
 
 // So tests are easier to scroll
 console.clear()

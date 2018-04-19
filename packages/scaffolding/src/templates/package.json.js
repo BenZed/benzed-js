@@ -4,7 +4,9 @@ export function devDependencies ({ has }) {
     'babel-cli',
     'eslint',
     has.api && 'nodemon',
-    has.ui && 'webpack-dev-server'
+    has.ui && 'webpack-dev-server',
+    has.ui && 'webpack-cli',
+    has.ui && 'webpack'
   ]
 }
 

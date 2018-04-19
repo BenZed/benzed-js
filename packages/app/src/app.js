@@ -1,8 +1,15 @@
 import feathers from '@feathersjs/feathers'
 import { get, set } from '@benzed/immutable'
 
-import { validateMode, validateConfig } from './configure'
-import { setupProviders } from './initialize'
+import {
+  validateMode,
+  validateConfig
+} from './configure'
+
+import {
+  setupProviders,
+  setupServices
+} from './initialize'
 
 /******************************************************************************/
 // Bens super duper backend class
@@ -15,9 +22,9 @@ import { setupProviders } from './initialize'
 
 // The App should be able to serve anything from static sites to complex web apps:
 // server-side rendering of a react ui
-// user authentication
 // socket.io provider
 // rest provider
+// user authentication
 // file service
 // real time editing service
 // object log service
@@ -44,6 +51,7 @@ class App {
 
     // create feathers app, apply config
     this.feathers = feathers()
+
     for (const key in config)
       this.set(key, config[key])
   }
@@ -60,16 +68,19 @@ class App {
 
   initialize () {
     this::setupProviders()
+    this::setupServices()
   }
 
-  start () {
+  async start () {
     const port = this.get('port')
 
-    this.listener = this.feathers.listen(port)
+    const listener = this.feathers.listen(port)
 
-    return new Promise((resolve, reject) => {
-      this.listener.once('listening', () => resolve(this.listener))
-    })
+    await new Promise(resolve => listener.once('listening', resolve))
+
+    this.listener = listener
+
+    return listener
   }
 
   end () {
