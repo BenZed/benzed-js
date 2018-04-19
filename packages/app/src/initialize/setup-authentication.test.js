@@ -1,7 +1,8 @@
 import { expect } from 'chai'
 import setupProviders from './setup-providers'
 import setupAuthentication from './setup-authentication'
-import setupServices from './setup-services'
+// import setupServices from './setup-services'
+// import setupMiddleware from './setup-middleware'
 
 import App from 'src/app'
 
@@ -21,10 +22,10 @@ const AUTH_CONFIG = {
 // Test
 /******************************************************************************/
 
-describe('setupServices()', () => {
+describe('setupAuthentication()', () => {
 
   it('must be bound to app', () => {
-    expect(setupServices).to.throw('Cannot destructure property `feathers` of \'undefined\'')
+    expect(setupAuthentication).to.throw('Cannot destructure property `feathers` of \'undefined\'')
   })
 
   describe('authentication', () => {
@@ -36,7 +37,7 @@ describe('setupServices()', () => {
         app = new TestApp(AUTH_CONFIG)
         app::setupProviders()
         app::setupAuthentication()
-        app::setupServices()
+
       } catch (err) {
         console.log(err)
       }
@@ -44,7 +45,10 @@ describe('setupServices()', () => {
 
     describe('sets up auth if defined in config', () => {
 
-      it('adds service hooks')
+      it('adds authentication hooks', () =>
+        expect(typeof app.feathers.service('authentication'))
+          .to.be.equal('object')
+      )
 
     })
 

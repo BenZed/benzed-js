@@ -26,10 +26,16 @@ describe('setupProviders()', () => {
   describe('sets up socket.io', () => {
 
     class SocketioMiddlewareApp extends App {
+
       socketioMiddlewareRan = 0
       testMessagesReceived = 0
       noticesReceived = 0
+      runsBound = false
+
       socketio (io) {
+        if (this && 'runsBound' in this)
+          this.runsBound = true
+
         io.use((socket, next) => {
           this.socketioMiddlewareRan++
           socket.on('test-message', () => {
@@ -74,6 +80,11 @@ describe('setupProviders()', () => {
         expect(app.socketioMiddlewareRan).to.be.equal(1)
       })
 
+    it('socketio() function runs bound',
+      () => {
+        expect(app.runsBound).to.be.equal(true)
+      })
+
     it('app receives client messages',
       () => {
         expect(app.testMessagesReceived).to.be.equal(1)
@@ -88,7 +99,11 @@ describe('setupProviders()', () => {
 
   })
 
-  describe('rest', () => {
+  describe('sets up rest', () => {
+
+    it('if rest middleware is provided')
+
+    it('or if authentication is configured')
 
   })
 

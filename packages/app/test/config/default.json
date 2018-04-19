@@ -1,8 +1,8 @@
 {
   "test-value": "foobar",
   "ui": {
-    "public": "/Users/bengaumond/Projects/benzed-mono/packages/app/test/public",
-    "favicon": "/Users/bengaumond/Projects/benzed-mono/packages/app/test/public/favicon.ico"
+    "public": "/Users/global/Programming/benzed-mono/packages/app/test/public",
+    "favicon": "/Users/global/Programming/benzed-mono/packages/app/test/public/favicon.ico"
   },
   "port": 4567
 }

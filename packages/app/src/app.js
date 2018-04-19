@@ -8,7 +8,9 @@ import {
 
 import {
   setupProviders,
-  setupServices
+  setupAuthentication,
+  setupServices,
+  setupMiddleware
 } from './initialize'
 
 /******************************************************************************/
@@ -68,12 +70,14 @@ class App {
 
   initialize () {
     this::setupProviders()
+    this::setupAuthentication()
     this::setupServices()
+    this::setupMiddleware()
   }
 
   async start () {
-    const port = this.get('port')
 
+    const port = this.get('port')
     const listener = this.feathers.listen(port)
 
     await new Promise(resolve => listener.once('listening', resolve))

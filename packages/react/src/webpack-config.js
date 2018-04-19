@@ -78,6 +78,16 @@ function validateConfig (config = { }, cwd) {
   return { name, inputFile, outputDir, htmlTemplate, mode }
 }
 
+function ensureDevDependencies (...names) {
+
+  const { devDependencies } = require('../package.json')
+  const { execSync } = require('child_process')
+
+  const pkgs = names.filter(name => name in devDependencies === false)
+
+  execSync(`npm i ${pkgs.split(' ')} --save-dev`)
+}
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -99,6 +109,17 @@ function WebpackConfig (config) {
   const MiniCssExtractPlugin = require('mini-css-extract-plugin')
   const HtmlWebpackPlugin = require('html-webpack-plugin')
   const path = require('path')
+
+  ensureDevDependencies(
+    'webpack',
+    'babel-loader',
+    'json-loader',
+    'css-loader',
+    'url-loader',
+    'file-loader',
+    'mini-css-extract-plugin',
+    'html-webpack-plugin'
+  )
 
   const entry = {
     [name]: inputFile
@@ -123,7 +144,7 @@ function WebpackConfig (config) {
     },
     {
       test: /\.css/,
-      use: [MiniCssExtractPlugin.loader, 'css-loader']
+      use: [ MiniCssExtractPlugin.loader, 'css-loader' ]
     },
     {
       test: /\.(woff2?|svg)(\?.+)?$/,

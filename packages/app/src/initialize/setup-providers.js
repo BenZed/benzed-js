@@ -1,29 +1,4 @@
 import is from 'is-explicit'
-
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-function setupStatic (express) {
-
-  const app = this
-
-  const { feathers } = app
-
-  const ui = app.get('ui')
-  if (!ui)
-    return
-
-  if (ui.favicon) {
-    const favicon = require('serve-favicon')
-    feathers
-      .use(favicon(ui.favicon))
-  }
-
-  feathers
-    .use(express.static(ui.public))
-}
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -33,10 +8,18 @@ function setupProviders () {
   const app = this
   let { feathers } = app
 
-  if (app.rest) {
+  const auth = app.get('auth')
+  const ui = app.get('ui')
+
+  // TODO right now rest is required for authentication
+  // eventually it wont be, so be on the look out and adjust
+  // your tests accordingly
+  if (auth || app.rest) {
     const express = require('@feathersjs/express')
     const compress = require('compression')
     const cors = require('cors')
+
+    const { settings } = feathers
 
     feathers = app.feathers = express(feathers)
     feathers
@@ -47,7 +30,15 @@ function setupProviders () {
       .use(express.json())
       .use(express.urlencoded({ extended: true }))
 
-    feathers::setupStatic(express)
+    // Move settings to deferred feathers object
+    for (const key in settings)
+      feathers.settings[key] = settings[key]
+  }
+
+  if (app.rest && ui && ui.favicon) {
+    const favicon = require('serve-favicon')
+    feathers
+      .use(favicon(ui.favicon))
   }
 
   if (app.socketio) {

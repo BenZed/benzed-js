@@ -3,6 +3,8 @@ import path from 'path'
 import is from 'is-explicit'
 
 import { Schema, type, required } from './util/schema'
+import { set } from '@benzed/immutable'
+import { randomBytes } from 'crypto'
 
 // TODO Temporary, this will be moved to @benzed/schema
 
@@ -75,6 +77,35 @@ function fsExists (...exts) {
   }
 }
 
+const boolToObject = value => value === true
+  ? { }
+  : value === false
+    ? null
+    : value
+
+const autoFill = value => {
+
+  if (!value)
+    return value
+
+  if (!is(value.secret, String)) {
+    const secret = randomBytes(48).toString('hex')
+    value = set(value, 'secret', secret)
+  }
+
+  // These are the feathers defaults, but they're needed for validation elsewhere
+  if (!is(value.path, String))
+    value = set(value, 'path', '/authentication')
+
+  if (!is(value.entity, String))
+    value = set(value, 'entity', 'user')
+
+  if (!is(value.service, String))
+    value = set(value, 'service', 'users')
+
+  return value
+}
+
 /******************************************************************************/
 // Schemas
 /******************************************************************************/
@@ -95,6 +126,12 @@ const validateConfigObject = new Schema({
         fsExists('.png', '.jpeg', '.jpg', '.svg', '.ico')
       ]
     }
+  ],
+
+  auth: [
+    boolToObject,
+    type.plainObject,
+    autoFill
   ],
 
   port: [

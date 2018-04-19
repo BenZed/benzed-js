@@ -28,9 +28,13 @@ function type (...types) {
   }
 }
 
-type.plainObject = (value, { path }) => value == null || is.plainObject(value)
-  ? value
-  : new Error(`${path.join('.')} must be a plain object.`)
+type.plainObject = (value, { path }) => {
+
+  const isPlainObjectOrUndefined = value == null || is.plainObject(value)
+  return isPlainObjectOrUndefined
+    ? value
+    : new Error(`${path.join('.')} must be a plain object.`)
+}
 
 /******************************************************************************/
 // Helper
