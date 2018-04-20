@@ -3,7 +3,8 @@ import { get, set } from '@benzed/immutable'
 
 import {
   validateMode,
-  validateConfig
+  validateConfig,
+  validateClass
 } from './configure'
 
 import {
@@ -45,6 +46,9 @@ import {
 
 class App {
 
+  listener = null
+  db = null
+
   constructor (configInput, mode = process.env.NODE_ENV || 'default') {
 
     this.mode = validateMode(mode)
@@ -56,6 +60,8 @@ class App {
 
     for (const key in config)
       this.set(key, config[key])
+
+    validateClass(this)
   }
 
   get (path) {
@@ -71,6 +77,7 @@ class App {
   initialize () {
     this::setupProviders()
     this::setupAuthentication()
+    // this::connectToDatabase()
     this::setupServices()
     this::setupMiddleware()
   }

@@ -4,6 +4,8 @@ import equals from './equals'
 import get from './get'
 import set from './set'
 
+import merge from './merge'
+
 import {
   push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
 
@@ -23,6 +25,8 @@ export {
   copy, equals,
 
   get, set,
+
+  merge,
 
   push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
 

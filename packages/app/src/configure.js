@@ -165,8 +165,20 @@ const validateMode = new Schema([
   type(String), trim(), notEmpty()
 ], 'mode')
 
+const validateClass = app => {
+
+  if (!is(app.services))
+    return
+
+  const isFunction = is(app.services, Function)
+  const isFunctionHash = is.objectOf(app.services, Function)
+  if (!isFunction && !isFunctionHash)
+    throw new Error('app.services not configured correctly. Must be either a function or an object of functions')
+
+}
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { validateConfig, validateMode }
+export { validateConfig, validateMode, validateClass }

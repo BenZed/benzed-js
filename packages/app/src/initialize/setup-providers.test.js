@@ -103,8 +103,6 @@ describe('setupProviders()', () => {
 
     it('if rest middleware is provided')
 
-    it('or if authentication is configured')
-
   })
 
 })

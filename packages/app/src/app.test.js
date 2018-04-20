@@ -50,4 +50,9 @@ describe('App', () => {
     it('runs setupMiddleware')
   })
 
+  describe('start()', () => {
+    it('starts the app listening on the configured port')
+    it('throw if listening fails')
+  })
+
 })

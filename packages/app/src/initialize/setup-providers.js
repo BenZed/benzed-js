@@ -1,4 +1,6 @@
 import is from 'is-explicit'
+import { merge } from '@benzed/immutable'
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -8,13 +10,9 @@ function setupProviders () {
   const app = this
   let { feathers } = app
 
-  const auth = app.get('auth')
   const ui = app.get('ui')
 
-  // TODO right now rest is required for authentication
-  // eventually it wont be, so be on the look out and adjust
-  // your tests accordingly
-  if (auth || app.rest) {
+  if (app.rest) {
     const express = require('@feathersjs/express')
     const compress = require('compression')
     const cors = require('cors')
@@ -31,8 +29,7 @@ function setupProviders () {
       .use(express.urlencoded({ extended: true }))
 
     // Move settings to deferred feathers object
-    for (const key in settings)
-      feathers.settings[key] = settings[key]
+    feathers.settings = merge(feathers.settings, settings)
   }
 
   if (app.rest && ui && ui.favicon) {

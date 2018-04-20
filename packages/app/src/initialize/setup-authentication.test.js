@@ -9,15 +9,6 @@ import App from 'src/app'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-class TestApp extends App {
-
-}
-
-const AUTH_CONFIG = {
-  port: 4450,
-  auth: true
-}
-
 /******************************************************************************/
 // Test
 /******************************************************************************/
@@ -28,32 +19,45 @@ describe('setupAuthentication()', () => {
     expect(setupAuthentication).to.throw('Cannot destructure property `feathers` of \'undefined\'')
   })
 
-  describe('authentication', () => {
+  let app, authService
 
-    let app
-
-    before(() => {
-      try {
-        app = new TestApp(AUTH_CONFIG)
-        app::setupProviders()
-        app::setupAuthentication()
-
-      } catch (err) {
-        console.log(err)
-      }
-    })
-
-    describe('sets up auth if defined in config', () => {
-
-      it('adds authentication hooks', () =>
-        expect(typeof app.feathers.service('authentication'))
-          .to.be.equal('object')
-      )
-
-    })
-
-    after(() => app && app.listener && app.end())
-
+  before(() => {
+    try {
+      app = new App({ port: 4450, auth: true })
+      app.rest = true
+      app::setupProviders()
+      app::setupAuthentication()
+      authService = app.feathers.service('authentication')
+    } catch (err) {
+      console.log(err)
+    }
   })
+
+  describe('if auth is defined', () => {
+    it('adds authentication service', () =>
+      expect(typeof authService).to.be.equal('object')
+    )
+
+    it('adds authentication hooks', () => {
+      const beforeHooks = authService.__hooks.before
+      expect(beforeHooks.create).to.have.length(1)
+      expect(beforeHooks.remove).to.have.length(1)
+    })
+
+    it('throws if rest is not enabled', () => {
+      const app = new App({ port: 2300, auth: true })
+      app::setupProviders()
+      expect(() => app::setupAuthentication()).to.throw('cannot be configured on this app. Rest provider is not enabled')
+    })
+  })
+
+  describe('if auth is not defined', () => {
+    it('does nothing', () => {
+      const app = new App({ port: 1294 })
+      expect(app.feathers.service('authentication')).to.equal(undefined)
+    })
+  })
+
+  after(() => app && app.listener && app.end())
 
 })
