@@ -19,6 +19,7 @@
   "license": "ISC",
   "description": "Data sanitization and validaiton through Schemas",
   "devDependencies": {
+    "@benzed/test": "*",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-polyfill": "^6.26.0",

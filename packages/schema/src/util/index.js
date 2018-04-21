@@ -1,7 +1,5 @@
-import normalize from './normalize-definition'
+import ValidationError from './validation-error'
 
 export {
-
-  normalize
-
+  ValidationError
 }
