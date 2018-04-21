@@ -7,7 +7,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-import Test from '@benzed/test'
+import Test from '@benzed/dev'
 
 /******************************************************************************/
 // DATA

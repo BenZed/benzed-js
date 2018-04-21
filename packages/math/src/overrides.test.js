@@ -1,6 +1,6 @@
 import { random, round, floor, ceil, clamp } from '../src'
 import { assert } from 'chai'
-import Test from '@benzed/test'
+import Test from '@benzed/dev'
 
 /* global describe it */
 

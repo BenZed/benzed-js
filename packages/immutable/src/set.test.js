@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import { set } from '../src'
 import { inspect } from 'util'
 
-import Test from '@benzed/test'
+import Test from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

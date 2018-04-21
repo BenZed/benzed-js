@@ -3,7 +3,7 @@ import WebpackConfig from './webpack-config'
 
 import is from 'is-explicit'
 
-import { inspect } from '@benzed/test'
+import { inspect } from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

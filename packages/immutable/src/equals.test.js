@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { equals, EQUALS } from '../src'
 
-import { Test, inspect } from '@benzed/test'
+import { Test, inspect } from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 

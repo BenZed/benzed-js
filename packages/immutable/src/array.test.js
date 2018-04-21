@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
   includes, indexOf, lastIndexOf, copy, EQUALS } from '../src'
 
-import Test from '@benzed/test'
+import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 

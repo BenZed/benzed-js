@@ -21,7 +21,7 @@
   "license": "ISC",
   "description": "My own library for manipulating objects immutably.",
   "devDependencies": {
-    "@benzed/test": "^0.1.1",
+    "@benzed/dev": "^0.1.1",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-polyfill": "^6.26.0",

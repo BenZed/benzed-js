@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 import clamp from './clamp'
-import Test from '@benzed/test'
+import Test from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

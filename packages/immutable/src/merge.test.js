@@ -4,7 +4,7 @@ import _merge from './merge'
 import copy from './copy'
 import { COPY } from './symbols'
 
-import Test, { inspect } from '@benzed/test'
+import Test, { inspect } from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
