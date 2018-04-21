@@ -23,13 +23,12 @@ describe('setupAuthentication()', () => {
 
   before(() => {
     try {
-      app = new App({ port: 4450, auth: true })
-      app.rest = true
+      app = new App({ port: 4450, auth: true, rest: true })
       app::setupProviders()
       app::setupAuthentication()
       authService = app.feathers.service('authentication')
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   })
 

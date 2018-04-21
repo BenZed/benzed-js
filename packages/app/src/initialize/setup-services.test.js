@@ -36,9 +36,10 @@ describe('setupServices()', () => {
       expect(() => app::setupServices()).to.not.throw('didnt call with feathers object')
       expect(app.servicesSetup).to.equal(true)
     })
+
   })
 
-  describe('if app.services is a plainObject', () => {
+  describe('if app.services is an array', () => {
 
     let app
 
@@ -54,10 +55,10 @@ describe('setupServices()', () => {
 
     class ServiceApp extends App {
       servicesSetup = 0
-      services = {
-        foo: service,
-        bar: service
-      }
+      services = [
+        service,
+        service
+      ]
     }
 
     it('calls each property with feathers object', () => {
@@ -83,7 +84,7 @@ describe('setupServices()', () => {
     })
   })
 
-  describe('setting up services with service class', () => {
+  describe('setting up services with service utility', () => {
 
     // class MessageApp extends App {
     //

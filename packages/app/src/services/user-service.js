@@ -4,7 +4,9 @@ import Service from './Service'
 // Main
 /******************************************************************************/
 
-class UserService extends Service {
+function UserService (config) {
+
+  
 
 }
 

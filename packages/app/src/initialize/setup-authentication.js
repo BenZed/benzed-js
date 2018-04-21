@@ -9,11 +9,12 @@ function setupAuthentication () {
 
   const { feathers } = app
 
-  const auth = app.get('auth')
-  if (!auth)
+  const configAuth = app.get('auth')
+  if (!configAuth)
     return
 
-  if (auth && !app.rest)
+  const configRest = app.get('rest')
+  if (configAuth && !configRest)
     throw new Error('Authentication cannot be configured on this app. Rest provider is not enabled.')
 
   const authentication = require('@feathersjs/authentication')
@@ -21,12 +22,12 @@ function setupAuthentication () {
   const jwt = require('@feathersjs/authentication-jwt')
 
   // Configure strategies
-  feathers.configure(authentication(auth))
+  feathers.configure(authentication(configAuth))
     .configure(local())
     .configure(jwt())
 
   // Add Strategy Hooks
-  const authService = feathers.service(auth.path)
+  const authService = feathers.service(configAuth.path)
   const { authenticate } = authentication.hooks
   authService.hooks({
     before: {

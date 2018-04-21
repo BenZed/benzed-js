@@ -9,19 +9,19 @@ function setupMiddleware () {
 
   const { feathers } = app
 
-  if (!app.rest)
+  const configRest = app.get('rest')
+  if (!configRest)
     return
 
   const express = require('@feathersjs/express')
 
   // if app.rest is a function, it's expected to be middleware
   if (typeof app.rest === 'function')
-    app.rest(feathers)
+    app.configure(feathers)
 
-  const ui = feathers.get('ui')
-  if (ui && ui.public)
+  if (configRest && configRest.public)
     feathers
-      .use('/', express.static(ui.public))
+      .use('/', express.static(configRest.public))
 
   feathers
     .use(express.errorHandler())

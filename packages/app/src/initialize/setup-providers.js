@@ -10,9 +10,8 @@ function setupProviders () {
   const app = this
   let { feathers } = app
 
-  const ui = app.get('ui')
-
-  if (app.rest) {
+  const configRest = app.get('rest')
+  if (configRest) {
     const express = require('@feathersjs/express')
     const compress = require('compression')
     const cors = require('cors')
@@ -32,21 +31,25 @@ function setupProviders () {
     feathers.settings = merge(feathers.settings, settings)
   }
 
-  if (app.rest && ui && ui.favicon) {
+  if (configRest && configRest.favicon) {
     const favicon = require('serve-favicon')
     feathers
-      .use(favicon(ui.favicon))
+      .use(favicon(configRest.favicon))
   }
 
-  if (app.socketio) {
+  const configIo = app.get('socketio')
+  if (configIo) {
     const socketio = require('@feathersjs/socketio')
     const middleware = is(app.socketio, Function)
       ? ::app.socketio
       : null
 
-    feathers.configure(socketio({
-      wsEngine: 'uws'
-    }, middleware))
+    const options = {
+      wsEngine: 'uws',
+      ...configIo
+    }
+
+    feathers.configure(socketio(options, middleware))
   }
 
 }

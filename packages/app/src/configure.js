@@ -59,7 +59,7 @@ function fsContains (...names) {
 function fsExists (...exts) {
   return (value, { path: errpath, original }) => {
 
-    if (!value && !original.ui)
+    if (!value)
       return
 
     if (!fs.existsSync(value))
@@ -111,12 +111,12 @@ const autoFill = value => {
 /******************************************************************************/
 
 const validateConfigObject = new Schema({
-  ui: [
+  rest: [
+    boolToObject,
     type.plainObject,
     {
       public: [
         type(String),
-        required(),
         fsExists('directory'),
         fsContains('index.html'),
         hasValidHtml()
@@ -167,13 +167,18 @@ const validateMode = new Schema([
 
 const validateClass = app => {
 
-  if (!is(app.services))
-    return
+  if (is(app.rest) && !is(app.rest, Function))
+    throw new Error('app.socketio not configured correctly. Must be a middleware function.')
 
-  const isFunction = is(app.services, Function)
-  const isFunctionHash = is.objectOf(app.services, Function)
-  if (!isFunction && !isFunctionHash)
-    throw new Error('app.services not configured correctly. Must be either a function or an object of functions')
+  if (is(app.socketio) && !is(app.socketio, Function))
+    throw new Error('app.socketio not configured correctly. Must be a middleware function.')
+
+  if (is(app.services)) {
+    const isFunction = is(app.services, Function)
+    const isFunctionArr = is.arrayOf(app.services, Function)
+    if (!isFunction && !isFunctionArr)
+      throw new Error('app.services not configured correctly. Must be either a function or an array of functions')
+  }
 
 }
 
