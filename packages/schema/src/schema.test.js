@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import Schema, { $ } from './schema'
+import Schema from './schema'
 import is from 'is-explicit'
 
 import { inspect } from '@benzed/test'
@@ -54,17 +54,9 @@ describe('Schema', () => {
 
       const type = Type => value => is(value, Type)
         ? value
-        : new Error(`Must be of type ${Type.name}`)
-
-      const boolToObject = value => value === true
-        ? {}
-        : value === false
-          ? null
-          : value
+        : new Error(`Must be of type: ${Type.name}`)
 
       const message = new Schema({
-
-        [$]: boolToObject,
 
         body: type(String),
         author: {
@@ -73,9 +65,7 @@ describe('Schema', () => {
         }
       })
 
-      console.log(message)
-
-      expect(message({ body: null })).to.be.instanceof(Error)
+      expect(() => message({ body: null })).to.throw('Must be of type: String')
 
     })
 
