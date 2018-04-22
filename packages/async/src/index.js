@@ -2,6 +2,7 @@ import PromiseQueue from './promise-queue'
 import SortablePromiseQueue from './sortable-promise-queue'
 
 import { seconds, milliseconds } from './delays'
+
 /******************************************************************************/
 // Extend
 /******************************************************************************/
