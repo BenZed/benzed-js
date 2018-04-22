@@ -23,9 +23,10 @@ function wrapValidator (def, path) {
     return validate(def, copy(data), context)
   }
 
-  const isPlainObject = is.plainObject(def)
-  if (isPlainObject) for (const key in def)
-    validator[key in validator ? '_' + key : key] = wrapValidator(def[key])
+  // Extend vadidator to have sub validators for each sub property
+  if (is.plainObject(def))
+    for (const key in def)
+      validator[key in validator ? '_' + key : key] = wrapValidator(def[key])
 
   return validator
 

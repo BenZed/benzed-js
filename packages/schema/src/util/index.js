@@ -1,6 +1,6 @@
 import ValidationError from './validation-error'
 import normalizeDefinition from './normalize-definition'
-import { SKIP, SELF } from './symbols'
+import { SKIP, SELF, ZERO_CONFIG } from './symbols'
 
 /******************************************************************************/
 // Exports
@@ -9,5 +9,5 @@ import { SKIP, SELF } from './symbols'
 export {
   normalizeDefinition,
   ValidationError,
-  SKIP, SELF
+  SKIP, SELF, ZERO_CONFIG
 }
