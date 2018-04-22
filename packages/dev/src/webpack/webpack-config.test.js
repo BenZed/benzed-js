@@ -3,12 +3,12 @@ import WebpackConfig from './webpack-config'
 
 import is from 'is-explicit'
 
-import { inspect } from '@benzed/dev'
+import { inspect } from '../util'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('WebpackConfig', () => {
+describe('WebpackConfig', () => {
 
   it('is a class', () => {
     expect(WebpackConfig).to.throw('cannot be invoked without \'new\'')
@@ -77,7 +77,11 @@ describe.only('WebpackConfig', () => {
     let wc
 
     before(() => {
-      wc = new WebpackConfig()
+      try {
+        wc = new WebpackConfig()
+      } catch (err) {
+        console.log(err)
+      }
     })
 
     it('is a plain object', () => {

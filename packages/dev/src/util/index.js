@@ -1,10 +1,11 @@
-
-export default ({ Backend, backend, has }) => has.api && `
-
-import ${Backend} from './${backend}'
+import inspect from './inspect'
+import clearConsole from './clear-console'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default ${Backend}`
+export {
+  inspect,
+  clearConsole
+}

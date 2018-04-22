@@ -1,11 +1,7 @@
-
-export default ({ Frontend, has }) => has.ui && `
-
-import ${Frontend} from './${Frontend}'
+import createProject from './create-project'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default ${Frontend}
-`
+export default createProject

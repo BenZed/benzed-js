@@ -1,17 +1,8 @@
-import testOptionallyBindableMethod from './test-optionally-bindable-method'
-import testPackageOutput from './test-package-output'
-import inspect from './inspect'
+import Test from './test'
 
-import WebpackConfig from './webpack-config'
+import { inspect, clearConsole } from './util'
 
-/******************************************************************************/
-// Test Object
-/******************************************************************************/
-
-const Test = {
-  optionallyBindableMethod: testOptionallyBindableMethod,
-  packageOutput: testPackageOutput
-}
+import WebpackConfig from './webpack'
 
 /******************************************************************************/
 // Exports
@@ -22,10 +13,10 @@ export default Test
 export {
 
   Test,
+
   WebpackConfig,
 
   inspect,
+  clearConsole
 
-  testOptionallyBindableMethod,
-  testPackageOutput
 }

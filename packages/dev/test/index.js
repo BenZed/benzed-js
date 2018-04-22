@@ -1,7 +1,7 @@
-import Scaffold from './scaffold'
+import { clearConsole } from '../src'
 
 /******************************************************************************/
-// Run
+// Setup
 /******************************************************************************/
 
-new Scaffold() // eslint-disable-line no-new
+clearConsole()

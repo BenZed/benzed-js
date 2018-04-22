@@ -1,22 +1,23 @@
-import path from 'path'
-import fs from 'fs-extra'
+import { execSync } from 'child_process'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
-const WORK_DIR = path.resolve(__dirname, '../work-dir')
+const PROCESS_CONSOLE = { stdio: [0, 1, 2] }
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function clearWorkDir (dir = WORK_DIR) {
-  fs.emptyDirSync(dir)
+function clearConsole () {
+
+  execSync('clear && printf \'\\e[3J\'', PROCESS_CONSOLE)
+
 }
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default clearWorkDir
+export default clearConsole

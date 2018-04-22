@@ -1,9 +1,13 @@
 {
   "name": "@benzed/dev",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "lib",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "test": "mocha --opts .mocha.opts",
+    "test:dev": "npx watch 'npm run test' src test",
     "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
     "release:patch": "npm version patch && npm publish",
@@ -12,11 +16,15 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "lint": "eslint src --fix"
   },
+  "bin": {
+    "benzed-project": "./scripts/create-project.js"
+  },
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
   "description": "Test helpers for the rest of @benzed packages.",
   "dependencies": {
+    "args": "^4.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
     "babel-polyfill": "^6.26.0",
@@ -30,9 +38,9 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^5.1.1",
     "fs-extra": "^5.0.0",
     "is-explicit": "^1.4.1",
+    "mocha": "^5.1.1",
     "targz": "^1.0.1"
   }
 }
