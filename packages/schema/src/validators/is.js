@@ -1,30 +1,18 @@
-import Schema from './schema'
-
-import { SKIP, SELF } from './util'
-
-import * as validators from './validators'
 
 /******************************************************************************/
-// Extend
+// Main
 /******************************************************************************/
 
-for (const key in validators)
-  Schema[key] = validators[key]
+function is (...types) {
+
+  return value => is(value, ...types)
+    ? value
+    : new Error(`Must be of type: ${types.join('')}`)
+
+}
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Schema
-
-export {
-
-  Schema,
-
-  validators,
-
-  SKIP,
-  SELF,
-  SELF as $
-
-}
+export default is

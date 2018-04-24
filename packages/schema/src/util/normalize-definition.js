@@ -2,6 +2,20 @@ import is from 'is-explicit'
 import { SELF, ZERO_CONFIG } from './symbols'
 
 /******************************************************************************/
+// Helper
+/******************************************************************************/
+
+function countKeys (obj) {
+
+  let num = Object.keys(obj).length
+
+  if (SELF in obj)
+    num++
+
+  return num
+}
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
@@ -17,7 +31,7 @@ function normalizeDefinition (def) {
   if (!isArray && !isPlainObject)
     throw new Error('definition must be a plain object, function, or array of functions')
 
-  if (isPlainObject && Object.keys(def).length === 0)
+  if (isPlainObject && countKeys(def) === 0)
     throw new Error('if providing a definition as an object, it must have at least one key')
 
   if (isArray && !is.arrayOf(def, Function))

@@ -12,7 +12,7 @@ import validate from './validate'
 
 function wrapValidator (def, path) {
 
-  function validator (data, ...args) {
+  const validator = (data, ...args) => {
 
     const context = {
       data,

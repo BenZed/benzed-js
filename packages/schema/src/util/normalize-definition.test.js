@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import normalizeDefinition from './normalize-definition'
 
 import { inspect } from '@benzed/dev'
-import { ZERO_CONFIG } from './symbols'
+import { ZERO_CONFIG, SELF } from './symbols'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -19,7 +19,18 @@ describe('normalizeDefinition', () => {
       expect(() => normalizeDefinition({})).to.throw('must have at least one key')
     })
 
-    it('plain object with SELF symbol cannot be a nested object')
+    it('plain object with SELF symbol cannot be a nested object', () => {
+
+      const pass = value => value
+
+      const badSelfDef = {
+        [SELF]: {
+          foo: pass
+        }
+      }
+
+      expect(() => normalizeDefinition(badSelfDef)).to.throw('SELF symbol must be a function or array of functions')
+    })
 
     it('can be an array', () => {
       expect(() => normalizeDefinition([ value => value ]).to.not.throw(Error))
@@ -91,7 +102,20 @@ describe('normalizeDefinition', () => {
         .equal({ config: [ trueToObj ] })
     })
 
-    it('normalizes SELF definitions on objects')
+    it('normalizes SELF definitions on objects', () => {
+
+      const isObject = value => typeof value === 'object'
+        ? value
+        : new Error('must be an object')
+
+      const selfVal = {
+        [SELF]: isObject
+      }
+
+      expect(normalizeDefinition(selfVal)).to.be.deep.equal({
+        [SELF]: [ isObject ]
+      })
+    })
   })
 
 })

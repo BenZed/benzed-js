@@ -1,8 +1,6 @@
 import { expect } from 'chai'
-import Schema from './schema'
+import Schema from './index'
 import is from 'is-explicit'
-
-import { inspect } from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -14,13 +12,13 @@ describe('Schema', () => {
     expect(typeof schema).to.be.equal('function')
   })
 
+  const type = Type => value => is(value, Type)
+    ? value
+    : new Error(`Must be of type: ${Type.name}`)
+
   describe('usage', () => {
 
     it('creates validators that run methods on data', () => {
-
-      const type = Type => value => is(value, Type)
-        ? value
-        : new Error(`Must be of type: ${Type.name}`)
 
       const message = new Schema({
 
@@ -32,6 +30,41 @@ describe('Schema', () => {
       })
 
       expect(() => message({ body: null })).to.throw('Must be of type: String')
+
+    })
+
+    it('does not mutate input data', () => {
+
+      class Foo {
+        constructor (bar = 0) {
+          this.bar = bar
+        }
+        copy () {
+          return new Foo(this.bar)
+        }
+        equals (b) {
+          return b instanceof Foo && b.bar === this.bar
+        }
+      }
+
+      const mustBeFoo = value => value instanceof Foo
+        ? value
+        : new Error('Must be a Foo')
+
+      const cantBeZero = value => value.bar === 0
+        ? new Error('Can\'t be zero.')
+        : value
+
+      const absPos = value => new Foo(Math.abs(value.bar))
+
+      const foo = new Schema([ mustBeFoo, cantBeZero, absPos ])
+
+      const input = new Foo(1)
+      const output = foo(input)
+
+      expect(output).to.not.equal(input)
+      expect(foo(new Foo(-1))).to.be.deep.equal({ bar: 1 })
+      expect(() => foo(new Foo(0))).to.throw('Can\'t be zero.')
 
     })
 
