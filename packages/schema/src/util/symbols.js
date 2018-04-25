@@ -8,6 +8,8 @@ const SELF = Symbol('self-validators')
 
 const ZERO_CONFIG = Symbol('this-validator-does-not-require-config')
 
+const DEFINITION = Symbol('definition')
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/

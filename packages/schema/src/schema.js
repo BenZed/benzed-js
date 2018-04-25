@@ -4,7 +4,7 @@ import { normalizeDefinition } from './util'
 import { copy } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 
-import validate from './validate'
+import { validate, createContext } from './validate'
 
 /******************************************************************************/
 // Helper
@@ -14,11 +14,7 @@ function wrapValidator (def, path) {
 
   const validator = (data, ...args) => {
 
-    const context = {
-      data,
-      args,
-      path: copy(path)
-    }
+    const context = createContext(data, args, path)
 
     return validate(def, copy(data), context)
   }

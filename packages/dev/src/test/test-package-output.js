@@ -40,7 +40,7 @@ function testPackageOutput (__dirname) {
     let pkg
 
     before(async () => {
-      const output = execSync('npm pack')
+      const output = execSync('npm pack -q')
 
       const packedName = output.toString().trim()
       const packedUrl = path.join(__dirname, packedName)
