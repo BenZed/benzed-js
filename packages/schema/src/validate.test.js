@@ -30,7 +30,7 @@ const fakeDelay = value => new Promise(resolve => setTimeout(() => resolve(value
 function run (func, data, ...args) {
 
   const funcs = normalizeDefinition(func)
-  const context = createContext(funcs, data, args)
+  const context = createContext(data, args, [])
 
   return validate(funcs, data, context)
 }
@@ -38,27 +38,41 @@ function run (func, data, ...args) {
 describe('validate()', () => {
 
   it('returns output from definitions, data and context', () => {
-
     const num = run(clamp, 1.2)
-
     expect(num).to.be.equal(1)
-
   })
 
   describe('definitions', () => {
 
     describe('if an array of functions', () => {
-      it('chains the input data into each function, returning the result')
+      it('chains the input data into each function, returning the result', () => {
 
-      it('if the result is an error, wraps it in a ValidationError and throws')
-      it('skips remaining functions is result is SKIP symbol')
-      it('does not return SKIP symbol')
-      it.only('resolves promise values into nested validate calls', async () => {
+        const plus1 = v => v + 1
+        const squared = v => v * v
+
+        const value = run([ plus1, plus1, squared ], 10)
+
+        expect(value).to.equal(144)
+
+      })
+
+      it('if the result is an error, wraps it in a ValidationError and throws', () => {
+        let err
+        try {
+          run([ () => { throw new Error('you fucked up') } ])
+        } catch (e) {
+          err = e
+        }
+        expect(err).to.be.instanceof(ValidationError)
+        expect(err.path).to.be.deep.equal([])
+      })
+
+      it('resolves promise values into nested validate calls', async () => {
         const value = await run([fakeDelay, opposite], true)
         expect(value).to.be.equal(false)
       })
 
-      it.only('promise rejections get cast to ValidationErrors', async () => {
+      it('promise rejections get cast to ValidationErrors', async () => {
         let err
         try {
           await run([ fakeDelay, () => { throw new Error('you fucked up') } ])
@@ -71,26 +85,43 @@ describe('validate()', () => {
     })
 
     describe('if a plain object', () => {
-      it('recursively calls validate() on each object key')
-      it('validate is not called on each object key if input is not object')
-      it('calls SELF on object before sub properties')
-      it('returns a plain object output for each key')
-      it('undefined values are not added to output object')
-      it.only('resolves promise values into nested validate calls', async () => {
+      it('validate is not called on each object key if input is not object', () => {
+        const fobj = {
+          foo: () => new Error('>:(')
+        }
 
+        expect(() => run(fobj, null)).to.not.throw(Error)
+      })
+      it('calls SELF on object before sub properties', () => {
+
+        const fobj = {
+          foo: [ v => v || 0, clamp ],
+          [SELF]: [ v => v || {} ]
+        }
+
+        expect(run(fobj, null)).to.deep.equal({ foo: 0 })
+      })
+
+      it('undefined values are not added to output object', () => {
+        const fobj = {
+          foo: clamp,
+          bar: clamp,
+          cake: clamp
+        }
+        expect(run(fobj, { foo: 2 })).to.deep.equal({ foo: 1 })
+      })
+
+      it('resolves promise values into nested validate calls', async () => {
         const fobj = {
           [SELF]: [ fakeDelay, plainObject ],
           code: [ v => v || 'empty', fakeDelay, upperCase ],
           priority: [ v => v || 0, fakeDelay, clamp ]
         }
-
         const result = await run(fobj, null)
-
         expect(result).to.deep.equal({
           code: 'EMPTY',
           priority: 0
         })
-
       })
     })
 
@@ -98,14 +129,53 @@ describe('validate()', () => {
 
   describe('context', () => {
 
-    it('holds the path of the current validation from the original input')
-    it('path auto increments for each nested object')
-    it('holds arguments supplied with the original validate() call')
-    it('holds the original data supplied to validate()')
+    it('holds the path of the current validation from the original input', () => {
+      const good = v => v
+      const bad = () => new Error('Bad.')
 
-  })
+      const fobj = {
+        foo: {
+          bar: good
+        },
+        cake: {
+          town: bad
+        }
+      }
 
-  describe('output', () => {
+      let err
+      try {
+        run(fobj, { foo: { bar: true }, cake: { town: false } })
+      } catch (e) {
+        err = e
+      }
+
+      expect(err.path).to.be.deep.equal(['cake', 'town'])
+    })
+
+    it('holds arguments supplied with the original validate() call', () => {
+      let args
+      const test = (v, ctx) => {
+        args = ctx.args
+        return v
+      }
+
+      run(test, true, 'foobar')
+      expect(args).to.deep.equal(['foobar'])
+    })
+
+    it('holds the original data supplied to validate()', () => {
+      let original
+
+      const neg = v => !v
+
+      const test = (v, ctx) => {
+        original = ctx.data
+        return v
+      }
+
+      run([ neg, test ], true)
+      expect(original).to.deep.equal(true)
+    })
 
   })
 

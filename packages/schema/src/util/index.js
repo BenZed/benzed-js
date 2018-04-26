@@ -1,13 +1,21 @@
+
+import argsToConfig from './args-to-config'
 import ValidationError from './validation-error'
 import normalizeDefinition from './normalize-definition'
-import { SKIP, SELF, ZERO_CONFIG } from './symbols'
+
+import { SELF, ZERO_CONFIG } from './symbols'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
+
   normalizeDefinition,
   ValidationError,
-  SKIP, SELF, ZERO_CONFIG
+  argsToConfig,
+
+  SELF,
+  ZERO_CONFIG
+
 }

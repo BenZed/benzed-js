@@ -1,7 +1,7 @@
 import is from 'is-explicit'
-import { ValidationError, SKIP, SELF } from './util'
+import { ValidationError, SELF } from './util'
 
-import { copy } from '@benzed/immutable'
+import { copy, push } from '@benzed/immutable'
 
 /******************************************************************************/
 // Helper
@@ -19,6 +19,8 @@ function validateObject (fobj, data, context, skipSelf) {
 
   let promises
 
+  const { path } = context
+
   if (!skipSelf && SELF in fobj) {
     const result = validate(fobj[SELF], data, context)
     if (result instanceof Promise)
@@ -29,7 +31,7 @@ function validateObject (fobj, data, context, skipSelf) {
 
   if (is.plainObject(data)) for (const key in fobj) {
 
-    context.path = [ ...context.path, key ]
+    context.path = push(path, key)
 
     const result = validate(fobj[key], data[key], context)
 
@@ -59,23 +61,32 @@ function validateObject (fobj, data, context, skipSelf) {
 
 }
 
+function handleError (path, str) {
+  throw new ValidationError(path, str)
+}
+
 function validateArray (funcs, value, context, index = 0) {
+
+  const { path } = context
 
   for (let i = index; i < funcs.length; i++) {
 
     const func = funcs[i]
-    const result = func(value, context)
+    let result
+
+    try {
+      result = func(value, context)
+    } catch (err) {
+      result = err
+    }
+
+    if (result instanceof Error)
+      return handleError(path, result.message)
 
     if (result instanceof Promise)
       return result
-        .then(value => validateArray(funcs, value, context, i + 1))
-        .catch(err => { throw new ValidationError(context.path, err.message) })
-
-    if (result === SKIP)
-      break
-
-    if (result instanceof Error)
-      throw new ValidationError(context.path, result.message)
+        .then(value => validateArray(funcs, value, { ...context, path }, i + 1))
+        .catch(err => handleError(path, err.message))
 
     value = result
   }

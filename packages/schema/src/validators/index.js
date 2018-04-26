@@ -1,8 +1,8 @@
-import is from './is'
+import type from './type'
 import required from './required'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { is, required }
+export { type, required }

@@ -1,4 +1,5 @@
 import is from 'is-explicit'
+
 import { normalizeDefinition } from './util'
 
 import { copy } from '@benzed/immutable'
@@ -13,16 +14,14 @@ import { validate, createContext } from './validate'
 function wrapValidator (def, path) {
 
   const validator = (data, ...args) => {
-
     const context = createContext(data, args, path)
-
     return validate(def, copy(data), context)
   }
 
   // Extend vadidator to have sub validators for each sub property
   if (is.plainObject(def))
     for (const key in def)
-      validator[key in validator ? '_' + key : key] = wrapValidator(def[key])
+      validator[key in validator ? '_' + key : key] = wrapValidator(def[key], [ ...path, key ])
 
   return validator
 
