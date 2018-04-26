@@ -1,74 +1,21 @@
-0 silly input [ 'test' ]
-1 silly flags { _: [ 'run' ],
+0 silly input []
+1 silly flags { _: [ 'bootstrap' ],
 1 silly flags   'reject-cycles': false,
 1 silly flags   rejectCycles: false,
-1 silly flags   script: 'test',
+1 silly flags   hoist: '**',
 1 silly flags   args: [] }
 2 verbose rootPath /Users/bengaumond/Projects/benzed-mono
 3 info version 2.11.0
 4 silly existsSync /Users/bengaumond/Projects/benzed-mono/VERSION
 5 info versioning independent
-6 silly initialize attempt
-7 silly initialize success
-8 silly execute attempt
-9 silly runScriptInDir test [] async
-10 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/async' }
-11 silly runScriptInDir test [] dev
-12 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-13 silly runScriptInDir test [] string
-14 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/string' }
-15 silly runScriptInDir test [] array
-16 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/array' }
-17 silly runScriptInDir test [] math
-18 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/math' }
-19 error test Errored while running script in '@benzed/array'
-20 error execute callback with error
-21 error Error: Command failed: npm run test
-21 error module.js:557
-21 error     throw err;
-21 error     ^
-21 error
-21 error Error: Cannot find module '@benzed/test'
-21 error     at Function.Module._resolveFilename (module.js:555:15)
-21 error     at Function.Module._load (module.js:482:25)
-21 error     at Module.require (module.js:604:17)
-21 error     at require (internal/module.js:11:18)
-21 error     at Object.<anonymous> (/Users/bengaumond/Projects/benzed-mono/packages/array/test/package.test.js:1:1)
-21 error     at Module._compile (module.js:660:30)
-21 error     at loader (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:144:5)
-21 error     at Object.require.extensions.(anonymous function) [as .js] (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:154:7)
-21 error     at Module.load (module.js:573:32)
-21 error     at tryModuleLoad (module.js:513:12)
-21 error     at Function.Module._load (module.js:505:3)
-21 error     at Module.require (module.js:604:17)
-21 error     at require (internal/module.js:11:18)
-21 error     at /Users/bengaumond/Projects/benzed-mono/node_modules/mocha/lib/mocha.js:253:27
-21 error     at Array.forEach (<anonymous>)
-21 error     at Mocha.loadFiles (/Users/bengaumond/Projects/benzed-mono/node_modules/mocha/lib/mocha.js:250:14)
-21 error     at Mocha.run (/Users/bengaumond/Projects/benzed-mono/node_modules/mocha/lib/mocha.js:577:10)
-21 error     at Object.<anonymous> (/Users/bengaumond/Projects/benzed-mono/node_modules/mocha/bin/_mocha:591:18)
-21 error     at Module._compile (module.js:660:30)
-21 error     at Object.Module._extensions..js (module.js:671:10)
-21 error     at Module.load (module.js:573:32)
-21 error     at tryModuleLoad (module.js:513:12)
-21 error     at Function.Module._load (module.js:505:3)
-21 error     at Function.Module.runMain (module.js:701:10)
-21 error     at startup (bootstrap_node.js:193:16)
-21 error     at bootstrap_node.js:617:3
-21 error npm ERR! code ELIFECYCLE
-21 error npm ERR! errno 1
-21 error npm ERR! @benzed/array@1.0.3 test: `mocha --opts .mocha.opts`
-21 error npm ERR! Exit status 1
-21 error npm ERR!
-21 error npm ERR! Failed at the @benzed/array@1.0.3 test script.
-21 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-21 error
-21 error npm ERR! A complete log of this run can be found in:
-21 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-04-24T23_47_26_119Z-debug.log
-21 error
-21 error > @benzed/array@1.0.3 test /Users/bengaumond/Projects/benzed-mono/packages/array
-21 error > mocha --opts .mocha.opts
-21 error
-21 error
-21 error     at Promise.all.then.arr (/Users/bengaumond/Projects/benzed-mono/node_modules/execa/index.js:236:11)
-21 error     at <anonymous>
+6 error EPACKAGES Errored while collecting packages and package graph
+7 error JSONError: Unexpected token } in JSON at position 847 while parsing near '...lient": "^2.1.0",  },  "dependencies":...' in packages/app/package.json
+7 error     at module.exports (/Users/bengaumond/Projects/benzed-mono/node_modules/lerna/node_modules/parse-json/index.js:26:19)
+7 error     at parse (/Users/bengaumond/Projects/benzed-mono/node_modules/lerna/node_modules/load-json-file/index.js:8:29)
+7 error     at Function.module.exports.sync.fp [as sync] (/Users/bengaumond/Projects/benzed-mono/node_modules/lerna/node_modules/load-json-file/index.js:11:29)
+7 error     at Function.module.exports.sync (/Users/bengaumond/Projects/benzed-mono/node_modules/lerna/node_modules/read-pkg/index.js:40:25)
+7 error     at /Users/bengaumond/Projects/benzed-mono/node_modules/lerna/lib/PackageUtilities.js:138:47
+7 error     at Array.forEach (<anonymous>)
+7 error     at /Users/bengaumond/Projects/benzed-mono/node_modules/lerna/lib/PackageUtilities.js:132:86
+7 error     at Array.forEach (<anonymous>)
+7 error     at Function.getPackages (/Users/bengaumond/Projects/benzed-mono/node_modules/lerna/lib/PackageUtilities.js:131:22)

@@ -6,4 +6,5 @@ lib
 *.temp.js
 *.tgz
 *-old*
-test/work
+test/create-project
+test/webpack-config

@@ -56,36 +56,27 @@ function smartFindHtml (cwd, inputFile) {
   throw new Error('config.html was not provided, and an html template could be found.')
 }
 
-function validateConfig (config = { }, cwd) {
+function validateConfig (config = { }) {
 
   const path = require('path')
 
   if (!is.plainObject(config))
     throw new Error(`if defined, config must be a plain object`)
 
+  const cwd = config.cwd || process.cwd()
   const name = config.name || path.basename(cwd)
   const inputFile = config.entry || smartFindInput(cwd)
   const outputDir = config.output || smartFindOutput(cwd)
   const htmlTemplate = config.html || smartFindHtml(cwd, inputFile)
 
-  const mode = config.mode || process.env.NODE_ENV === 'production'
+  const mode = config.mode || (process.env.NODE_ENV === 'production'
     ? 'production'
-    : 'development'
+    : 'development')
 
   if (mode !== 'development' && mode !== 'production')
     throw new Error(`config.mode must either be production or development`)
 
   return { name, inputFile, outputDir, htmlTemplate, mode }
-}
-
-function ensureDevDependencies (...names) {
-
-  const { devDependencies } = require('../package.json')
-  const { execSync } = require('child_process')
-
-  const pkgs = names.filter(name => name in devDependencies === false)
-
-  execSync(`npm i ${pkgs.split(' ')} --save-dev`)
 }
 
 /******************************************************************************/
@@ -99,9 +90,7 @@ function WebpackConfig (config) {
   if (this instanceof WebpackConfig === false)
     throw new Error('WebpackConfig cannot be invoked without \'new\'.')
 
-  const cwd = process.cwd()
-
-  const { name, inputFile, outputDir, htmlTemplate, mode } = validateConfig(config, cwd)
+  const { name, inputFile, outputDir, htmlTemplate, mode } = validateConfig(config)
 
   // this is essentially a development class, so we don't want imports used here
   // polluting the @benzed/react module for other use cases
@@ -109,17 +98,6 @@ function WebpackConfig (config) {
   const MiniCssExtractPlugin = require('mini-css-extract-plugin')
   const HtmlWebpackPlugin = require('html-webpack-plugin')
   const path = require('path')
-
-  ensureDevDependencies(
-    'webpack',
-    'babel-loader',
-    'json-loader',
-    'css-loader',
-    'url-loader',
-    'file-loader',
-    'mini-css-extract-plugin',
-    'html-webpack-plugin'
-  )
 
   const entry = {
     [name]: inputFile

@@ -2,11 +2,32 @@ import { expect } from 'chai'
 import WebpackConfig from './webpack-config'
 
 import is from 'is-explicit'
+import fs from 'fs-extra'
+import path from 'path'
 
 import { inspect } from '../util'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const TEST_DIR = path.resolve(__dirname, '../../test/webpack-config')
+const LIB_PUBLIC = path.resolve(TEST_DIR, 'lib/public')
+const SRC_DIR = path.resolve(TEST_DIR, 'src')
+
+const SRC_HTML = path.resolve(SRC_DIR, 'public/index.html')
+const SRC_INDEX = path.resolve(SRC_DIR, 'index.js')
+
+fs.ensureDirSync(LIB_PUBLIC)
+fs.ensureFileSync(SRC_INDEX)
+fs.ensureFileSync(SRC_HTML)
+
+/******************************************************************************/
+// Tests
+/******************************************************************************/
 
 describe('WebpackConfig', () => {
 
@@ -54,8 +75,17 @@ describe('WebpackConfig', () => {
     })
 
     describe('.mode', () => {
-      it('uses process.env.NODE_ENV if not provided')
-      it('must be either \'production\' or \'development\' if provided')
+      it('uses process.env.NODE_ENV || \'development\' if not provided', () => {
+        const wc = new WebpackConfig({ cwd: TEST_DIR })
+
+        const env = process.env.NODE_ENV || 'development'
+
+        expect(wc.mode).to.equal(env)
+      })
+      it('must be either \'production\' or \'development\' if provided', () => {
+        expect(() => new WebpackConfig({ cwd: TEST_DIR, mode: 'default' }))
+          .to.throw('must either be production or development')
+      })
     })
 
     describe('.html', () => {
@@ -74,19 +104,37 @@ describe('WebpackConfig', () => {
 
   describe('webpack config output', () => {
 
-    let wc
+    const agnosticEnvTests = wc => {
+      it('is a plain object', () => {
+        expect(is.plainObject(wc)).to.be.equal(true)
+      })
+      it('has node config for core/non-browser modules')
+      it('does not resolve .jsx files')
+    }
 
-    before(() => {
-      try {
-        wc = new WebpackConfig()
-      } catch (err) {
-        console.log(err)
-      }
+    describe('development', () => {
+      const dev = new WebpackConfig({ cwd: TEST_DIR, mode: 'development' })
+
+      it('has development mode', () => {
+        expect(dev.mode).to.be.equal('development')
+      })
+
+      agnosticEnvTests(dev)
+
     })
 
-    it('is a plain object', () => {
-      expect(is.plainObject(wc))
+    describe('production', () => {
+      const prod = new WebpackConfig({ cwd: TEST_DIR, mode: 'production' })
+
+      it('has production mode', () => {
+        expect(prod.mode).to.be.equal('production')
+      })
+
+      agnosticEnvTests(prod)
+
+      it('has define webpack plugin')
     })
+
   })
 
   describe('webpacked output', () => {

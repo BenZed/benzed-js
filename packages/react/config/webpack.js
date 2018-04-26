@@ -1,4 +1,4 @@
-const { WebpackConfig } = require('../lib')
+const { WebpackConfig } = require('@benzed/dev')
 
 /******************************************************************************/
 // Config

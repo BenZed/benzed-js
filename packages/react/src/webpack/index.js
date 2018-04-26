@@ -24,7 +24,7 @@ window.addEventListener('load', async () => {
   const arr = [ 0, 0, 1, 2, 3, 0, 10, 4, 5, 2, 1 ]::unique()
 
   const tag = document.getElementById('benzed-react')
-  const component = <Example arr={arr}/>
+  const component = <Example arr={arr} />
 
   render(component, tag)
 })

@@ -23,7 +23,7 @@ const fakeArgs = dir => [
 // Test
 /******************************************************************************/
 
-describe.only('createProject()', () => {
+describe('createProject()', () => {
 
   it('is a function', () => {
     expect(createProject).to.be.instanceof(Function)

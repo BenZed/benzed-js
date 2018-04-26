@@ -155,7 +155,7 @@ describe('config app instance', () => {
       })
       it('must point toward a public folder with an index.html file', () => {
         const badValues = [
-          path.resolve(__dirname, '../../test')
+          path.resolve(__dirname, '../../dev')
         ]
         for (const badValue of badValues)
           expect(() => new App(CONFIG_OBJ::set([ 'rest', 'public' ], badValue))).to.throw('must contain files \'index.html\'')
