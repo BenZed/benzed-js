@@ -1,6 +1,6 @@
 {
   "name": "@benzed/schema",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "main": "lib",
   "private": true,
   "scripts": {
@@ -19,11 +19,11 @@
   "license": "ISC",
   "description": "Data sanitization and validaiton through Schemas",
   "devDependencies": {
-    "@benzed/dev": "*"
+    "@benzed/dev": "^0.2.0"
   },
   "dependencies": {
-    "@benzed/array": "*",
-    "@benzed/immutable": "*",
+    "@benzed/array": "^1.1.0",
+    "@benzed/immutable": "^1.1.2",
     "is-explicit": "^1.4.1"
   }
 }

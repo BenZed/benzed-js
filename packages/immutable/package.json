@@ -1,6 +1,6 @@
 {
   "name": "@benzed/immutable",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -21,9 +21,9 @@
   "license": "ISC",
   "description": "My own library for manipulating objects immutably.",
   "devDependencies": {
-    "@benzed/dev": "*"
+    "@benzed/dev": "^0.2.0"
   },
   "dependencies": {
-    "@benzed/array": "^1.0.3"
+    "@benzed/array": "^1.1.0"
   }
 }
