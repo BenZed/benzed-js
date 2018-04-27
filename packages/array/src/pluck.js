@@ -29,7 +29,7 @@ function pluck (arr, test, count = arr.length) {
     i += reverse ? -1 : 1) {
 
     const value = arr[i]
-    if (!test(value))
+    if (!test(value, i, arr))
       continue
 
     if (reverse)

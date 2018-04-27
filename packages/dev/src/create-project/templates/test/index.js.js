@@ -1,6 +1,9 @@
+export default () => `
+import { clearConsole } from '@benzed/dev'
 
 /******************************************************************************/
-// Exports
+// Setup
 /******************************************************************************/
 
-export default typeof window === 'object'
+clearConsole()
+`

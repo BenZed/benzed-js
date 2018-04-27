@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import createProject from './create-project'
 import path from 'path'
+import fs from 'fs-extra'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -10,15 +11,35 @@ import path from 'path'
 /******************************************************************************/
 
 const WORK_DIR = path.resolve(__dirname, '../../test/create-project')
+fs.ensureDirSync(WORK_DIR)
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-const fakeArgs = dir => [
-  'node', 'benzed-create', // needs two or else args package breaks
-  `--dir`, `${dir || WORK_DIR}`
-]
+function testProjectExists (options) {
+
+  const { dir, name } = options
+
+  const projectDir = path.join(dir, name)
+
+  it(`project '${name}' created at ${projectDir}`, () => {
+    let stat
+    expect(() => {
+      stat = fs.statSync(projectDir)
+    }).to.not.throw(Error)
+
+    expect(stat.isDirectory()).to.be.equal(true)
+
+    // expect project to have a .babelrc, package.json, ect.
+  })
+
+}
+
+// const fakeArgs = dir => [
+//   'node', 'benzed-create', // needs two or else args package breaks
+//   `--dir`, `${dir || WORK_DIR}`
+// ]
 
 /******************************************************************************/
 // Test
@@ -31,9 +52,32 @@ describe.only('createProject()', () => {
   })
 
   describe('input', () => {
+    it('array of strings (argv)')
+    it('plain object')
+    it('otherwise throws')
+  })
 
-    it('dir', () => {
-      createProject({
+  describe('options', () => {
+
+    describe('dir', () => {
+      it('must be a path')
+      it('throws if dir does not exist')
+    })
+    it('name')
+    it('api')
+    it('socketio')
+    it('rest')
+    it('auth')
+    it('files')
+    it('ui')
+
+  })
+
+  describe('usage', () => {
+
+    describe('creates projects', () => {
+
+      const options = {
         dir: WORK_DIR,
         name: 'test',
         socketio: false,
@@ -42,27 +86,13 @@ describe.only('createProject()', () => {
         api: false,
         auth: false,
         files: false
-      })
+      }
+
+      createProject(options)
+
+      testProjectExists(options)
+
     })
-
-    describe('array of strings (argv)')
-
-    describe('plain object')
-
-    describe('undefined')
-
-  })
-
-  describe('options', () => {
-
-    describe('dir')
-    describe('name')
-    describe('api')
-    describe('socketio')
-    describe('rest')
-    describe('auth')
-    describe('files')
-    describe('ui')
 
   })
 

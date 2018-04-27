@@ -22,6 +22,16 @@ Test.optionallyBindableMethod.only(pluck, pluck => {
     expect(even).to.deep.equal([2, 4, 6, 8])
   })
 
+  it('callback takes value, index, array args', () => {
+    const arr = [ 'zero' ]
+
+    pluck(arr, (v, i, a) => {
+      expect(v).to.equal('zero')
+      expect(i).to.equal(0)
+      expect(a).to.equal(arr)
+    })
+  })
+
   describe('count', () => {
 
     it('limits the number of results to take', () => {

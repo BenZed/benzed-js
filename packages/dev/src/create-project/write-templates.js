@@ -1,6 +1,8 @@
 import path from 'path'
 import fs from 'fs-extra'
+import is from 'is-explicit'
 
+import { push, unique } from '@benzed/immutable'
 /******************************************************************************/
 // Data
 /******************************************************************************/
@@ -11,37 +13,103 @@ const TEMPLATES_DIR = path.join(__dirname, './templates')
 // Helper
 /******************************************************************************/
 
-function writeTemplate (options, url) {
+// Prevents undefined values from making it to the final JSON
+const stringifyNoUndef = (k, v) => v instanceof Array
+  ? v.filter(i => i !== undefined)
+  : v
 
-  const context = this
+function prettifyString (strings, ...params) {
+  let str = ''
 
-  const {
-    default: getText, dependencies, devDependencies
-  } = require(url)
+  for (let i = 0; i < strings.length; i++) {
+    const string = strings[i]
+    str += string
 
-  const text = getText()
+    if (i >= params.length)
+      continue
 
-  // const url = template.writeToFile(text, url)
-  // if (url)
-  //   scaffold.writtenFiles.push(url)
-  //
-  // scaffold.addDependencies(dependencies, templateUrl)
-  // scaffold.addDevDependencies(devDependencies, templateUrl)
-  // scaffold.addDependenciesFromImportStatements(text, templateUrl)
+    // falsy values don't get added
+    const param = params[i]
+    if (!param)
+      continue
 
+    str += param
+  }
+
+  const lines = str.split('\n')
+    // Remove blank first line
+    .filter((line, i) => i > 0 || line.trim().length > 0)
+
+  return lines.join('\n')
 }
-
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function writeTemplates (options, dir = TEMPLATES_DIR) {
+function writeToProject (text, templateUrl) {
 
   const context = this
 
+  const urlInProject = templateUrl
+    .replace(
+      TEMPLATES_DIR,
+      context.projectDir
+    )
+    .replace(/\.js$/, '')
+
+  fs.ensureFileSync(urlInProject)
+  fs.writeFileSync(urlInProject, text)
+
+  context.writtenFiles.push(urlInProject)
+
+}
+
+function addDependencies (deps, options) {
+
+  if (deps instanceof Function)
+    deps = deps(options)
+
+  if (deps instanceof Array === false)
+    deps = []
+
+  deps = deps.filter(d => typeof d === 'string')
+
+  return this
+    ::push(...deps)
+    ::unique()
+}
+
+function writeTemplate (templateUrl) {
+
+  const context = this
+
+  const {
+    default: getText, dependencies, devDependencies
+  } = require(templateUrl)
+
+  let text = getText({ ...context.options, pretty: prettifyString })
+
+  if (is.plainObject(text))
+    text = JSON.stringify(text, stringifyNoUndef, 2)
+
+  if (text)
+    context::writeToProject(text, templateUrl)
+
+  context.dependencies = context.dependencies::addDependencies(dependencies, context.options)
+  context.devDependencies = context.devDependencies::addDependencies(devDependencies, context.options)
+
+}
+
+function writeTemplates (dir = TEMPLATES_DIR) {
+
+  const context = this
+  if (typeof context !== 'object' || context === null)
+    throw new Error('writeTemplates needs to be bound to a context')
+
   const urls = fs
     .readdirSync(dir)
+    .filter(name => !/\.test\.js/.test(name))
     .map(name => path.join(dir, name))
 
   for (const url of urls)

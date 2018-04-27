@@ -7,7 +7,7 @@
   },
   "scripts": {
     "test": "mocha --opts .mocha.opts",
-    "test:dev": "npx watch 'npm run test' src test",
+    "test:dev": "npx watch 'npm run test' src",
     "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
     "release:patch": "npm version patch && npm publish",
@@ -24,7 +24,8 @@
   "license": "ISC",
   "description": "Test helpers for the rest of @benzed packages.",
   "dependencies": {
-    "@benzed/schema": "^0.2.0",
+    "@benzed/schema": "*",
+    "@benzed/immutable": "*",
     "args": "^4.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
@@ -42,6 +43,7 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-react": "^7.7.0",
     "eslint-plugin-standard": "^3.1.0",
     "file-loader": "^1.1.11",
     "fs-extra": "^5.0.0",

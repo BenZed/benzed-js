@@ -1,4 +1,6 @@
 import is from 'is-explicit'
+import path from 'path'
+import fs from 'fs-extra'
 
 import validateOptions from './options/validate'
 import inquireMissingOptions from './options/inquire-missing'
@@ -12,26 +14,42 @@ import writeTemplates from './write-templates'
 
 class Context {
 
+  constructor (options) {
+    this.options = options
+    this.projectDir = path.join(options.dir, options.name)
+  }
+
   writtenFiles = []
-
   devDependencies = []
-
   dependencies = []
 
 }
 
 /******************************************************************************/
-// Main
+//
 /******************************************************************************/
+
+function createProjectFolder () {
+
+  const context = this
+
+  const { dir } = context.options
+  const { projectDir } = context
+
+  if (!fs.existsSync(dir))
+    throw new Error(`${dir} does not exist.`)
+
+  fs.ensureDirSync(projectDir)
+}
 
 async function createProject (input) {
 
   let options
 
-  if (is.arrayOf(String))
+  if (is.arrayOf(input, String))
     options = parseArgs(input)
 
-  else if (is.painObject(input))
+  else if (is.plainObject(input))
     options = input
   else
     throw new Error('input must be an array of strings or a plain object')
@@ -41,7 +59,9 @@ async function createProject (input) {
 
   const context = new Context(options)
 
-  await context::writeTemplates(options)
+  context::createProjectFolder()
+  await context::writeTemplates()
+
 }
 
 /******************************************************************************/
