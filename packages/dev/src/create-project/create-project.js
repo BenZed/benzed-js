@@ -1,23 +1,47 @@
-import args from 'args'
-import validateOptions from './validate-options'
+import is from 'is-explicit'
+
+import validateOptions from './options/validate'
+import inquireMissingOptions from './options/inquire-missing'
+import parseArgs from './options/parse-args'
+
+import writeTemplates from './write-templates'
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+class Context {
+
+  writtenFiles = []
+
+  devDependencies = []
+
+  dependencies = []
+
+}
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function createProject (argv, options) {
+async function createProject (input) {
 
-  const flags = args
-    .option('dir', 'directory where project will be generated', process.cwd())
-    // .option('install', 'should dependencies be installed', true)
-    .parse(argv)
+  let options
 
-  // args creates the same flag 3 times with single letter alternatives,
-  // which I don't need
-  for (const key in flags)
-    if (key.length === 1)
-      delete flags[key]
+  if (is.arrayOf(String))
+    options = parseArgs(input)
 
+  else if (is.painObject(input))
+    options = input
+  else
+    throw new Error('input must be an array of strings or a plain object')
+
+  options = inquireMissingOptions(options)
+  options = validateOptions(options)
+
+  const context = new Context(options)
+
+  await context::writeTemplates(options)
 }
 
 /******************************************************************************/

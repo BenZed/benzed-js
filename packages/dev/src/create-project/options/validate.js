@@ -3,8 +3,10 @@
 // Main
 /******************************************************************************/
 
-function validateOptions () {
+// TODO implement
+function validateOptions (options) {
 
+  return options
 }
 
 /******************************************************************************/

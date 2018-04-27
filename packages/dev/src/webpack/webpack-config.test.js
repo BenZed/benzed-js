@@ -108,8 +108,13 @@ describe('WebpackConfig', () => {
       it('is a plain object', () => {
         expect(is.plainObject(wc)).to.be.equal(true)
       })
-      it('has node config for core/non-browser modules')
-      it('does not resolve .jsx files')
+      it('does not resolve .jsx files', () => {
+        expect(wc.resolve.extensions).to.not.include('.jsx')
+      })
+      it('resolves src root', () => {
+        const SRC = path.resolve(__dirname, '../src')
+        expect(wc.resolve.modules.includes(SRC))
+      })
     }
 
     describe('development', () => {
@@ -117,6 +122,25 @@ describe('WebpackConfig', () => {
 
       it('has development mode', () => {
         expect(dev.mode).to.be.equal('development')
+      })
+
+      it('has mini css extract plugin', () => {
+        const { plugins } = dev
+        expect(plugins.filter(p => p.constructor.name === 'MiniCssExtractPlugin')).to.have.length(1)
+      })
+
+      it('has mini css extract plugin', () => {
+        const { plugins } = dev
+        expect(plugins.filter(p => p.constructor.name === 'HtmlWebpackPlugin')).to.have.length(1)
+      })
+
+      it('has node config for core/non-browser modules except url and punycode', () => {
+        const { node } = dev
+
+        const libs = require('repl')._builtinLibs.filter(l => l !== 'url' && l !== 'punycode')
+        const keys = Object.keys(node)
+        expect(keys).to.have.length(libs.length)
+        expect(keys).to.deep.equal(libs)
       })
 
       agnosticEnvTests(dev)
@@ -132,16 +156,21 @@ describe('WebpackConfig', () => {
 
       agnosticEnvTests(prod)
 
-      it('has define webpack plugin')
+      it('has node config for core/non-browser modules ', () => {
+        const { node } = prod
+
+        const libs = require('repl')._builtinLibs
+        const keys = Object.keys(node)
+        expect(keys).to.have.length(libs.length)
+        expect(keys).to.deep.equal(libs)
+      })
+
+      it('has define webpack plugin', () => {
+        const { plugins } = prod
+        expect(plugins.filter(p => p.constructor.name === 'DefinePlugin')).to.have.length(1)
+      })
     })
 
-  })
-
-  describe('webpacked output', () => {
-    describe('creates an html from template', () => {
-      it('links css')
-      it('links bundles')
-    })
   })
 
 })

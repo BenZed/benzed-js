@@ -5,17 +5,46 @@ import type from './type'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
+const TYPE_TESTS = [
+  {
+    type: Number,
+    err: 'foo',
+    cast: [{ in: '123', out: 123 }]
+  },
+  {
+    type: Boolean,
+    err: NaN,
+    cast: [{ in: 123, out: '123' }]
+  },
+  {
+    type: String,
+    err: Symbol('one'),
+    cast: [{ in: 123, out: '123' }]
+  }
+]
+
 describe.only('type()', () => {
 
-  it('throws if value can not be casted to type', () => {
+  for (const data of TYPE_TESTS) {
+    const test = type(data.type)
 
-    const number = type(Number)
+    describe(`${data.type.name}`, () => {
 
-    expect(() => number('foo')).to.throw()
-    expect(() => number('123')).to.not.throw()
-    expect(() => number(new Date())).to.not.throw()
-    expect(() => number(10000)).to.not.throw()
+      it('returns error if value can not be casted to type', () => {
+        const error = test(data.err)
+        expect(error).to.be.instanceof(Error)
+        expect(error).to.have.property('message', `Must be of type: ${data.type.name}`)
+      })
 
-  })
+      describe('casts to type if possible', () => {
+        for (const convert of data.cast)
+          it(`${convert.in} >> ${convert.out}`, () => {
+            expect(test(convert.in)).to.be.equal(convert.out)
+          })
+      })
+
+    })
+
+  }
 
 })

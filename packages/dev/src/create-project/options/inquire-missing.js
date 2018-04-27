@@ -1,13 +1,16 @@
-const { WebpackConfig } = require('@benzed/dev')
 
 /******************************************************************************/
-// Config
+// Main
 /******************************************************************************/
 
-const config = { port: 4000 }
+// TODO implement
+function inquireMissingOptions (options) {
+
+  return options
+}
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-module.exports = new WebpackConfig(config)
+export default inquireMissingOptions

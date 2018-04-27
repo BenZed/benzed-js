@@ -1,4 +1,9 @@
 import is from 'is-explicit'
+import { _builtinLibs } from 'repl'
+import { DefinePlugin } from 'webpack'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import path from 'path'
 
 /******************************************************************************/
 // Helper
@@ -68,6 +73,7 @@ function validateConfig (config = { }) {
   const inputFile = config.entry || smartFindInput(cwd)
   const outputDir = config.output || smartFindOutput(cwd)
   const htmlTemplate = config.html || smartFindHtml(cwd, inputFile)
+  const port = config.port || 5000
 
   const mode = config.mode || (process.env.NODE_ENV === 'production'
     ? 'production'
@@ -76,7 +82,49 @@ function validateConfig (config = { }) {
   if (mode !== 'development' && mode !== 'production')
     throw new Error(`config.mode must either be production or development`)
 
-  return { name, inputFile, outputDir, htmlTemplate, mode }
+  return { name, inputFile, outputDir, htmlTemplate, mode, port }
+}
+
+/******************************************************************************/
+//
+/******************************************************************************/
+
+const rules = [
+  {
+    test: /\.js$/,
+    exclude: /node_modules/,
+    loader: 'babel-loader'
+  },
+  {
+    test: /\.json$/,
+    exclude: /node_modules/,
+    loader: 'json-loader'
+  },
+  {
+    test: /\.css/,
+    use: [ MiniCssExtractPlugin.loader, 'css-loader' ]
+  },
+  {
+    test: /\.(woff2?|svg)(\?.+)?$/,
+    use: [ 'url-loader?limit=10000' ]
+  },
+  {
+    test: /\.(ttf|eot|ico|png|gif|mp4|jpg|svg)(\?.+)?$/,
+    loader: 'file-loader',
+    options: {
+      name: '[name]_[hash].[ext]'
+    }
+  }
+]
+
+const resolve = {
+  extensions: [ '.js', '.json' ],
+  modules: [
+    'node_modules',
+
+    // same as add-module-path src
+    path.resolve(__dirname, '../src')
+  ]
 }
 
 /******************************************************************************/
@@ -90,14 +138,7 @@ function WebpackConfig (config) {
   if (this instanceof WebpackConfig === false)
     throw new Error('WebpackConfig cannot be invoked without \'new\'.')
 
-  const { name, inputFile, outputDir, htmlTemplate, mode } = validateConfig(config)
-
-  // this is essentially a development class, so we don't want imports used here
-  // polluting the @benzed/react module for other use cases
-  const { DefinePlugin } = require('webpack')
-  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-  const HtmlWebpackPlugin = require('html-webpack-plugin')
-  const path = require('path')
+  const { name, inputFile, outputDir, htmlTemplate, mode, port } = validateConfig(config)
 
   const entry = {
     [name]: inputFile
@@ -107,44 +148,6 @@ function WebpackConfig (config) {
     filename: `[name].js`,
     publicPath: '/',
     path: outputDir
-  }
-
-  const rules = [
-    {
-      test: /\.jsx?$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader'
-    },
-    {
-      test: /\.json$/,
-      exclude: /node_modules/,
-      loader: 'json-loader'
-    },
-    {
-      test: /\.css/,
-      use: [ MiniCssExtractPlugin.loader, 'css-loader' ]
-    },
-    {
-      test: /\.(woff2?|svg)(\?.+)?$/,
-      use: [ 'url-loader?limit=10000' ]
-    },
-    {
-      test: /\.(ttf|eot|ico|png|gif|mp4|jpg|svg)(\?.+)?$/,
-      loader: 'file-loader',
-      options: {
-        name: '[name]_[hash].[ext]'
-      }
-    }
-  ]
-
-  const resolve = {
-    extensions: [ '.js', '.jsx', '.json' ],
-    modules: [
-      'node_modules',
-
-      // same as add-module-path src
-      path.resolve(__dirname, '../src')
-    ]
   }
 
   const plugins = [
@@ -172,7 +175,11 @@ function WebpackConfig (config) {
     }
   }
 
-  return {
+  const node = {}
+  for (const lib of _builtinLibs)
+    node[lib] = 'empty'
+
+  const webpack = {
 
     mode,
     entry,
@@ -185,10 +192,33 @@ function WebpackConfig (config) {
     resolve,
     optimization,
 
-    plugins
+    plugins,
+
+    node
 
   }
 
+  if (mode !== 'production') {
+
+    delete webpack.node.url
+    delete webpack.node.punycode
+
+    webpack.devServer = {
+      contentBase: path.dirname(htmlTemplate),
+      inline: true,
+      hot: false,
+      port,
+      host: '0.0.0.0',
+      historyApiFallback: true,
+      stats: {
+        warnings: false
+      }
+    }
+
+    webpack.devtool = 'cheap-source-map'
+  }
+
+  return webpack
 }
 
 /******************************************************************************/

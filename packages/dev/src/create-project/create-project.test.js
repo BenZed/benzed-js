@@ -9,36 +9,60 @@ import path from 'path'
 // Data
 /******************************************************************************/
 
-const WORK_DIR = path.resolve(__dirname, '../../test/work')
+const WORK_DIR = path.resolve(__dirname, '../../test/create-project')
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
 const fakeArgs = dir => [
-  '--dir', dir || WORK_DIR
+  'node', 'benzed-create', // needs two or else args package breaks
+  `--dir`, `${dir || WORK_DIR}`
 ]
 
 /******************************************************************************/
 // Test
 /******************************************************************************/
 
-describe('createProject()', () => {
+describe.only('createProject()', () => {
 
   it('is a function', () => {
     expect(createProject).to.be.instanceof(Function)
   })
 
-  describe('arguments', () => {
+  describe('input', () => {
 
-    createProject(fakeArgs(), {
-      name: 'test',
-      socketio: true,
-      ui: false,
-      api: false,
-      rest: false,
-      auth: false
+    it('dir', () => {
+      createProject({
+        dir: WORK_DIR,
+        name: 'test',
+        socketio: false,
+        rest: false,
+        ui: false,
+        api: false,
+        auth: false,
+        files: false
+      })
     })
+
+    describe('array of strings (argv)')
+
+    describe('plain object')
+
+    describe('undefined')
+
+  })
+
+  describe('options', () => {
+
+    describe('dir')
+    describe('name')
+    describe('api')
+    describe('socketio')
+    describe('rest')
+    describe('auth')
+    describe('files')
+    describe('ui')
 
   })
 
