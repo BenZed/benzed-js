@@ -1,13 +1,5 @@
 
-const REACT_RULES = {
-  'react/jsx-uses-react': 'error',
-  'react/jsx-uses-vars': 'error',
-  'react/jsx-no-undef': 'error',
-  'react/jsx-no-duplicate-props': 'error',
-  'react/jsx-boolean-value': 'error',
-  'react/jsx-pascal-case': 'error',
-  'jsx-quites': [ 'error', 'prefer-single' ]
-}
+
 
 export default ({ ui }) => {
 
@@ -26,8 +18,18 @@ export default ({ ui }) => {
     ? [ 'react' ]
     : undefined
 
+  const react = ui ? {
+    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-vars': 'error',
+    'react/jsx-no-undef': 'error',
+    'react/jsx-no-duplicate-props': 'error',
+    'react/jsx-boolean-value': 'error',
+    'react/jsx-pascal-case': 'error',
+    'jsx-quotes': [ 'error', 'prefer-single' ]
+  } : {}
+
   const rules = {
-    ...ui ? REACT_RULES : {},
+    ...react,
     'no-var': 'error',
     'prefer-const': 'error',
     'padded-blocks': 'off',

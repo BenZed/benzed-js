@@ -17,9 +17,11 @@ fs.ensureDirSync(WORK_DIR)
 // Helper
 /******************************************************************************/
 
-function testProjectExists (options) {
+function testProjectCreate (options) {
 
   const { dir, name } = options
+
+  createProject(options)
 
   const projectDir = path.join(dir, name)
 
@@ -63,6 +65,7 @@ describe.only('createProject()', () => {
       it('must be a path')
       it('throws if dir does not exist')
     })
+
     it('name')
     it('api')
     it('socketio')
@@ -75,22 +78,63 @@ describe.only('createProject()', () => {
 
   describe('usage', () => {
 
-    describe('creates projects', () => {
+    describe('creates libraries', () => {
 
       const options = {
         dir: WORK_DIR,
-        name: 'test',
+        name: 'test-lib',
+
         socketio: false,
         rest: false,
+
         ui: false,
         api: false,
+
         auth: false,
         files: false
       }
 
-      createProject(options)
+      testProjectCreate(options)
 
-      testProjectExists(options)
+    })
+
+    describe('creates apis', () => {
+
+      const options = {
+        dir: WORK_DIR,
+        name: 'test-api',
+
+        socketio: true,
+        rest: false,
+
+        ui: false,
+        api: true,
+
+        auth: false,
+        files: false
+      }
+
+      testProjectCreate(options)
+
+    })
+
+    describe('creates app', () => {
+
+      const options = {
+        dir: WORK_DIR,
+        name: 'test-app',
+
+        socketio: true,
+        rest: false,
+
+        ui: true,
+        api: true,
+
+        auth: false,
+        files: false
+      }
+
+      testProjectCreate(options)
 
     })
 

@@ -25,6 +25,7 @@
   "description": "Test helpers for the rest of @benzed packages.",
   "dependencies": {
     "@benzed/schema": "*",
+    "@benzed/string": "*",
     "@benzed/immutable": "*",
     "args": "^4.0.0",
     "babel-cli": "^6.26.0",

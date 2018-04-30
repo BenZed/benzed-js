@@ -17,6 +17,17 @@ class Context {
   constructor (options) {
     this.options = options
     this.projectDir = path.join(options.dir, options.name)
+
+    const { api, auth } = options
+
+    const backend = auth ? 'api' : 'server'
+
+    let frontend = auth ? 'app' : 'website'
+    if (!api)
+      frontend = 'example'
+
+    this.backend = backend
+    this.frontend = frontend
   }
 
   writtenFiles = []

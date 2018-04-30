@@ -3,6 +3,7 @@ import fs from 'fs-extra'
 import is from 'is-explicit'
 
 import { push, unique } from '@benzed/immutable'
+
 /******************************************************************************/
 // Data
 /******************************************************************************/
@@ -47,22 +48,40 @@ function prettifyString (strings, ...params) {
 // Main
 /******************************************************************************/
 
-function writeToProject (text, templateUrl) {
+function writeToProject (text, templateUrl, namer) {
 
   const context = this
 
-  const urlInProject = templateUrl
+  let urlInProject = templateUrl
     .replace(
       TEMPLATES_DIR,
       context.projectDir
     )
     .replace(/\.js$/, '')
 
+  const ext = path.extname(urlInProject)
+  let name = path.basename(urlInProject, ext)
+  const dir = path.dirname(urlInProject)
+
+  if (namer instanceof Function)
+    namer = namer(context.options)
+
+  if (typeof namer === 'string')
+    name = namer
+
+  else if (/^\$/.test(name)) {
+
+    const key = name.replace('$', '')
+    name = context.options[key] || context[key]
+
+  }
+
+  urlInProject = path.join(dir, name + ext)
+
   fs.ensureFileSync(urlInProject)
   fs.writeFileSync(urlInProject, text)
 
   context.writtenFiles.push(urlInProject)
-
 }
 
 function addDependencies (deps, options) {
@@ -88,7 +107,15 @@ function writeTemplate (templateUrl) {
     default: getText, dependencies, devDependencies
   } = require(templateUrl)
 
-  let text = getText({ ...context.options, pretty: prettifyString })
+  const { frontend, backend, type } = context
+
+  let text = getText({
+    frontend,
+    backend,
+    type,
+    ...context.options,
+    pretty: prettifyString
+  })
 
   if (is.plainObject(text))
     text = JSON.stringify(text, stringifyNoUndef, 2)
@@ -119,7 +146,6 @@ function writeTemplates (dir = TEMPLATES_DIR) {
 
     else
       context::writeTemplate(url)
-
 }
 
 /******************************************************************************/
