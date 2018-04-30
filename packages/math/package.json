@@ -1,6 +1,6 @@
 {
   "name": "@benzed/math",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "My own personal Math module, extending Math with overridden or custom functionality.",
   "devDependencies": {
-    "@benzed/dev": "^0.2.0"
+    "@benzed/dev": "^0.3.0"
   }
 }
