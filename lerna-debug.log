@@ -1,598 +1,75 @@
-0 silly input [ 'publish' ]
-1 silly flags { _: [ 'publish' ], 'reject-cycles': false, rejectCycles: false }
-2 verbose rootPath /Users/bengaumond/Projects/benzed-mono
-3 info version 2.8.0
-4 silly isInitialized
-5 silly isInitialized true
-6 silly existsSync /Users/bengaumond/Projects/benzed-mono/VERSION
-7 info versioning independent
-8 silly initialize attempt
-9 silly isDetachedHead
-10 silly getCurrentBranch
-11 verbose getCurrentBranch master
-12 verbose isDetachedHead false
-13 silly getCurrentBranch
-14 verbose getCurrentBranch master
-15 silly getUpdates
-16 info Checking for updated packages...
-17 silly hasTags
-18 verbose hasTags true
-19 silly getLastTag
-20 verbose getLastTag @benzed/schema@0.1.6
-21 info Comparing with @benzed/schema@0.1.6.
-22 silly diffSinceIn @benzed/schema@0.1.6 packages/app
-23 silly diff packages/app/.mocha.opts
-23 silly diff packages/app/package-lock.json
-23 silly diff packages/app/package.json
-23 silly diff packages/app/src/app.js
-23 silly diff packages/app/src/app.test.js
-23 silly diff packages/app/src/configure.js
-23 silly diff packages/app/src/configure.test.js
-23 silly diff packages/app/src/initialize/connect-to-database.js
-23 silly diff packages/app/src/initialize/index.js
-23 silly diff packages/app/src/initialize/setup-authentication.js
-23 silly diff packages/app/src/initialize/setup-authentication.test.js
-23 silly diff packages/app/src/initialize/setup-middleware.js
-23 silly diff packages/app/src/initialize/setup-middleware.test.js
-23 silly diff packages/app/src/initialize/setup-providers.js
-23 silly diff packages/app/src/initialize/setup-providers.test.js
-23 silly diff packages/app/src/initialize/setup-services.js
-23 silly diff packages/app/src/initialize/setup-services.test.js
-23 silly diff packages/app/src/services/file-service.js
-23 silly diff packages/app/src/services/index.js
-23 silly diff packages/app/src/services/live-edit-service.js
-23 silly diff packages/app/src/services/service.js
-23 silly diff packages/app/src/services/user-service.js
-23 silly diff packages/app/src/services/version-service.js
-23 silly diff packages/app/src/start/start.test.js
-23 silly diff packages/app/src/util/index.js
-23 silly diff packages/app/src/util/schema.js
-23 silly diff packages/app/test/app/config.test.js
-23 silly diff packages/app/test/app/initialize.test.js
-23 silly diff packages/app/test/config/default.json
-23 silly diff packages/app/test/index.js
-24 silly diffSinceIn @benzed/schema@0.1.6 packages/array
-25 silly diff packages/array/package.json
-25 silly diff packages/array/src/adjacent.test.js
-25 silly diff packages/array/src/index.js
-25 silly diff packages/array/src/is-array-like.test.js
-25 silly diff packages/array/src/is-iterable.test.js
-25 silly diff packages/array/src/pluck.js
-25 silly diff packages/array/src/pluck.test.js
-25 silly diff packages/array/src/shuffle.test.js
-25 silly diff packages/array/src/unique.test.js
-25 silly diff packages/array/src/wrap.test.js
-25 silly diff packages/array/test/package.test.js
-26 silly diffSinceIn @benzed/schema@0.1.6 packages/async
-27 silly diff packages/async/package.json
-27 silly diff packages/async/src/index.js
-28 silly diffSinceIn @benzed/schema@0.1.6 packages/dev
-29 silly diff packages/dev/.babelrc
-29 silly diff packages/dev/.eslintignore
-29 silly diff packages/dev/.eslintrc.yml
-29 silly diff packages/dev/.gitignore
-29 silly diff packages/dev/.mocha.opts
-29 silly diff packages/dev/.npmignore
-29 silly diff packages/dev/package-lock.json
-29 silly diff packages/dev/package.json
-29 silly diff packages/dev/scripts/create-project.js
-29 silly diff packages/dev/src/create-project/create-project.js
-29 silly diff packages/dev/src/create-project/create-project.test.js
-29 silly diff packages/dev/src/create-project/index.js
-29 silly diff packages/dev/src/create-project/validate-options.js
-29 silly diff packages/dev/src/index.js
-29 silly diff packages/dev/src/test/get-describer.js
-29 silly diff packages/dev/src/test/index.js
-29 silly diff packages/dev/src/test/test-optionally-bindable-method.js
-29 silly diff packages/dev/src/test/test-package-output.js
-29 silly diff packages/dev/src/util/clear-console.js
-29 silly diff packages/dev/src/util/index.js
-29 silly diff packages/dev/src/util/inspect.js
-29 silly diff packages/dev/src/webpack/index.js
-29 silly diff packages/dev/src/webpack/webpack-config.js
-29 silly diff packages/dev/src/webpack/webpack-config.test.js
-29 silly diff packages/dev/test/index.js
-30 silly diffSinceIn @benzed/schema@0.1.6 packages/immutable
-31 silly diff packages/immutable/package.json
-31 silly diff packages/immutable/src/array.test.js
-31 silly diff packages/immutable/src/copy.test.js
-31 silly diff packages/immutable/src/equals.test.js
-31 silly diff packages/immutable/src/get.test.js
-31 silly diff packages/immutable/src/index.js
-31 silly diff packages/immutable/src/merge.test.js
-31 silly diff packages/immutable/src/set.test.js
-32 silly diffSinceIn @benzed/schema@0.1.6 packages/math
-33 silly diff packages/math/package.json
-33 silly diff packages/math/src/clamp.test.js
-33 silly diff packages/math/src/lerp.test.js
-33 silly diff packages/math/src/overrides.test.js
-34 silly diffSinceIn @benzed/schema@0.1.6 packages/react
-35 silly diff packages/react/.gitignore
-35 silly diff packages/react/.mocha.opts
-35 silly diff packages/react/.npmignore
-35 silly diff packages/react/config/webpack.js
-35 silly diff packages/react/package-lock.json
-35 silly diff packages/react/package.json
-35 silly diff packages/react/src/public/index.html
-35 silly diff packages/react/src/state/state.test.js
-35 silly diff packages/react/src/theme.js
-35 silly diff packages/react/src/util/is-client.js
-35 silly diff packages/react/src/util/is-mobile.js
-35 silly diff packages/react/src/webpack/example/Example.jsx
-35 silly diff packages/react/src/webpack/example/index.js
-35 silly diff packages/react/src/webpack/globals.js
-35 silly diff packages/react/src/webpack/index.js
-35 silly diff packages/react/src/webpack/util/is-client.js
-36 silly diffSinceIn @benzed/schema@0.1.6 packages/schema
-37 silly diff packages/schema/package.json
-37 silly diff packages/schema/src/index.js
-37 silly diff packages/schema/src/schema.js
-37 silly diff packages/schema/src/schema.test.js
-37 silly diff packages/schema/src/util/args-to-config.js
-37 silly diff packages/schema/src/util/index.js
-37 silly diff packages/schema/src/util/normalize-definition.js
-37 silly diff packages/schema/src/util/normalize-definition.test.js
-37 silly diff packages/schema/src/util/symbols.js
-37 silly diff packages/schema/src/util/validation-error.js
-37 silly diff packages/schema/src/validate.js
-37 silly diff packages/schema/src/validate.test.js
-37 silly diff packages/schema/src/validators/index.js
-37 silly diff packages/schema/src/validators/required.js
-37 silly diff packages/schema/src/validators/required.test.js
-37 silly diff packages/schema/src/validators/type.js
-37 silly diff packages/schema/src/validators/type.test.js
-37 silly diff packages/schema/test/index.js
-38 silly diffSinceIn @benzed/schema@0.1.6 packages/string
-39 silly diff packages/string/package.json
-40 verbose updated @benzed/app
-41 verbose updated @benzed/array
-42 verbose updated @benzed/async
-43 verbose updated @benzed/dev
-44 verbose updated @benzed/immutable
-45 verbose updated @benzed/math
-46 verbose updated @benzed/react
-47 verbose updated @benzed/schema
-48 verbose updated @benzed/string
-49 info Checking for prereleased packages...
-50 silly collectDependents
-51 silly isPackageDependentOf @benzed/app @benzed/app
-52 silly isPackageDependentOf @benzed/dev @benzed/app
-53 silly isPackageDependentOf @benzed/schema @benzed/app
-54 silly isPackageDependentOf @benzed/dev @benzed/app
-55 silly isPackageDependentOf @benzed/array @benzed/app
-56 silly isPackageDependentOf @benzed/dev @benzed/app
-57 silly isPackageDependentOf @benzed/immutable @benzed/app
-58 silly isPackageDependentOf @benzed/dev @benzed/app
-59 silly isPackageDependentOf @benzed/array @benzed/app
-60 silly isPackageDependentOf @benzed/array @benzed/app
-61 silly isPackageDependentOf @benzed/async @benzed/app
-62 silly isPackageDependentOf @benzed/dev @benzed/app
-63 silly isPackageDependentOf @benzed/immutable @benzed/app
-64 silly isPackageDependentOf @benzed/app @benzed/array
-65 verbose dependent @benzed/app depends on @benzed/array
-66 silly isPackageDependentOf @benzed/app @benzed/async
-67 verbose dependent @benzed/app depends on @benzed/async
-68 silly isPackageDependentOf @benzed/app @benzed/dev
-69 verbose dependent @benzed/app depends on @benzed/dev
-70 silly isPackageDependentOf @benzed/app @benzed/immutable
-71 verbose dependent @benzed/app depends on @benzed/immutable
-72 silly isPackageDependentOf @benzed/app @benzed/math
-73 silly isPackageDependentOf @benzed/dev @benzed/math
-74 silly isPackageDependentOf @benzed/schema @benzed/math
-75 silly isPackageDependentOf @benzed/dev @benzed/math
-76 silly isPackageDependentOf @benzed/array @benzed/math
-77 silly isPackageDependentOf @benzed/dev @benzed/math
-78 silly isPackageDependentOf @benzed/immutable @benzed/math
-79 silly isPackageDependentOf @benzed/dev @benzed/math
-80 silly isPackageDependentOf @benzed/array @benzed/math
-81 silly isPackageDependentOf @benzed/array @benzed/math
-82 silly isPackageDependentOf @benzed/async @benzed/math
-83 silly isPackageDependentOf @benzed/dev @benzed/math
-84 silly isPackageDependentOf @benzed/immutable @benzed/math
-85 silly isPackageDependentOf @benzed/app @benzed/react
-86 silly isPackageDependentOf @benzed/dev @benzed/react
-87 silly isPackageDependentOf @benzed/schema @benzed/react
-88 silly isPackageDependentOf @benzed/dev @benzed/react
-89 silly isPackageDependentOf @benzed/array @benzed/react
-90 silly isPackageDependentOf @benzed/dev @benzed/react
-91 silly isPackageDependentOf @benzed/immutable @benzed/react
-92 silly isPackageDependentOf @benzed/dev @benzed/react
-93 silly isPackageDependentOf @benzed/array @benzed/react
-94 silly isPackageDependentOf @benzed/array @benzed/react
-95 silly isPackageDependentOf @benzed/async @benzed/react
-96 silly isPackageDependentOf @benzed/dev @benzed/react
-97 silly isPackageDependentOf @benzed/immutable @benzed/react
-98 silly isPackageDependentOf @benzed/app @benzed/schema
-99 silly isPackageDependentOf @benzed/dev @benzed/schema
-100 silly isPackageDependentOf @benzed/array @benzed/schema
-101 silly isPackageDependentOf @benzed/dev @benzed/schema
-102 silly isPackageDependentOf @benzed/async @benzed/schema
-103 silly isPackageDependentOf @benzed/dev @benzed/schema
-104 silly isPackageDependentOf @benzed/immutable @benzed/schema
-105 silly isPackageDependentOf @benzed/dev @benzed/schema
-106 silly isPackageDependentOf @benzed/array @benzed/schema
-107 verbose dependent @benzed/app depends on @benzed/schema
-108 silly isPackageDependentOf @benzed/app @benzed/string
-109 silly isPackageDependentOf @benzed/dev @benzed/string
-110 silly isPackageDependentOf @benzed/schema @benzed/string
-111 silly isPackageDependentOf @benzed/dev @benzed/string
-112 silly isPackageDependentOf @benzed/array @benzed/string
-113 silly isPackageDependentOf @benzed/dev @benzed/string
-114 silly isPackageDependentOf @benzed/immutable @benzed/string
-115 silly isPackageDependentOf @benzed/dev @benzed/string
-116 silly isPackageDependentOf @benzed/array @benzed/string
-117 silly isPackageDependentOf @benzed/array @benzed/string
-118 silly isPackageDependentOf @benzed/async @benzed/string
-119 silly isPackageDependentOf @benzed/dev @benzed/string
-120 silly isPackageDependentOf @benzed/immutable @benzed/string
-121 silly isPackageDependentOf @benzed/array @benzed/app
-122 silly isPackageDependentOf @benzed/array @benzed/array
-123 silly isPackageDependentOf @benzed/dev @benzed/array
-124 silly isPackageDependentOf @benzed/schema @benzed/array
-125 verbose dependent @benzed/array depends on @benzed/array
-126 silly isPackageDependentOf @benzed/array @benzed/async
-127 silly isPackageDependentOf @benzed/dev @benzed/async
-128 silly isPackageDependentOf @benzed/schema @benzed/async
-129 silly isPackageDependentOf @benzed/dev @benzed/async
-130 silly isPackageDependentOf @benzed/array @benzed/async
-131 silly isPackageDependentOf @benzed/immutable @benzed/async
-132 silly isPackageDependentOf @benzed/dev @benzed/async
-133 silly isPackageDependentOf @benzed/array @benzed/async
-134 silly isPackageDependentOf @benzed/array @benzed/dev
-135 verbose dependent @benzed/array depends on @benzed/dev
-136 silly isPackageDependentOf @benzed/array @benzed/immutable
-137 silly isPackageDependentOf @benzed/dev @benzed/immutable
-138 silly isPackageDependentOf @benzed/schema @benzed/immutable
-139 verbose dependent @benzed/array depends on @benzed/immutable
-140 silly isPackageDependentOf @benzed/array @benzed/math
-141 silly isPackageDependentOf @benzed/array @benzed/react
-142 silly isPackageDependentOf @benzed/array @benzed/schema
-143 verbose dependent @benzed/array depends on @benzed/schema
-144 silly isPackageDependentOf @benzed/array @benzed/string
-145 silly isPackageDependentOf @benzed/async @benzed/app
-146 silly isPackageDependentOf @benzed/async @benzed/array
-147 silly isPackageDependentOf @benzed/dev @benzed/array
-148 verbose dependent @benzed/async depends on @benzed/array
-149 silly isPackageDependentOf @benzed/async @benzed/async
-150 silly isPackageDependentOf @benzed/dev @benzed/async
-151 silly isPackageDependentOf @benzed/async @benzed/dev
-152 verbose dependent @benzed/async depends on @benzed/dev
-153 silly isPackageDependentOf @benzed/async @benzed/immutable
-154 silly isPackageDependentOf @benzed/dev @benzed/immutable
-155 verbose dependent @benzed/async depends on @benzed/immutable
-156 silly isPackageDependentOf @benzed/async @benzed/math
-157 silly isPackageDependentOf @benzed/async @benzed/react
-158 silly isPackageDependentOf @benzed/async @benzed/schema
-159 verbose dependent @benzed/async depends on @benzed/schema
-160 silly isPackageDependentOf @benzed/async @benzed/string
-161 silly isPackageDependentOf @benzed/dev @benzed/app
-162 silly isPackageDependentOf @benzed/dev @benzed/array
-163 verbose dependent @benzed/dev depends on @benzed/array
-164 silly isPackageDependentOf @benzed/dev @benzed/async
-165 silly isPackageDependentOf @benzed/dev @benzed/dev
-166 silly isPackageDependentOf @benzed/schema @benzed/dev
-167 verbose dependent @benzed/dev depends on @benzed/dev
-168 silly isPackageDependentOf @benzed/dev @benzed/immutable
-169 verbose dependent @benzed/dev depends on @benzed/immutable
-170 silly isPackageDependentOf @benzed/dev @benzed/math
-171 silly isPackageDependentOf @benzed/dev @benzed/react
-172 silly isPackageDependentOf @benzed/dev @benzed/schema
-173 verbose dependent @benzed/dev depends on @benzed/schema
-174 silly isPackageDependentOf @benzed/dev @benzed/string
-175 silly isPackageDependentOf @benzed/immutable @benzed/app
-176 silly isPackageDependentOf @benzed/immutable @benzed/array
-177 verbose dependent @benzed/immutable depends on @benzed/array
-178 silly isPackageDependentOf @benzed/immutable @benzed/async
-179 silly isPackageDependentOf @benzed/immutable @benzed/dev
-180 verbose dependent @benzed/immutable depends on @benzed/dev
-181 silly isPackageDependentOf @benzed/immutable @benzed/immutable
-182 silly isPackageDependentOf @benzed/dev @benzed/immutable
-183 silly isPackageDependentOf @benzed/array @benzed/immutable
-184 verbose dependent @benzed/immutable depends on @benzed/immutable
-185 silly isPackageDependentOf @benzed/immutable @benzed/math
-186 silly isPackageDependentOf @benzed/immutable @benzed/react
-187 silly isPackageDependentOf @benzed/immutable @benzed/schema
-188 verbose dependent @benzed/immutable depends on @benzed/schema
-189 silly isPackageDependentOf @benzed/immutable @benzed/string
-190 silly isPackageDependentOf @benzed/math @benzed/app
-191 silly isPackageDependentOf @benzed/dev @benzed/app
-192 silly isPackageDependentOf @benzed/math @benzed/array
-193 silly isPackageDependentOf @benzed/dev @benzed/array
-194 verbose dependent @benzed/math depends on @benzed/array
-195 silly isPackageDependentOf @benzed/math @benzed/async
-196 silly isPackageDependentOf @benzed/dev @benzed/async
-197 silly isPackageDependentOf @benzed/math @benzed/dev
-198 verbose dependent @benzed/math depends on @benzed/dev
-199 silly isPackageDependentOf @benzed/math @benzed/immutable
-200 silly isPackageDependentOf @benzed/dev @benzed/immutable
-201 verbose dependent @benzed/math depends on @benzed/immutable
-202 silly isPackageDependentOf @benzed/math @benzed/math
-203 silly isPackageDependentOf @benzed/dev @benzed/math
-204 silly isPackageDependentOf @benzed/math @benzed/react
-205 silly isPackageDependentOf @benzed/dev @benzed/react
-206 silly isPackageDependentOf @benzed/math @benzed/schema
-207 silly isPackageDependentOf @benzed/dev @benzed/schema
-208 verbose dependent @benzed/math depends on @benzed/schema
-209 silly isPackageDependentOf @benzed/math @benzed/string
-210 silly isPackageDependentOf @benzed/dev @benzed/string
-211 silly isPackageDependentOf @benzed/react @benzed/app
-212 silly isPackageDependentOf @benzed/dev @benzed/app
-213 silly isPackageDependentOf @benzed/array @benzed/app
-214 silly isPackageDependentOf @benzed/immutable @benzed/app
-215 silly isPackageDependentOf @benzed/react @benzed/array
-216 verbose dependent @benzed/react depends on @benzed/array
-217 silly isPackageDependentOf @benzed/react @benzed/async
-218 silly isPackageDependentOf @benzed/dev @benzed/async
-219 silly isPackageDependentOf @benzed/array @benzed/async
-220 silly isPackageDependentOf @benzed/immutable @benzed/async
-221 silly isPackageDependentOf @benzed/react @benzed/dev
-222 verbose dependent @benzed/react depends on @benzed/dev
-223 silly isPackageDependentOf @benzed/react @benzed/immutable
-224 verbose dependent @benzed/react depends on @benzed/immutable
-225 silly isPackageDependentOf @benzed/react @benzed/math
-226 silly isPackageDependentOf @benzed/dev @benzed/math
-227 silly isPackageDependentOf @benzed/array @benzed/math
-228 silly isPackageDependentOf @benzed/immutable @benzed/math
-229 silly isPackageDependentOf @benzed/react @benzed/react
-230 silly isPackageDependentOf @benzed/dev @benzed/react
-231 silly isPackageDependentOf @benzed/array @benzed/react
-232 silly isPackageDependentOf @benzed/immutable @benzed/react
-233 silly isPackageDependentOf @benzed/react @benzed/schema
-234 silly isPackageDependentOf @benzed/dev @benzed/schema
-235 silly isPackageDependentOf @benzed/array @benzed/schema
-236 silly isPackageDependentOf @benzed/immutable @benzed/schema
-237 verbose dependent @benzed/react depends on @benzed/schema
-238 silly isPackageDependentOf @benzed/react @benzed/string
-239 silly isPackageDependentOf @benzed/dev @benzed/string
-240 silly isPackageDependentOf @benzed/array @benzed/string
-241 silly isPackageDependentOf @benzed/immutable @benzed/string
-242 silly isPackageDependentOf @benzed/schema @benzed/app
-243 silly isPackageDependentOf @benzed/schema @benzed/array
-244 verbose dependent @benzed/schema depends on @benzed/array
-245 silly isPackageDependentOf @benzed/schema @benzed/async
-246 silly isPackageDependentOf @benzed/schema @benzed/dev
-247 verbose dependent @benzed/schema depends on @benzed/dev
-248 silly isPackageDependentOf @benzed/schema @benzed/immutable
-249 verbose dependent @benzed/schema depends on @benzed/immutable
-250 silly isPackageDependentOf @benzed/schema @benzed/math
-251 silly isPackageDependentOf @benzed/schema @benzed/react
-252 silly isPackageDependentOf @benzed/schema @benzed/schema
-253 silly isPackageDependentOf @benzed/dev @benzed/schema
-254 silly isPackageDependentOf @benzed/array @benzed/schema
-255 silly isPackageDependentOf @benzed/immutable @benzed/schema
-256 verbose dependent @benzed/schema depends on @benzed/schema
-257 silly isPackageDependentOf @benzed/schema @benzed/string
-258 silly isPackageDependentOf @benzed/string @benzed/app
-259 silly isPackageDependentOf @benzed/dev @benzed/app
-260 silly isPackageDependentOf @benzed/string @benzed/array
-261 silly isPackageDependentOf @benzed/dev @benzed/array
-262 verbose dependent @benzed/string depends on @benzed/array
-263 silly isPackageDependentOf @benzed/string @benzed/async
-264 silly isPackageDependentOf @benzed/dev @benzed/async
-265 silly isPackageDependentOf @benzed/string @benzed/dev
-266 verbose dependent @benzed/string depends on @benzed/dev
-267 silly isPackageDependentOf @benzed/string @benzed/immutable
-268 silly isPackageDependentOf @benzed/dev @benzed/immutable
-269 verbose dependent @benzed/string depends on @benzed/immutable
-270 silly isPackageDependentOf @benzed/string @benzed/math
-271 silly isPackageDependentOf @benzed/dev @benzed/math
-272 silly isPackageDependentOf @benzed/string @benzed/react
-273 silly isPackageDependentOf @benzed/dev @benzed/react
-274 silly isPackageDependentOf @benzed/string @benzed/schema
-275 silly isPackageDependentOf @benzed/dev @benzed/schema
-276 verbose dependent @benzed/string depends on @benzed/schema
-277 silly isPackageDependentOf @benzed/string @benzed/string
-278 silly isPackageDependentOf @benzed/dev @benzed/string
-279 silly collectUpdates
-280 verbose has filtered update @benzed/app
-281 verbose has filtered update @benzed/array
-282 verbose has filtered update @benzed/async
-283 verbose has filtered update @benzed/dev
-284 verbose has filtered update @benzed/immutable
-285 verbose has filtered update @benzed/math
-286 verbose has filtered update @benzed/react
-287 verbose has filtered update @benzed/schema
-288 verbose has filtered update @benzed/string
-289 silly initialize success
-290 silly execute attempt
-291 silly runScriptSync preversion benzed-mono
-292 silly runScriptSync preversion @benzed/app
-293 silly runScriptSync version @benzed/app
-294 silly runScriptSync preversion @benzed/array
-295 silly runScriptSync version @benzed/array
-296 silly runScriptSync preversion @benzed/async
-297 silly runScriptSync version @benzed/async
-298 silly runScriptSync preversion @benzed/dev
-299 silly runScriptSync version @benzed/dev
-300 silly runScriptSync preversion @benzed/immutable
-301 silly runScriptSync version @benzed/immutable
-302 silly runScriptSync preversion @benzed/math
-303 silly runScriptSync version @benzed/math
-304 silly runScriptSync preversion @benzed/react
-305 silly runScriptSync version @benzed/react
-306 silly runScriptSync preversion @benzed/schema
-307 silly runScriptSync version @benzed/schema
-308 silly runScriptSync preversion @benzed/string
-309 silly runScriptSync version @benzed/string
-310 silly runScriptSync version benzed-mono
-311 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/app/package.json
-312 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/array/package.json
-313 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/async/package.json
-314 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/dev/package.json
-315 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/immutable/package.json
-316 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/math/package.json
-317 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/react/package.json
-318 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/schema/package.json
-319 silly addFile /Users/bengaumond/Projects/benzed-mono/packages/string/package.json
-320 silly commit Publish
-320 silly commit
-320 silly commit  - @benzed/app@0.1.7
-320 silly commit  - @benzed/array@1.1.0
-320 silly commit  - @benzed/async@0.9.3
-320 silly commit  - @benzed/dev@0.2.0
-320 silly commit  - @benzed/immutable@1.1.2
-320 silly commit  - @benzed/math@1.0.2
-320 silly commit  - @benzed/react@0.0.4
-320 silly commit  - @benzed/schema@0.2.0
-320 silly commit  - @benzed/string@0.5.1
-321 verbose commit [ 'commit',
-321 verbose commit   '--no-verify',
-321 verbose commit   '-F',
-321 verbose commit   '/private/var/folders/m5/81bw3ctd4lvcqbxmvjgnjdpc0000gq/T/458f555d-0b3d-4da5-baf0-e39019c019cb/lerna-commit.txt' ]
-322 silly addTag @benzed/app@0.1.7
-323 silly addTag @benzed/array@1.1.0
-324 silly addTag @benzed/async@0.9.3
-325 silly addTag @benzed/dev@0.2.0
-326 silly addTag @benzed/immutable@1.1.2
-327 silly addTag @benzed/math@1.0.2
-328 silly addTag @benzed/react@0.0.4
-329 silly addTag @benzed/schema@0.2.0
-330 silly addTag @benzed/string@0.5.1
-331 silly runScriptSync postversion @benzed/app
-332 silly runScriptSync postversion @benzed/array
-333 silly runScriptSync postversion @benzed/async
-334 silly runScriptSync postversion @benzed/dev
-335 silly runScriptSync postversion @benzed/immutable
-336 silly runScriptSync postversion @benzed/math
-337 silly runScriptSync postversion @benzed/react
-338 silly runScriptSync postversion @benzed/schema
-339 silly runScriptSync postversion @benzed/string
-340 silly runScriptSync postversion benzed-mono
-341 info publish Publishing packages to npm...
-342 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/app/scripts/prepublish.js
-343 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/app/scripts/prepublish.js
-344 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/array/scripts/prepublish.js
-345 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/array/scripts/prepublish.js
-346 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/async/scripts/prepublish.js
-347 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/async/scripts/prepublish.js
-348 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/dev/scripts/prepublish.js
-349 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/dev/scripts/prepublish.js
-350 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/immutable/scripts/prepublish.js
-351 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/immutable/scripts/prepublish.js
-352 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/math/scripts/prepublish.js
-353 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/math/scripts/prepublish.js
-354 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/react/scripts/prepublish.js
-355 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/react/scripts/prepublish.js
-356 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/schema/scripts/prepublish.js
-357 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/schema/scripts/prepublish.js
-358 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/string/scripts/prepublish.js
-359 verbose execScript No prepublish script found at /Users/bengaumond/Projects/benzed-mono/packages/string/scripts/prepublish.js
-360 verbose publishing @benzed/array
-361 silly publishTaggedInDir latest array
-362 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/array' }
-363 verbose publishing @benzed/async
-364 silly publishTaggedInDir latest async
-365 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/async' }
-366 verbose publishing @benzed/dev
-367 silly publishTaggedInDir latest dev
-368 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-369 verbose publishing @benzed/math
-370 silly publishTaggedInDir latest math
-371 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/math' }
-372 error publish Retrying failed publish: @benzed/dev
-373 verbose publish error undefined
-374 verbose publishing @benzed/dev
-375 silly publishTaggedInDir latest dev
-376 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-377 error publish Retrying failed publish: @benzed/dev
-378 verbose publish error undefined
-379 verbose publishing @benzed/dev
-380 silly publishTaggedInDir latest dev
-381 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-382 error publish Retrying failed publish: @benzed/dev
-383 verbose publish error undefined
-384 verbose publishing @benzed/dev
-385 silly publishTaggedInDir latest dev
-386 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-387 info published @benzed/array
-388 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/array/scripts/postpublish.js
-389 verbose execScript No postpublish script found at /Users/bengaumond/Projects/benzed-mono/packages/array/scripts/postpublish.js
-390 verbose publishing @benzed/string
-391 silly publishTaggedInDir latest string
-392 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/string' }
-393 info published @benzed/async
-394 silly existsSync /Users/bengaumond/Projects/benzed-mono/packages/async/scripts/postpublish.js
-395 verbose execScript No postpublish script found at /Users/bengaumond/Projects/benzed-mono/packages/async/scripts/postpublish.js
-396 error publish Retrying failed publish: @benzed/dev
-397 verbose publish error undefined
-398 verbose publishing @benzed/dev
-399 silly publishTaggedInDir latest dev
-400 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-401 error publish Ran out of retries while publishing @benzed/dev Error: Command failed: npm publish --tag latest
-401 error publish npm ERR! code ELIFECYCLE
-401 error publish npm ERR! errno 1
-401 error publish npm ERR! @benzed/dev@0.2.0 lint: `eslint src --fix`
-401 error publish npm ERR! Exit status 1
-401 error publish npm ERR!
-401 error publish npm ERR! Failed at the @benzed/dev@0.2.0 lint script.
-401 error publish npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-401 error publish
-401 error publish npm ERR! A complete log of this run can be found in:
-401 error publish npm ERR!     /Users/bengaumond/.npm/_logs/2018-04-27T02_54_06_333Z-debug.log
-401 error publish npm ERR! code ELIFECYCLE
-401 error publish npm ERR! errno 1
-401 error publish npm ERR! @benzed/dev@0.2.0 prepublishOnly: `npm run lint && npm run test && npm run build`
-401 error publish npm ERR! Exit status 1
-401 error publish npm ERR!
-401 error publish npm ERR! Failed at the @benzed/dev@0.2.0 prepublishOnly script.
-401 error publish npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-401 error publish
-401 error publish npm ERR! A complete log of this run can be found in:
-401 error publish npm ERR!     /Users/bengaumond/.npm/_logs/2018-04-27T02_54_06_355Z-debug.log
-401 error publish
-401 error publish > @benzed/dev@0.2.0 prepublishOnly .
-401 error publish > npm run lint && npm run test && npm run build
-401 error publish
-401 error publish
-401 error publish > @benzed/dev@0.2.0 lint /Users/bengaumond/Projects/benzed-mono/packages/dev
-401 error publish > eslint src --fix
-401 error publish
-401 error publish
-401 error publish /Users/bengaumond/Projects/benzed-mono/packages/dev/src/create-project/create-project.js
-401 error publish   2:8  error  'validateOptions' is defined but never used  no-unused-vars
-401 error publish
-401 error publish ✖ 1 problem (1 error, 0 warnings)
-401 error publish
-401 error publish
-401 error publish     at Promise.all.then.arr (/Users/bengaumond/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
-401 error publish     at <anonymous>
-401 error publish     at process._tickCallback (internal/process/next_tick.js:160:7)
-402 error execute callback with error
-403 error Error: Command failed: npm publish --tag latest
-403 error npm ERR! code ELIFECYCLE
-403 error npm ERR! errno 1
-403 error npm ERR! @benzed/dev@0.2.0 lint: `eslint src --fix`
-403 error npm ERR! Exit status 1
-403 error npm ERR!
-403 error npm ERR! Failed at the @benzed/dev@0.2.0 lint script.
-403 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-403 error
-403 error npm ERR! A complete log of this run can be found in:
-403 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-04-27T02_54_06_333Z-debug.log
-403 error npm ERR! code ELIFECYCLE
-403 error npm ERR! errno 1
-403 error npm ERR! @benzed/dev@0.2.0 prepublishOnly: `npm run lint && npm run test && npm run build`
-403 error npm ERR! Exit status 1
-403 error npm ERR!
-403 error npm ERR! Failed at the @benzed/dev@0.2.0 prepublishOnly script.
-403 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-403 error
-403 error npm ERR! A complete log of this run can be found in:
-403 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-04-27T02_54_06_355Z-debug.log
-403 error
-403 error > @benzed/dev@0.2.0 prepublishOnly .
-403 error > npm run lint && npm run test && npm run build
-403 error
-403 error
-403 error > @benzed/dev@0.2.0 lint /Users/bengaumond/Projects/benzed-mono/packages/dev
-403 error > eslint src --fix
-403 error
-403 error
-403 error /Users/bengaumond/Projects/benzed-mono/packages/dev/src/create-project/create-project.js
-403 error   2:8  error  'validateOptions' is defined but never used  no-unused-vars
-403 error
-403 error ✖ 1 problem (1 error, 0 warnings)
-403 error
-403 error
-403 error     at Promise.all.then.arr (/Users/bengaumond/.nvm/versions/node/v9.4.0/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
-403 error     at <anonymous>
+0 silly input [ 'test' ]
+1 silly flags { _: [ 'run' ],
+1 silly flags   'reject-cycles': false,
+1 silly flags   rejectCycles: false,
+1 silly flags   script: 'test',
+1 silly flags   args: [] }
+2 verbose rootPath /Users/global/Programming/benzed-mono
+3 info version 2.11.0
+4 silly existsSync /Users/global/Programming/benzed-mono/VERSION
+5 info versioning independent
+6 silly initialize attempt
+7 warn ECYCLE Encountered a cycle in the dependency graph.This may cause instability! Packages in cycle are: "@benzed/app", "@benzed/array", "@benzed/async", "@benzed/dev", "@benzed/immutable", "@benzed/math", "@benzed/react", "@benzed/schema", "@benzed/string"
+8 silly packages [ '@benzed/dev' ]
+9 silly initialize success
+10 silly execute attempt
+11 silly runScriptInDir test [] dev
+12 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/dev' }
+13 silly runScriptInDir test [] array
+14 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/array' }
+15 silly runScriptInDir test [] async
+16 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/async' }
+17 silly runScriptInDir test [] math
+18 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/math' }
+19 silly runScriptInDir test [] string
+20 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/string' }
+21 silly runScriptInDir test [] immutable
+22 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/immutable' }
+23 silly runScriptInDir test [] app
+24 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/app' }
+25 silly runScriptInDir test [] react
+26 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/react' }
+27 silly runScriptInDir test [] schema
+28 silly getExecOpts { cwd: '/Users/global/Programming/benzed-mono/packages/schema' }
+29 error test Errored while running script in '@benzed/schema'
+30 error execute callback with error
+31 error Error: Command failed: npm run test
+31 error npm ERR! code ELIFECYCLE
+31 error npm ERR! errno 1
+31 error npm ERR! @benzed/schema@0.2.0 test: `mocha --opts .mocha.opts`
+31 error npm ERR! Exit status 1
+31 error npm ERR!
+31 error npm ERR! Failed at the @benzed/schema@0.2.0 test script.
+31 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+31 error
+31 error npm ERR! A complete log of this run can be found in:
+31 error npm ERR!     /Users/global/.npm/_logs/2018-04-30T19_53_21_173Z-debug.log
+31 error
+31 error > @benzed/schema@0.2.0 test /Users/global/Programming/benzed-mono/packages/schema
+31 error > mocha --opts .mocha.opts
+31 error
+31 error [3J[H[2J[3J
+31 error
+31 error   type()
+31 error     Number
+31 error       ✓ returns error if value can not be casted to type
+31 error       casts to type if possible
+31 error         ✓ 123 >> 123
+31 error     Boolean
+31 error       1) returns error if value can not be casted to type
+31 error
+31 error
+31 error   2 passing (37ms)
+31 error   1 failing
+31 error
+31 error   1) type()
+31 error        Boolean
+31 error          returns error if value can not be casted to type:
+31 error      AssertionError: expected undefined to be an instance of Error
+31 error       at Context.it (src/validators/type.test.js:35:9)
+31 error
+31 error
+31 error
+31 error
+31 error     at Promise.all.then.arr (/Users/global/Programming/benzed-mono/node_modules/execa/index.js:236:11)
+31 error     at <anonymous>

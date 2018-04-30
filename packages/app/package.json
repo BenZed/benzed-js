@@ -36,8 +36,10 @@
     "@feathersjs/socketio": "^3.2.1",
     "compress": "^0.99.0",
     "cors": "^2.8.4",
+    "feathers-memory": "^2.1.1",
     "fs-extra": "^5.0.0",
     "is-explicit": "^1.4.1",
+    "save-dev": "^2.0.0",
     "uws": "^9.148.0"
   }
 }

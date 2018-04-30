@@ -24,12 +24,12 @@ function dummyHook (name) {
   return () => console.log(name, 'hook not yet implemented')
 }
 
-function setupLiveEdit () {
-  console.log('set up live edit')
+function setupLiveEdit (config) {
+  console.log('set up live edit', config)
 }
 
-function setupVersions () {
-  console.log('set up live edit')
+function setupVersions (config) {
+  console.log('set up live edit', config)
 }
 
 /******************************************************************************/
@@ -46,9 +46,9 @@ function validateConfig (config) {
 
   // TODO
   // check for versions config
-  // check for liveedit config
-  // check for softdelete config
-  // check for requiresAuth flag
+  // check for live-edit config
+  // check for soft-delete config
+  // check for requires-auth flag
 
   return config
 }
@@ -117,10 +117,10 @@ function Service (config) {
     service.hooks(hooks)
 
     if (versions)
-      service::setupVersions()
+      service::setupVersions(versions)
 
     if (liveEdit)
-      service::setupLiveEdit()
+      service::setupLiveEdit(liveEdit)
 
     return service
   }

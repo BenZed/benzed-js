@@ -1,7 +1,8 @@
 import is from 'is-explicit'
-import { ValidationError, SELF } from './util'
+import { ValidationError, SELF, ARRAY } from './util'
 
 import { copy, push } from '@benzed/immutable'
+import { wrap, unwrap } from '@benzed/array'
 
 /******************************************************************************/
 // Helper
@@ -28,6 +29,10 @@ function validateObject (fobj, data, context, skipSelf) {
     else
       data = result
   }
+
+  const shouldBeArray = context[ARRAY]
+
+  let datas = wrap(data)
 
   if (is.plainObject(data)) for (const key in fobj) {
 

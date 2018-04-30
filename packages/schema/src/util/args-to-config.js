@@ -1,11 +1,53 @@
 import is from 'is-explicit'
+import validate from '../validate'
 import { pluck } from '@benzed/array'
+import { SELF, ARRAY } from './symbols'
+
+/******************************************************************************/
+// Validate Layout
+/******************************************************************************/
+
+const arrayOfPlainObjects = (value, context) => {
+
+  context[ARRAY] = true
+
+  return !is(value, Array) || !value.every(a => is.plainObject(a))
+    ? new Error('argsToConfig expects be an array of plain objects')
+    : value
+}
+
+const log = (value, context) => console.log(value, context) || value
+
+const defaultOne = value =>
+  !is(value)
+    ? 1
+    : value
+
+const trueToInfinite = value =>
+  value === true
+    ? Infinity
+    : !is(value, Number) || value <= 0
+      ? new Error('count must be true or a positive number')
+      : value
+
+const nonEmptyString = value =>
+  !is(value, String) || value.length === 0
+    ? new Error('must be a non-empty string')
+    : value
+
+const layoutValidateFuncs = {
+  [SELF]: [ arrayOfPlainObjects, log ],
+  name: [ nonEmptyString, log ],
+  count: [ defaultOne, trueToInfinite ]
+}
 
 /******************************************************************************/
 // Move
 /******************************************************************************/
 
 function argsToConfig (layout) {
+
+  layout = validate(layoutValidateFuncs, layout, { path: [] })
 
   return args => {
 
@@ -14,7 +56,7 @@ function argsToConfig (layout) {
     if (args.length === 1 && is.plainObject(args[0]))
       config = args[0]
 
-    else for (const key in layout) {
+    else if (is.plainObject(layout)) for (const key in layout) {
 
       const { type, only = Infinity } = layout[key]
 

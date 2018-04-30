@@ -3,7 +3,7 @@ import argsToConfig from './args-to-config'
 import ValidationError from './validation-error'
 import normalizeDefinition from './normalize-definition'
 
-import { SELF, ZERO_CONFIG } from './symbols'
+import { SELF, ARRAY, ZERO_CONFIG } from './symbols'
 
 /******************************************************************************/
 // Exports
@@ -16,6 +16,7 @@ export {
   argsToConfig,
 
   SELF,
+  ARRAY,
   ZERO_CONFIG
 
 }

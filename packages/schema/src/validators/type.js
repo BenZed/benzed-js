@@ -6,24 +6,24 @@ import { argsToConfig } from '../util'
 // Helper
 /******************************************************************************/
 
-const argsToTypeConfig = argsToConfig({
-
-  err: {
-    type: String,
-    only: 1,
-    default: config => `Must be of type: ${config.types.map(t => t.name)}`
-  },
-
-  types: {
-    type: Function
-  },
-
-  cast: {
-    type: [Function, Boolean],
-    default: true
-  }
-
-})
+// const argsToTypeConfig = argsToConfig({
+//
+//   err: {
+//     type: String,
+//     only: 1,
+//     default: config => `Must be of type: ${config.types.map(t => t.name)}`
+//   },
+//
+//   types: {
+//     type: Function
+//   },
+//
+//   cast: {
+//     type: [Function, Boolean],
+//     default: true
+//   }
+//
+// })
 
 function cast (types) {
 
@@ -52,7 +52,7 @@ function typeChecker (...args) {
 
   const is = this
 
-  const config = argsToTypeConfig(args)
+  // const config = argsToTypeConfig(args)
 
   if (config.cast && !is(config.cast, Function))
     config.cast = cast(config.types)
