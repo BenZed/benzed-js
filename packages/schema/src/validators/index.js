@@ -1,8 +1,12 @@
-import type from './type'
 import required from './required'
+import type, { bool, string, number, object, func } from './types'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { type, required }
+export {
+  required,
+  type, bool, string, number,
+  object, func
+}

@@ -1,6 +1,6 @@
 import Schema from './schema'
 
-import { SKIP, SELF } from './util'
+import { SELF } from './util'
 
 import * as validators from './validators'
 
@@ -23,7 +23,6 @@ export {
 
   validators,
 
-  SKIP,
   SELF,
   SELF as $
 

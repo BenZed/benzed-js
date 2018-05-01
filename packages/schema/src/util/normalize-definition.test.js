@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import normalizeDefinition from './normalize-definition'
 
 import { inspect } from '@benzed/dev'
-import { ZERO_CONFIG, SELF } from './symbols'
+import { OPTIONAL_CONFIG, SELF } from './symbols'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -63,7 +63,7 @@ describe('normalizeDefinition', () => {
 
     })
 
-    it('resolves ZERO_CONFIG functions', () => {
+    it('resolves OPTIONAL_CONFIG functions', () => {
 
       const disallowNullValidator = msg =>
         value =>
@@ -71,7 +71,7 @@ describe('normalizeDefinition', () => {
             ? new Error(msg || 'null is disallowed')
             : value
 
-      disallowNullValidator[ZERO_CONFIG] = true
+      disallowNullValidator[OPTIONAL_CONFIG] = true
 
       const [ normalized ] = normalizeDefinition(disallowNullValidator)
       expect(normalized).not.be.equal(disallowNullValidator)
@@ -80,13 +80,13 @@ describe('normalizeDefinition', () => {
       expect(err).to.have.property('message', 'null is disallowed')
     })
 
-    it('throws of ZERO_CONFIG does not return a function', () => {
+    it('throws of OPTIONAL_CONFIG does not return a function', () => {
       const incorrectlyMadeValidator = value => Symbol('see-what-you-done-is-fucked-up')
-      incorrectlyMadeValidator[ZERO_CONFIG] = true
+      incorrectlyMadeValidator[OPTIONAL_CONFIG] = true
 
       expect(() => normalizeDefinition([ incorrectlyMadeValidator ]))
         .to
-        .throw('ZERO_CONFIG enabled must return a function')
+        .throw('OPTIONAL_CONFIG enabled must return a function')
     })
 
     it('normalizes sub definitions on objects', () => {

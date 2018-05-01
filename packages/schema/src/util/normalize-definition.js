@@ -1,5 +1,5 @@
 import is from 'is-explicit'
-import { SELF, ZERO_CONFIG } from './symbols'
+import { SELF, OPTIONAL_CONFIG } from './symbols'
 
 /******************************************************************************/
 // Helper
@@ -39,10 +39,10 @@ function normalizeDefinition (def) {
 
   if (isArray) for (let i = 0; i < def.length; i++) {
     const func = def[i]
-    if (func[ZERO_CONFIG]) {
+    if (func[OPTIONAL_CONFIG]) {
       const result = func()
       if (!is(result, Function))
-        throw new Error('validators with ZERO_CONFIG enabled must return a function')
+        throw new Error('validators with OPTIONAL_CONFIG enabled must return a function')
 
       def[i] = func()
     }

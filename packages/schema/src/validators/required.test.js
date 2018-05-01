@@ -42,14 +42,6 @@ describe('required() stock validator', () => {
       expect(() => required({ err: 'Error.' })).to.not.throw(Error)
     })
 
-    it('throws otherwise', () => {
-      for (const bad of [true, false, 0, -1, Symbol(''), []])
-        expect(() => required(bad)).to.throw('must be given a string or object')
-
-      for (const bad of ['', true, false, 0, -1, Symbol(''), []])
-        expect(() => required({ err: bad })).to.throw('must be a non-empty string')
-    })
-
   })
 
   describe('in schema', () => {
@@ -75,7 +67,5 @@ describe('required() stock validator', () => {
       expect(() => schema({ name: 'Ben', age: 33 })).to.not.throw()
 
     })
-
   })
-
 })

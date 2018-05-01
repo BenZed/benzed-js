@@ -1,7 +1,7 @@
 import is from 'is-explicit'
 import validate from '../validate'
-import { pluck } from '@benzed/array'
-import { SELF, ARRAY } from './symbols'
+import { pluck, wrap, unwrap } from '@benzed/array'
+import { SELF } from './symbols'
 
 /******************************************************************************/
 // Validate Layout
@@ -9,14 +9,17 @@ import { SELF, ARRAY } from './symbols'
 
 const arrayOfPlainObjects = (value, context) => {
 
-  context[ARRAY] = true
+  value = wrap(value)
 
-  return !is(value, Array) || !value.every(a => is.plainObject(a))
+  return value.length === 0 || !value.every(a => is.plainObject(a))
     ? new Error('argsToConfig expects be an array of plain objects')
     : value
 }
 
-const log = (value, context) => console.log(value, context) || value
+const log = (value, context) => {
+  // console.log(value, context)
+  return value
+}
 
 const defaultOne = value =>
   !is(value)
@@ -27,7 +30,7 @@ const trueToInfinite = value =>
   value === true
     ? Infinity
     : !is(value, Number) || value <= 0
-      ? new Error('count must be true or a positive number')
+      ? new Error('must be true or a positive number')
       : value
 
 const nonEmptyString = value =>
@@ -35,50 +38,77 @@ const nonEmptyString = value =>
     ? new Error('must be a non-empty string')
     : value
 
+const isFunctionOrArrayOf = value =>
+  !is(value, Function) && !is.arrayOf(value, Function)
+    ? new Error('must be a function or an array of functions')
+    : wrap(value)
+
+const allPass = value => value
+
+const toBool = value => !!value
+
+const defaultsToAllPass = value => !is(value) ? allPass : value
+
 const layoutValidateFuncs = {
+
   [SELF]: [ arrayOfPlainObjects, log ],
+
   name: [ nonEmptyString, log ],
-  count: [ defaultOne, trueToInfinite ]
+  count: [ defaultOne, trueToInfinite ],
+  type: [ isFunctionOrArrayOf ],
+
+  validate: [ defaultsToAllPass, isFunctionOrArrayOf ],
+  default: [ allPass ],
+  required: [ toBool ]
 }
 
 /******************************************************************************/
 // Move
 /******************************************************************************/
 
-function argsToConfig (layout) {
+function argsToConfig (layouts) {
 
-  layout = validate(layoutValidateFuncs, layout, { path: [] })
+  layouts = validate(layoutValidateFuncs, layouts, { path: [] })
 
   return args => {
 
     let config = {}
 
+    args = [ ...wrap(args) ]
+
     if (args.length === 1 && is.plainObject(args[0]))
-      config = args[0]
+      config = { ...args[0] }
 
-    else if (is.plainObject(layout)) for (const key in layout) {
+    else for (const layout of layouts) {
+      const { name, count, type: Types } = layout
+      const found = args::pluck(arg => is(arg, ...Types), count)
 
-      const { type, only = Infinity } = layout[key]
-
-      const types = is(type, Array) ? type : [ type ]
-
-      config[key] = pluck(args, v => is(v, ...types), only)
-
-      if (only === 1)
-        config[key] = config[key][0]
+      if (found.length > 0)
+        config[name] = count === 1 ? unwrap(found) : found
     }
 
     if (!is.plainObject(config))
       throw new Error('Invalid type config.')
 
-    for (const key in layout) {
-      const { default: def } = layout[key]
+    // Set defaults and ensure required
+    for (const layout of layouts) {
+      const { name, default: _default, type, required, validate: validateFuncs } = layout
 
-      if (def !== undefined && config[key] === undefined)
-        config[key] = typeof def === 'function'
-          ? def(config)
-          : def
+      if (config[name] === undefined && _default !== undefined)
+        config[name] = _default
+
+      if (validate !== undefined)
+        config[name] = validate(validateFuncs, config[name], { path: [] })
+
+      if (config[name] === undefined && required)
+        throw new Error(`config requires ${type.map(t => t.name).join(' or ')} '${name}' property.`)
+
     }
+
+    // Remove keys that arn't supposed to be in config
+    for (const key in config)
+      if (!layouts.some(layout => layout.name === key))
+        delete config[key]
 
     return config
   }

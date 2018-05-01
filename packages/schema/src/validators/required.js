@@ -1,48 +1,35 @@
-import { ZERO_CONFIG, SELF } from '../util'
-import Schema from '../Schema'
+import { argsToConfig, OPTIONAL_CONFIG } from '../util'
 import is from 'is-explicit'
 
 /******************************************************************************/
 // Config
 /******************************************************************************/
 
-const cast = config => {
-
-  if (!is(config))
-    config = 'is Required.'
-
-  if (is(config, String))
-    config = { err: config }
-
-  if (!is.plainObject(config))
-    return new Error('required validator must be given a string or object')
-
-  return config
-}
-
-const errString = err => is(err, String) && err.length > 0
+const nonEmpty = err => is(err, String) && err.length > 0
   ? err
   : new Error('must be a non-empty string.')
 
-const validateConfig = Schema({
-  [SELF]: cast,
-  err: errString
+const configRequired = argsToConfig({
+  name: 'err',
+  type: String,
+  default: 'is Required.',
+  validate: nonEmpty
 })
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function required (config) {
+function required (...args) {
 
-  config = validateConfig(config)
+  const { err } = configRequired(args)
 
-  return value => is(value)
+  return (value, ctx) => is(value)
     ? value
-    : new Error(config.err)
+    : new Error(err)
 }
 
-required[ZERO_CONFIG] = true
+required[OPTIONAL_CONFIG] = true
 
 /******************************************************************************/
 // Exports

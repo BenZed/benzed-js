@@ -2,16 +2,14 @@
 // Symbols
 /******************************************************************************/
 
-const SELF = Symbol('self-validators')
+const DEFINITION = Symbol('definition-used-by-this-validator')
 
-const ARRAY = Symbol('validate-items-inside-array')
+const SELF = Symbol('validators-called-on-object-before-its-properties')
 
-const ZERO_CONFIG = Symbol('this-validator-does-not-require-config')
-
-const DEFINITION = Symbol('definition')
+const OPTIONAL_CONFIG = Symbol('this-validator-does-not-require-config')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { SELF, ARRAY, ZERO_CONFIG, DEFINITION }
+export { SELF, OPTIONAL_CONFIG, DEFINITION }
