@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import type, { string, number, bool } from './types'
+import type, { string, number, bool, arrayOf, oneOfType } from './types'
 
 import { OPTIONAL_CONFIG } from '../util/symbols'
 
@@ -9,7 +9,7 @@ import { OPTIONAL_CONFIG } from '../util/symbols'
 
 describe('stock type validators', () => {
 
-  describe('type()', () => {
+  describe('instanceOf() || typeOf()', () => {
 
     function Foo () {}
 
@@ -24,6 +24,7 @@ describe('stock type validators', () => {
 
     it('returns the value, otherwise', () => {
       const value = new Foo()
+
       expect(foo(value))
         .to
         .equal(value)
@@ -56,27 +57,17 @@ describe('stock type validators', () => {
           .to.be.instanceof(Foo)
       })
 
-      it('if configured as an object, can use multiple types', () => {
+    })
 
-        const customFooOrString = type({
-          types: [Foo, String],
-          err: 'Gotta be a Foo or a String, bro.',
-          cast: value => value === true ? new Foo() : value === false ? 'false' : null
-        })
+    describe('can compose other type functions', () => {
 
-        const foo = new Foo()
-        expect(customFooOrString(foo)).to.be.equal(foo)
+      it('type functions can be used as types', () => {
 
-        const str = 'string'
-        expect(customFooOrString(str)).to.be.equal(str)
+        const nestedBool = type(bool)
 
-        const t = true
-        expect(customFooOrString(t)).to.be.instanceof(Foo)
+        expect(nestedBool(true))
+          .to.be.equal(true)
 
-        const f = false
-        expect(customFooOrString(f)).to.be.equal('false')
-
-        expect(customFooOrString(1000)).to.have.property('message', 'Gotta be a Foo or a String, bro.')
       })
 
     })
@@ -318,5 +309,110 @@ describe('stock type validators', () => {
 
       })
     })
+  })
+
+  describe('arrayOf()', () => {
+
+    const arrayOfNumber = arrayOf(Number)
+
+    const arrayOfBool = arrayOf(bool)
+
+    it('returns an error if value cannot be cast to an Array of type', () => {
+      expect(arrayOfNumber([ 1, 2, 3, 'nerd' ]))
+        .to.have.property('message', 'Must be an Array of Numbers')
+    })
+
+    it('returns input, otherwise', () => {
+      expect(arrayOfNumber([ 1, 2, 3 ]))
+        .to.be.deep.equal([ 1, 2, 3 ])
+    })
+
+    it('casts input to array', () => {
+      expect(arrayOfNumber(1))
+        .to.deep.equal([1])
+    })
+
+    it('can take other type functions', () => {
+      expect(arrayOfBool([ true, false ]))
+        .to.deep.equal([ true, false ])
+    })
+
+    it('type functions throw proper default errors', () => {
+      expect(arrayOfBool([ 100 ]))
+        .to.have.property('message', 'Must be an Array of Booleans')
+    })
+
+    it('uses cast functions defined by other type functions', () => {
+
+      const arrayOfNum = arrayOf(number)
+      expect(arrayOfNum([ '0', '1', '2' ]))
+        .to.deep.equal([ 0, 1, 2 ])
+
+      const arrayOfBoolOrNumber = arrayOf(oneOfType(bool, number))
+
+      expect(arrayOfBoolOrNumber(['0', 'true']))
+        .to.deep.equal([0, true])
+
+    })
+
+    it('cast function in config overrides type cast functions, if provided', () => {
+
+      const cast = value => value === 'ONE THOUSAND' ? 1000 : value
+
+      const arrayOfNumber = arrayOf(number, cast)
+
+      expect(arrayOfNumber('ONE THOUSAND'))
+        .to.deep.equal([ 1000 ])
+
+    })
+
+  })
+
+  describe('oneOfType()', () => {
+
+    const isBoolOrNumber = oneOfType(Boolean, Number)
+
+    it('returns an error if input is not one of many types', () => {
+      expect(isBoolOrNumber('lol'))
+        .to.have.property('message', 'Must be one of type: Boolean or Number')
+    })
+
+    it('returns value otherwise', () => {
+      expect(isBoolOrNumber(100))
+        .to.equal(100)
+
+      expect(isBoolOrNumber(true))
+        .to.equal(true)
+    })
+
+    describe('takes a config', () => {
+      const err = 'That\'s not a boolean or a number.'
+      it('err string', () => {
+        const boolOrNumWithError = oneOfType(Boolean, Number, err)
+        expect(boolOrNumWithError(NaN))
+          .to.have.property('message', err)
+      })
+    })
+
+    it('can be nested with other type functions', () => {
+
+      const stringOrArrayOf = oneOfType(String, arrayOf(String))
+
+      expect(stringOrArrayOf('str'))
+        .to.be.equal('str')
+
+      expect(stringOrArrayOf(['str']))
+        .to.deep.equal(['str'])
+
+      expect(stringOrArrayOf([ 0 ]))
+        .to.have.property('message', 'Must be one of type: String or Array of Strings')
+
+      const arrayOfBoolsOrArrayOfNums = oneOfType(arrayOf(bool), arrayOf(number))
+
+      expect(arrayOfBoolsOrArrayOfNums('no friggen way skin'))
+        .to.have.property('message', 'Must be one of type: Array of Booleans or Array of Numbers')
+
+    })
+
   })
 })

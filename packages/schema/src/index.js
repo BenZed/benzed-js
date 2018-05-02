@@ -1,15 +1,14 @@
 import Schema from './schema'
 
-import { SELF } from './util'
+import {
+  required,
+  type, bool, string, number,
+  object, func
+} from './validators'
 
-import * as validators from './validators'
-
-/******************************************************************************/
-// Extend
-/******************************************************************************/
-
-for (const key in validators)
-  Schema[key] = validators[key]
+import {
+  SELF, OPTIONAL_CONFIG
+} from './util'
 
 /******************************************************************************/
 // Exports
@@ -21,8 +20,16 @@ export {
 
   Schema,
 
-  validators,
+  required,
 
+  type,
+  bool,
+  string,
+  number,
+  object,
+  func,
+
+  OPTIONAL_CONFIG,
   SELF,
   SELF as $
 
