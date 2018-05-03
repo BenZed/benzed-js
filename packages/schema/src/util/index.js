@@ -1,9 +1,19 @@
 
+import reduceValidator from './reduce-validator'
 import argsToConfig from './args-to-config'
-import ValidationError from './validation-error'
-import normalizeDefinition from './normalize-definition'
 
-import { SELF, OPTIONAL_CONFIG } from './symbols'
+import ValidationError from './validation-error'
+import Context from './context'
+
+import {
+
+  SELF,
+  DEFINITION,
+  TYPE_TEST_ONLY,
+  OPTIONAL_CONFIG,
+  TYPE
+
+} from './symbols'
 
 /******************************************************************************/
 // Exports
@@ -11,11 +21,16 @@ import { SELF, OPTIONAL_CONFIG } from './symbols'
 
 export {
 
-  normalizeDefinition,
-  ValidationError,
+  reduceValidator,
   argsToConfig,
 
+  ValidationError,
+  Context,
+
   SELF,
-  OPTIONAL_CONFIG
+  DEFINITION,
+  TYPE_TEST_ONLY,
+  OPTIONAL_CONFIG,
+  TYPE
 
 }

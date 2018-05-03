@@ -11,7 +11,7 @@ import Schema from '../schema'
 
 describe('required() stock validator', () => {
 
-  const r = required()
+  // const r = required()
 
   describe('returns error if input is undefined, null or NaN', () => {
 

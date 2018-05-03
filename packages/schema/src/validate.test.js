@@ -1,10 +1,11 @@
 import { expect } from 'chai'
 
-import { validate, createContext } from './validate'
-import normalizeDefinition from './util/normalize-definition'
+import { validate } from './validate'
+// import normalizeDefinition from './util/normalize-definition'
 
 import { SELF } from './util/symbols'
 import ValidationError from './util/validation-error'
+import Context from './util/context'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -30,7 +31,7 @@ const fakeDelay = value => new Promise(resolve => setTimeout(() => resolve(value
 function run (func, data, ...args) {
 
   const funcs = normalizeDefinition(func)
-  const context = createContext(data, args, [])
+  const context = new Context(data, args, [])
 
   return validate(funcs, data, context)
 }

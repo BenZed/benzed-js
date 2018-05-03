@@ -3,7 +3,7 @@
 // Main
 /******************************************************************************/
 
-function oneOfType () {
+function any () {
 
 }
 
@@ -11,4 +11,4 @@ function oneOfType () {
 // Exports
 /******************************************************************************/
 
-export default oneOfType
+export default any

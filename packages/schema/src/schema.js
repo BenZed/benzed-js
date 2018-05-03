@@ -1,31 +1,13 @@
 import is from 'is-explicit'
 
-import { normalizeDefinition } from './util'
+import { Context, reduceValidator, TYPE } from './util'
 
 import { copy } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 
-import { validate, createContext } from './validate'
+import { normalizeValidator } from './types/object'
 
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-function wrapValidator (def, path) {
-
-  const validator = (data, ...args) => {
-    const context = createContext(data, args, path)
-    return validate(def, copy(data), context)
-  }
-
-  // Extend vadidator to have sub validators for each sub property
-  if (is.plainObject(def))
-    for (const key in def)
-      validator[key in validator ? '_' + key : key] = wrapValidator(def[key], [ ...path, key ])
-
-  return validator
-
-}
+import validate from './validate'
 
 /******************************************************************************/
 // Interface
@@ -38,9 +20,14 @@ function Schema (raw, path) {
 
   path = path ? wrap(path) : []
 
-  const normalized = normalizeDefinition(raw)
+  const normalized = normalizeValidator(raw)
 
-  return wrapValidator(normalized, path)
+  return function validator (data, ...args) {
+
+    const context = new Context(data, args, path)
+
+    return validate(normalized, copy(data), context)
+  }
 
 }
 

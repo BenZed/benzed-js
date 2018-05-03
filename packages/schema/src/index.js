@@ -1,10 +1,13 @@
 import Schema from './schema'
 
 import {
-  required,
-  type, bool, string, number,
-  object, func
+  required
 } from './validators'
+
+import {
+  type, bool, string, number, object, func, array,
+  arrayOf, typeOf, oneOfType
+} from './types'
 
 import {
   SELF, OPTIONAL_CONFIG
@@ -22,12 +25,8 @@ export {
 
   required,
 
-  type,
-  bool,
-  string,
-  number,
-  object,
-  func,
+  type, bool, string, number, object, func, array,
+  arrayOf, typeOf, oneOfType,
 
   OPTIONAL_CONFIG,
   SELF,

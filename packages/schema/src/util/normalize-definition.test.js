@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import normalizeDefinition from './normalize-definition'
+// import normalizeDefinition from './normalize-definition'
 
 import { inspect } from '@benzed/dev'
 import { OPTIONAL_CONFIG, SELF } from './symbols'
@@ -7,7 +7,7 @@ import { OPTIONAL_CONFIG, SELF } from './symbols'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('normalizeDefinition', () => {
+describe.skip('normalizeDefinition', () => {
 
   describe('input', () => {
 

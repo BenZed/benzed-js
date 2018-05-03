@@ -1,65 +1,49 @@
 import is from 'is-explicit'
-import validate from '../validate'
+
 import { pluck, wrap, unwrap } from '@benzed/array'
-import { SELF } from './symbols'
+
+import validate from '../validate'
+import reduceValidator from './reduce-validator'
 
 /******************************************************************************/
 // Validate Layout
 /******************************************************************************/
 
-const arrayOfPlainObjects = (value, context) => {
-
-  value = wrap(value)
-
-  return value.length === 0 || !value.every(a => is.plainObject(a))
-    ? new Error('argsToConfig expects be an array of plain objects')
-    : value
-}
-
-const log = (value, context) => {
-  // console.log(value, context)
-  return value
-}
-
-const defaultOne = value =>
-  !is(value)
-    ? 1
-    : value
-
-const trueToInfinite = value =>
-  value === true
-    ? Infinity
-    : !is(value, Number) || value <= 0
-      ? new Error('must be true or a positive number')
-      : value
-
-const nonEmptyString = value =>
-  !is(value, String) || value.length === 0
-    ? new Error('must be a non-empty string')
-    : value
-
-const isFunctionOrArrayOf = value =>
-  !is(value, Function) && !is.arrayOf(value, Function)
-    ? new Error('must be a function or an array of functions')
-    : wrap(value)
+// Be nice to actually use type validators for this, unfortunately they all depend
+// on this function.
 
 const allPass = value => value
 
-const toBool = value => !!value
+function checkLayouts (layouts) {
 
-const defaultsToAllPass = value => !is(value) ? allPass : value
+  layouts = wrap(layouts)
 
-const layoutValidateFuncs = {
+  for (const layout of layouts) {
 
-  [SELF]: [ arrayOfPlainObjects, log ],
+    if (!is.plainObject(layout))
+      throw new Error('argsToConfig expects an array of plain objects as layouts')
 
-  name: [ nonEmptyString, log ],
-  count: [ defaultOne, trueToInfinite ],
-  type: [ isFunctionOrArrayOf ],
+    if (!is(layout.name, String) || layout.name.length === 0)
+      throw new Error('layout.name needs to be a non empty string')
 
-  validate: [ defaultsToAllPass, isFunctionOrArrayOf ],
-  default: [ allPass ],
-  required: [ toBool ]
+    if (!is(layout.count, Number))
+      layout.count = 1
+
+    layout.required = !!layout.required
+
+    layout.type = layout.type ? wrap(layout.type) : []
+    if (!is.arrayOf(layout.type, Function))
+      throw new Error('layout.type needs to be an array of Functions')
+
+    layout.validate = layout.validate ? wrap(layout.validate) : [ allPass ]
+    if (!is.arrayOf(layout.validate, Function))
+      throw new Error('layout.validate needs to be an array of Functions')
+
+    layout.validate = layout.validate.map(reduceValidator)
+
+  }
+
+  return layouts
 }
 
 /******************************************************************************/
@@ -68,7 +52,7 @@ const layoutValidateFuncs = {
 
 function argsToConfig (layouts) {
 
-  layouts = validate(layoutValidateFuncs, layouts, { path: [] })
+  layouts = checkLayouts(layouts)
 
   return args => {
 
@@ -81,6 +65,7 @@ function argsToConfig (layouts) {
 
     else for (const layout of layouts) {
       const { name, count, type: Types } = layout
+
       const found = args::pluck(arg => is(arg, ...Types), count)
 
       if (found.length > 0)
@@ -97,7 +82,7 @@ function argsToConfig (layouts) {
       if (config[name] === undefined && _default !== undefined)
         config[name] = _default
 
-      if (validate !== undefined)
+      if (validateFuncs !== undefined)
         config[name] = validate(validateFuncs, config[name], { path: [] })
 
       if (config[name] === undefined && required)

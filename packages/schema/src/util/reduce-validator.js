@@ -1,23 +1,23 @@
-import { wrap } from '@benzed/array'
+import is from 'is-explicit'
+import { OPTIONAL_CONFIG } from './symbols'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-class ValidationError extends Error {
+function reduceValidator (validator) {
 
-  constructor (path, msg = 'Validation failed.') {
-    path = wrap(path || '<input>')
+  while (OPTIONAL_CONFIG in validator) {
+    validator = validator()
 
-    super(`${path.join('.')} ${msg}`)
-    this.name = 'ValidationError'
-    this.path = path
+    if (!is(validator, Function))
+      throw new Error('validators with OPTIONAL_CONFIG enabled must return a function')
   }
 
+  return validator
 }
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default ValidationError
+export default reduceValidator
