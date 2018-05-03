@@ -1,7 +1,7 @@
 import { wrap } from '@benzed/array'
+import normalizeValidator from '../util/normalize-validator'
 import {
 
-  reduceValidator,
   TYPE, TYPE_TEST_ONLY
 
 } from '../util'
@@ -14,14 +14,14 @@ import { typeConfig, isType, castToType, getTypeName } from './type-of'
 
 function arrayOf (...args) {
 
-  const config = typeConfig(args)
+  const config = typeConfig(args, 'arrayOf')
   const { err, cast } = config
 
   // Because arrayOf can use other type functions, this is an elegant way
   // to reduce methods that have OPTIONAL_CONFIG enabled
-  const Type = reduceValidator(config.type)
+  const Type = normalizeValidator(config.type)
 
-  const typeName = `Array of ${getTypeName(Type)}s`
+  const typeName = `Array of ${getTypeName(Type)}`
 
   const arrayOf = (array, context) => {
 

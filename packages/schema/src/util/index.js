@@ -1,4 +1,5 @@
 
+import normalizeValidator from './normalize-validator'
 import reduceValidator from './reduce-validator'
 import argsToConfig from './args-to-config'
 
@@ -7,7 +8,6 @@ import Context from './context'
 
 import {
 
-  SELF,
   DEFINITION,
   TYPE_TEST_ONLY,
   OPTIONAL_CONFIG,
@@ -21,13 +21,13 @@ import {
 
 export {
 
+  normalizeValidator,
   reduceValidator,
   argsToConfig,
 
   ValidationError,
   Context,
 
-  SELF,
   DEFINITION,
   TYPE_TEST_ONLY,
   OPTIONAL_CONFIG,

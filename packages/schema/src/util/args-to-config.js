@@ -50,11 +50,11 @@ function checkLayouts (layouts) {
 // Move
 /******************************************************************************/
 
-function argsToConfig (layouts) {
+function argsToConfig (layouts, masterErrName = 'validator') {
 
   layouts = checkLayouts(layouts)
 
-  return args => {
+  return (args, errName = masterErrName) => {
 
     let config = {}
 
@@ -73,11 +73,11 @@ function argsToConfig (layouts) {
     }
 
     if (!is.plainObject(config))
-      throw new Error('Invalid type config.')
+      throw new Error(`${errName} config could not be converted to object`)
 
     // Set defaults and ensure required
     for (const layout of layouts) {
-      const { name, default: _default, type, required, validate: validateFuncs } = layout
+      const { name, default: _default, type, required, count, validate: validateFuncs } = layout
 
       if (config[name] === undefined && _default !== undefined)
         config[name] = _default
@@ -85,8 +85,11 @@ function argsToConfig (layouts) {
       if (validateFuncs !== undefined)
         config[name] = validate(validateFuncs, config[name], { path: [] })
 
+      if (count > 1)
+        config[name] = config[name] === undefined ? [] : wrap(config[name])
+
       if (config[name] === undefined && required)
-        throw new Error(`config requires ${type.map(t => t.name).join(' or ')} '${name}' property.`)
+        throw new Error(`${errName} config requires ${type.map(t => t.name).join(' or ')} '${name}' property.`)
 
     }
 

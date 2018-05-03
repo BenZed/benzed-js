@@ -3,7 +3,7 @@ import Schema from './schema'
 
 import { DEFINITION } from './util'
 
-import { typeOf, string, object, number } from './types'
+import { typeOf, string, object, number, arrayOf, oneOfType } from './types'
 import { required } from './validators'
 
 /******************************************************************************/
@@ -15,84 +15,46 @@ import { required } from './validators'
 
 describe.only('Schema', () => {
 
-  // it('returns a validator', () => {
-  //   const schema = Schema([ value => value ])
-  //   expect(typeof schema).to.be.equal('function')
-  // })
+  describe('takes definition argument', () => {
 
-  describe.skip('usage', () => {
-    //
-    // it('creates validators that run methods on data')
-    //
-    // it('does not mutate input data', () => {
-    //
-    //   // Type
-    //   class Foo {
-    //     constructor (bar = 0) {
-    //       this.bar = bar
-    //     }
-    //     copy () {
-    //       return new Foo(this.bar)
-    //     }
-    //     equals (b) {
-    //       return b instanceof Foo && b.bar === this.bar
-    //     }
-    //   }
-    //
-    //   // Validtors
-    //   const cantBeZero = value => value.bar === 0
-    //     ? new Error('Can\'t be zero.')
-    //     : value
-    //
-    //   const absolute = value => new Foo(Math.abs(value.bar))
-    //
-    //   // Schema
-    //
-    //   const foo = new Schema([ typeOf(Foo), cantBeZero, absolute ])
-    //
-    //   // Tests
-    //
-    //   const input = new Foo(1)
-    //   const output = foo(input)
-    //
-    //   expect(output).to.not.equal(input)
-    //   expect(foo(new Foo(-1))).to.be.deep.equal({ bar: 1 })
-    //   expect(() => foo(new Foo(0))).to.throw('Can\'t be zero.')
-    //
-    // })
-    //
-    // it('definition is stored in symbolic DEFINITION property', () => {
-    //
-    //   const simpleString = new Schema(string)
-    //
-    //   expect(simpleString).to.have.property(DEFINITION)
-    //   expect(simpleString[DEFINITION]).to.be.instanceof(Array)
-    //
-    // })
+    it('can be a type function', () => {
+      expect(() => Schema(string)).to.not.throw()
+    })
 
-  })
+    it('can be a plain object', () => {
 
-  describe.only('syntax', () => {
-
-    it('describing an object', () => {
-
-      const length = l => v => v && v.length <= l
-        ? new Error(`length must be at least ${l}`)
-        : v
-
-      const name = Schema(string(required, length(10)), 'name')
-
-      const author = Schema({
-        name: string(required),
-
-        metadata: object({
-          name: string,
-          files: number
-        }, required)
-      })
+      expect(() => Schema({
+        name: string,
+        age: number
+      })).to.not.throw()
 
     })
 
+    it('can be an array', () => {
+
+      expect(() => Schema([number])).to.not.throw()
+
+    })
+
+    it('can be a type function', () => {
+
+      expect(() => Schema(oneOfType(number, string))).to.not.throw()
+
+    })
+
+    it('throws otherwise', () => {
+      for (const badValue of [ 0, 1, Symbol('cake') ])
+        expect(() => Schema(badValue)).to.throw('validators must be defined as arrays, objects or functions')
+
+      for (const almostValue of [ required, () => {} ])
+        expect(() => Schema(almostValue)).to.throw('Schema must be defined with a type function, or an array or plain object thereof')
+    })
+
+  })
+
+  it('returns a validator', () => {
+    const schema = Schema(string)
+    expect(typeof schema).to.be.equal('function')
   })
 
 })

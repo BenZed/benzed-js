@@ -1,5 +1,5 @@
 import {
-  argsToConfig, reduceValidator,
+  argsToConfig, normalizeValidator,
   TYPE, TYPE_TEST_ONLY
 
 } from '../util'
@@ -19,6 +19,11 @@ const multiTypeConfig = argsToConfig([
   {
     name: 'err',
     type: String
+  },
+  {
+    name: 'validators',
+    type: Function,
+    count: Infinity
   },
   {
     name: 'cast',
@@ -68,11 +73,11 @@ function oneOfType (...args) {
 
   // Because arrayOf can use other type functions, this is an elegant way
   // to reduce methods that have OPTIONAL_CONFIG enabled
-  const types = config.types.map(reduceValidator)
+  const types = config.types.map(normalizeValidator)
 
-  const typeNames = `one of type: ${getTypeName(types)}`
+  const typeNames = `either: ${getTypeName(types)}`
 
-  const func = (value, context) => {
+  const oneOfType = (value, context) => {
 
     const testOnly = context === TYPE_TEST_ONLY
 
@@ -91,9 +96,9 @@ function oneOfType (...args) {
 
   }
 
-  func[TYPE] = typeNames
+  oneOfType[TYPE] = typeNames
 
-  return func
+  return oneOfType
 }
 
 /******************************************************************************/

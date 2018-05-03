@@ -1,5 +1,5 @@
-import is from 'is-explicit'
 import { OPTIONAL_CONFIG } from './symbols'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Main
@@ -16,6 +16,7 @@ function reduceValidator (validator) {
 
   return validator
 }
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/

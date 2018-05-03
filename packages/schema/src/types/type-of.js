@@ -1,7 +1,7 @@
 import is from 'is-explicit'
 
 import argsToConfig from '../util/args-to-config'
-import reduceValidator from '../util/reduce-validator'
+import normalizeValidator from '../util/normalize-validator'
 import {
   TYPE, TYPE_TEST_ONLY
 } from '../util/symbols'
@@ -15,7 +15,8 @@ import validate from '../validate'
 const layout = [
   {
     name: 'type',
-    type: Function
+    type: Function,
+    required: true
   },
   {
     name: 'err',
@@ -25,7 +26,8 @@ const layout = [
     name: 'validators',
     type: Function,
     count: Infinity,
-    default: []
+    default: [],
+    validate: normalizeValidator
   },
   {
     name: 'cast',
@@ -37,16 +39,16 @@ const typeConfig = argsToConfig(layout)
 
 const specificTypeConfig = argsToConfig(layout.slice(1))
 
-const ERR_DELIMITER = ' or '
-
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
 function getTypeName (type) {
 
-  if (type instanceof Array)
-    return type.map(getTypeName).join(ERR_DELIMITER)
+  if (type instanceof Array) {
+    const last = type.pop()
+    return type.map(getTypeName).join(', ') + ' or ' + getTypeName(last)
+  }
 
   return type[TYPE]
     ? type[TYPE]
@@ -73,14 +75,6 @@ function castToType (value, cast, Type) {
       : value
 }
 
-function normalizeValidators (validators) {
-
-  validators = validators.map(reduceValidator)
-
-  return validators
-
-}
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -89,13 +83,11 @@ function typeOf (...args) {
 
   const config = typeConfig(args)
 
-  const { err, cast } = config
+  const { err, cast, validators } = config
 
   // Because typeOf can use other type functions, this is an elegant way
   // to reduce methods that have OPTIONAL_CONFIG enabled
-  const Type = reduceValidator(config.type)
-
-  const validators = normalizeValidators(config.validators)
+  const Type = normalizeValidator(config.type)
 
   const typeName = getTypeName(Type)
 

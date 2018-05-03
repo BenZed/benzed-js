@@ -2,8 +2,6 @@ import { expect } from 'chai'
 
 import required from './required'
 
-import { SELF } from '../util'
-
 import Schema from '../schema'
 
 // eslint-disable-next-line no-unused-vars
@@ -11,7 +9,7 @@ import Schema from '../schema'
 
 describe('required() stock validator', () => {
 
-  // const r = required()
+  const r = required()
 
   describe('returns error if input is undefined, null or NaN', () => {
 
@@ -56,7 +54,6 @@ describe('required() stock validator', () => {
     it('practical example', () => {
 
       const schema = Schema({
-        [SELF]: required,
         name: required,
         age: required
       })

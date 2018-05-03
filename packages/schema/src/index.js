@@ -10,7 +10,7 @@ import {
 } from './types'
 
 import {
-  SELF, OPTIONAL_CONFIG
+  OPTIONAL_CONFIG
 } from './util'
 
 /******************************************************************************/
@@ -28,8 +28,6 @@ export {
   type, bool, string, number, object, func, array,
   arrayOf, typeOf, oneOfType,
 
-  OPTIONAL_CONFIG,
-  SELF,
-  SELF as $
+  OPTIONAL_CONFIG
 
 }

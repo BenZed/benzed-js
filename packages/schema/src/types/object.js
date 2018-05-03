@@ -1,11 +1,10 @@
 import { OPTIONAL_CONFIG, TYPE, TYPE_TEST_ONLY } from '../util/symbols'
 import argsToConfig from '../util/args-to-config'
-import reduceValidator from '../util/reduce-validator'
+import normalizeValidator from '../util/normalize-validator'
 
 import validate from '../validate'
 import is from 'is-explicit'
 
-import arrayOf from './array-of'
 import { castToType } from './type-of'
 
 /******************************************************************************/
@@ -41,32 +40,13 @@ const objectConfig = argsToConfig(layout)
 // Helper
 /******************************************************************************/
 
-function normalizeValidator (validator) {
-
-  if (validator instanceof Array)
-    validator = arrayOf(...validator)
-
-  if (is.plainObject(validator))
-    validator = object(validator)
-
-  if (!is(validator, Function))
-    throw new Error('properties must be defined with arrays, objects or type validators')
-
-  validator = reduceValidator(validator)
-
-  if (TYPE in validator === false)
-    throw new Error('property was defined with a function that is not a type validator')
-
-  return validator
-}
-
 function normalizeShape (shape) {
 
   if (shape) for (const key in shape)
     shape[key] = normalizeValidator(shape[key])
 
   if (shape && Object.keys(shape).length === 0)
-    throw new Error('Cannot define a shape with no properties')
+    throw new Error('object config \'shape\' property requires at least one key')
 
   return shape
 }
@@ -84,7 +64,7 @@ function validateShape (shape, obj, context) {
     const result = validate(shape[key], obj[key], context.push(key))
 
     if (result instanceof Promise) {
-      async = { keys: [], promises: [] }
+      async = async || { keys: [], promises: [] }
       async.keys.push(key)
       async.promises.push(result)
 
@@ -113,7 +93,6 @@ function validateShape (shape, obj, context) {
 
 }
 
-
 function validateObject (value, context, config, skipSelf = false) {
 
   const { validators, cast, shape, err } = config
@@ -123,12 +102,12 @@ function validateObject (value, context, config, skipSelf = false) {
   if (testOnly)
     return testResult
 
-  if (!skipSelf) {
+  if (!skipSelf)
     value = validate(validators, value, context)
-    if (value instanceof Promise)
-      return value
-        .then(resolvedValue => validateObject(resolvedValue, context, config, true))
-  }
+
+  if (value instanceof Promise)
+    return value
+      .then(resolvedValue => validateObject(resolvedValue, context, config, true))
 
   if (value != null || !is.plainObject(value)) {
 
@@ -140,7 +119,7 @@ function validateObject (value, context, config, skipSelf = false) {
       )
   }
 
-  return shape
+  return shape && value
     ? validateShape(shape, value, context)
     : value
 
@@ -155,7 +134,7 @@ function object (...args) {
   const config = objectConfig(args)
 
   config.shape = normalizeShape(config.shape)
-  config.validators = config.validators.map(reduceValidator)
+  config.validators = config.validators.map(normalizeValidator)
 
   const object = (value, context) => validateObject(value, context, config)
 
