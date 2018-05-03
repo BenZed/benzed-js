@@ -12,7 +12,7 @@ import reduceValidator from './reduce-validator'
 function normalizeValidator (validator) {
 
   if (validator instanceof Array)
-    validator = arrayOf(...validator)
+    validator = arrayOf(...validator.map(normalizeValidator))
 
   if (is.plainObject(validator))
     validator = object({ shape: validator })

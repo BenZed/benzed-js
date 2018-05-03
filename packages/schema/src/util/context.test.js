@@ -5,7 +5,7 @@ import Context from './Context'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('Context', () => {
+describe('Context', () => {
 
   it('is a class', () => {
     expect(Context).to.throw('invoked without \'new\'')

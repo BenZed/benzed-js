@@ -1,9 +1,7 @@
 import { expect } from 'chai'
 import Schema from './schema'
 
-import { DEFINITION } from './util'
-
-import { typeOf, string, object, number, arrayOf, oneOfType } from './types'
+import { string, number, oneOfType } from './types'
 import { required } from './validators'
 
 /******************************************************************************/
@@ -13,7 +11,7 @@ import { required } from './validators'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('Schema', () => {
+describe('Schema', () => {
 
   describe('takes definition argument', () => {
 

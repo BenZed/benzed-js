@@ -76,7 +76,7 @@
 15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 15 error
 15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-05-01T05_07_13_082Z-debug.log
+15 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-05-03T04_37_21_184Z-debug.log
 15 error
 15 error > @benzed/dev@0.3.0 test /Users/bengaumond/Projects/benzed-mono/packages/dev
 15 error > mocha --opts .mocha.opts

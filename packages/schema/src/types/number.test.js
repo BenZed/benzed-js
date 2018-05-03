@@ -43,7 +43,11 @@ describe('number()', () => {
     })
 
     it('cast function', () => {
-      const numWithCast = number(value => Number.isNaN(value) ? 0 : value)
+
+      const numWithCast = number({
+        cast: value => Number.isNaN(value) ? 0 : value
+      })
+
       expect(numWithCast(NaN))
         .to.be.equal(0)
     })

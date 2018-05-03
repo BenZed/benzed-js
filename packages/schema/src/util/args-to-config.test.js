@@ -18,12 +18,6 @@ describe('argsToConfig', () => {
 
   describe('construct', () => {
 
-    it('expects a plain object or an array of plain objects', () => {
-      expect(() => argsToConfig(EXAMPLE_LAYOUT[0])).to.not.throw('array of plain objects')
-      expect(() => argsToConfig([])).to.throw('array of plain objects')
-      expect(() => argsToConfig(EXAMPLE_LAYOUT)).to.not.throw('array of plain objects')
-    })
-
     it('each plain object must have a non-empty string name property', () => {
 
       for (const badValue of [ '', undefined, null, {} ])
@@ -31,7 +25,7 @@ describe('argsToConfig', () => {
           {
             name: badValue
           }
-        ])).to.throw('name must be a non-empty string')
+        ])).to.throw('layout.name needs to be a non empty string')
     })
 
     it('each plain object must have one or more functions as types', () => {
@@ -41,18 +35,7 @@ describe('argsToConfig', () => {
             name: 'whatever',
             type: badValue
           }
-        ])).to.throw('type must be a function or an array of functions')
-    })
-
-    it('each plain can have a count property, but it must be true or a number above zero', () => {
-      for (const badValue of [ -1, false, 'lol', 0 ])
-        expect(() => argsToConfig([
-          {
-            name: 'whatever',
-            type: Number,
-            count: badValue
-          }
-        ])).to.throw('count must be true or a positive number')
+        ])).to.throw('layout.type needs to be an array of Functions')
     })
 
   })
@@ -79,7 +62,7 @@ describe('argsToConfig', () => {
       const configEnum = argsToConfig({
         name: 'enum',
         type: [String, Number],
-        count: true
+        count: 4
       })
 
       const args = ['one', 2, 'three', 'four']

@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 
 import required from './required'
+import { string } from '../types'
 
 import Schema from '../schema'
 
@@ -46,7 +47,7 @@ describe('required() stock validator', () => {
 
     it('is optionally configurable', () => {
 
-      const s = Schema(required)
+      const s = Schema(string(required))
 
       expect(() => s(null)).to.throw('is Required.')
     })

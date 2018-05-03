@@ -37,7 +37,7 @@ describe('bool()', () => {
     })
 
     it('cast function', () => {
-      const boolWithCast = bool(value => !!value)
+      const boolWithCast = bool({ cast: value => !!value })
       expect(boolWithCast(NaN))
         .to.be.equal(false)
     })

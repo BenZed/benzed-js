@@ -49,7 +49,7 @@ describe('typeOf()', () => {
     })
 
     it('cast function', () => {
-      const fooWithCast = typeOf(Foo, value => new Foo())
+      const fooWithCast = typeOf({ type: Foo, cast: value => new Foo() })
       expect(fooWithCast(true))
         .to.be.instanceof(Foo)
     })

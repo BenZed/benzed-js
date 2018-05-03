@@ -13,7 +13,7 @@ describe('oneOfType()', () => {
 
   it('returns an error if input is not one of many types', () => {
     expect(isBoolOrNumber('lol'))
-      .to.have.property('message', 'Must be one of type: Boolean or Number')
+      .to.have.property('message', 'Must be either: Boolean or Number')
   })
 
   it('returns value otherwise', () => {
@@ -44,12 +44,12 @@ describe('oneOfType()', () => {
       .to.deep.equal(['str'])
 
     expect(stringOrArrayOf([ 0 ]))
-      .to.have.property('message', 'Must be one of type: String or Array of Strings')
+      .to.have.property('message', 'Must be either: String or Array of String')
 
     const arrayOfBoolsOrArrayOfNums = oneOfType(arrayOf(bool), arrayOf(number))
 
     expect(arrayOfBoolsOrArrayOfNums('no friggen way skin'))
-      .to.have.property('message', 'Must be one of type: Array of Booleans or Array of Numbers')
+      .to.have.property('message', 'Must be either: Array of Boolean or Array of Number')
 
   })
 

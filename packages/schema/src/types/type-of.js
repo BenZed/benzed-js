@@ -46,6 +46,7 @@ const specificTypeConfig = argsToConfig(layout.slice(1))
 function getTypeName (type) {
 
   if (type instanceof Array) {
+    type = [ ...type ]
     const last = type.pop()
     return type.map(getTypeName).join(', ') + ' or ' + getTypeName(last)
   }

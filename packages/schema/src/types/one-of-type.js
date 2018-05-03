@@ -73,6 +73,7 @@ function oneOfType (...args) {
 
   // Because arrayOf can use other type functions, this is an elegant way
   // to reduce methods that have OPTIONAL_CONFIG enabled
+
   const types = config.types.map(normalizeValidator)
 
   const typeNames = `either: ${getTypeName(types)}`
