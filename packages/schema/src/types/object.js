@@ -88,7 +88,6 @@ function validateShape (shape, obj, context) {
       }
 
       return obj
-
     })
 
 }

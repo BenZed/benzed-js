@@ -5,6 +5,6 @@
 
 describe('any()', () => {
 
-  it('any type')
+  it('always returns value, never throws')
 
 })

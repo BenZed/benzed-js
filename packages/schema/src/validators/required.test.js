@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
 import required from './required'
-import { string } from '../types'
+import { string, number } from '../types'
 
 import Schema from '../schema'
 
@@ -55,11 +55,10 @@ describe('required() stock validator', () => {
     it('practical example', () => {
 
       const schema = Schema({
-        name: required,
-        age: required
+        name: string(required),
+        age: number(required)
       })
 
-      expect(() => schema(null)).to.throw('is Required.')
       expect(() => schema({ })).to.throw('name is Required.')
       expect(() => schema({ name: 'Ben' })).to.throw('age is Required.')
       expect(() => schema({ name: 'Ben', age: 33 })).to.not.throw()

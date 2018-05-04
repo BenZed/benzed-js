@@ -3,6 +3,10 @@ import { expect } from 'chai'
 import typeOf from './type-of'
 import bool from './bool'
 
+import { Context } from '../util'
+
+import { expectResolve, expectReject } from '@benzed/dev'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -54,6 +58,43 @@ describe('typeOf()', () => {
         .to.be.instanceof(Foo)
     })
 
+    it('type validator or type constructor', () => {
+
+      const string = typeOf(String)
+      expect(string('wee'))
+        .to.equal('wee')
+
+    })
+
+    it('sub validators', () => {
+
+      const short = value => value == null || value.length <= 3
+        ? value
+        : new Error('Too long!')
+
+      const lower = value => value != null
+        ? value.toLowerCase()
+        : value
+
+      const shortString = typeOf(String, short, lower)
+
+      expect(shortString('ANT')).to.be.equal('ant')
+
+      expect(() => shortString('FAIL', new Context())).to.throw('Too long!')
+
+    })
+
+    it('sub validators can be asyncronous', async () => {
+
+      const delay = value => Promise.resolve(value)
+      const error = value => Promise.reject(new Error('Seriously what is your problem'))
+
+      const delayString = typeOf(String, delay)
+      await delayString('foobar')::expectResolve(ers => ers.to.equal('foobar'))
+
+      const errString = typeOf(String, delay, error)
+      return errString('oh no', new Context())::expectReject('Seriously what is your problem')
+    })
   })
 
   describe('can compose other type functions', () => {
@@ -64,9 +105,6 @@ describe('typeOf()', () => {
 
       expect(nestedBool(true))
         .to.be.equal(true)
-
     })
-
   })
-
 })

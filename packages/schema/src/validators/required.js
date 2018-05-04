@@ -24,7 +24,7 @@ function required (...args) {
 
   const { err } = configRequired(args)
 
-  return (value, ctx) => is(value)
+  return value => is(value)
     ? value
     : new Error(err)
 }

@@ -1,10 +1,12 @@
 import {
   argsToConfig, normalizeValidator,
-  TYPE, TYPE_TEST_ONLY
+  TYPE
 
 } from '../util'
 
-import { isType, getTypeName } from './type-of'
+import typeOf, { getTypeName, isType } from './type-of'
+import is from 'is-explicit'
+import validate from '../validate'
 
 /******************************************************************************/
 // Configure
@@ -35,31 +37,82 @@ const multiTypeConfig = argsToConfig([
 // Helper
 /******************************************************************************/
 
-function isOneOfType (value, types) {
-  for (const type of types)
-    if (isType(value, type))
-      return true
+// function isOneOfType (value, types) {
+//   for (const type of types) {
+//
+//     if (is(value, type))
+//       return true
+//   }
+//
+//   return false
+// }
 
-  return false
-}
+// function castToOneOfType (value, cast, types) {
+//
+//   if (cast)
+//     return cast(value)
+//
+//   for (const type of types) {
+//
+//     if (TYPE in type === false)
+//       continue
+//
+//     const result = type(value)
+//     if (isType(result, type))
+//       return result
+//
+//   }
+//
+//   return value
+// }
 
-function castToOneOfType (value, cast, types) {
+function setupTypes ({ types, err, cast }) {
 
-  if (cast)
-    return cast(value)
+  for (let i = 0; i < types.length; i++) {
+    let type = types[i]
+    type = normalizeValidator(type)
+    type = typeOf({ type, err, cast })
 
-  for (const type of types) {
-
-    if (TYPE in type === false)
-      continue
-
-    const result = type(value)
-    if (isType(result, type))
-      return result
-
+    types[i] = type
   }
 
-  return value
+  return types
+}
+
+function validateOneOfType (value, context, config, index = 0) {
+
+  const { types, validators } = config
+
+  const safeContext = context.safe()
+
+  for (let i = index; i < types.length; i++) {
+    const type = types[i]
+
+    const result = validate(type, value, safeContext)
+    // console.log({ value, result })
+    if (is(result, Error))
+      continue
+
+    if (is(result, Promise))
+      return result.then(resolvedValue => {
+        const isError = is(resolvedValue, Error)
+        validateOneOfType(
+          isError ? value : resolvedValue,
+          context,
+          config,
+          isError ? index + 1 : types.length
+        )
+      })
+
+    value = result
+
+    if (isType(value, type))
+      break
+  }
+
+  return validators && validators.length > 0
+    ? validate(value, validators, context.safe())
+    : value
 }
 
 /******************************************************************************/
@@ -69,35 +122,14 @@ function castToOneOfType (value, cast, types) {
 function oneOfType (...args) {
 
   const config = multiTypeConfig(args)
-  const { err, cast } = config
 
-  // Because arrayOf can use other type functions, this is an elegant way
-  // to reduce methods that have OPTIONAL_CONFIG enabled
+  config.types = setupTypes(config)
+  config.validators = config.validators.map(normalizeValidator)
+  config.err = config.err || `Must be either: ${getTypeName(config.types)}`
 
-  const types = config.types.map(normalizeValidator)
+  const oneOfType = (value, context) => validateOneOfType(value, context, config)
 
-  const typeNames = `either: ${getTypeName(types)}`
-
-  const oneOfType = (value, context) => {
-
-    const testOnly = context === TYPE_TEST_ONLY
-
-    const testResult = value == null || isOneOfType(value, types)
-    if (testOnly)
-      return testResult
-
-    if (testResult)
-      return value
-
-    value = castToOneOfType(value, cast, types)
-
-    return !isOneOfType(value, types)
-      ? new Error(err || `Must be ${typeNames}`)
-      : value
-
-  }
-
-  oneOfType[TYPE] = typeNames
+  oneOfType[TYPE] = config.types
 
   return oneOfType
 }

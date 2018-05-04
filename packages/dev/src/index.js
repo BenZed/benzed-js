@@ -1,4 +1,4 @@
-import Test from './test'
+import Test, { expectReject, expectResolve } from './test'
 
 import { inspect, clearConsole } from './util'
 
@@ -13,6 +13,9 @@ export default Test
 export {
 
   Test,
+
+  expectReject,
+  expectResolve,
 
   WebpackConfig,
 

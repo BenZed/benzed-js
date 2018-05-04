@@ -7,8 +7,14 @@ import is from 'is-explicit'
 // Helper
 /******************************************************************************/
 
-function handleError (ctx, str) {
-  throw new ValidationError(ctx.path, str)
+function handleError (ctx, err) {
+
+  const vErr = new ValidationError(ctx.path, err.message)
+
+  if (ctx.throw)
+    throw vErr
+  else
+    return vErr
 }
 
 function validateAll (validators, value, context, index = 0) {
@@ -25,12 +31,12 @@ function validateAll (validators, value, context, index = 0) {
     }
 
     if (result instanceof Error)
-      return handleError(context.path, result.message)
+      return handleError(context, result)
 
     if (result instanceof Promise)
       return result
         .then(value => validateAll(validators, value, context, i + 1))
-        .catch(err => handleError(context, err.message))
+        .catch(err => handleError(context, err))
 
     value = result
   }
@@ -48,8 +54,7 @@ function validate (validator, input, context) {
   const validators = wrap(validator)
 
   return is(input, Promise)
-    ? input
-      .then(resolvedInput => validateAll(validators, resolvedInput, context))
+    ? input.then(resolvedInput => validateAll(validators, resolvedInput, context))
 
     : validateAll(validators, input, context)
 }

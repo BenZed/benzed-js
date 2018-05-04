@@ -2,11 +2,11 @@ import is from 'is-explicit'
 
 import argsToConfig from '../util/args-to-config'
 import normalizeValidator from '../util/normalize-validator'
-import {
-  TYPE, TYPE_TEST_ONLY
-} from '../util/symbols'
+import { TYPE } from '../util/symbols'
 
 import validate from '../validate'
+
+import { wrap } from '@benzed/array'
 
 /******************************************************************************/
 // Config
@@ -43,37 +43,70 @@ const specificTypeConfig = argsToConfig(layout.slice(1))
 // Helper
 /******************************************************************************/
 
+function getRootType (type) {
+  while (TYPE in type)
+    type = type[TYPE]
+
+  return type
+}
+
+function isType (value, type) {
+
+  const rootType = getRootType(type)
+  return rootType instanceof Array
+    ? is(value, ...rootType)
+    : is(value, rootType)
+
+}
+
 function getTypeName (type) {
 
-  if (type instanceof Array) {
-    type = [ ...type ]
-    const last = type.pop()
-    return type.map(getTypeName).join(', ') + ' or ' + getTypeName(last)
+  let rootType = getRootType(type)
+
+  if (rootType instanceof Array) {
+    rootType = [ ...rootType ]
+    const last = rootType.pop()
+    return rootType.map(getTypeName).join(', ') + ' or ' + getTypeName(last)
   }
 
-  return type[TYPE]
-    ? type[TYPE]
-    : type.name
+  return rootType.name
 
 }
 
-function isType (value, Type) {
+function validateType (value, context, config, skipSelf = false) {
 
-  if (TYPE in Type)
-    return Type(value, TYPE_TEST_ONLY)
+  const { type, err, cast, validators } = config
 
-  else
-    return is(value, Type)
+  const rootType = getRootType(type)
 
-}
+  const isTypeValidator = TYPE in type
+  if (isTypeValidator && !skipSelf) {
+    const result = validate(type, value, context.safe())
+    if (isType(result, rootType) || is(result, Promise))
+      value = result
+  }
 
-function castToType (value, cast, Type) {
+  console.log('TYPEOF', { value, type: getTypeName(type) })
 
-  return cast
-    ? cast(value)
-    : TYPE in Type
-      ? Type(value)
-      : value
+  if (is(value, Error))
+    return value
+
+  if (is(value, Promise))
+    return value
+      .then(resolvedValue => validateType(resolvedValue, context, config, true))
+
+  if (value != null) {
+    if (!isType(value, rootType) && cast)
+      value = cast(value)
+
+    if (!isType(value, rootType))
+      return new Error(err)
+  }
+
+  return validators && validators.length > 0
+    ? validate(validators, value, context)
+    : value
+
 }
 
 /******************************************************************************/
@@ -84,38 +117,13 @@ function typeOf (...args) {
 
   const config = typeConfig(args)
 
-  const { err, cast, validators } = config
+  config.type = normalizeValidator(config.type)
+  config.validators = config.validators.map(normalizeValidator)
+  config.err = config.err || `Must be of type: ${getTypeName(config.type)}`
 
-  // Because typeOf can use other type functions, this is an elegant way
-  // to reduce methods that have OPTIONAL_CONFIG enabled
-  const Type = normalizeValidator(config.type)
+  const typeOf = (value, context) => validateType(value, context, config)
 
-  const typeName = getTypeName(Type)
-
-  const typeOf = (value, context) => {
-
-    const testOnly = context === TYPE_TEST_ONLY
-
-    const testResult = value == null || isType(value, Type)
-    if (testOnly)
-      return testResult
-
-    if (!testResult) {
-
-      value = castToType(value, cast, Type)
-
-      if (!isType(value, Type))
-        return new Error(
-          err || `Must be of type: ${typeName}`
-        )
-    }
-
-    return validators && validators.length > 0
-      ? validate(validators, value, context)
-      : value
-  }
-
-  typeOf[TYPE] = typeName
+  typeOf[TYPE] = config.type
 
   return typeOf
 
@@ -126,4 +134,4 @@ function typeOf (...args) {
 
 export default typeOf
 
-export { typeConfig, specificTypeConfig, isType, castToType, getTypeName }
+export { typeConfig, specificTypeConfig, getTypeName, isType }

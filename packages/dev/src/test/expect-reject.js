@@ -1,29 +1,29 @@
-import { TYPE_TEST_ONLY, OPTIONAL_CONFIG, TYPE } from '../util'
+import { expect } from 'chai'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function any () {
+async function expectReject (errTypeOrString) {
 
-  const any = (value, context) => {
+  const promise = this
 
-    if (context === TYPE_TEST_ONLY)
-      return true
-
-    return value
+  let err
+  try {
+    await promise
+  } catch (e) {
+    err = e
   }
 
-  any[TYPE] = 'Any'
-
-  return any
+  expect(() => {
+    if (err)
+      throw err
+  }).to.throw(errTypeOrString)
 
 }
-
-any[OPTIONAL_CONFIG] = true
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default any
+export default expectReject

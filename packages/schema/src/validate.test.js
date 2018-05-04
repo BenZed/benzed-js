@@ -6,6 +6,8 @@ import { string } from './types'
 
 import { Context, ValidationError } from './util'
 
+import { expectReject } from '@benzed/dev'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -58,18 +60,6 @@ describe('validate', () => {
 
   })
 
-  async function catcher (func) {
-
-    try {
-      await func()
-    } catch (err) {
-      return err
-    }
-
-    throw new Error('Function did not throw error.')
-
-  }
-
   it('wraps errors in ValidationError', () => {
 
     expect(() => validate(string(), Symbol('010'), new Context()))
@@ -77,13 +67,12 @@ describe('validate', () => {
 
   })
 
-  it('wraps promise rejections in ValidationError', async () => {
+  it('wraps promise rejections in ValidationError', () => {
 
     const uFuckedUp = () => Promise.reject(new Error('You fucked up'))
 
-    const err = await catcher(() => validate(uFuckedUp, 0, new Context()))
+    return validate(uFuckedUp, 0, new Context())::expectReject(ValidationError)
 
-    expect(err).to.be.instanceof(ValidationError)
   })
 
 })
