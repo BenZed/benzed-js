@@ -2,11 +2,12 @@ import { wrap } from '@benzed/array'
 import is from 'is-explicit'
 
 import normalizeValidator from '../util/normalize-validator'
+import TypeValidationError from '../util/type-validation-error'
 import validate from '../validate'
 
 import { TYPE } from '../util'
 
-import typeOf, { typeConfig, getTypeName } from './type-of'
+import typeOf, { arrayTypeConfig, getTypeName } from './type-of'
 
 /******************************************************************************/
 // Helpers
@@ -22,32 +23,25 @@ function firstErrorOrArray (array) {
   return array
 }
 
-function validateArrayOf (array, context, config, skipSelf = false) {
+function handleError (err, msg) {
+  return is(err, TypeValidationError)
+    ? new TypeValidationError(msg)
+    : err
+}
 
-  const { validators, type } = config
+function validateArrayOf (array, context, config, skipItems = false) {
+
+  const { validators, err, type } = config
 
   array = wrap(array)
-
-  if (!skipSelf)
-    array = validate(validators, array, context.safe())
-
-  if (is(array, Error))
-    return array
-
-  if (!skipSelf && is(array, Promise))
-    return array
-      .then(resolvedArray => validateArrayOf(resolvedArray, context, config, true))
-
   let async = false
 
-  for (let i = 0; i < array.length; i++) {
+  if (!skipItems) for (let i = 0; i < array.length; i++) {
     let value = array[i]
-
     value = validate(type, value, context.safe())
-    console.log('ARRAYOF', { i, value })
 
     if (is(value, Error))
-      return value
+      return handleError(value, err)
 
     if (is(value, Promise))
       async = true
@@ -55,10 +49,17 @@ function validateArrayOf (array, context, config, skipSelf = false) {
     array[i] = value
   }
 
-  return async
-    ? Promise
+  if (async)
+    return Promise
       .all(array)
       .then(firstErrorOrArray)
+      .then(arr => arr instanceof Error
+        ? handleError(arr, err)
+        : validateArrayOf(arr, context, config, true)
+      )
+
+  return validators && validators.length > 0
+    ? validate(validators, array, context.safe())
     : array
 }
 
@@ -68,25 +69,26 @@ function validateArrayOf (array, context, config, skipSelf = false) {
 
 function arrayOf (...args) {
 
-  const config = typeConfig(args, 'arrayOf')
+  const config = arrayTypeConfig(args, 'arrayOf')
 
   // Because arrayOf can use other type functions, this is an elegant way to
   // reduce methods that have OPTIONAL_CONFIG enabled
   config.type = normalizeValidator(config.type)
   config.validators = config.validators.map(normalizeValidator)
-  config.err = config.err || `Must be an ${arrayTypeName(config.type)}`
+
+  const typeName = arrayTypeName(config.type)
+
+  config.err = config.err || `Must be an ${typeName}`
 
   // Nest the type inside a typeof validator with potentially overriding err and
   // cast configs
-  config.type = typeOf({
-    type: config.type,
-    err: config.err,
-    cast: config.cast
-  })
+  config.type = TYPE in config.type
+    ? config.type
+    : typeOf(config.type)
 
   const arrayOf = (array, context) => validateArrayOf(array, context, config)
 
-  arrayOf[TYPE] = config.type
+  arrayOf[TYPE] = typeName
 
   return arrayOf
 

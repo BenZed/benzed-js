@@ -11,7 +11,12 @@ import reduceValidator from './reduce-validator'
 
 function normalizeValidator (validator) {
 
-  if (validator instanceof Array)
+  const isArray = is(validator, Array)
+
+  if (isArray && validator.length === 0)
+    throw new Error('validator can not be defined as an empty array')
+
+  if (isArray)
     validator = arrayOf(...validator.map(normalizeValidator))
 
   if (is.plainObject(validator))

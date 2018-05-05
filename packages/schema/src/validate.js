@@ -9,12 +9,10 @@ import is from 'is-explicit'
 
 function handleError (ctx, err) {
 
-  const vErr = new ValidationError(ctx.path, err.message)
-
   if (ctx.throw)
-    throw vErr
+    throw new ValidationError(ctx.path, err.message)
   else
-    return vErr
+    return err
 }
 
 function validateAll (validators, value, context, index = 0) {

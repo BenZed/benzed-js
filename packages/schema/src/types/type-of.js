@@ -1,12 +1,12 @@
 import is from 'is-explicit'
 
 import argsToConfig from '../util/args-to-config'
-import normalizeValidator from '../util/normalize-validator'
+import reduceValidator from '../util/reduce-validator'
+import TypeValidationError from '../util/type-validation-error'
+
 import { TYPE } from '../util/symbols'
 
 import validate from '../validate'
-
-import { wrap } from '@benzed/array'
 
 /******************************************************************************/
 // Config
@@ -16,7 +16,8 @@ const layout = [
   {
     name: 'type',
     type: Function,
-    required: true
+    required: true,
+    validate: reduceValidator
   },
   {
     name: 'err',
@@ -27,7 +28,7 @@ const layout = [
     type: Function,
     count: Infinity,
     default: [],
-    validate: normalizeValidator
+    validate: reduceValidator
   },
   {
     name: 'cast',
@@ -37,75 +38,19 @@ const layout = [
 
 const typeConfig = argsToConfig(layout)
 
+const arrayTypeConfig = argsToConfig(layout.slice(0, 3))
+
+const anyTypeConfig = argsToConfig(layout.slice(1, 3))
+
 const specificTypeConfig = argsToConfig(layout.slice(1))
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-function getRootType (type) {
-  while (TYPE in type)
-    type = type[TYPE]
-
-  return type
-}
-
-function isType (value, type) {
-
-  const rootType = getRootType(type)
-  return rootType instanceof Array
-    ? is(value, ...rootType)
-    : is(value, rootType)
-
-}
-
 function getTypeName (type) {
 
-  let rootType = getRootType(type)
-
-  if (rootType instanceof Array) {
-    rootType = [ ...rootType ]
-    const last = rootType.pop()
-    return rootType.map(getTypeName).join(', ') + ' or ' + getTypeName(last)
-  }
-
-  return rootType.name
-
-}
-
-function validateType (value, context, config, skipSelf = false) {
-
-  const { type, err, cast, validators } = config
-
-  const rootType = getRootType(type)
-
-  const isTypeValidator = TYPE in type
-  if (isTypeValidator && !skipSelf) {
-    const result = validate(type, value, context.safe())
-    if (isType(result, rootType) || is(result, Promise))
-      value = result
-  }
-
-  console.log('TYPEOF', { value, type: getTypeName(type) })
-
-  if (is(value, Error))
-    return value
-
-  if (is(value, Promise))
-    return value
-      .then(resolvedValue => validateType(resolvedValue, context, config, true))
-
-  if (value != null) {
-    if (!isType(value, rootType) && cast)
-      value = cast(value)
-
-    if (!isType(value, rootType))
-      return new Error(err)
-  }
-
-  return validators && validators.length > 0
-    ? validate(validators, value, context)
-    : value
+  return type[TYPE] || type.name
 
 }
 
@@ -117,13 +62,32 @@ function typeOf (...args) {
 
   const config = typeConfig(args)
 
-  config.type = normalizeValidator(config.type)
-  config.validators = config.validators.map(normalizeValidator)
-  config.err = config.err || `Must be of type: ${getTypeName(config.type)}`
+  // I had originally written this function so that this was possible, but
+  // it really should never be the case
+  if (TYPE in config.type)
+    throw new Error('Cannot nest type functions in typeOf')
 
-  const typeOf = (value, context) => validateType(value, context, config)
+  const typeName = getTypeName(config.type)
 
-  typeOf[TYPE] = config.type
+  config.err = config.err || `Must be of type: ${typeName}`
+
+  const typeOf = (value, context) => {
+
+    const { cast, type, err, validators } = config
+
+    if (cast && value != null && !is(value, type))
+      value = cast(value)
+
+    if (value != null && !is(value, type))
+      return new TypeValidationError(err)
+
+    return validators && validators.length > 0
+      ? validate(validators, value, context.safe())
+      : value
+
+  }
+
+  typeOf[TYPE] = typeName
 
   return typeOf
 
@@ -134,4 +98,10 @@ function typeOf (...args) {
 
 export default typeOf
 
-export { typeConfig, specificTypeConfig, getTypeName, isType }
+export {
+  typeConfig,
+  anyTypeConfig,
+  specificTypeConfig,
+  arrayTypeConfig,
+  getTypeName
+}

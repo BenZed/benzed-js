@@ -1,16 +1,29 @@
 import {
-  argsToConfig, normalizeValidator,
+  argsToConfig, normalizeValidator, TypeValidationError,
   TYPE
 
 } from '../util'
 
-import typeOf, { getTypeName, isType } from './type-of'
+import typeOf, { getTypeName } from './type-of'
 import is from 'is-explicit'
 import validate from '../validate'
 
 /******************************************************************************/
 // Configure
 /******************************************************************************/
+
+const oneOfTypeName = types => {
+
+  const names = types.map(getTypeName)
+
+  if (names.length === 1)
+    return names[0]
+
+  const last = names.pop()
+
+  return `${names.join(', ')} or ${last}`
+
+}
 
 const multiTypeConfig = argsToConfig([
   {
@@ -26,10 +39,6 @@ const multiTypeConfig = argsToConfig([
     name: 'validators',
     type: Function,
     count: Infinity
-  },
-  {
-    name: 'cast',
-    type: Function
   }
 ])
 
@@ -37,49 +46,21 @@ const multiTypeConfig = argsToConfig([
 // Helper
 /******************************************************************************/
 
-// function isOneOfType (value, types) {
-//   for (const type of types) {
-//
-//     if (is(value, type))
-//       return true
-//   }
-//
-//   return false
-// }
-
-// function castToOneOfType (value, cast, types) {
-//
-//   if (cast)
-//     return cast(value)
-//
-//   for (const type of types) {
-//
-//     if (TYPE in type === false)
-//       continue
-//
-//     const result = type(value)
-//     if (isType(result, type))
-//       return result
-//
-//   }
-//
-//   return value
-// }
-
 function setupTypes ({ types, err, cast }) {
 
   for (let i = 0; i < types.length; i++) {
     let type = types[i]
     type = normalizeValidator(type)
-    type = typeOf({ type, err, cast })
+    type = TYPE in type ? type : typeOf(type)
 
     types[i] = type
   }
 
   return types
+
 }
 
-function validateOneOfType (value, context, config, index = 0) {
+function validateOneOfType (value, context, config, index = 0, oneSuccess = false) {
 
   const { types, validators } = config
 
@@ -89,7 +70,6 @@ function validateOneOfType (value, context, config, index = 0) {
     const type = types[i]
 
     const result = validate(type, value, safeContext)
-    // console.log({ value, result })
     if (is(result, Error))
       continue
 
@@ -100,15 +80,19 @@ function validateOneOfType (value, context, config, index = 0) {
           isError ? value : resolvedValue,
           context,
           config,
-          isError ? index + 1 : types.length
+          isError ? index + 1 : types.length,
+          !isError
         )
       })
 
+    oneSuccess = true
     value = result
+    break
 
-    if (isType(value, type))
-      break
   }
+
+  if (!oneSuccess)
+    return new TypeValidationError(config.err)
 
   return validators && validators.length > 0
     ? validate(value, validators, context.safe())
@@ -124,12 +108,15 @@ function oneOfType (...args) {
   const config = multiTypeConfig(args)
 
   config.types = setupTypes(config)
+
+  const typeNames = oneOfTypeName(config.types)
+
   config.validators = config.validators.map(normalizeValidator)
-  config.err = config.err || `Must be either: ${getTypeName(config.types)}`
+  config.err = config.err || `Must be either: ${typeNames}`
 
   const oneOfType = (value, context) => validateOneOfType(value, context, config)
 
-  oneOfType[TYPE] = config.types
+  oneOfType[TYPE] = typeNames
 
   return oneOfType
 }

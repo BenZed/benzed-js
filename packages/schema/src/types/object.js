@@ -1,11 +1,10 @@
-import { OPTIONAL_CONFIG, TYPE, TYPE_TEST_ONLY } from '../util/symbols'
+import { OPTIONAL_CONFIG, TYPE } from '../util/symbols'
 import argsToConfig from '../util/args-to-config'
 import normalizeValidator from '../util/normalize-validator'
+import TypeValidationError from '../util/type-validation-error'
 
 import validate from '../validate'
 import is from 'is-explicit'
-
-import { castToType } from './type-of'
 
 /******************************************************************************/
 // Config
@@ -63,7 +62,7 @@ function validateShape (shape, obj, context) {
 
     const result = validate(shape[key], obj[key], context.push(key))
 
-    if (result instanceof Promise) {
+    if (is(result, Promise)) {
       async = async || { keys: [], promises: [] }
       async.keys.push(key)
       async.promises.push(result)
@@ -84,6 +83,9 @@ function validateShape (shape, obj, context) {
         const key = async.keys[i]
         const result = results[i]
 
+        if (is(result, Error))
+          return result
+
         obj[key] = result
       }
 
@@ -94,34 +96,26 @@ function validateShape (shape, obj, context) {
 
 function validateObject (value, context, config, skipSelf = false) {
 
-  const { validators, cast, shape, err } = config
+  const { cast, shape, err, validators } = config
 
-  const testOnly = context === TYPE_TEST_ONLY
-  const testResult = value == null || is.plainObject(value)
-  if (testOnly)
-    return testResult
+  if (!skipSelf && cast && value != null && !is.plainObject(value))
+    value = cast(value)
 
-  if (!skipSelf)
-    value = validate(validators, value, context)
+  if (!skipSelf && value != null && !is.plainObject(value))
+    return new TypeValidationError(err)
 
-  if (value instanceof Promise)
+  if (!skipSelf && value != null)
+    value = validateShape(shape, value, context)
+
+  if (is(value, Error))
     return value
-      .then(resolvedValue => validateObject(resolvedValue, context, config, true))
 
-  if (value != null || !is.plainObject(value)) {
+  if (is(value, Promise))
+    return value.then(resolved => validateObject(resolved, context, config, true))
 
-    value = castToType(value, cast, Object)
-
-    if (!is.plainObject(value))
-      return new Error(
-        err || `Must be of type: Object`
-      )
-  }
-
-  return shape && value
-    ? validateShape(shape, value, context)
+  return validators && validators.length > 0
+    ? validate(validators, value, context.safe())
     : value
-
 }
 
 /******************************************************************************/

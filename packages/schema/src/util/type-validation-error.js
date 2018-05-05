@@ -1,28 +1,19 @@
-import { OPTIONAL_CONFIG, TYPE } from '../util'
-import { anyTypeConfig } from './type-of'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function any (...args) {
+class TypeValidationError extends Error {
 
-  const config = anyTypeConfig(args)
-
-  const any = (value, context) => {
-
+  constructor (msg) {
+    super(msg)
+    this.name = 'TypeValidationError'
   }
 
-  any[TYPE] = 'Any'
-
-  return any
-
 }
-
-any[OPTIONAL_CONFIG] = true
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default any
+export default TypeValidationError

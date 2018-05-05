@@ -7,6 +7,9 @@ import is from 'is-explicit'
 
 function reduceValidator (validator) {
 
+  if (is(validator, Array))
+    return validator.map(reduceValidator)
+
   while (OPTIONAL_CONFIG in validator) {
     validator = validator()
 

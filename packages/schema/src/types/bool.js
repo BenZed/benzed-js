@@ -15,13 +15,6 @@ const toBoolean = value => {
         ? false
         : value
 
-  if (is(value, Number))
-    return value === 1
-      ? true
-      : value === 0
-        ? false
-        : value
-
   if (is(value, Object) && is(value.valueOf, Function))
     value = value.valueOf()
 

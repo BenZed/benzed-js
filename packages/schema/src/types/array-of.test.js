@@ -7,7 +7,7 @@ import oneOfType from './one-of-type'
 
 import { Context } from '../util'
 
-import { expectResolve, expectReject } from '@benzed/dev'
+import { expectResolve } from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -43,28 +43,6 @@ describe('arrayOf()', () => {
       .to.have.property('message', 'Must be an Array of Boolean')
   })
 
-  it.only('uses cast functions defined by other type functions', () => {
-
-    // const arrayOfNum = arrayOf(number)
-    // expect(arrayOfNum([ '0', '1', '2' ], new Context()))
-    //   .to.deep.equal([ 0, 1, 2 ])
-
-    const arrayOfBoolOrNumber = arrayOf(oneOfType(bool, number))
-
-    expect(arrayOfBoolOrNumber(['0', 'true'], new Context()))
-      .to.deep.equal([0, true])
-  })
-
-  it('cast function in config overrides type cast functions, if provided', () => {
-
-    const cast = value => value === 'ONE THOUSAND' ? 1000 : value
-
-    const arrayOfNumber = arrayOf({ type: number, cast })
-
-    expect(arrayOfNumber('ONE THOUSAND', new Context()))
-      .to.deep.equal([ 1000 ])
-  })
-
   describe('takes a configuration', () => {
 
     describe('type', () => {
@@ -73,7 +51,36 @@ describe('arrayOf()', () => {
         const arrayOfString = arrayOf(String)
 
         const oneTwoThree = ['one', 'two', 'three']
-        expect(arrayOfString(oneTwoThree, new Context())).to.deep.equal(oneTwoThree)
+        expect(arrayOfString(oneTwoThree, new Context()))
+          .to.deep.equal(oneTwoThree)
+      })
+
+      describe('can take type functions', () => {
+
+        it('bool example', () => {
+          const arrayOfBool = arrayOf(bool)
+
+          const trueFalseTrue = [ 'true', 'false', 'true' ]
+          expect(arrayOfBool(trueFalseTrue, new Context()))
+            .to.deep.equal(trueFalseTrue)
+
+          const bad = [ -1000, 'faslle' ]
+          expect(arrayOfBool(bad, new Context()))
+            .to.have.property('message', 'Must be an Array of Boolean')
+        })
+
+        it('oneOfType example', () => {
+
+          const arrayOfBoolOrNumber = arrayOf(
+            oneOfType(bool, number)
+          )
+
+          const mixedBoolNum = [ 2, true, false, 100 ]
+          expect(arrayOfBoolOrNumber(mixedBoolNum, new Context()))
+            .to.deep.equal([ 2, true, false, 100 ])
+
+        })
+
       })
 
     })
@@ -91,7 +98,7 @@ describe('arrayOf()', () => {
 
     describe('validators', () => {
 
-      it('validators to be run on the array before items inside of it', () => {
+      it('validators to be run on the array after items inside of it', () => {
 
         const even = arr => arr.length % 2 === 0
           ? arr
@@ -120,21 +127,18 @@ describe('arrayOf()', () => {
         const delayDouble = num => Promise.resolve(num * 2)
         const delayDoubleNum = number(delayDouble)
 
-        await delayDoubleNum(5)::expectResolve(10)
+        await delayDoubleNum(5, new Context())::expectResolve(10)
         const delayArrayOfDelayNum = arrayOf(delayDoubleNum)
 
         await delayArrayOfDelayNum([1, 2, 3, 4], new Context())::expectResolve([2, 4, 6, 8])
 
-        const delayWrong = num => Promise.resolve(`one-${num}`)
+        const delayWrong = num => Promise.reject(new Error('This number... broke, or something.'))
         const arrayOfDelayWrongNum = arrayOf(number(delayWrong))
 
         await arrayOfDelayWrongNum([1, 2, 3, 4], new Context())
-          ::expectResolve(er => er.have.property('message', 'Must be an Array of Number'))
+          ::expectResolve(er => er.have.property('message', 'This number... broke, or something.'))
 
       })
-
     })
-
   })
-
 })

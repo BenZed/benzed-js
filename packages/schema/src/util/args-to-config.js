@@ -2,6 +2,8 @@ import is from 'is-explicit'
 
 import { pluck, wrap, unwrap } from '@benzed/array'
 
+import Context from './context'
+
 import validate from '../validate'
 import reduceValidator from './reduce-validator'
 
@@ -77,13 +79,14 @@ function argsToConfig (layouts, masterErrName = 'validator') {
 
     // Set defaults and ensure required
     for (const layout of layouts) {
-      const { name, default: _default, type, required, count, validate: validateFuncs } = layout
+
+      const { name, default: _default, type, required, count, validate: validators } = layout
 
       if (config[name] === undefined && _default !== undefined)
         config[name] = _default
 
-      if (validateFuncs !== undefined)
-        config[name] = validate(validateFuncs, config[name], { path: [] })
+      if (validators !== undefined)
+        config[name] = validate(validators, config[name], new Context())
 
       if (count > 1)
         config[name] = config[name] === undefined ? [] : wrap(config[name])

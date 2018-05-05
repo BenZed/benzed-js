@@ -25,13 +25,15 @@ describe('normalizeDefinition', () => {
 
       expect(arrayOfString).to.have.property('name', 'arrayOf')
 
-      expect(arrayOfString([ 'string' ])).to.deep.equal([ 'string' ])
+      expect(arrayOfString([ 'string' ], new Context())).to.deep.equal([ 'string' ])
 
     })
 
     it('throws if array is empty', () => {
 
-      expect(() => normalizeValidator([])).to.throw('arrayOf config requires Function \'type\' property')
+      expect(() => normalizeValidator([]))
+        .to
+        .throw('validator can not be defined as an empty array')
 
     })
 

@@ -59,13 +59,6 @@ describe('bool()', () => {
 
     })
 
-    it('it casts number if number is explicitly equal to 1 or 0', () => {
-
-      expect(b(1)).to.equal(true)
-      expect(b(0)).to.equal(false)
-
-    })
-
     it('calls valueOf on objects', () => {
 
       class Bool {
