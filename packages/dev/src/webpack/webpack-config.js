@@ -23,7 +23,7 @@ function smartFindInput (cwd) {
   if (fs.existsSync(plainIndex))
     return plainIndex
 
-  throw new Error('config.inputFile was not provided, and no src entry could be found.')
+  throw new Error('config.entry was not provided, and no src entry could be found.')
 }
 
 function smartFindOutput (cwd) {
@@ -33,6 +33,7 @@ function smartFindOutput (cwd) {
 
   const libPublic = path.join(cwd, 'lib/public')
   const distPublic = path.join(cwd, 'dist/public')
+  const distWebpackPublic = path.join(cwd, 'dist/webpack/public')
 
   if (fs.existsSync(distPublic))
     return distPublic
@@ -40,7 +41,7 @@ function smartFindOutput (cwd) {
   if (fs.existsSync(libPublic))
     return libPublic
 
-  throw new Error('config.outputDir was not provided, and public folder could be found.')
+  throw new Error('config.output was not provided, and public folder could be found.')
 }
 
 function smartFindHtml (cwd, inputFile) {

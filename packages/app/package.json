@@ -2,7 +2,9 @@
   "name": "@benzed/app",
   "version": "0.1.8",
   "main": "lib",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "mocha --opts .mocha.opts",
     "test:dev": "npx watch 'npm run test' src test",

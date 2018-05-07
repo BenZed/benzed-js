@@ -7,6 +7,7 @@ import inquireMissingOptions from './options/inquire-missing'
 import parseArgs from './options/parse-args'
 
 import writeTemplates from './write-templates'
+import addDependencies from './add-dependencies'
 
 /******************************************************************************/
 // Helper
@@ -28,6 +29,7 @@ class Context {
 
     this.backend = backend
     this.frontend = frontend
+
   }
 
   writtenFiles = []
@@ -72,6 +74,7 @@ async function createProject (input) {
 
   context::createProjectFolder()
   await context::writeTemplates()
+  await context::addDependencies()
 
 }
 

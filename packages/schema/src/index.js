@@ -1,7 +1,11 @@
 import Schema from './schema'
 
 import {
-  required
+  required,
+  format,
+  length,
+  defaultTo
+
 } from './validators'
 
 import {
@@ -23,7 +27,7 @@ export {
 
   Schema,
 
-  required,
+  required, format, length, defaultTo,
 
   type, bool, string, number, object, func, array,
   arrayOf, typeOf, oneOfType,

@@ -1,5 +1,6 @@
 import { OPTIONAL_CONFIG, TYPE } from '../util'
 import { anyTypeConfig } from './type-of'
+import validate from '../validate'
 
 /******************************************************************************/
 // Main
@@ -7,11 +8,12 @@ import { anyTypeConfig } from './type-of'
 
 function any (...args) {
 
-  const config = anyTypeConfig(args)
+  const { validators } = anyTypeConfig(args)
 
-  const any = (value, context) => {
-
-  }
+  const any = (value, context) =>
+    validators && validators.length
+      ? validate(validators, value, context)
+      : value
 
   any[TYPE] = 'Any'
 

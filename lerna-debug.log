@@ -1,8 +1,9 @@
-0 silly input [ 'test' ]
+0 silly input [ 'build:dev' ]
 1 silly flags { _: [ 'run' ],
 1 silly flags   'reject-cycles': false,
 1 silly flags   rejectCycles: false,
-1 silly flags   script: 'test',
+1 silly flags   parallel: true,
+1 silly flags   script: 'build:dev',
 1 silly flags   args: [] }
 2 verbose rootPath /Users/bengaumond/Projects/benzed-mono
 3 info version 2.11.0
@@ -13,73 +14,114 @@
 8 silly packages [ '@benzed/dev' ]
 9 silly initialize success
 10 silly execute attempt
-11 silly runScriptInDir test [] dev
-12 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
-13 error test Errored while running script in '@benzed/dev'
-14 error execute callback with error
-15 error Error: Command failed: npm run test
-15 error internal/modules/cjs/loader.js:573
-15 error     throw err;
-15 error     ^
-15 error
-15 error Error: Cannot find module 'feathers-schema'
-15 error     at Function.Module._resolveFilename (internal/modules/cjs/loader.js:571:15)
-15 error     at Function.Module._load (internal/modules/cjs/loader.js:497:25)
-15 error     at Module.require (internal/modules/cjs/loader.js:626:17)
-15 error     at require (internal/modules/cjs/helpers.js:20:18)
-15 error     at Object.<anonymous> (/Users/bengaumond/Projects/benzed-mono/packages/dev/src/project-old/scaffold/validate-options.js:1:1)
-15 error     at Module._compile (internal/modules/cjs/loader.js:678:30)
-15 error     at loader (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:144:5)
-15 error     at Object.require.extensions.(anonymous function) [as .js] (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:154:7)
-15 error     at Module.load (internal/modules/cjs/loader.js:589:32)
-15 error     at tryModuleLoad (internal/modules/cjs/loader.js:528:12)
-15 error     at Function.Module._load (internal/modules/cjs/loader.js:520:3)
-15 error     at Module.require (internal/modules/cjs/loader.js:626:17)
-15 error     at require (internal/modules/cjs/helpers.js:20:18)
-15 error     at Object.<anonymous> (/Users/bengaumond/Projects/benzed-mono/packages/dev/src/project-old/scaffold/scaffold.js:3:1)
-15 error     at Module._compile (internal/modules/cjs/loader.js:678:30)
-15 error     at loader (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:144:5)
-15 error     at Object.require.extensions.(anonymous function) [as .js] (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:154:7)
-15 error     at Module.load (internal/modules/cjs/loader.js:589:32)
-15 error     at tryModuleLoad (internal/modules/cjs/loader.js:528:12)
-15 error     at Function.Module._load (internal/modules/cjs/loader.js:520:3)
-15 error     at Module.require (internal/modules/cjs/loader.js:626:17)
-15 error     at require (internal/modules/cjs/helpers.js:20:18)
-15 error     at Object.<anonymous> (/Users/bengaumond/Projects/benzed-mono/packages/dev/src/project-old/scaffold/scaffold.test.js:1:1)
-15 error     at Module._compile (internal/modules/cjs/loader.js:678:30)
-15 error     at loader (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:144:5)
-15 error     at Object.require.extensions.(anonymous function) [as .js] (/Users/bengaumond/Projects/benzed-mono/node_modules/babel-register/lib/node.js:154:7)
-15 error     at Module.load (internal/modules/cjs/loader.js:589:32)
-15 error     at tryModuleLoad (internal/modules/cjs/loader.js:528:12)
-15 error     at Function.Module._load (internal/modules/cjs/loader.js:520:3)
-15 error     at Module.require (internal/modules/cjs/loader.js:626:17)
-15 error     at require (internal/modules/cjs/helpers.js:20:18)
-15 error     at /Users/bengaumond/Projects/benzed-mono/node_modules/mocha/lib/mocha.js:253:27
-15 error     at Array.forEach (<anonymous>)
-15 error     at Mocha.loadFiles (/Users/bengaumond/Projects/benzed-mono/node_modules/mocha/lib/mocha.js:250:14)
-15 error     at Mocha.run (/Users/bengaumond/Projects/benzed-mono/node_modules/mocha/lib/mocha.js:577:10)
-15 error     at Object.<anonymous> (/Users/bengaumond/Projects/benzed-mono/node_modules/mocha/bin/_mocha:591:18)
-15 error     at Module._compile (internal/modules/cjs/loader.js:678:30)
-15 error     at Object.Module._extensions..js (internal/modules/cjs/loader.js:689:10)
-15 error     at Module.load (internal/modules/cjs/loader.js:589:32)
-15 error     at tryModuleLoad (internal/modules/cjs/loader.js:528:12)
-15 error     at Function.Module._load (internal/modules/cjs/loader.js:520:3)
-15 error     at Function.Module.runMain (internal/modules/cjs/loader.js:719:10)
-15 error     at startup (internal/bootstrap/node.js:228:19)
-15 error     at bootstrapNodeJSCore (internal/bootstrap/node.js:575:3)
-15 error npm ERR! code ELIFECYCLE
-15 error npm ERR! errno 1
-15 error npm ERR! @benzed/dev@0.3.0 test: `mocha --opts .mocha.opts`
-15 error npm ERR! Exit status 1
-15 error npm ERR!
-15 error npm ERR! Failed at the @benzed/dev@0.3.0 test script.
-15 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-15 error
-15 error npm ERR! A complete log of this run can be found in:
-15 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-05-03T04_37_21_184Z-debug.log
-15 error
-15 error > @benzed/dev@0.3.0 test /Users/bengaumond/Projects/benzed-mono/packages/dev
-15 error > mocha --opts .mocha.opts
-15 error
-15 error [H[2J[3J
-15 error     at Promise.all.then.arr (/Users/bengaumond/Projects/benzed-mono/node_modules/execa/index.js:236:11)
+11 info run in 9 package(s): npm run build:dev
+12 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/app' ]
+13 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/app' }
+14 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/array' ]
+15 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/array' }
+16 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/async' ]
+17 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/async' }
+18 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/dev' ]
+19 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/dev' }
+20 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/immutable' ]
+21 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/immutable' }
+22 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/math' ]
+23 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/math' }
+24 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/react' ]
+25 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/react' }
+26 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/schema' ]
+27 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/schema' }
+28 silly runScriptInPackageStreaming [ 'build:dev', [], '@benzed/string' ]
+29 silly getExecOpts { cwd: '/Users/bengaumond/Projects/benzed-mono/packages/string' }
+30 error execute callback with error
+31 error Error: Command failed: npm run build:dev
+31 error sh: line 1: 43387 Abort trap: 6           babel src --out-dir lib --copy-files "--watch"
+31 error npm ERR! code ELIFECYCLE
+31 error npm ERR! errno 134
+31 error npm ERR! @benzed/dev@0.3.0 build: `rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files "--watch"`
+31 error npm ERR! Exit status 134
+31 error npm ERR!
+31 error npm ERR! Failed at the @benzed/dev@0.3.0 build script.
+31 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+31 error
+31 error npm ERR! A complete log of this run can be found in:
+31 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-05-06T12_01_08_173Z-debug.log
+31 error npm ERR! code ELIFECYCLE
+31 error npm ERR! errno 134
+31 error npm ERR! @benzed/dev@0.3.0 build:dev: `npm run build -- --watch`
+31 error npm ERR! Exit status 134
+31 error npm ERR!
+31 error npm ERR! Failed at the @benzed/dev@0.3.0 build:dev script.
+31 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+31 error
+31 error npm ERR! A complete log of this run can be found in:
+31 error npm ERR!     /Users/bengaumond/.npm/_logs/2018-05-06T12_01_08_202Z-debug.log
+31 error
+31 error
+31 error > @benzed/dev@0.3.0 build:dev /Users/bengaumond/Projects/benzed-mono/packages/dev
+31 error > npm run build -- --watch
+31 error
+31 error
+31 error > @benzed/dev@0.3.0 build /Users/bengaumond/Projects/benzed-mono/packages/dev
+31 error > rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files "--watch"
+31 error
+31 error src/create-project/create-project.js -> lib/create-project/create-project.js
+31 error src/create-project/create-project.test.js -> lib/create-project/create-project.test.js
+31 error src/create-project/index.js -> lib/create-project/index.js
+31 error src/create-project/options/inquire-missing.js -> lib/create-project/options/inquire-missing.js
+31 error src/create-project/options/parse-args.js -> lib/create-project/options/parse-args.js
+31 error src/create-project/options/validate.js -> lib/create-project/options/validate.js
+31 error src/create-project/templates/config/default.json.js -> lib/create-project/templates/config/default.json.js
+31 error src/create-project/templates/package.json.js -> lib/create-project/templates/package.json.js
+31 error src/create-project/templates/src/api/$backend.js.js -> lib/create-project/templates/src/api/$backend.js.js
+31 error src/create-project/templates/src/api/index.js.js -> lib/create-project/templates/src/api/index.js.js
+31 error src/create-project/templates/src/index.js.js -> lib/create-project/templates/src/index.js.js
+31 error src/create-project/templates/src/scripts/serve.js.js -> lib/create-project/templates/src/scripts/serve.js.js
+31 error src/create-project/templates/src/ui/components/$frontend.js.js -> lib/create-project/templates/src/ui/components/$frontend.js.js
+31 error src/create-project/templates/src/ui/components/index.js.js -> lib/create-project/templates/src/ui/components/index.js.js
+31 error src/create-project/templates/src/webpack/index.js.js -> lib/create-project/templates/src/webpack/index.js.js
+31 error src/create-project/templates/src/webpack/public/$name.css.js -> lib/create-project/templates/src/webpack/public/$name.css.js
+31 error src/create-project/templates/src/webpack/public/index.html.js -> lib/create-project/templates/src/webpack/public/index.html.js
+31 error src/create-project/templates/test/index.js.js -> lib/create-project/templates/test/index.js.js
+31 error src/create-project/templates/webpack.config.js.js -> lib/create-project/templates/webpack.config.js.js
+31 error src/create-project/write-templates.js -> lib/create-project/write-templates.js
+31 error src/create-project/write-templates.test.js -> lib/create-project/write-templates.test.js
+31 error src/index.js -> lib/index.js
+31 error src/project-old/index.js -> lib/project-old/index.js
+31 error src/project-old/scaffold/index.js -> lib/project-old/scaffold/index.js
+31 error src/project-old/scaffold/install-dependencies.js -> lib/project-old/scaffold/install-dependencies.js
+31 error src/project-old/scaffold/scaffold.js -> lib/project-old/scaffold/scaffold.js
+31 error src/project-old/scaffold/scaffold.test.js -> lib/project-old/scaffold/scaffold.test.js
+31 error src/project-old/scaffold/template.js -> lib/project-old/scaffold/template.js
+31 error src/project-old/scaffold/validate-options.js -> lib/project-old/scaffold/validate-options.js
+31 error src/project-old/scaffold/write-templates.js -> lib/project-old/scaffold/write-templates.js
+31 error src/project-old/templates/config/default.json.js -> lib/project-old/templates/config/default.json.js
+31 error src/project-old/templates/config/webpack.js.js -> lib/project-old/templates/config/webpack.js.js
+31 error src/project-old/templates/package.json.js -> lib/project-old/templates/package.json.js
+31 error src/project-old/templates/src/$backend/$backend.js.js -> lib/project-old/templates/src/$backend/$backend.js.js
+31 error src/project-old/templates/src/$backend/index.js.js -> lib/project-old/templates/src/$backend/index.js.js
+31 error src/project-old/templates/src/index.js.js -> lib/project-old/templates/src/index.js.js
+31 error src/project-old/templates/src/public/index.html.js -> lib/project-old/templates/src/public/index.html.js
+31 error src/project-old/templates/src/scripts/serve.js.js -> lib/project-old/templates/src/scripts/serve.js.js
+31 error src/project-old/templates/src/webpack/assets/$name.css.js -> lib/project-old/templates/src/webpack/assets/$name.css.js
+31 error src/project-old/templates/src/webpack/components/Example.jsx.js -> lib/project-old/templates/src/webpack/components/Example.jsx.js
+31 error src/project-old/templates/src/webpack/components/index.js.js -> lib/project-old/templates/src/webpack/components/index.js.js
+31 error src/project-old/templates/src/webpack/globals.js.js -> lib/project-old/templates/src/webpack/globals.js.js
+31 error src/project-old/templates/src/webpack/index.js.js -> lib/project-old/templates/src/webpack/index.js.js
+31 error src/project-old/templates/test/index.js.js -> lib/project-old/templates/test/index.js.js
+31 error src/test/get-describer.js -> lib/test/get-describer.js
+31 error src/test/index.js -> lib/test/index.js
+31 error src/test/test-optionally-bindable-method.js -> lib/test/test-optionally-bindable-method.js
+31 error src/test/test-package-output.js -> lib/test/test-package-output.js
+31 error src/util/clear-console.js -> lib/util/clear-console.js
+31 error src/util/index.js -> lib/util/index.js
+31 error src/util/inspect.js -> lib/util/inspect.js
+31 error src/webpack/index.js -> lib/webpack/index.js
+31 error src/webpack/webpack-config.js -> lib/webpack/webpack-config.js
+31 error src/webpack/webpack-config.test.js -> lib/webpack/webpack-config.test.js
+31 error src/test/index.js -> lib/test/index.js
+31 error src/index.js -> lib/index.js
+31 error src/test/expect-reject.js -> lib/test/expect-reject.js
+31 error src/test/expect-resolve.js -> lib/test/expect-resolve.js
+31 error
+31 error     at Promise.all.then.arr (/Users/bengaumond/Projects/benzed-mono/node_modules/execa/index.js:236:11)

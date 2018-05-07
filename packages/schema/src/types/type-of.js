@@ -40,7 +40,7 @@ const typeConfig = argsToConfig(layout)
 
 const arrayTypeConfig = argsToConfig(layout.slice(0, 3))
 
-const anyTypeConfig = argsToConfig(layout.slice(1, 3))
+const anyTypeConfig = argsToConfig(layout[2])
 
 const specificTypeConfig = argsToConfig(layout.slice(1))
 

@@ -10,8 +10,14 @@ import fs from 'fs-extra'
 // Data
 /******************************************************************************/
 
-const WORK_DIR = path.resolve(__dirname, '../../test/create-project')
-fs.ensureDirSync(WORK_DIR)
+const WORK_DIR = path.resolve(
+  __dirname,
+  '../../test/create-project'
+)
+
+fs.ensureDirSync(
+  WORK_DIR
+)
 
 /******************************************************************************/
 // Helper
@@ -33,7 +39,7 @@ function testProjectCreate (options) {
 
     expect(stat.isDirectory()).to.be.equal(true)
 
-    // expect project to have a .babelrc, package.json, ect.
+    // TODO expect project to have a .babelrc, package.json, ect.
   })
 
 }
@@ -131,6 +137,26 @@ describe.only('createProject()', () => {
         api: true,
 
         auth: false,
+        files: false
+      }
+
+      testProjectCreate(options)
+
+    })
+
+    describe('creates quini-emailer', () => {
+
+      const options = {
+        dir: WORK_DIR,
+        name: 'quini-emailer',
+
+        socketio: true,
+        rest: false,
+
+        ui: true,
+        api: true,
+
+        auth: true,
         files: false
       }
 
