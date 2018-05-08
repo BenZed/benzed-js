@@ -9,11 +9,14 @@ import validate from '../validate'
 function any (...args) {
 
   const { validators } = anyTypeConfig(args)
+  const any = (value, context) => {
 
-  const any = (value, context) =>
-    validators && validators.length
+    const result = validators && validators.length > 0
       ? validate(validators, value, context)
       : value
+
+    return result
+  }
 
   any[TYPE] = 'Any'
 

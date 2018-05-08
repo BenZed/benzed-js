@@ -128,6 +128,7 @@ function object (...args) {
 
   config.shape = normalizeShape(config.shape)
   config.validators = config.validators.map(normalizeValidator)
+  config.err = config.err || `Must be an Object`
 
   const object = (value, context) => validateObject(value, context, config)
 

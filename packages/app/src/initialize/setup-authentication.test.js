@@ -44,7 +44,7 @@ describe('setupAuthentication()', () => {
     })
 
     it('throws if rest is not enabled', () => {
-      const app = new App({ port: 2300, auth: true })
+      const app = new App({ port: 2300, auth: true, socketio: true })
       app::setupProviders()
       expect(() => app::setupAuthentication()).to.throw('cannot be configured on this app. Rest provider is not enabled')
     })
@@ -52,7 +52,7 @@ describe('setupAuthentication()', () => {
 
   describe('if auth is not defined', () => {
     it('does nothing', () => {
-      const app = new App({ port: 1294 })
+      const app = new App({ port: 1294, socketio: true })
       expect(app.feathers.service('authentication')).to.equal(undefined)
     })
   })

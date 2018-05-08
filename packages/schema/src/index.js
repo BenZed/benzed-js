@@ -10,7 +10,7 @@ import {
 
 import {
   type, bool, string, number, object, func, array,
-  arrayOf, typeOf, oneOfType
+  arrayOf, typeOf, oneOfType, any
 } from './types'
 
 import {
@@ -30,7 +30,7 @@ export {
   required, format, length, defaultTo,
 
   type, bool, string, number, object, func, array,
-  arrayOf, typeOf, oneOfType,
+  arrayOf, typeOf, oneOfType, any, any as group,
 
   OPTIONAL_CONFIG
 

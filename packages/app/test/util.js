@@ -6,7 +6,7 @@ export const CONFIG_URL = path.resolve(__dirname, './config')
 
 export const CONFIG_OBJ = {
   'test-value': 'foobar',
-  ui: {
+  rest: {
     public: path.join(__dirname, './public'),
     favicon: path.join(__dirname, './public/favicon.ico')
   },

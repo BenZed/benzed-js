@@ -75,11 +75,13 @@ function length (operator, value, err) {
     if (value == null || !hasNumericLength(value))
       return value
 
-    const result = compare(value, err)
-    if (result instanceof Error)
+    const result = compare(value.length, err)
+    if (result instanceof Error) {
       result.message = 'length ' + result.message
+      return result
+    }
 
-    return result
+    return value
 
   }
 

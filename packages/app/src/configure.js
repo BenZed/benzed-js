@@ -2,8 +2,11 @@ import fs from 'fs-extra'
 import path from 'path'
 import is from 'is-explicit'
 
-import { Schema, type, required } from './util/schema'
-import { set } from '@benzed/immutable'
+import { Schema,
+  object, arrayOf, string, bool, number,
+  required, length, format
+} from '@benzed/schema'
+import { get, set } from '@benzed/immutable'
 import { randomBytes } from 'crypto'
 
 // TODO Temporary, this will be moved to @benzed/schema
@@ -16,35 +19,35 @@ function hasValidHtml () {
   return value => value
 }
 
-function trim () {
-  return value => value && value.trim()
+function trim (value) {
+  return value && value.trim()
 }
 
-function notEmpty () {
-  return (value, { path }) => value && value.length > 0
+function notEmpty (value) {
+  return value && value.length > 0
     ? value
-    : new Error(`${path.join('.')} must not be an empty string.`)
+    : new Error(`must not be an empty string.`)
 }
 
-function fsContainsConfigJson () {
-  return (value, { args, path: errpath }) => {
-    if (!value)
-      return value
+function fsContainsConfigJson (value, { args }) {
 
-    const [ mode ] = args
-    try {
-      const jsonUrl = path.join(value, mode)
+  if (!value)
+    return value
 
-      return require(jsonUrl)
+  const [ mode ] = args
+  try {
+    const jsonUrl = path.join(value, mode)
 
-    } catch (err) {
-      throw new Error(`${errpath.join('.')} does not contain a valid ${mode}.js or ${mode}.json file: ${value}`)
-    }
+    return require(jsonUrl)
+
+  } catch (err) {
+    throw new Error(`does not contain a valid ${mode}.js or ${mode}.json file: ${value}`)
   }
+
 }
 
 function fsContains (...names) {
-  return (value, { path: errpath }) => {
+  return value => {
     if (!value)
       return value
 
@@ -52,36 +55,51 @@ function fsContains (...names) {
       .map(name => path.join(value, name))
       .every(url => fs.existsSync(url))
       ? value
-      : new Error(`${errpath.join('.')} must contain files '${names}': ${value}`)
+      : new Error(`must contain files '${names}': ${value}`)
   }
 }
 
 function fsExists (...exts) {
-  return (value, { path: errpath, original }) => {
+  return (value, { original }) => {
 
     if (!value)
       return
 
     if (!fs.existsSync(value))
-      throw new Error(`${errpath.join('.')} does not exist: ${value}`)
+      throw new Error(`does not exist: ${value}`)
 
     if (exts.includes('directory')) {
       const stat = fs.statSync(value)
       if (!stat.isDirectory())
-        throw new Error(`${errpath.join('.')} is not a directory: ${value}`)
+        throw new Error(`is not a directory: ${value}`)
 
     } else if (exts.length > 0 && !exts.some(ext => path.extname(value) === ext))
-      throw new Error(`${errpath.join('.')} must be a file with extension ${exts}: ${value}`)
+      throw new Error(`must be a file with extension ${exts}: ${value}`)
 
     return value
   }
 }
 
-const boolToObject = value => value === true
-  ? { }
-  : value === false
-    ? null
+function requiredIfNo (other) {
+
+  return (value, ctx) => value == null && !get(ctx.data, other)
+    ? new Error(`required if ${other} is disabled.`)
     : value
+}
+
+function requiredIf (other) {
+
+  return (value, ctx) => value == null && get(ctx.data, other)
+    ? new Error(`required if ${other} is enabled.`)
+    : value
+}
+
+const boolToObject = value =>
+  value === true
+    ? { }
+    : value === false
+      ? null
+      : value
 
 const autoFill = value => {
 
@@ -110,43 +128,65 @@ const autoFill = value => {
 // Schemas
 /******************************************************************************/
 
-const validateConfigObject = new Schema({
-  rest: [
-    boolToObject,
-    type.plainObject,
-    {
-      public: [
-        type(String),
+const validateConfigObject = Schema({
+  rest: object({
+
+    cast: boolToObject,
+
+    shape: {
+      public: string(
         fsExists('directory'),
         fsContains('index.html'),
         hasValidHtml()
-      ],
-      favicon: [
-        type(String),
+      ),
+      favicon: string(
         fsExists('.png', '.jpeg', '.jpg', '.svg', '.ico')
-      ]
-    }
-  ],
+      )
+    },
 
-  auth: [
-    boolToObject,
-    type.plainObject,
-    autoFill
-  ],
+    validators: requiredIfNo('socketio')
 
-  port: [
-    type(Number),
-    required()
-  ]
-}, 'config')
+  }),
 
-const validateConfigUrl = new Schema([
-  required(),
-  type(String),
-  notEmpty(),
-  fsExists('directory'),
-  fsContainsConfigJson()
-], 'configUrl')
+  mongodb: object({
+
+    shape: {
+      username: string(),
+      password: string(),
+      database: string(required),
+      hosts: arrayOf(
+        string(format(/([A-z]|[0-9]|-|\.)+:\d+/)),
+        required,
+        length('>=', 1)
+      )
+    },
+
+    validators: requiredIf('auth')
+
+  }),
+
+  socketio: bool(
+    requiredIfNo('rest')
+  ),
+
+  auth: object({
+    cast: boolToObject,
+    validators: [ autoFill ]
+  }),
+
+  port: number(
+    required
+  )
+})
+
+const validateConfigUrl = Schema(
+  string(
+    required,
+    notEmpty(),
+    fsExists('directory'),
+    fsContainsConfigJson
+  )
+)
 
 const validateConfig = (config, ...args) => {
 
@@ -161,9 +201,10 @@ const validateConfig = (config, ...args) => {
   return config
 }
 
-const validateMode = new Schema([
-  type(String), trim(), notEmpty()
-], 'mode')
+const validateMode = new Schema(string(
+  trim,
+  notEmpty
+), 'mode')
 
 const validateClass = app => {
 

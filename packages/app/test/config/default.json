@@ -1,6 +1,6 @@
 {
   "test-value": "foobar",
-  "ui": {
+  "rest": {
     "public": "/Users/global/Programming/benzed-mono/packages/app/test/public",
     "favicon": "/Users/global/Programming/benzed-mono/packages/app/test/public/favicon.ico"
   },

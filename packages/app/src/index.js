@@ -1,4 +1,5 @@
 import App from './app'
+import run from './run'
 
 /******************************************************************************/
 // Exports
@@ -6,4 +7,4 @@ import App from './app'
 
 export default App
 
-export { App }
+export { App, run }

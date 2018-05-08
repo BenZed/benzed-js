@@ -13,6 +13,7 @@ import { CONFIG_OBJ, CONFIG_URL } from 'test/util'
 describe('config app instance', () => {
 
   describe('argument', () => {
+
     it('must be a string or plain object', () => {
       const Foo = class { }
       const badValues = [ 1, false, null, undefined, new Date(), Symbol('cake'), new Foo() ]
@@ -27,7 +28,7 @@ describe('config app instance', () => {
     describe('if string', () => {
       it('must be an existant path', () => {
         const fakeUrl = path.join(__dirname, 'not-a-real-place')
-        expect(() => new App(fakeUrl)).to.throw('configUrl does not exist')
+        expect(() => new App(fakeUrl)).to.throw('does not exist:')
       })
 
       it('must be a directory', () => {
@@ -67,13 +68,14 @@ describe('config app instance', () => {
         expect(appOverride).to.have.property('mode', 'test')
       })
 
-      it('must be a string', () => {
-        const badValues = [ {}, false, 1, -1, Infinity, NaN, function () {}, Symbol('-') ]
+      describe('must be a string', () => {
+        const badValues = [ {}, NaN, Symbol('-') ]
         for (const badValue of badValues)
-          expect(() => new App(CONFIG_OBJ, badValue))
-            .to
-            .throw('mode must be of type: String')
-
+          it(`${String(badValue)}`, () => {
+            expect(() => new App(CONFIG_OBJ, badValue))
+              .to
+              .throw('Must be of type: String')
+          })
       })
 
       it('must not be an empty string, when trimmed', () => {
@@ -81,7 +83,7 @@ describe('config app instance', () => {
         for (const badValue of badValues)
           expect(() => new App(CONFIG_OBJ, badValue))
             .to
-            .throw('mode must not be an empty string')
+            .throw('ust not be an empty string')
       })
 
       it('if combined with a configUrl string, must match the name of a config file', () => {
@@ -95,10 +97,10 @@ describe('config app instance', () => {
 
   describe('config.port', () => {
     it('is required', () => {
-      expect(() => new App(CONFIG_OBJ::set('port', null))).to.throw('port is required')
+      expect(() => new App(CONFIG_OBJ::set('port', null))).to.throw('port is Required')
     })
     it('must be a number', () => {
-      expect(() => new App(CONFIG_OBJ::set('port', 'cake'))).to.throw('must be of type: Number')
+      expect(() => new App(CONFIG_OBJ::set('port', 'cake'))).to.throw('Must be of type: Number')
     })
   })
 
@@ -113,7 +115,7 @@ describe('config app instance', () => {
     it('must be an object if defined', () => {
       const badValues = [ 10, Symbol('str'), 'str' ]
       for (const badValue of badValues)
-        expect(() => new App(CONFIG_OBJ::set('auth', badValue))).to.throw('must be a plain object')
+        expect(() => new App(CONFIG_OBJ::set('auth', badValue))).to.throw('Must be an Object')
     })
 
     it('booleans are cast to objects', () => {
@@ -142,16 +144,24 @@ describe('config app instance', () => {
   describe('config.rest', () => {
     it('not required', () => {
       const fineValues = [ null, undefined ]
+      const config = CONFIG_OBJ::set('socketio', true)
+
       for (const fineValue of fineValues)
-        expect(() => new App(CONFIG_OBJ::set('rest', fineValue))).to.not.throw(Error)
+        expect(() => new App(config::set('rest', fineValue))).to.not.throw(Error)
+    })
+    it('required if socket.io is disabled', () => {
+      const fineValues = [ null, undefined ]
+      for (const fineValue of fineValues)
+        expect(() => new App(CONFIG_OBJ::set('rest', fineValue))).to.throw('rest required if socketio is disabled')
     })
     it('legal values are true, false, or an empty object')
     it('true is casted to an empty object')
     describe('config.rest.public', () => {
       it('must be a string', () => {
-        const badValues = [ true, 100, {} ]
+
+        const badValues = [ Symbol('-'), {} ]
         for (const badValue of badValues)
-          expect(() => new App(CONFIG_OBJ::set([ 'rest', 'public' ], badValue))).to.throw('must be of type: String')
+          expect(() => new App(CONFIG_OBJ::set([ 'rest', 'public' ], badValue))).to.throw('Must be of type: String')
       })
       it('must point toward a public folder with an index.html file', () => {
         const badValues = [
@@ -164,9 +174,9 @@ describe('config app instance', () => {
     })
     describe('config.rest.favicon', () => {
       it('must be a string', () => {
-        const badValues = [ true, 100, {} ]
+        const badValues = [ Symbol('-'), {} ]
         for (const badValue of badValues)
-          expect(() => new App(CONFIG_OBJ::set([ 'rest', 'favicon' ], badValue))).to.throw('must be of type: String')
+          expect(() => new App(CONFIG_OBJ::set([ 'rest', 'favicon' ], badValue))).to.throw('Must be of type: String')
       })
       it('must point to an existing url', () => {
         const badValues = [
@@ -197,6 +207,36 @@ describe('config app instance', () => {
     it('optional')
     it('if defined, must be a plain object')
     it('act as service options or initializers')
+  })
+
+  describe.only('config.mongodb', () => {
+
+    it('must be an object')
+    it('is not required')
+    it('required if auth is enabled', () => {
+
+      const config = CONFIG_OBJ::set('auth', true)
+
+      expect(() => new App(config)).to.throw('mongodb required if auth is enabled.')
+
+    })
+
+    describe('config.mongodb.username', () => {
+      it('must be a string')
+    })
+
+    describe('config.mongodb.password', () => {
+      it('must be a string')
+    })
+
+    describe('config.mongodb.database', () => {
+      it('must be a string')
+    })
+
+    describe('config.mongodb.hosts', () => {
+      it('must be an array of strings')
+    })
+
   })
 })
 

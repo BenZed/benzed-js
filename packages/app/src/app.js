@@ -11,7 +11,8 @@ import {
   setupProviders,
   setupAuthentication,
   setupServices,
-  setupMiddleware
+  setupMiddleware,
+  connectToDatabase
 } from './initialize'
 
 /******************************************************************************/
@@ -47,7 +48,7 @@ import {
 class App {
 
   listener = null
-  db = null
+  database = null
 
   constructor (configInput, mode = process.env.NODE_ENV || 'default') {
 
@@ -74,10 +75,10 @@ class App {
     return set.mut(settings, path, value)
   }
 
-  initialize () {
+  async initialize () {
     this::setupProviders()
     this::setupAuthentication()
-    // this::connectToDatabase()
+    await this::connectToDatabase()
     this::setupServices()
     this::setupMiddleware()
   }

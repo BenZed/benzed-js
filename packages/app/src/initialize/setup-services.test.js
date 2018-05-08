@@ -31,7 +31,7 @@ describe('setupServices()', () => {
 
     it('calls app.services with the feathers object', () => {
 
-      const app = new ServiceApp({ port: 1234 })
+      const app = new ServiceApp({ port: 1234, socketio: true })
 
       expect(() => app::setupServices()).to.not.throw('didnt call with feathers object')
       expect(app.servicesSetup).to.equal(true)
@@ -63,7 +63,7 @@ describe('setupServices()', () => {
 
     it('calls each property with feathers object', () => {
 
-      app = new ServiceApp({ port: 5421 })
+      app = new ServiceApp({ port: 5421, socketio: true })
       expect(() => app::setupServices()).to.not.throw(Error)
       expect(app.servicesSetup).to.equal(2)
     })
@@ -72,13 +72,13 @@ describe('setupServices()', () => {
   describe('if auth is configured', () => {
 
     it('sets up a users service if one isn\'t configured', () => {
-      const app = new App({ port: 1283, auth: true })
+      const app = new App({ port: 1283, auth: true, socketio: true })
       app::setupServices()
       expect(typeof app.feathers.service('users')).to.be.equal('object')
     })
 
     it('even if auth.service is somethign other than \'users\'', () => {
-      const app = new App({ port: 4910, auth: { service: 'players' } })
+      const app = new App({ port: 4910, auth: { service: 'players' }, socketio: true })
       app::setupServices()
       expect(typeof app.feathers.service('players')).to.be.equal('object')
     })
