@@ -49,6 +49,7 @@ class App {
 
   listener = null
   database = null
+  logging = true
 
   constructor (configInput, mode = process.env.NODE_ENV || 'default') {
 
@@ -95,9 +96,30 @@ class App {
     return listener
   }
 
-  end () {
+  async end () {
     if (this.listener)
-      return this.listener.close()
+      await this.listener.close()
+
+    if (this.database && this.database.process)
+      await this.database.process.kill()
+
+  }
+
+  log = (strings, ...params) => {
+
+    if (!this.logging)
+      return
+
+    const { inspect } = require('util')
+
+    let str = ''
+    for (let i = 0; i < strings.length; i++) {
+      str += strings[i]
+      if (i < params.length)
+        str += inspect(params[i])
+    }
+
+    console.log(str)
   }
 
 }

@@ -54,7 +54,7 @@ function createMongoProcess (uri, database) {
 
   const port = app.get('mongodb').hosts[0].replace('localhost:', '')
 
-  console.log('local mongodb process being created on port ' + port)
+  app.log`local mongodb process being created on port ${port}`
 
   return new Promise((resolve, reject) => {
 
@@ -114,9 +114,9 @@ async function connectToDatabase () {
   }
 
   if (app.database.process)
-    console.log('local mongodb process created successfully')
+    app.log`local mongodb process created successfully`
 
-  console.log(`connected to mongodb at ${uri}`)
+  app.log`connected to mongodb at ${uri}`
 }
 
 /******************************************************************************/

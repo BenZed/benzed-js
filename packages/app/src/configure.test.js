@@ -235,6 +235,7 @@ describe('config app instance', () => {
 
     describe('config.mongodb.hosts', () => {
       it('must be an array of strings')
+      it('each string must be a url formatted')
     })
 
   })

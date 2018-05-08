@@ -1,6 +1,16 @@
 import { milliseconds } from '@benzed/async'
 
 /******************************************************************************/
+// Data
+/******************************************************************************/
+
+const EXIT_ERROR = 1
+
+// const EXIT_CLEAN = 0
+
+const KILL_WAIT = 500 // ms
+
+/******************************************************************************/
 // Helper
 /******************************************************************************/
 
@@ -8,15 +18,12 @@ async function kill () {
 
   const app = this
 
-  if (app && app.listener)
+  if (app)
     await app.end()
 
-  if (app && app.database.process)
-    await app.database.process.kill()
+  await milliseconds(KILL_WAIT)
 
-  await milliseconds(500)
-
-  process.exit(1)
+  process.exit(EXIT_ERROR)
 }
 
 /******************************************************************************/
@@ -31,7 +38,7 @@ async function run (config) {
   try {
     app = new App(config)
   } catch (err) {
-    console.log('app could not be configured:', err.message)
+    app.log`app could not be configured: ${err.message}`
     app::kill()
   }
 
@@ -39,17 +46,17 @@ async function run (config) {
     await app.initialize()
   } catch (err) {
 
-    console.log('app could not be initialized:', err.message)
-    app::kill(1)
+    app.log`app could not be initialized: ${err.message}`
+    app::kill()
   }
 
   try {
     await app.start()
-    console.log(`app listening on ${app.get('port')}`)
+    app.log`app listening on ${app.get('port')}`
 
   } catch (err) {
-    console.log(`app could not start:`, err.message)
-    app::kill(1)
+    app.log`app could not start: ${err.message}`
+    app::kill()
   }
 
 }

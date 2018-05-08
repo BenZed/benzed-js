@@ -22,6 +22,8 @@ function setupServices () {
     for (const service of app.services)
       app::service(feathers)
 
+  // set up users if it hasn't been setup already
+  // TODO use the UserService wrapper
   if (authConfig && !feathers.service(authConfig.service))
     feathers.use('/' + authConfig.service, require('feathers-memory')())
 
