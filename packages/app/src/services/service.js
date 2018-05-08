@@ -1,6 +1,7 @@
 import is from 'is-explicit'
 import { MongoService } from 'feathers-mongodb'
 import { copy } from '@benzed/immutable'
+import { Schema } from '@benzed/schema'
 
 /******************************************************************************/
 // DATA
@@ -53,6 +54,10 @@ function validateConfig (config) {
   return config
 }
 
+// const validateConfig = new Schema({
+//
+// })
+
 function addServiceShortCut (name) {
   const app = this
 
@@ -60,7 +65,7 @@ function addServiceShortCut (name) {
 
   const getter = {
     get () {
-      return this.feathrs.service(name)
+      return this.feathers.service(name)
     },
     configurable: false
   }
@@ -107,7 +112,7 @@ function Service (config) {
     if (app !== undefined && name in app === false)
       app::addServiceShortCut(name)
 
-    const Model = feathers.db.collection(name)
+    const Model = app.database.link.collection(name)
 
     const service = feathers
       .use(`/${name}`, new MongoService({ Model }))

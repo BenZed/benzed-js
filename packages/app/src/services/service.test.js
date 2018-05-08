@@ -5,4 +5,6 @@ import { expect } from 'chai'
 
 describe('Service', () => {
 
+  it('is a fuckin... whatever')
+
 })
