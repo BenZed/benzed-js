@@ -39,7 +39,7 @@ async function run (config) {
     app = new App(config)
   } catch (err) {
     app.log`app could not be configured: ${err.message}`
-    app::kill()
+    return app::kill()
   }
 
   try {
@@ -47,7 +47,7 @@ async function run (config) {
   } catch (err) {
 
     app.log`app could not be initialized: ${err.message}`
-    app::kill()
+    return app::kill()
   }
 
   try {
@@ -56,7 +56,7 @@ async function run (config) {
 
   } catch (err) {
     app.log`app could not start: ${err.message}`
-    app::kill()
+    return app::kill()
   }
 
 }

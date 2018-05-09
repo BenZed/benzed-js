@@ -30,6 +30,11 @@ const layout = [
   {
     name: 'cast',
     type: Function
+  },
+
+  {
+    name: 'onlyShapeKeys',
+    type: Boolean
   }
 ]
 
@@ -54,9 +59,13 @@ function normalizeShape (shape) {
 // Validate Shape
 /******************************************************************************/
 
-function validateShape (shape, obj, context) {
+function validateShape (shape, obj, context, onlyShapeKeys) {
 
   let async
+
+  if (onlyShapeKeys) for (const key in obj)
+    if (key in shape === false)
+      delete obj[key]
 
   for (const key in shape) {
 
@@ -96,7 +105,7 @@ function validateShape (shape, obj, context) {
 
 function validateObject (value, context, config, skipSelf = false) {
 
-  const { cast, shape, err, validators } = config
+  const { cast, shape, err, validators, onlyShapeKeys } = config
 
   if (!skipSelf && cast && value != null && !is.plainObject(value))
     value = cast(value)
@@ -104,8 +113,8 @@ function validateObject (value, context, config, skipSelf = false) {
   if (!skipSelf && value != null && !is.plainObject(value))
     return new TypeValidationError(err)
 
-  if (!skipSelf && value != null)
-    value = validateShape(shape, value, context)
+  if (!skipSelf && value != null && shape)
+    value = validateShape(shape, value, context, onlyShapeKeys)
 
   if (is(value, Error))
     return value
@@ -129,6 +138,8 @@ function object (...args) {
   config.shape = normalizeShape(config.shape)
   config.validators = config.validators.map(normalizeValidator)
   config.err = config.err || `Must be an Object`
+  if ('onlyShapeKeys' in config === false)
+    config.onlyShapeKeys = !!config.shape
 
   const object = (value, context) => validateObject(value, context, config)
 

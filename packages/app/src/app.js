@@ -97,6 +97,7 @@ class App {
   }
 
   async end () {
+
     if (this.listener)
       await this.listener.close()
 
@@ -116,7 +117,9 @@ class App {
     for (let i = 0; i < strings.length; i++) {
       str += strings[i]
       if (i < params.length)
-        str += inspect(params[i])
+        str += typeof params[i] === 'string'
+          ? params[i]
+          : inspect(params[i])
     }
 
     console.log(str)

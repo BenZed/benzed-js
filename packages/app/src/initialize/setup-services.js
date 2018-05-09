@@ -1,6 +1,24 @@
-import is from 'is-explicit'
+import { Service, FileService, UserService } from '../services'
 
-// import { UserService } from '../services'
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const FILE_SERVICE_NAME = 'files'
+
+/******************************************************************************/
+// Helpers
+/******************************************************************************/
+
+function assertServicesMissingConfig (config, services) {
+
+  const configKeys = config ? Object.keys(config) : []
+
+  for (const serviceName in services)
+    if (!configKeys.includes(serviceName))
+      throw new Error(`App is missing configuration for '${serviceName}' service.`)
+
+}
 
 /******************************************************************************/
 // Main
@@ -12,20 +30,28 @@ function setupServices () {
   const { feathers } = app
 
   const authConfig = feathers.get('auth')
+  const serviceConfig = feathers.get('services')
 
-  // If it's a function, call the function
-  if (is(app.services, Function))
-    app.services(feathers)
+  const services = app.services || {}
 
-  // Otherwise, if it's defined, it will be an object of functions (thanks to validation)
-  else if (app.services)
-    for (const service of app.services)
-      app::service(feathers)
+  assertServicesMissingConfig(serviceConfig, services)
 
-  // set up users if it hasn't been setup already
-  // TODO use the UserService wrapper
-  if (authConfig && !feathers.service(authConfig.service))
-    feathers.use('/' + authConfig.service, require('feathers-memory')())
+  for (const serviceName in serviceConfig) {
+
+    const setupConfig = serviceConfig[serviceName]
+    if (!setupConfig || ('enabled' in serviceConfig && !serviceConfig.enabled))
+      continue
+
+    const setupFunc = app.services && app.services[serviceName]
+      ? app.services[serviceName]
+      : authConfig && serviceName === authConfig.service
+        ? UserService()
+        : serviceName === FILE_SERVICE_NAME
+          ? FileService()
+          : Service()
+
+    app::setupFunc(setupConfig, serviceName)
+  }
 
 }
 

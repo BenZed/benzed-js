@@ -13,9 +13,13 @@ function setupAuthentication () {
   if (!configAuth)
     return
 
+  const configService = app.get('services')
+  if (!configService || !configService[configAuth.service])
+    throw new Error(`Authentication cannot be setup on this app. "${configAuth.service}" service is not enabled.`)
+
   const configRest = app.get('rest')
   if (configAuth && !configRest)
-    throw new Error('Authentication cannot be configured on this app. Rest provider is not enabled.')
+    throw new Error('Authentication cannot be setup on this app. Rest provider is not enabled.')
 
   const authentication = require('@feathersjs/authentication')
   const local = require('@feathersjs/authentication-local')

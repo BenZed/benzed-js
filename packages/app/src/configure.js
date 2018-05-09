@@ -101,7 +101,22 @@ const boolToObject = value =>
       ? null
       : value
 
-const autoFill = value => {
+const eachKeyMustBeObject = value => {
+
+  if (value == null)
+    return value
+
+  for (const key in value)
+    value[key] = boolToObject(value[key])
+
+  for (const key in value)
+    if (value[key] !== null && !is.plainObject(value[key]))
+      return new Error('must be comprised of objects')
+
+  return value
+}
+
+const autoFillAuth = value => {
 
   if (!value)
     return value
@@ -129,6 +144,7 @@ const autoFill = value => {
 /******************************************************************************/
 
 const validateConfigObject = Schema({
+
   rest: object({
 
     cast: boolToObject,
@@ -148,6 +164,10 @@ const validateConfigObject = Schema({
 
   }),
 
+  socketio: bool(
+    requiredIfNo('rest')
+  ),
+
   mongodb: object({
 
     shape: {
@@ -155,7 +175,7 @@ const validateConfigObject = Schema({
       password: string(),
       database: string(required),
       hosts: arrayOf(
-        string(format(/([A-z]|[0-9]|-|\.)+:\d+/)),
+        string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
         required,
         length('>=', 1)
       )
@@ -165,13 +185,14 @@ const validateConfigObject = Schema({
 
   }),
 
-  socketio: bool(
-    requiredIfNo('rest')
-  ),
+  services: object({
+    cast: boolToObject,
+    validators: eachKeyMustBeObject
+  }),
 
   auth: object({
     cast: boolToObject,
-    validators: [ autoFill ]
+    validators: autoFillAuth
   }),
 
   port: number(
@@ -214,12 +235,8 @@ const validateClass = app => {
   if (is(app.socketio) && !is(app.socketio, Function))
     throw new Error('app.socketio not configured correctly. Must be a middleware function.')
 
-  if (is(app.services)) {
-    const isFunction = is(app.services, Function)
-    const isFunctionArr = is.arrayOf(app.services, Function)
-    if (!isFunction && !isFunctionArr)
-      throw new Error('app.services not configured correctly. Must be either a function or an array of functions')
-  }
+  if (is(app.services) && !is.objectOf(app.services, Function))
+    throw new Error('app.services not configured correctly. Must be an object of functions.')
 
 }
 

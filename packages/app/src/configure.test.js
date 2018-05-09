@@ -6,6 +6,7 @@ import { get, set } from '@benzed/immutable'
 import path from 'path'
 import fs from 'fs-extra'
 import { CONFIG_OBJ, CONFIG_URL } from 'test/util'
+import { inspect } from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -106,22 +107,27 @@ describe('config app instance', () => {
 
   describe('config.auth', () => {
 
+    const withDB = CONFIG_OBJ::set('mongodb', {
+      hosts: 'localhost:3200',
+      database: 'test-db'
+    })
+
     it('not required', () => {
       const fineValues = [ null, undefined ]
       for (const fineValue of fineValues)
-        expect(() => new App(CONFIG_OBJ::set('auth', fineValue))).to.not.throw(Error)
+        expect(() => new App(withDB::set('auth', fineValue))).to.not.throw(Error)
     })
 
     it('must be an object if defined', () => {
       const badValues = [ 10, Symbol('str'), 'str' ]
       for (const badValue of badValues)
-        expect(() => new App(CONFIG_OBJ::set('auth', badValue))).to.throw('Must be an Object')
+        expect(() => new App(withDB::set('auth', badValue))).to.throw('Must be an Object')
     })
 
     it('booleans are cast to objects', () => {
       const castValues = [ true, false ]
       for (const castValue of castValues)
-        expect(() => new App(CONFIG_OBJ::set('auth', castValue))).to.not.throw(Error)
+        expect(() => new App(withDB::set('auth', castValue))).to.not.throw(Error)
     })
 
     describe('config.auth.secret', () => {
@@ -209,10 +215,22 @@ describe('config app instance', () => {
     it('act as service options or initializers')
   })
 
-  describe.only('config.mongodb', () => {
+  describe('config.mongodb', () => {
 
-    it('must be an object')
-    it('is not required')
+    describe('must be an object', () => {
+      for (const badValue of [ true, false, [true], 'cake', Symbol('oy') ]) {
+        const config = CONFIG_OBJ::set('mongodb', badValue)
+        it(inspect`${badValue} should fail`, () => {
+          expect(() => new App(config)).to.throw('mongodb Must be an Object')
+        })
+      }
+    })
+
+    it('is not required', () => {
+      const config = CONFIG_OBJ::set('mongodb', null)
+      expect(() => new App(config)).to.not.throw('mongodb Must be an Object')
+
+    })
     it('required if auth is enabled', () => {
 
       const config = CONFIG_OBJ::set('auth', true)
@@ -221,24 +239,80 @@ describe('config app instance', () => {
 
     })
 
+    const notStrings = [ {}, Symbol('oy') ]
+    const withDB = CONFIG_OBJ::set('mongodb', {
+      database: 'test-database',
+      hosts: 'localhost:3200'
+    })
+
     describe('config.mongodb.username', () => {
-      it('must be a string')
+      describe('must be a string', () => {
+        for (const badValue of notStrings)
+          it(inspect`${badValue} should fail`, () => {
+            const config = withDB::set(['mongodb', 'username'], badValue)
+            expect(() => new App(config)).to.throw('username Must be of type: String')
+          })
+      })
     })
 
     describe('config.mongodb.password', () => {
-      it('must be a string')
+      describe('must be a string', () => {
+        for (const badValue of notStrings)
+          it(inspect`${badValue} should fail`, () => {
+            const config = withDB::set(['mongodb', 'password'], badValue)
+            expect(() => new App(config)).to.throw('password Must be of type: String')
+          })
+      })
     })
 
     describe('config.mongodb.database', () => {
-      it('must be a string')
+      describe('must be a string', () => {
+        for (const badValue of notStrings)
+          it(inspect`${badValue} should fail`, () => {
+            const config = CONFIG_OBJ::set(['mongodb', 'database'], badValue)
+            expect(() => new App(config)).to.throw('database Must be of type: String')
+          })
+      })
     })
 
     describe('config.mongodb.hosts', () => {
-      it('must be an array of strings')
-      it('each string must be a url formatted')
-    })
 
+      it('must be an array of strings', () => {
+        const config = withDB::set(['mongodb', 'hosts'], [{}, {}, {}])
+        expect(() => new App(config)).to.throw('hosts Must be an Array of String')
+      })
+
+      describe('each string must be a url formatted', () => {
+
+        for (const badValue of ['name@email.com', 'CONST_THING', 'ahh mazing', 'foo[bar]']) {
+          const bad = withDB::set(['mongodb', 'hosts'], badValue)
+          it(`'${badValue}' should throw`, () => {
+            expect(() => new App(bad)).to.throw('hosts Must be a url.')
+          })
+        }
+
+        for (const goodValue of ['localhost:3200', '192.168.1.102:27107', 'gears.server.quake:4500']) {
+          const good = withDB::set(['mongodb', 'hosts'], goodValue)
+          it(`'${goodValue}' should not throw`, () => {
+            expect(() => new App(good)).to.not.throw('Must be a url.')
+          })
+        }
+
+      })
+    })
   })
+
+  describe('config.services', () => {
+
+    it('must be an object')
+    it('key names match service names')
+
+    describe('config.services[name]', () => {
+      it('must be an object')
+      it('bool casts to object')
+    })
+  })
+
 })
 
 describe('config app class extension', () => {
@@ -259,6 +333,7 @@ describe('config app class extension', () => {
     it('optional')
     it('if defined must be a function or array of functions')
     it('are expected to add new services')
+    it('must have accompanying configurations in config.services')
   })
 
 })

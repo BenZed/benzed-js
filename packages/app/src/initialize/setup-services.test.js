@@ -9,102 +9,81 @@ import App from 'src/app'
 /* global describe it before after beforeEach afterEach */
 
 /******************************************************************************/
+//
+/******************************************************************************/
+
+const mongodb = {
+  hosts: 'localhost:3200',
+  database: 'test-db'
+}
+
+/******************************************************************************/
 // Test
 /******************************************************************************/
 
-describe('setupServices()', () => {
+describe.only('setupServices()', () => {
 
   it('must be bound to app', () => {
     expect(setupServices).to.throw('Cannot destructure property `feathers` of \'undefined\'')
   })
 
-  describe('if app.services is a function', () => {
+  describe('app.services', () => {
+    it('are used instead of standard Service constructor')
+    it('throws if config.service[serviceName] counterpart is missing', () => {
+      class MessageApp extends App {
 
-    class ServiceApp extends App {
-      servicesSetup = false
-      services (feathers) {
-        if (feathers !== this.feathers)
-          throw new Error('didnt call with feathers object')
-        this.servicesSetup = true
+        services = {
+          messages: () => {
+            console.log('this is where a message service would go')
+          }
+        }
+
       }
-    }
 
-    it('calls app.services with the feathers object', () => {
+      const msgApp = new MessageApp({
+        port: 3200,
+        auth: false,
+        socketio: true
+      })
 
-      const app = new ServiceApp({ port: 1234, socketio: true })
-
-      expect(() => app::setupServices()).to.not.throw('didnt call with feathers object')
-      expect(app.servicesSetup).to.equal(true)
+      expect(msgApp::setupServices).to.throw('missing configuration for \'messages\' service')
     })
 
-  })
+    it('are not setup if config.sercive[serviceName] is disabled', () => {
 
-  describe('if app.services is an array', () => {
+      const app = new App({
+        socketio: true,
+        port: 4500,
+        services: {
+          articles: false
+        }
+      })
 
-    let app
-
-    function service (feathers) {
-      if (this !== app)
-        throw new Error('[this] is not scoped to app')
-
-      if (this.feathers !== feathers)
-        throw new Error('feathers not passed in as argument')
-
-      this.servicesSetup++
-    }
-
-    class ServiceApp extends App {
-      servicesSetup = 0
-      services = [
-        service,
-        service
-      ]
-    }
-
-    it('calls each property with feathers object', () => {
-
-      app = new ServiceApp({ port: 5421, socketio: true })
-      expect(() => app::setupServices()).to.not.throw(Error)
-      expect(app.servicesSetup).to.equal(2)
-    })
-  })
-
-  describe('if auth is configured', () => {
-
-    it('sets up a users service if one isn\'t configured', () => {
-      const app = new App({ port: 1283, auth: true, socketio: true })
       app::setupServices()
-      expect(typeof app.feathers.service('users')).to.be.equal('object')
+      expect(app.feathers.service('articles')).to.be.equal(undefined)
+
+      const app2 = new App({
+        socketio: true,
+        port: 4500,
+        services: {
+          articles: true
+        }
+      })
+
+      app2::setupServices()
+      expect(app2.feathers.service('articles')).to.be.instanceof(Object)
+
     })
 
-    it('even if auth.service is somethign other than \'users\'', () => {
-      const app = new App({ port: 4910, auth: { service: 'players' }, socketio: true })
-      app::setupServices()
-      expect(typeof app.feathers.service('players')).to.be.equal('object')
+    describe('auth users service', () => {
+      it('uses UserService constructor instead of generic if no counterpart exists in app.services')
+      it('uses app.services[userServiceName] otherwise')
     })
-  })
 
-  describe('setting up services with service utility', () => {
-
-    // class MessageApp extends App {
-    //
-    //   services = {
-    //     messages: new Service(),
-    //     authors: new Service()
-    //   }
-    //
-    // }
-
-    // const app = new MessageApp({
-    //   port: 1234,
-    //   auth: {
-    //     service: 'authors',
-    //     entity: 'author'
-    //   }
-    // })
-
-    it('dunno how this works yet')
+    describe('files service', () => {
+      it('uses FileService constructor instead of generic if no counterpart exists in app.services')
+      it('uses app.services.files otherwise')
+    })
 
   })
-
 })

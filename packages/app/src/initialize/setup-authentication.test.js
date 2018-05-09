@@ -6,12 +6,27 @@ import setupAuthentication from './setup-authentication'
 
 import App from 'src/app'
 
+import { set } from '@benzed/immutable'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
 /******************************************************************************/
 // Test
 /******************************************************************************/
+
+const AUTH = {
+  port: 4450,
+  auth: true,
+  rest: true,
+  mongodb: {
+    database: 'test',
+    hosts: 'localhost:3200'
+  },
+  services: {
+    users: true
+  }
+}
 
 describe('setupAuthentication()', () => {
 
@@ -23,7 +38,7 @@ describe('setupAuthentication()', () => {
 
   before(() => {
     try {
-      app = new App({ port: 4450, auth: true, rest: true })
+      app = new App(AUTH)
       app::setupProviders()
       app::setupAuthentication()
       authService = app.feathers.service('authentication')
@@ -44,15 +59,22 @@ describe('setupAuthentication()', () => {
     })
 
     it('throws if rest is not enabled', () => {
-      const app = new App({ port: 2300, auth: true, socketio: true })
+      const app = new App(AUTH::set('rest', false))
       app::setupProviders()
       expect(() => app::setupAuthentication()).to.throw('cannot be configured on this app. Rest provider is not enabled')
     })
+
+    it('requires that config.services.users be enabled', () => {
+      const app = new App(AUTH::set('services', null))
+
+      expect(app::setupAuthentication).to.throw('\'users\' service is not enabled.')
+    })
+
   })
 
   describe('if auth is not defined', () => {
     it('does nothing', () => {
-      const app = new App({ port: 1294, socketio: true })
+      const app = new App({ ...AUTH, auth: null })
       expect(app.feathers.service('authentication')).to.equal(undefined)
     })
   })

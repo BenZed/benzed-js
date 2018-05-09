@@ -26,14 +26,12 @@ describe('setupProviders()', () => {
   describe('socket.io', () => {
 
     describe('will be set up if', () => {
-      it('config.socketio is true')
-      it('config.socketio is undefined but app.socketio middleware is defined')
       it('config.socketio is an object, in which case it will be used as options')
+      it('will use class defined middleware')
     })
 
     describe('will not be set up if', () => {
-      it('config.socketio is false')
-      it('config.socketio is undefined and app.socketio middleware is undefined')
+      it('config.socketio is falsy')
     })
 
     describe('setup', () => {
@@ -109,21 +107,17 @@ describe('setupProviders()', () => {
         })
 
       after(() => app && app.end())
-
     })
-
   })
 
   describe('sets up rest', () => {
 
     describe('will be set up if', () => {
       it('config.rest is true')
-      it('config.rest is undefined but app.rest middleware is defined')
     })
 
     describe('will not be set up if', () => {
       it('config.rest is false')
-      it('config.rest is undefined and app.rest middleware is undefined')
     })
 
   })

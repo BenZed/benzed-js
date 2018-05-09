@@ -19,7 +19,7 @@
   "license": "ISC",
   "description": "React components, classes, helpers",
   "devDependencies": {
-    "@benzed/dev": "^0.3.0"
+    "@benzed/dev": "^0.4.0"
   },
   "dependencies": {
     "@benzed/array": "^1.1.1",

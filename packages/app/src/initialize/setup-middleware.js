@@ -17,7 +17,7 @@ function setupMiddleware () {
 
   // if app.rest is a function, it's expected to be middleware
   if (typeof app.rest === 'function')
-    app.configure(feathers)
+    app.configure(app.rest)
 
   if (configRest && configRest.public)
     feathers
