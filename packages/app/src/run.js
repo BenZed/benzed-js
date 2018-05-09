@@ -38,7 +38,7 @@ async function run (config) {
   try {
     app = new App(config)
   } catch (err) {
-    app.log`app could not be configured: ${err.message}`
+    console.log(`app could not be configured: ${err.message}`)
     return app::kill()
   }
 

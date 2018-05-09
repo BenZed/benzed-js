@@ -33,7 +33,7 @@ function smartFindOutput (cwd) {
 
   const libPublic = path.join(cwd, 'lib/public')
   const distPublic = path.join(cwd, 'dist/public')
-  const distWebpackPublic = path.join(cwd, 'dist/webpack/public')
+  // const distWebpackPublic = path.join(cwd, 'dist/webpack/public')
 
   if (fs.existsSync(distPublic))
     return distPublic

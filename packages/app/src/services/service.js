@@ -35,22 +35,18 @@ const configObject = object({
 })
 
 const validateConfig = new Schema({
-  shape: {
-    path: string,
-    auth: bool(defaultTo(true)),
-    softDelete: configObject,
-    versions: configObject,
-    liveEdit: configObject
-  }
+  path: string,
+  auth: bool(defaultTo(true)),
+  softDelete: configObject,
+  versions: configObject,
+  liveEdit: configObject
 })
 
 const validateFunctionality = new Schema({
-  shape: {
-    hooks: oneOfType(func, object),
-    permissions: func,
-    schema: func,
-    middleware: arrayOf(func)
-  }
+  hooks: oneOfType(func, object),
+  permissions: func,
+  schema: func,
+  middleware: arrayOf(func)
 })
 
 /******************************************************************************/

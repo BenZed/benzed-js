@@ -7,10 +7,14 @@
 
 function defaultTo (defaultValue) {
 
-  return value => value == null
+  return value => {
+    const result = value == null
 
-    ? defaultValue
-    : value
+      ? defaultValue
+      : value
+
+    return result
+  }
 
 }
 

@@ -17,9 +17,12 @@ function handleError (ctx, err) {
 
 function validateAll (validators, value, context, index = 0) {
 
-  for (let i = index; i < validators.length; i++) {
+  const { length } = validators
+
+  for (let i = index; i < length; i++) {
 
     const validator = validators[i]
+
     let result
 
     try {
@@ -53,7 +56,6 @@ function validate (validator, input, context) {
 
   return is(input, Promise)
     ? input.then(resolvedInput => validateAll(validators, resolvedInput, context))
-
     : validateAll(validators, input, context)
 }
 
