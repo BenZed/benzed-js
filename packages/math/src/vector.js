@@ -1,5 +1,6 @@
 import lerp from './lerp'
-import { cos, sin, sqrt, atan2, PI } from './overrides'
+import { cos, sin, sqrt, atan2 } from './overrides'
+import { PI } from './constants'
 
 /******************************************************************************/
 // Helper
@@ -65,10 +66,10 @@ class Vector {
   static dot (a, b) {
 
     a = this.toVector(a)
-    a = this.toVector(b)
+    b = this.toVector(b)
 
-    const an = a.normalized()
-    const bn = b.normalized()
+    const an = a.normalize()
+    const bn = b.normalize()
 
     return an.x * bn.x + an.y * bn.y
   }

@@ -1,9 +1,17 @@
 import is from 'is-explicit'
-import { _builtinLibs } from 'repl'
 import { DefinePlugin } from 'webpack'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import path from 'path'
+
+/******************************************************************************/
+// Node Core Modules to not bundle
+/******************************************************************************/
+
+const NODE_CORE = [
+  'fs', 'child_process', 'cluster', 'http', 'https', 'net', 'os', 'readline',
+  'tls', 'tty', 'v8', 'vm', 'zlib', 'module'
+]
 
 /******************************************************************************/
 // Helper
@@ -120,12 +128,12 @@ const rules = [
 
 const resolve = {
   extensions: [ '.js', '.json' ],
-  modules: [
-    'node_modules',
-
-    // same as add-module-path src
-    path.resolve(__dirname, '../src')
-  ]
+  // modules: [
+  //   'node_modules'
+  //
+  //   // TODO fix this
+  //   // path.resolve(__dirname, '../src')
+  // ]
 }
 
 /******************************************************************************/
@@ -177,8 +185,8 @@ function WebpackConfig (config) {
   }
 
   const node = {}
-  for (const lib of _builtinLibs)
-    node[lib] = 'empty'
+  for (const core of NODE_CORE)
+    node[core] = 'empty'
 
   const webpack = {
 
