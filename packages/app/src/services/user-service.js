@@ -1,68 +1,26 @@
-import Service, { validateFunctionality } from './service'
-import is from 'is-explicit'
-import { discard, iff, isProvider } from 'feathers-hooks-common'
-import { merge } from '@benzed/immutable'
-
-import { validatePassword } from './hooks'
-
-/******************************************************************************/
-// Merge Hooks
-/******************************************************************************/
-
-function mergeHooks (a, b) {
-
-  if (!b)
-    return a
-
-  const merged = merge(a, b)
-  return merged
-}
-
-function createUserHooks (customHooks) {
-
-  if (!is(customHooks, Function)) {
-    const value = customHooks
-    customHooks = () => value
-  }
-
-  // Hooks
-  const passHash = require('@feathersjs/authentication-local').hooks.hashPassword()
-  const passRemove = iff(isProvider('external'), discard('password'))
-
-  return (config, name) => {
-
-    const passValidate = validatePassword(config.passwordLength)
-
-    const userHooks = {
-      before: {
-        create: [ passValidate, passHash ],
-        patch:  [ passValidate, passHash ],
-        update: [ passValidate, passHash ]
-      },
-      after: {
-        all: [ passRemove ]
-      }
-    }
-
-    return mergeHooks(userHooks, customHooks(config, name))
-
-  }
-
-}
+import Service from './service'
+import { hashPassword, validatePassword } from '../hooks'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function UserService (functionality) {
+class UserService extends Service {
 
-  functionality = validateFunctionality(functionality) || {}
+  hooks (config, app) {
 
-  const { hooks: customHooks } = functionality
+    const pass = {
+      check: validatePassword(config['password-length']),
+      hash: hashPassword()
+    }
 
-  functionality.hooks = createUserHooks(customHooks)
+    this.before({
+      create: [ pass.check, pass.hash ],
+      patch:  [ pass.check, pass.hash ],
+      update: [ pass.check, pass.hash ]
+    })
 
-  return Service(functionality)
+  }
 
 }
 

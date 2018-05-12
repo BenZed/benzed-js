@@ -9,19 +9,10 @@ import App from 'src/app'
 /* global describe it before after beforeEach afterEach */
 
 /******************************************************************************/
-//
-/******************************************************************************/
-
-const mongodb = {
-  hosts: 'localhost:3200',
-  database: 'test-db'
-}
-
-/******************************************************************************/
 // Test
 /******************************************************************************/
 
-describe.only('setupServices()', () => {
+describe('setupServices()', () => {
 
   it('must be bound to app', () => {
     expect(setupServices).to.throw('Cannot destructure property `feathers` of \'undefined\'')
@@ -31,13 +22,11 @@ describe.only('setupServices()', () => {
     it('are used instead of standard Service constructor')
     it('throws if config.service[serviceName] counterpart is missing', () => {
       class MessageApp extends App {
-
         services = {
           messages: () => {
             console.log('this is where a message service would go')
           }
         }
-
       }
 
       const msgApp = new MessageApp({
@@ -49,7 +38,7 @@ describe.only('setupServices()', () => {
       expect(msgApp::setupServices).to.throw('missing configuration for \'messages\' service')
     })
 
-    it('are not setup if config.sercive[serviceName] is disabled', () => {
+    it('are not setup if config.service[serviceName] is disabled', () => {
 
       const app = new App({
         socketio: true,

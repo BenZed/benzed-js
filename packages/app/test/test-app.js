@@ -1,10 +1,10 @@
-import Service from './Service'
+import App from 'src/app'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-class LiveEditService extends Service {
+class TestApp extends App {
 
 }
 
@@ -12,4 +12,4 @@ class LiveEditService extends Service {
 // Exports
 /******************************************************************************/
 
-export default LiveEditService
+export default TestApp

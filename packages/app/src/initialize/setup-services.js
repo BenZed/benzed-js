@@ -20,6 +20,14 @@ function assertServicesMissingConfig (config, services) {
 
 }
 
+function isServiceConstructor (input) {
+
+  const { prototype } = input
+
+  return prototype.constructor === Service ||
+    prototype instanceof Service
+}
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -42,15 +50,25 @@ function setupServices () {
     if (!setupConfig || ('enabled' in serviceConfig && !serviceConfig.enabled))
       continue
 
-    const setupFunc = app.services && app.services[serviceName]
-      ? app.services[serviceName]
-      : authConfig && serviceName === authConfig.service
-        ? UserService()
-        : serviceName === FILE_SERVICE_NAME
-          ? FileService()
-          : Service()
+    let service = app.services && app.services[serviceName]
+    if (!service && authConfig && serviceName === authConfig.service)
+      service = UserService
 
-    app::setupFunc(setupConfig, serviceName)
+    if (!service && serviceName === FILE_SERVICE_NAME)
+      service = FileService
+
+    if (!service)
+      service = Service
+
+    if (service instanceof Function === false)
+      throw new Error('service must be a function or a Service instance')
+
+    if (isServiceConstructor(service))
+      void new Service(setupConfig, serviceName, app)
+
+    else
+      app::service(setupConfig, serviceName, app)
+
   }
 
 }

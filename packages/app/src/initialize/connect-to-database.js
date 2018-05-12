@@ -63,6 +63,7 @@ function createMongoProcess (uri, database) {
     app.database.process = spawn('mongod', [
       '--port', port,
       '--quiet'
+      // '--dbPath', dbPath // TODO add the ability customize data path location to config
     ])
 
     app.database.process.on('exit', onError)

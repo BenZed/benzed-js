@@ -33,10 +33,12 @@ function validateArrayOf (array, context, config, skipItems = false) {
 
   const { validators, err, type } = config
 
-  array = wrap(array)
+  if (array != null)
+    array = wrap(array)
+
   let async = false
 
-  if (!skipItems) for (let i = 0; i < array.length; i++) {
+  if (!skipItems && array) for (let i = 0; i < array.length; i++) {
     let value = array[i]
     value = validate(type, value, context.safe())
 

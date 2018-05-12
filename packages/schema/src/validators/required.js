@@ -24,9 +24,11 @@ function required (...args) {
 
   const { err } = configRequired(args)
 
-  return value => is(value)
+  const required = value => is(value)
     ? value
     : new Error(err)
+
+  return required
 }
 
 required[OPTIONAL_CONFIG] = true

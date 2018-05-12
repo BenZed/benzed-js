@@ -5,6 +5,7 @@ import bool from './bool'
 import func from './func'
 import number from './number'
 import object from './object'
+import oneOf from './one-of'
 import oneOfType from './one-of-type'
 import string from './string'
 import typeOf from './type-of'
@@ -21,6 +22,7 @@ export {
   func,
   number,
   object,
+  oneOf,
   oneOfType,
   string,
   typeOf

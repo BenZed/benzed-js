@@ -47,6 +47,10 @@ describe('setupAuthentication()', () => {
     }
   })
 
+  after(() =>
+    app.end()
+  )
+
   describe('if auth is defined', () => {
     it('adds authentication service', () =>
       expect(typeof authService).to.be.equal('object')
@@ -59,15 +63,19 @@ describe('setupAuthentication()', () => {
     })
 
     it('throws if rest is not enabled', () => {
-      const app = new App(AUTH::set('rest', false))
+      const config = AUTH
+        ::set('rest', false)
+        ::set('socketio', true)
+
+      const app = new App(config)
       app::setupProviders()
-      expect(() => app::setupAuthentication()).to.throw('cannot be configured on this app. Rest provider is not enabled')
+      expect(() => app::setupAuthentication()).to.throw('cannot be setup on this app. Rest provider is not enabled')
     })
 
     it('requires that config.services.users be enabled', () => {
       const app = new App(AUTH::set('services', null))
 
-      expect(app::setupAuthentication).to.throw('\'users\' service is not enabled.')
+      expect(app::setupAuthentication).to.throw('"users" service is not enabled.')
     })
 
   })

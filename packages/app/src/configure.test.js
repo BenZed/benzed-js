@@ -275,6 +275,12 @@ describe('config app instance', () => {
       })
     })
 
+    describe('config.mongodb.localdata', () => {
+      it('is a string')
+      it('is optional')
+      it('must point toward an existing local folder')
+    })
+
     describe('config.mongodb.hosts', () => {
 
       it('must be an array of strings', () => {
@@ -313,6 +319,11 @@ describe('config app instance', () => {
     })
   })
 
+  describe('config.logging', () => {
+    it('must be a bool')
+    it('defaults to true')
+  })
+
 })
 
 describe('config app class extension', () => {
@@ -331,7 +342,7 @@ describe('config app class extension', () => {
 
   describe('ExtendedApp.services', () => {
     it('optional')
-    it('if defined must be a function or array of functions')
+    it('if defined must be a function or service instance or array of functions or service instances')
     it('are expected to add new services')
     it('must have accompanying configurations in config.services')
   })

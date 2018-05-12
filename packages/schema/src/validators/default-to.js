@@ -1,3 +1,4 @@
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Main
@@ -7,15 +8,20 @@
 
 function defaultTo (defaultValue) {
 
-  return value => {
+  const getDefaultValue = is(defaultValue, Function)
+    ? defaultValue
+    : () => defaultValue
+
+  const defaultTo = (value, context) => {
     const result = value == null
 
-      ? defaultValue
+      ? getDefaultValue(context)
       : value
 
     return result
   }
 
+  return defaultTo
 }
 
 /******************************************************************************/

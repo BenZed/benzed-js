@@ -3,13 +3,12 @@ import connectToDatabase from './connect-to-database'
 import App from '../app'
 
 import { ChildProcess } from 'child_process'
-
 import { expectReject } from '@benzed/dev'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('connectToDatabase()', () => {
+describe.skip('connectToDatabase()', () => {
 
   it('is a function', () => {
     expect(connectToDatabase).to.be.instanceof(Function)
@@ -22,7 +21,8 @@ describe('connectToDatabase()', () => {
   it('ignored if mongodb is not configured', () => {
     const app = new App({
       port: 4000,
-      socketio: true
+      socketio: true,
+      logging: false
     })
     app.logging = false
     expect(app::connectToDatabase).to.not.throw(Error)
@@ -41,6 +41,7 @@ describe('connectToDatabase()', () => {
       const app = new App({
         port: 4600,
         socketio: true,
+        logging: false,
         mongodb: {
           database: 'test-app',
           hosts: 'localhost:4650'

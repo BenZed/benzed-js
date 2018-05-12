@@ -4,7 +4,7 @@ import is from 'is-explicit'
 
 import { Schema,
   object, arrayOf, string, bool, number,
-  required, length, format
+  required, length, format, defaultTo
 } from '@benzed/schema'
 import { get, set } from '@benzed/immutable'
 import { randomBytes } from 'crypto'
@@ -118,7 +118,7 @@ const eachKeyMustBeObject = value => {
 
 const autoFillAuth = value => {
 
-  if (!value)
+  if (!is.plainObject(value))
     return value
 
   if (!is(value.secret, String)) {
@@ -197,6 +197,10 @@ const validateConfigObject = Schema({
 
   port: number(
     required
+  ),
+
+  logging: bool(
+    defaultTo(true)
   )
 })
 

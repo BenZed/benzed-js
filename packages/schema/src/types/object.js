@@ -11,20 +11,23 @@ import is from 'is-explicit'
 /******************************************************************************/
 
 const layout = [
-  {
-    name: 'shape',
-    type: Object,
-    default: null
-  },
+
   {
     name: 'err',
     type: String
   },
+
   {
     name: 'validators',
     type: Function,
     count: Infinity,
     default: []
+  },
+
+  {
+    name: 'shape',
+    type: Object,
+    default: null
   },
 
   {
@@ -107,14 +110,11 @@ function validateObject (value, context, config, skipSelf = false) {
 
   const { cast, shape, err, validators, onlyShapeKeys } = config
 
-  if (!skipSelf && cast && value != null && !is.plainObject(value))
+  if (!skipSelf && value != null && cast && !is.plainObject(value))
     value = cast(value)
 
-  if (!skipSelf && value != null && !is.plainObject(value))
-    return new TypeValidationError(err)
-
-  if (!skipSelf && value != null && shape)
-    value = validateShape(shape, value, context, onlyShapeKeys)
+  if (!skipSelf && validators && validators.length > 0)
+    value = validate(validators, value, context.safe())
 
   if (is(value, Error))
     return value
@@ -122,9 +122,13 @@ function validateObject (value, context, config, skipSelf = false) {
   if (is(value, Promise))
     return value.then(resolved => validateObject(resolved, context, config, true))
 
-  return validators && validators.length > 0
-    ? validate(validators, value, context.safe())
-    : value
+  if (!skipSelf && value != null && !is.plainObject(value))
+    return new TypeValidationError(err)
+
+  if (value != null && shape)
+    value = validateShape(shape, value, context, onlyShapeKeys)
+
+  return value
 }
 
 /******************************************************************************/
