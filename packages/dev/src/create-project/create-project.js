@@ -55,7 +55,7 @@ function createProjectFolder () {
   fs.ensureDirSync(projectDir)
 }
 
-async function createProject (input) {
+function createProject (input) {
 
   let options
 
@@ -73,8 +73,8 @@ async function createProject (input) {
   const context = new Context(options)
 
   context::createProjectFolder()
-  await context::writeTemplates()
-  await context::addDependencies()
+  context::writeTemplates()
+  context::addDependencies()
 
 }
 

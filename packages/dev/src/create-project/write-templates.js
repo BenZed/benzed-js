@@ -10,6 +10,8 @@ import { push, unique } from '@benzed/immutable'
 
 const TEMPLATES_DIR = path.join(__dirname, './templates')
 
+const SKIP_LINE = '@benzed-skip-line'
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -18,6 +20,16 @@ const TEMPLATES_DIR = path.join(__dirname, './templates')
 const stringifyNoUndef = (k, v) => v instanceof Array
   ? v.filter(i => i !== undefined)
   : v
+
+function lineIf (condition) {
+
+  if (typeof condition === 'function')
+    condition = condition()
+
+  return (strings, ...params) => condition
+    ? prettifyString(strings, ...params)
+    : SKIP_LINE
+}
 
 function prettifyString (strings, ...params) {
   let str = ''
@@ -40,8 +52,16 @@ function prettifyString (strings, ...params) {
   const lines = str.split('\n')
     // Remove blank first line
     .filter((line, i) => i > 0 || line.trim().length > 0)
+    // Remove skip line
+    .filter(line => !line.includes(SKIP_LINE))
 
-  return lines.join('\n')
+  str = lines.join('\n')
+
+  // Remove duplicate spaces
+  while (/\n\n\n/.test(str))
+    str = str.replace(/\n\n\n/, '\n\n')
+
+  return str
 }
 
 /******************************************************************************/
@@ -114,7 +134,8 @@ function writeTemplate (templateUrl) {
     backend,
     type,
     ...context.options,
-    pretty: prettifyString
+    pretty: prettifyString,
+    iff: lineIf
   })
 
   if (is.plainObject(text))

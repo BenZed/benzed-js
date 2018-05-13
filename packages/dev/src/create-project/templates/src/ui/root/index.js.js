@@ -1,19 +1,12 @@
-
 import { capitalize } from '@benzed/string'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default ({ ui, name, pretty, frontend }) => ui && pretty`
-import { React } from '@benzed/react'
+export default ({ frontend, ui, pretty }) => ui &&
 
-/******************************************************************************/
-// Main
-/******************************************************************************/
-
-const ${frontend::capitalize()} = () =>
-  <div>${name}</div>
+pretty`import ${frontend::capitalize()} from './${frontend}'
 
 /******************************************************************************/
 // Exports

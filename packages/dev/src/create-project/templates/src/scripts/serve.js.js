@@ -6,12 +6,13 @@ export default ({ api, backend, name, pretty }) => {
 
   return api && `import ${className} from '../api/${backend}'
 import path from 'path'
+import { run } from '@benzed/app'
 
 /******************************************************************************/
 // Setup
 /******************************************************************************/
 
-const CONFIG_URL = path.resolve(__dirname, '../../config')
+const CONFIG_URL = path.resolve(process.cwd(), 'config')
 
 /******************************************************************************/
 // Execute

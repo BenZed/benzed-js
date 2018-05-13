@@ -1,3 +1,4 @@
+import { serverSideRendering } from '../middleware'
 
 /******************************************************************************/
 // Main
@@ -19,9 +20,11 @@ function setupMiddleware () {
   if (typeof app.rest === 'function')
     app.configure(app.rest)
 
-  if (configRest && configRest.public)
+  const publicDir = configRest && configRest.public
+  if (publicDir)
     feathers
       .use('/', express.static(configRest.public))
+      .use(serverSideRendering(configRest.public))
 
   feathers
     .use(express.errorHandler())

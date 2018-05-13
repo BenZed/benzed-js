@@ -6,14 +6,18 @@ import args from 'args'
 
 function parseArgs (input) {
   const options = args
+
     .option('dir', 'directory where project will be generated', process.cwd())
     .option('name', 'name of the project')
+
     .option('api', 'should this project use an api')
     .option('socketio', 'should this api use a socket.io provider')
     .option('rest', 'should this api use a rest provider')
     .option('auth', 'should this api use user authentication')
     .option('files', 'should this api have a files service')
     .option('ui', 'should this project have a ui')
+    .option('routing', 'should this project have routing')
+
     .parse(input)
 
   // args creates the same flag 3 times with single letter alternatives,

@@ -1,8 +1,7 @@
 import { capitalize } from '@benzed/string'
 
-export default ({ name, frontend, type, ui, pretty }) => {
-
-  return ui && pretty`import 'normalize.css'
+export default ({ name, frontend, type, ui, api, pretty }) => ui && pretty`
+import 'normalize.css'
 import './public/${name}.css'
 
 /******************************************************************************/
@@ -10,8 +9,9 @@ import './public/${name}.css'
 /******************************************************************************/
 
 const dependencies = Promise.all([
-  import('@benzed/react'),
-  import('ui/components/${frontend}')
+  import('react'),
+  import('react-dom'),
+  import('../ui/root')
 ])
 
 /******************************************************************************/
@@ -20,14 +20,21 @@ const dependencies = Promise.all([
 
 window.addEventListener('load', async () => {
   const [
-    { React, render },
+    { default: React },
+    { ${api ? 'hydrate' : 'render'} },
     { default: ${frontend::capitalize()} }
   ] = await dependencies
 
   const tag = document.getElementById('${name}')
   const element = <${frontend::capitalize()} />
 
-  render(element, tag)
+  ${api ? 'hydrate' : 'render'}(element, tag)
 })
 `
+
+export function dependencies ({ ui }) {
+  return ui && [
+    'react',
+    'react-dom'
+  ]
 }

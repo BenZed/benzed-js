@@ -39,17 +39,15 @@ function smartFindOutput (cwd) {
   const fs = require('fs')
   const path = require('path')
 
-  const libPublic = path.join(cwd, 'lib/public')
-  const distPublic = path.join(cwd, 'dist/public')
-  // const distWebpackPublic = path.join(cwd, 'dist/webpack/public')
+  const lib = path.join(cwd, 'lib')
+  const dist = path.join(cwd, 'dist')
 
-  if (fs.existsSync(distPublic))
-    return distPublic
+  const build = (fs.existsSync(lib) && lib) || (fs.existsSync(dist) && dist)
+  if (!build)
+    throw new Error('config.output was not provided, and build folder could be found.')
 
-  if (fs.existsSync(libPublic))
-    return libPublic
-
-  throw new Error('config.output was not provided, and public folder could be found.')
+  const output = path.join(build, 'public')
+  return output
 }
 
 function smartFindHtml (cwd, inputFile) {
@@ -127,7 +125,7 @@ const rules = [
 ]
 
 const resolve = {
-  extensions: [ '.js', '.json' ],
+  extensions: [ '.js', '.json' ] // ,
   // modules: [
   //   'node_modules'
   //

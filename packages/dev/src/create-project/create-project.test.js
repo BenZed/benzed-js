@@ -27,11 +27,12 @@ function testProjectCreate (options) {
 
   const { dir, name } = options
 
-  createProject(options)
-
   const projectDir = path.join(dir, name)
 
   it(`project '${name}' created at ${projectDir}`, () => {
+
+    expect(() => createProject(options)).to.not.throw(Error)
+
     let stat
     expect(() => {
       stat = fs.statSync(projectDir)
@@ -144,20 +145,25 @@ describe.only('createProject()', () => {
 
     })
 
-    describe('creates quini-emailer', () => {
+    describe.only('creates boss-media-www', function () {
+      this.timeout(50000)
 
+      const dir = path.resolve(process.cwd(), '../../../')
+
+      console.log(dir)
       const options = {
-        dir: WORK_DIR,
-        name: 'quini-emailer',
+        dir: dir,
+        name: 'boss-media-www',
 
-        socketio: true,
+        socketio: false,
         rest: false,
 
         ui: true,
         api: true,
 
-        auth: true,
-        files: false
+        auth: false,
+        files: false,
+        routing: true
       }
 
       testProjectCreate(options)

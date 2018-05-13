@@ -5,7 +5,7 @@ import is from 'is-explicit'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('addDependencies', () => {
+describe('addDependencies', () => {
 
   it('is a function', () => {
     expect(is(addDependencies, Function)).to.be.equal(true)

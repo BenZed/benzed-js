@@ -1,4 +1,3 @@
-import { capitalize } from '@benzed/string'
 
 /******************************************************************************/
 // Exports
@@ -6,11 +5,11 @@ import { capitalize } from '@benzed/string'
 
 export default ({ frontend, ui, pretty }) => ui &&
 
-pretty`import ${frontend::capitalize()} from './${frontend}'
+pretty`
+// index file for sub components
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default ${frontend::capitalize()}
-`
+export { }`

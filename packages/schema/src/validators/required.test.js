@@ -8,7 +8,7 @@ import Schema from '../schema'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('required() stock validator', () => {
+describe.only('required() stock validator', () => {
 
   const r = required()
 
@@ -62,6 +62,18 @@ describe('required() stock validator', () => {
       expect(() => schema({ })).to.throw('name is Required.')
       expect(() => schema({ name: 'Ben' })).to.throw('age is Required.')
       expect(() => schema({ name: 'Ben', age: 33 })).to.not.throw()
+
+    })
+
+    it.only('empty strings count', () => {
+
+      const schema = Schema({
+        dir: string(required)
+      })
+
+      expect(() => schema({ })).to.throw('dir is Required.')
+      expect(() => schema({ dir: '' })).to.not.throw('dir is Required.')
+      expect(() => schema({ dir: '/whatever/man' })).to.not.throw('dir is Required.')
 
     })
   })
