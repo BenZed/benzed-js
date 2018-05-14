@@ -1,10 +1,7 @@
-import { clearConsole } from '../src'
-import { addPath } from 'module-alias'
-import path from 'path'
+import testCreateProject from './test-create-project'
 
 /******************************************************************************/
-// Setup
+// Exports
 /******************************************************************************/
 
-addPath(path.join(__dirname, '../'))
-clearConsole()
+export default testCreateProject

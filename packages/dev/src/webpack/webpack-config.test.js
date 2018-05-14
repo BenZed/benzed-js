@@ -5,7 +5,7 @@ import is from 'is-explicit'
 import fs from 'fs-extra'
 import path from 'path'
 
-import { inspect } from '../util'
+import { inspect } from '../misc-util'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

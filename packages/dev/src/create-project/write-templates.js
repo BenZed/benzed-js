@@ -68,7 +68,7 @@ function prettifyString (strings, ...params) {
 // Main
 /******************************************************************************/
 
-function writeToProject (text, templateUrl, namer) {
+function writeToProject (text, templateUrl) {
 
   const context = this
 
@@ -83,24 +83,20 @@ function writeToProject (text, templateUrl, namer) {
   let name = path.basename(urlInProject, ext)
   const dir = path.dirname(urlInProject)
 
-  if (namer instanceof Function)
-    namer = namer(context.options)
-
-  if (typeof namer === 'string')
-    name = namer
-
-  else if (/^\$/.test(name)) {
+  if (/^\$/.test(name)) {
 
     const key = name.replace('$', '')
     name = context.options[key] || context[key]
 
   }
 
+  if (/^\*/.test(name))
+    name = name.replace('*', '.')
+
   urlInProject = path.join(dir, name + ext)
 
   fs.ensureFileSync(urlInProject)
   fs.writeFileSync(urlInProject, text)
-
   context.writtenFiles.push(urlInProject)
 }
 
@@ -122,9 +118,10 @@ function addDependencies (deps, options) {
 function writeTemplate (templateUrl) {
 
   const context = this
-
   const {
-    default: getText, dependencies, devDependencies
+    default: getText,
+    dependencies,
+    devDependencies
   } = require(templateUrl)
 
   const { frontend, backend, type } = context

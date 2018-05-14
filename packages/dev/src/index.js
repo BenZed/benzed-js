@@ -1,6 +1,6 @@
-import Test, { expectReject, expectResolve } from './test'
+import Test, { expectReject, expectResolve } from './test-util'
 
-import { inspect, clearConsole } from './util'
+import { inspect, clearConsole } from './misc-util'
 
 import WebpackConfig from './webpack'
 

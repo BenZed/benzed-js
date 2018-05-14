@@ -1,22 +1,18 @@
 
-/******************************************************************************/
-// TODO seperate to own file
-/******************************************************************************/
-
-/* global describe */
-
 const SKIP = Symbol('skip')
 const ONLY = Symbol('only')
 
-function getDescriber (operator) {
+function getDescriber (operator, name = 'describe') {
+
+  const func = global[name]
 
   if (operator === SKIP)
-    return (...args) => describe.skip(...args)
+    return (...args) => func.skip(...args)
 
   if (operator === ONLY)
-    return (...args) => describe.only(...args)
+    return (...args) => func.only(...args)
 
-  return describe
+  return func
 }
 
 /******************************************************************************/

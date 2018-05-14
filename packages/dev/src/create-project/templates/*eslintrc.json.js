@@ -1,8 +1,5 @@
 
-
-
 export default ({ ui }) => {
-
 
   const env = {
     browser: ui || undefined,

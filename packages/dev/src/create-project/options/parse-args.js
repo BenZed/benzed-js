@@ -7,8 +7,8 @@ import args from 'args'
 function parseArgs (input) {
   const options = args
 
+    // .option('name', 'name of the project')
     .option('dir', 'directory where project will be generated', process.cwd())
-    .option('name', 'name of the project')
 
     .option('api', 'should this project use an api')
     .option('socketio', 'should this api use a socket.io provider')
@@ -19,6 +19,8 @@ function parseArgs (input) {
     .option('routing', 'should this project have routing')
 
     .parse(input)
+
+  options.name = args.sub[0]
 
   // args creates the same flag 3 times with single letter alternatives,
   // which I don't need

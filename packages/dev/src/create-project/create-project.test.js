@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import createProject from './create-project'
+import testCreateProject from 'test/test-create-project'
 import path from 'path'
 import fs from 'fs-extra'
 
@@ -19,32 +19,6 @@ fs.ensureDirSync(
   WORK_DIR
 )
 
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-function testProjectCreate (options) {
-
-  const { dir, name } = options
-
-  const projectDir = path.join(dir, name)
-
-  it(`project '${name}' created at ${projectDir}`, () => {
-
-    expect(() => createProject(options)).to.not.throw(Error)
-
-    let stat
-    expect(() => {
-      stat = fs.statSync(projectDir)
-    }).to.not.throw(Error)
-
-    expect(stat.isDirectory()).to.be.equal(true)
-
-    // TODO expect project to have a .babelrc, package.json, ect.
-  })
-
-}
-
 // const fakeArgs = dir => [
 //   'node', 'benzed-create', // needs two or else args package breaks
 //   `--dir`, `${dir || WORK_DIR}`
@@ -57,7 +31,7 @@ function testProjectCreate (options) {
 describe.only('createProject()', () => {
 
   it('is a function', () => {
-    expect(createProject).to.be.instanceof(Function)
+    expect(testCreateProject).to.be.instanceof(Function)
   })
 
   describe('input', () => {
@@ -101,7 +75,7 @@ describe.only('createProject()', () => {
         files: false
       }
 
-      testProjectCreate(options)
+      testCreateProject(options)
 
     })
 
@@ -121,7 +95,7 @@ describe.only('createProject()', () => {
         files: false
       }
 
-      testProjectCreate(options)
+      testCreateProject(options)
 
     })
 
@@ -141,7 +115,7 @@ describe.only('createProject()', () => {
         files: false
       }
 
-      testProjectCreate(options)
+      testCreateProject(options)
 
     })
 
@@ -150,7 +124,6 @@ describe.only('createProject()', () => {
 
       const dir = path.resolve(process.cwd(), '../../../')
 
-      console.log(dir)
       const options = {
         dir: dir,
         name: 'boss-media-www',
@@ -166,7 +139,7 @@ describe.only('createProject()', () => {
         routing: true
       }
 
-      testProjectCreate(options)
+      testCreateProject(options)
 
     })
 
