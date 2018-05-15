@@ -57,9 +57,13 @@ describe('Hook', () => {
 
 })
 
-describe('setPriority', () => {
+describe('prepareGeneric', () => {
+
+  it('sets the name of a given function')
   it('sets the priority of a given function')
   it('intended to be used on generic hooks')
   it('throws if not bound to hook')
-  it('throws if value is not a number')
+  it('throws if name is not a string')
+  it('throws if priority is not a number')
+
 })

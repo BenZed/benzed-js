@@ -24,8 +24,9 @@ function isServiceConstructor (input) {
 
   const { prototype } = input
 
-  return prototype.constructor === Service ||
-    prototype instanceof Service
+  return prototype &&
+    (prototype.constructor === Service ||
+    prototype instanceof Service)
 }
 
 /******************************************************************************/
@@ -63,10 +64,11 @@ function setupServices () {
     if (service instanceof Function === false)
       throw new Error('service must be a function or a Service instance')
 
-    if (isServiceConstructor(service))
+    if (isServiceConstructor(service)) {
+      const Service = service
       void new Service(setupConfig, serviceName, app)
 
-    else
+    } else
       app::service(setupConfig, serviceName, app)
 
   }

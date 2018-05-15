@@ -11,9 +11,9 @@ import Service from './service'
 // Service constructor does not return an instance of service, so we have
 // to fake it.
 
-const createDummyService = () => Object({
+const createDummyService = (addHooks = () => {}) => Object({
 
-  addHooks () {},
+  addHooks,
 
   [HOOKS]: validateHookTypeStructure({}),
 
@@ -51,15 +51,27 @@ describe('compileHooks()', () => {
     it('returns a object with feathers hook structure', () => {
 
       const dummyService = createDummyService()
-
       const hooks = dummyService::compileHooks(app, { })
-
       expect(hooks).to.be.instanceof(Object)
 
       // No configuration, no hooks added
       expect(Object.keys(hooks)).to.have.length(0)
     })
-    it('prunes object structure to only include entries with hook')
+    it('prunes object structure to only include entries with hook', () => {
+      const testHook = () => {}
+      const dummyService = createDummyService(function () {
+        return {
+          before: {
+            create: testHook
+          }
+        }
+      })
+      const hooks = dummyService::compileHooks(app, { })
+      expect(hooks).to.be.instanceof(Object)
+      expect(hooks).to.have.property('before')
+      expect(hooks.before).to.have.property('create')
+      expect(hooks.before.create).to.have.length(1)
+    })
   })
 
   describe('adds shortcut hooks via app or service config', () => {
@@ -80,6 +92,7 @@ describe('compileHooks()', () => {
     describe('auth', () => {
       it('app.config.auth and app.config[serviceName].auth', () => {
         app.set('auth', { })
+
         const dummyService = createDummyService()
 
         const hooks = dummyService::compileHooks(
@@ -118,6 +131,25 @@ describe('compileHooks()', () => {
     it('validates correct hook structure')
     it('inlines hooks with existing hooks, respecting priority')
     it('preserves order of equal priority hooks')
+    describe('adds hooks added via shortcuts', () => {
+      it('before', () => {
+
+        const testHook = () => { console.log('test') }
+
+        const dummyService = createDummyService(function () {
+          this.before({
+            create: [ testHook ]
+          })
+        })
+
+        const hooks = dummyService::compileHooks(app, { auth: false, softDelete: false })
+        expect(hooks).to.have.property('before')
+        expect(hooks.before).to.have.property('create')
+        expect(hooks.before.create).to.have.length(1)
+      })
+      it('after')
+      it('error')
+    })
   })
 
 })

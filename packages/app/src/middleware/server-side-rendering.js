@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'fs'
+// import path from 'path'
+// import fs from 'fs'
 
 /******************************************************************************/
 // Helper
@@ -10,16 +10,16 @@ class HtmlTemplate {
   open = '<main>'
   close = '<main/>'
 
-  constructor (dir) {
-
-    const indexHtml = path.join(dir, 'index.html')
-    const indexLines = fs
-      .readFileSync(indexHtml, 'utf-8')
-      .split('\n')
-
-    // TODO FINISH TURNING INDEX.HTML INTO A TEMPLATE
-
-  }
+  // constructor (dir) {
+  //
+  //   const indexHtml = path.join(dir, 'index.html')
+  //   const indexLines = fs
+  //     .readFileSync(indexHtml, 'utf-8')
+  //     .split('\n')
+  //
+  //   // TODO FINISH TURNING INDEX.HTML INTO A TEMPLATE
+  //
+  // }
 
   render (ui) {
     const { renderToString } = require('react-dom/server')

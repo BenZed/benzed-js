@@ -76,12 +76,11 @@ function addServiceHooks (app, config) {
 
   const service = this
 
-  const serviceHooks = validateHookTypeStructure(
-    service.addHooks(config, app)
-  )
-
-  if (serviceHooks)
+  let serviceHooks = service.addHooks(config, app)
+  if (serviceHooks) {
+    serviceHooks = validateHookTypeStructure(serviceHooks)
     mergeHooks(service[HOOKS], serviceHooks)
+  }
 
 }
 

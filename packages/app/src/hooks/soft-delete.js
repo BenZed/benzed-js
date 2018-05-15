@@ -1,7 +1,7 @@
 import Hook from './hook'
 
 import { AUTH_PRIORITY } from './jwt-auth'
-import { Schema, func, required } from '@benzed/schema'
+import { Schema, func } from '@benzed/schema'
 
 /******************************************************************************/
 // Main

@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import setupServices from './setup-services'
 
 import App from 'src/app'
-// import Service from 'src/services'
+import Service from 'src/services/service'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -14,20 +14,66 @@ import App from 'src/app'
 
 describe('setupServices()', () => {
 
+  class MessageApp extends App {
+    services = {
+      messages: (config, name, app) => {
+        app.messagesSetup = true
+      }
+    }
+  }
+
   it('must be bound to app', () => {
     expect(setupServices).to.throw('Cannot destructure property `feathers` of \'undefined\'')
   })
 
-  describe('app.services', () => {
-    it('are used instead of standard Service constructor')
-    it('throws if config.service[serviceName] counterpart is missing', () => {
-      class MessageApp extends App {
-        services = {
-          messages: () => {
-            console.log('this is where a message service would go')
-          }
+  describe.only('app.services', () => {
+
+    it('are used instead of standard Service constructor', () => {
+
+      const msgApp = new MessageApp({
+        port: 3200,
+        auth: false,
+        socketio: true,
+        services: {
+          messages: true
+        }
+      })
+
+      expect(msgApp::setupServices).to.not.throw(Error)
+      expect(msgApp.messagesSetup).to.be.equal(true)
+
+    })
+
+    it('uses extended Service constructors', () => {
+
+      class CustomService extends Service {
+        constructor (config, name, app) {
+          super(config, name, app)
+          app.customServiceSetup = true
         }
       }
+
+      class CustomApp extends App {
+        services = {
+          custom: CustomService
+        }
+      }
+
+      const customApp = new CustomApp({
+        port: 3200,
+        auth: false,
+        socketio: true,
+        services: {
+          custom: true
+        }
+      })
+
+      expect(customApp::setupServices).to.not.throw(Error)
+      expect(customApp.customServiceSetup).to.equal(true)
+
+    })
+
+    it('throws if config.service[serviceName] counterpart is missing', () => {
 
       const msgApp = new MessageApp({
         port: 3200,

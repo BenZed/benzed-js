@@ -104,6 +104,14 @@ describe('Service', () => {
 
   })
 
+  describe('methods', () => {
+
+    describe('before, after, error hook shortcuts', () => {
+
+    })
+
+  })
+
   describe('configuration', () => {
     it('config.path')
     it('config.versions')

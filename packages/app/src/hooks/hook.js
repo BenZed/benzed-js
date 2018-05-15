@@ -13,15 +13,15 @@ import {
 
 } from '@benzed/schema'
 
-import * as common from 'feathers-hooks-common'
 import is from 'is-explicit'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
-const HOOK_METHODS = [ 'all', 'find', 'get', 'update', 'patch', 'create', 'remove' ]
-const HOOK_TYPES = [ 'before', 'after', 'error' ]
+const HOOK_METHODS = Object.freeze([ 'all', 'find', 'get', 'update', 'patch', 'create', 'remove' ])
+
+const HOOK_TYPES = Object.freeze([ 'before', 'after', 'error' ])
 
 const PRIORITY = Symbol('hook-priority')
 
@@ -93,9 +93,13 @@ class Hook {
 
   checkContext (ctx) {
 
-    common.checkContext(ctx, this.methods, this.types, this.name)
-
     const { method, data, id, type } = ctx
+
+    if (!this.types.includes(type))
+      throw new Error(`The '${this.name}' hook can only be used as a '${this.types}' hook.`)
+
+    if (!this.methods.includes(method))
+      throw new Error(`The '${this.name}' hook can only be used on the '${this.methods}' service methods.`)
 
     const isFind = method === 'find'
     const isGet = method === 'get'
@@ -116,6 +120,7 @@ class Hook {
     const isError = type === 'error'
 
     return {
+
       isView,
       isFind,
       isGet,
