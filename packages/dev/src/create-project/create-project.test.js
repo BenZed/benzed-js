@@ -129,7 +129,7 @@ describe.only('createProject()', () => {
         name: 'boss-media-www',
 
         socketio: false,
-        rest: false,
+        rest: true,
 
         ui: true,
         api: true,

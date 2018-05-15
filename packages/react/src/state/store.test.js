@@ -88,6 +88,19 @@ describe('Store', () => {
         expect(_state.status).to.be.equal('great')
       })
 
+      it('applies state to store before notifying', () => {
+
+        let statusFromStore
+        meta.set('status', 'red')
+        meta.subscribe(() => {
+          statusFromStore = meta.status
+        })
+
+        meta.set('status', 'green')
+
+        expect(statusFromStore).to.equal('green')
+      })
+
       it('sets values in state', () => {
 
         meta.set('status', 'okay')

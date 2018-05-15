@@ -11,7 +11,8 @@ import {
 
   DEFINITION,
   OPTIONAL_CONFIG,
-  TYPE
+  TYPE,
+  CAST
 
 } from './symbols'
 
@@ -32,6 +33,7 @@ export {
 
   DEFINITION,
   OPTIONAL_CONFIG,
-  TYPE
+  TYPE,
+  CAST
 
 }

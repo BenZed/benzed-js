@@ -1,19 +1,18 @@
-import Observer from './Observer'
+import Observer from './observer'
 import React from 'react'
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function observe (Component, config) {
+function observe (Component, listen) {
 
   if (this !== undefined) {
-    config = Component
+    listen = Component
     Component = this
   }
 
   const Observed = props =>
-    <Observer config={config}>
+    <Observer listen={listen}>
       <Component {...props}/>
     </Observer>
 

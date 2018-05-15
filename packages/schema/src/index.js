@@ -1,4 +1,5 @@
 import Schema from './schema'
+import PropTypeSchema from './prop-type-schema'
 
 import {
   required,
@@ -25,7 +26,7 @@ export default Schema
 
 export {
 
-  Schema,
+  Schema, PropTypeSchema,
 
   required, format, length, defaultTo,
 

@@ -108,14 +108,9 @@ class Store {
     if (state === STATE_UNCHANGED)
       return
 
-    notify(this, path, state)
-
-    // TODO Do something with new state
-    // serialize it, log it to history, whatever
-
-    // console.log(state)
-
     apply(this, state)
+
+    notify(this, path, state)
 
   }
 
@@ -124,7 +119,6 @@ class Store {
   }
 
   copy () {
-
     const state = {}
 
     for (const key in this) {
