@@ -1,4 +1,9 @@
-import { PRIORITY, jwtAuth, softDelete } from '../../hooks'
+import {
+  PRIORITY,
+  jwtAuth,
+  softDelete,
+  writeDateFields
+} from '../../hooks'
 
 import { Schema, object, arrayOf, func, defaultTo } from '@benzed/schema'
 
@@ -53,22 +58,27 @@ const validateHookMethodStructure = new Schema(methodObj)
 // Hook Compiler
 /******************************************************************************/
 
+// TODO if auth, soft-delete or write-date-fields are already in,
+// the shortcuts should not be added
 function addQuickHooks (app, config) {
 
   const service = this
 
-  const all = []
   // Auth
-  const auth = app.get('auth')
-  if (auth && config.auth)
-    all.push(jwtAuth())
+  const authRequired = config.auth
+  const authConfigured = app.get('auth')
+  if (authConfigured && authRequired)
+    service.before({ all: jwtAuth() })
 
   // SoftDelete
   const softDeleteOptions = config.softDelete
   if (softDeleteOptions)
-    all.push(softDelete(softDeleteOptions))
+    service.before({ all: softDelete(softDeleteOptions) })
 
-  service.before({ all })
+  // writeDateFields
+  const dateOptions = config.date
+  if (dateOptions)
+    service.after({ all: writeDateFields(dateOptions) })
 
 }
 
@@ -146,8 +156,8 @@ function compileHooks (app, config) {
 
   const service = this
 
-  service::addQuickHooks(app, config)
   service::addServiceHooks(app, config)
+  service::addQuickHooks(app, config)
   service::sortAndPruneHooks()
 
   return service[HOOKS]

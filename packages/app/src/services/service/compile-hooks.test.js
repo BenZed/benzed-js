@@ -106,6 +106,12 @@ describe('compileHooks()', () => {
       })
     })
 
+    describe('date', () => {
+      it('in after.create')
+      it('in after.patch')
+      it('in after.update')
+    })
+
     it('ordered according to priority', () => {
       app.set('auth', { })
       const dummyService = createDummyService()

@@ -19,22 +19,26 @@ export const DEFAULT_LENGTH = 8
 // Setup
 /******************************************************************************/
 
-function validateLength (_length = DEFAULT_LENGTH) {
-  return new Schema(
-    string(
-      length('>=', _length),
-      trim
+function setup (_length = DEFAULT_LENGTH) {
+  return {
+    validateLength: new Schema(
+      string(
+        length('>=', _length),
+        trim
+      )
     )
-  )
+  }
 }
 
 /******************************************************************************/
 // Exec
 /******************************************************************************/
 
-async function validatePassword (ctx) {
+function exec (ctx) {
 
-  const { isBulk } = this.checkContext(ctx)
+  const hook = this
+
+  const { isBulk } = hook.checkContext(ctx)
 
   const asBulk = wrap(ctx.data)
 
@@ -55,18 +59,24 @@ async function validatePassword (ctx) {
     }
 
     if (password !== passwordConfirm)
-      throw new BadRequest('Password mismatch.', { errors: {
-        password: 'Must match confirm field.',
-        passwordConfirm: 'Must match password field.'
-      }})
+      throw new BadRequest('Password mismatch.', {
+        errors: {
+          password: 'Must match confirm field.',
+          passwordConfirm: 'Must match password field.'
+        }
+      })
 
-    const validateLength = this.options
+    const { validateLength } = hook.options
 
-    const error = await validateLength(password)
-    if (error)
-      throw new BadRequest('Password invalid.', { errors: {
-        password: error
-      }})
+    try {
+      validateLength(password)
+    } catch (err) {
+      throw new BadRequest('Password invalid.', {
+        errors: {
+          password: err.message
+        }
+      })
+    }
   }
 
   ctx.data = isBulk
@@ -87,6 +97,6 @@ export default new Hook({
   methods: ['update', 'patch', 'create'],
   priority: AUTH_PRIORITY + 100,
 
-  setup: validateLength,
-  exec: validatePassword
+  setup,
+  exec
 })

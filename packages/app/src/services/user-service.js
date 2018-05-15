@@ -1,5 +1,14 @@
 import Service from './service'
-import { hashPassword, validatePassword } from '../hooks'
+import {
+  hashPassword,
+  validatePassword,
+  removePassword
+
+} from '../hooks'
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
 
 /******************************************************************************/
 // Main
@@ -7,17 +16,22 @@ import { hashPassword, validatePassword } from '../hooks'
 
 class UserService extends Service {
 
-  hooks (config, app) {
+  addHooks (config, app) {
 
     const pass = {
       check: validatePassword(config['password-length']),
-      hash: hashPassword()
+      hash: hashPassword(),
+      remove: removePassword
     }
 
     this.before({
       create: [ pass.check, pass.hash ],
       patch:  [ pass.check, pass.hash ],
       update: [ pass.check, pass.hash ]
+    })
+
+    this.after({
+      all:    [ pass.remove ]
     })
 
   }
