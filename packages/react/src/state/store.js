@@ -17,22 +17,18 @@ const STATE_UNCHANGED = Symbol('state-unchanged')
 
 function build (store, path, value) {
 
-  const stateOld = store.copy()
-
   const [ key ] = path
-  if (key in stateOld === false)
-    throw new Error(`Cannot set ${path}, ${key} is not a valid state property.`)
-
-  const stateNew = set(stateOld, path, value)
+  if (key in store === false || store[key] instanceof Function)
+    throw new Error(`Cannot set ${path.join('.')}, ${key} is not a valid state property.`)
 
   const isEqual = equals(
-    get.mut(stateNew, path),
-    get.mut(stateOld, path)
+    get.mut(store, path),
+    value
   )
 
   return isEqual
     ? STATE_UNCHANGED
-    : stateNew
+    : set(store, path, value)
 
 }
 
@@ -50,10 +46,6 @@ function notify (store, path, state) {
   const subs = reverse(store[SUBSCRIBERS])
 
   const { length: pathLength } = path
-
-  // const start = Date.now()
-
-  // let count = 0
 
   for (let i = 0; i < pathLength; i++) {
     const stateKey = path[i]
@@ -80,7 +72,6 @@ function notify (store, path, state) {
       if (!finished && atMaxSubPathIndex) {
         finished = true
         sub.func(state, sub.path)
-        // count++
       }
 
       // subscriber will not be considered for further state calls
@@ -92,15 +83,12 @@ function notify (store, path, state) {
       break
   }
 
-  // console.log(Date.now() - start, 'ms to update', count, 'subscribers')
-
 }
 
-function apply (store, path, state) {
+function apply (store, state) {
 
-  const [ key ] = path
-
-  store[key] = state[key]
+  for (const key in state)
+    store[key] = state[key]
 
 }
 
@@ -124,9 +112,10 @@ class Store {
 
     // TODO Do something with new state
     // serialize it, log it to history, whatever
+
     // console.log(state)
 
-    apply(this, path, state)
+    apply(this, state)
 
   }
 
@@ -174,7 +163,7 @@ class Store {
     const subs = this[SUBSCRIBERS]
 
     for (let i = subs.length - 1; i >= 0; i--)
-      if (subs[i].func === func)
+      if (equals(subs[i].func, func))
         subs.splice(i, 1)
   }
 

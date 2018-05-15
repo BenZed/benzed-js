@@ -15,7 +15,7 @@ function hasAllRootFiles (projectDir, { api, ui }) {
   const ROOT_NON_API_FILES = [ '.npmignore' ]
   const ROOT_UI_FILES = [ 'webpack.config.js' ]
 
-  describe('has root files', () => {
+  describe('root files', () => {
     for (const file of ROOT_FILES)
       expectFile({
         projectDir,
