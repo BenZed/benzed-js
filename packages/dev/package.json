@@ -7,7 +7,7 @@
   },
   "scripts": {
     "test": "mocha --opts .mocha.opts",
-    "test:dev": "npx watch 'npm run test' src test",
+    "test:dev": "npx watch 'npm run test' src test/test-create-project",
     "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
     "release:patch": "npm version patch && npm publish",
@@ -27,6 +27,7 @@
     "@benzed/immutable": "^1.1.5",
     "@benzed/schema": "^0.4.0",
     "@benzed/string": "^0.5.4",
+    "@benzed/async": "*",
     "args": "^4.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
