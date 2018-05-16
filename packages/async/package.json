@@ -1,6 +1,6 @@
 {
   "name": "@benzed/async",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "My own async utilities.",
   "devDependencies": {
-    "@benzed/dev": "^0.5.1"
+    "@benzed/dev": "^0.5.2"
   }
 }
