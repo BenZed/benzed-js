@@ -6,7 +6,7 @@ const path = require('path')
 // Production
 /******************************************************************************/
 // const webpackConfig = new WebpackConfig({
-//   port: 7000
+//   port: 5000
 // })
 
 /******************************************************************************/
@@ -25,7 +25,7 @@ const names = fs.readdirSync(BENZED_PKG)
 // Create Webpack Config From Dev
 const { WebpackConfig } = require(path.join(BENZED_PKG, 'dev'))
 const webpackConfig = new WebpackConfig({
-  port: 7000
+  port: 5000
 })
 
 // Resolve BenZed node_modules
