@@ -1,4 +1,4 @@
-import Observer from './observer'
+import StoreObserver from './observer'
 import React from 'react'
 /******************************************************************************/
 // Main
@@ -12,9 +12,9 @@ function observe (Component, listen) {
   }
 
   const Observed = props =>
-    <Observer listen={listen}>
+    <StoreObserver listen={listen}>
       <Component {...props}/>
-    </Observer>
+    </StoreObserver>
 
   return Observed
 }

@@ -1,6 +1,6 @@
 import Store from './store'
-import Provider from './provider'
-import Observer from './observer'
+import StoreProvider, { StoreConsumer } from './provider'
+import StoreObserver from './observer'
 import observe from './observe'
 
-export { Store, Provider, Observer, observe }
+export { Store, StoreProvider, StoreConsumer, StoreObserver, observe }

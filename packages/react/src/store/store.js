@@ -1,4 +1,4 @@
-import { get, set, copy, equals } from '@benzed/immutable'
+import { get, set, copy, equals, reverse } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 
 /******************************************************************************/
@@ -15,7 +15,7 @@ const STATE_UNCHANGED = Symbol('state-unchanged')
 // Helpers
 /******************************************************************************/
 
-function build (store, path, value) {
+function buildState (store, path, value) {
 
   const [ key ] = path
   if (key in store === false || store[key] instanceof Function)
@@ -32,16 +32,7 @@ function build (store, path, value) {
 
 }
 
-function reverse (array) {
-
-  const reversed = [ ...array ]
-
-  reversed.reverse()
-
-  return reversed
-}
-
-function notify (store, path, state) {
+function notifySubscribers (store, path, state) {
 
   const subs = reverse(store[SUBSCRIBERS])
 
@@ -52,8 +43,8 @@ function notify (store, path, state) {
 
     const atMaxPathIndex = i === pathLength - 1
 
-    for (let ii = subs.length - 1; ii >= 0; ii--) {
-      const sub = subs[ii]
+    for (let j = subs.length - 1; j >= 0; j--) {
+      const sub = subs[j]
 
       const subPathLength = sub.path.length
 
@@ -76,7 +67,7 @@ function notify (store, path, state) {
 
       // subscriber will not be considered for further state calls
       if (finished)
-        subs.splice(ii, 1)
+        subs.splice(j, 1)
     }
 
     if (subs.length === 0)
@@ -85,7 +76,7 @@ function notify (store, path, state) {
 
 }
 
-function apply (store, state) {
+function applyState (store, state) {
 
   for (const key in state)
     store[key] = state[key]
@@ -104,13 +95,13 @@ class Store {
 
     path = wrap(path)
 
-    const state = build(this, path, value)
+    const state = buildState(this, path, value)
     if (state === STATE_UNCHANGED)
       return
 
-    apply(this, state)
+    applyState(this, state)
 
-    notify(this, path, state)
+    notifySubscribers(this, path, state)
 
   }
 
@@ -159,6 +150,7 @@ class Store {
     for (let i = subs.length - 1; i >= 0; i--)
       if (equals(subs[i].func, func))
         subs.splice(i, 1)
+
   }
 
 }

@@ -7,7 +7,7 @@ import {
 } from '@benzed/schema'
 
 import Store from './store'
-import { Context } from './provider'
+import { StoreConsumer } from './context'
 import is from 'is-explicit'
 
 /******************************************************************************/
@@ -28,27 +28,27 @@ function toObject (value) {
   return value
 }
 
-function listenKeys (listeners) {
-
-  for (const key in listeners) {
-    const listen = listeners[key]
-    if (!is(listen, Array) || (listen.length > 0 && !is.arrayOf(listen, String)))
-      return new Error('Must be an array of Strings.')
-  }
-
-  return listeners
-}
-
-function storeKeys (stores) {
-
-  for (const key in stores) {
-    const store = stores[key]
-    if (!is(store, Store))
-      return new Error('Must be a Store instance.')
-  }
-
-  return stores
-}
+// function listenKeys (listeners) {
+//
+//   for (const key in listeners) {
+//     const listen = listeners[key]
+//     if (!is(listen, Array) || (listen.length > 0 && !is.arrayOf(listen, String)))
+//       return new Error('Must be an array of Strings.')
+//   }
+//
+//   return listeners
+// }
+//
+// function storeKeys (stores) {
+//
+//   for (const key in stores) {
+//     const store = stores[key]
+//     if (!is(store, Store))
+//       return new Error('Must be a Store instance.')
+//   }
+//
+//   return stores
+// }
 
 /******************************************************************************/
 // Main Component
@@ -56,18 +56,18 @@ function storeKeys (stores) {
 
 class Observer extends React.Component {
 
-  static propTypes = new PropTypeSchema({
-
-    stores: object({
-      validators: storeKeys
-    }),
-
-    listen: object({
-      cast: toObject,
-      validators: listenKeys
-    })
-
-  })
+  // static propTypes = new PropTypeSchema({
+  //
+  //   stores: object({
+  //     validators: storeKeys
+  //   }),
+  //
+  //   listen: object({
+  //     cast: toObject,
+  //     validators: listenKeys
+  //   })
+  //
+  // })
 
   state = {
     stores: null,
@@ -111,13 +111,9 @@ class Observer extends React.Component {
     const { children } = this.props
     const { stores } = this.state
 
-    const props = {
-      ...stores
-    }
-
     return Children.map(
       children,
-      child => cloneElement(child, props)
+      child => cloneElement(child, stores)
     )
   }
 
@@ -127,15 +123,15 @@ class Observer extends React.Component {
 // Context
 /******************************************************************************/
 
-const ContextObserver = props =>
-  <Context>
-    { stores => <Observer stores={stores} {...props} /> }
-  </Context>
+const StoreObserver = props =>
+  <StoreConsumer>
+    { stores => <Observer {...props} stores={stores} /> }
+  </StoreConsumer>
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default ContextObserver
+export default StoreObserver
 
-export { Observer, ContextObserver }
+export { Observer, StoreObserver }

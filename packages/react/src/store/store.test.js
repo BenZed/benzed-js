@@ -241,13 +241,14 @@ describe('Store', () => {
         const setter = state => { calls++ }
 
         meta.subscribe(setter)
+        meta.subscribe(setter)
 
         meta.set('status', 'red')
-        expect(calls).to.equal(1)
+        expect(calls).to.equal(2)
 
         meta.unsubscribe(setter)
         meta.set('status', 'blue')
-        expect(calls).to.equal(1)
+        expect(calls).to.equal(2)
 
       })
 

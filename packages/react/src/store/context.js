@@ -19,6 +19,4 @@ const StoreProvider = ({ children, ...stores }) =>
 // Exports
 /******************************************************************************/
 
-export default StoreProvider
-
-export { StoreContext as Context }
+export { StoreProvider, StoreContext as StoreConsumer }
