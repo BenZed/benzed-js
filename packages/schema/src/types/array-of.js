@@ -2,12 +2,13 @@ import { wrap } from '@benzed/array'
 import is from 'is-explicit'
 
 import normalizeValidator from '../util/normalize-validator'
-import TypeValidationError from '../util/type-validation-error'
-import validate from '../validate'
+import ValidationError from '../util/validation-error'
+import { getTypeName, arrayTypeConfig } from '../util/type-config'
+import validate from '../util/validate'
+import { TYPE } from '../util/symbols'
+import Context from '../util/context'
 
-import { TYPE } from '../util'
-
-import typeOf, { arrayTypeConfig, getTypeName } from './type-of'
+import typeOf from './type-of'
 
 /******************************************************************************/
 // Helpers
@@ -23,9 +24,9 @@ function firstErrorOrArray (array) {
   return array
 }
 
-function handleError (err, msg) {
-  return is(err, TypeValidationError)
-    ? new TypeValidationError(msg)
+function handleError (err, msg, context) {
+  return err.isTypeError
+    ? new ValidationError(context.path, msg, true)
     : err
 }
 
@@ -43,7 +44,7 @@ function validateArrayOf (array, context, config, skipItems = false) {
     value = validate(type, value, context.safe())
 
     if (is(value, Error))
-      return handleError(value, err)
+      return handleError(value, err, context)
 
     if (is(value, Promise))
       async = true
@@ -56,7 +57,7 @@ function validateArrayOf (array, context, config, skipItems = false) {
       .all(array)
       .then(firstErrorOrArray)
       .then(arr => arr instanceof Error
-        ? handleError(arr, err)
+        ? handleError(arr, err, context)
         : validateArrayOf(arr, context, config, true)
       )
 
@@ -88,7 +89,7 @@ function arrayOf (...args) {
     ? config.type
     : typeOf(config.type)
 
-  const arrayOf = (array, context) => validateArrayOf(array, context, config)
+  const arrayOf = (array, context = new Context()) => validateArrayOf(array, context, config)
 
   arrayOf[TYPE] = typeName
 

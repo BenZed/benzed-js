@@ -4,16 +4,12 @@
   "description": "Mono repo for all of BenZeds util and helper classes for scoped npm distribution.",
   "main": "index.js",
   "scripts": {
-    "test": "lerna run test",
-    "build:dev": "lerna run build:dev --parallel",
-    "webpack:dev": "lerna run webpack:dev --parallel",
-    "serve:dev": "lerna run serve:dev --parallel",
-    "update": "bash shell/update-deps.sh",
-    "bootstrap": "lerna bootstrap --hoist"
+    "reinstall": "bash shell/reinstall.sh",
+    "install": "bash shell/install.sh",
+    "update": "bash shell/update.sh",
+    "link": "bash shell/link.sh"
   },
   "author": "BenZed",
   "license": "ISC",
-  "devDependencies": {
-    "lerna": "^2.11.0"
-  }
+  "devDependencies": {}
 }

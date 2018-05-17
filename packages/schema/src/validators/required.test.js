@@ -8,7 +8,7 @@ import Schema from '../schema'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('required() stock validator', () => {
+describe('required() stock validator', () => {
 
   const r = required()
 
@@ -65,7 +65,7 @@ describe.only('required() stock validator', () => {
 
     })
 
-    it.only('empty strings count', () => {
+    it('empty strings count', () => {
 
       const schema = Schema({
         dir: string(required)

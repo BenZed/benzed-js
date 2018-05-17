@@ -1,16 +1,17 @@
-import { Context, normalizeValidator, TYPE } from './util'
+import normalizeValidator from './util/normalize-validator'
+import Context from './util/context'
+import validate from './util/validate'
+import { TYPE } from './util/symbols'
 
 import { copy } from '@benzed/immutable'
 
-import validate from './validate'
-
 /******************************************************************************/
-// Interface
+// Main
 /******************************************************************************/
 
-function Schema (raw) {
+function Schema (raw, ...args) {
 
-  const normalized = normalizeValidator(raw)
+  const normalized = normalizeValidator(raw, ...args)
 
   if (TYPE in normalized === false)
     throw new Error('Schema must be defined with a type function, or an array or plain object thereof')

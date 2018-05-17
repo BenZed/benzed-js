@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import typeOf from './type-of'
 import bool from './bool'
 
-import { Context } from '../util'
+import { cast } from '../validators'
 
 import { expectResolve } from '@benzed/dev'
 
@@ -60,6 +60,15 @@ describe('typeOf()', () => {
         expect(fooWithCast(true))
           .to.be.instanceof(Foo)
       })
+      it('cast functions are properly found in args', () => {
+
+        const stringToFoo = s => s === 'foo' ? new Foo() : s
+
+        const fooWithAutoCast = typeOf(cast(stringToFoo), Foo)
+
+        expect(fooWithAutoCast('foo')).to.not.be.instanceof(Error)
+
+      })
     })
 
     describe('type constructor', () => {
@@ -84,8 +93,8 @@ describe('typeOf()', () => {
 
         const shortString = typeOf(String, short, lower)
 
-        expect(shortString('ANT', new Context())).to.be.equal('ant')
-        expect(shortString('FAIL', new Context())).to.have.property('message', 'Too long!')
+        expect(shortString('ANT')).to.be.equal('ant')
+        expect(shortString('FAIL')).to.have.property('message', 'Too long!')
 
       })
 
@@ -95,10 +104,10 @@ describe('typeOf()', () => {
         const error = value => Promise.reject(new Error('Seriously what is your problem'))
 
         const delayString = typeOf(String, delay)
-        await delayString('foobar', new Context())::expectResolve(ers => ers.to.equal('foobar'))
+        await delayString('foobar')::expectResolve(ers => ers.to.equal('foobar'))
 
         const errString = typeOf(String, delay, error)
-        return errString('oh no', new Context())
+        return errString('oh no')
           ::expectResolve(ers =>
             ers.to.have.property('message', 'Seriously what is your problem')
           )
@@ -106,7 +115,7 @@ describe('typeOf()', () => {
     })
   })
 
-  describe('can compose other type functions', () => {
+  describe('cannot compose other type functions', () => {
 
     it('type functions cannot be used as types', () => {
 

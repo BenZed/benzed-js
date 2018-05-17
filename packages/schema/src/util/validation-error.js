@@ -6,7 +6,7 @@ import { wrap } from '@benzed/array'
 
 class ValidationError extends Error {
 
-  constructor (path, msg = 'Validation failed.') {
+  constructor (path, msg = 'Validation failed.', isTypeError = false) {
     path = wrap(path || '<input>')
 
     let pathStr = path.join('.')
@@ -16,6 +16,7 @@ class ValidationError extends Error {
     super(`${pathStr}${msg}`)
     this.name = 'ValidationError'
     this.path = path
+    this.isTypeError = isTypeError
   }
 
 }

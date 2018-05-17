@@ -1,14 +1,32 @@
 import is from 'is-explicit'
+import argsToConfig from '../util/args-to-config'
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const defaultConfig = argsToConfig(
+  [{
+    name: 'value',
+    test: input => is(input),
+    required: true
+  },
+  {
+    name: 'call',
+    type: Boolean,
+    default: true
+  }
+  ])
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-// TODO come up with a way for defaultValue to also be a function
+function defaultTo (args) {
 
-function defaultTo (defaultValue) {
+  const { value: defaultValue, call } = defaultConfig(args)
 
-  const getDefaultValue = is(defaultValue, Function)
+  const getDefaultValue = call && is(defaultValue, Function)
     ? defaultValue
     : () => defaultValue
 

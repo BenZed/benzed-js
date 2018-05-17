@@ -1,6 +1,8 @@
 import { expect } from 'chai'
 import bool from './bool'
-import { OPTIONAL_CONFIG } from '../util'
+
+import Context from '../util/context'
+import { OPTIONAL_CONFIG } from '../util/symbols'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -9,7 +11,7 @@ describe('bool()', () => {
 
   const b = bool()
 
-  it('returns if value could not be cast to number', () => {
+  it('returns if value could not be cast to bool', () => {
     expect(
       b(100)
     ).to.have.property('message', 'Must be of type: Boolean')

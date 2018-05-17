@@ -24,8 +24,8 @@
     "@benzed/dev": "^0.5.2"
   },
   "dependencies": {
-    "@benzed/array": "^1.1.4",
-    "@benzed/immutable": "^1.1.6",
+    "@benzed/array": "latest",
+    "@benzed/immutable": "latest",
     "is-explicit": "^1.4.1"
   }
 }

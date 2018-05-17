@@ -1,5 +1,7 @@
-import { OPTIONAL_CONFIG } from '../util'
-import typeOf, { specificTypeConfig } from './type-of'
+import { OPTIONAL_CONFIG } from '../util/symbols'
+import { specificTypeConfig } from '../util/type-config'
+
+import typeOf from './type-of'
 import is from 'is-explicit'
 
 /******************************************************************************/

@@ -1,4 +1,5 @@
-import ValidationError from './util/validation-error'
+import ValidationError from './validation-error'
+import Context from './context'
 
 import { wrap } from '@benzed/array'
 import is from 'is-explicit'
@@ -50,7 +51,7 @@ function validateAll (validators, value, context, index = 0) {
 // Main
 /******************************************************************************/
 
-function validate (validator, input, context) {
+function validate (validator, input, context = new Context()) {
 
   const validators = wrap(validator)
 

@@ -1,4 +1,5 @@
-import { argsToConfig, OPTIONAL_CONFIG } from '../util'
+import { OPTIONAL_CONFIG } from '../util/symbols'
+import argsToConfig from '../util/args-to-config'
 import is from 'is-explicit'
 
 /******************************************************************************/

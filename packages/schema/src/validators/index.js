@@ -3,6 +3,8 @@ import format from './format'
 import length from './length'
 import defaultTo from './default-to'
 
+import cast from './cast'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
@@ -13,6 +15,8 @@ export {
   format,
   length,
 
-  defaultTo
+  defaultTo,
+
+  cast
 
 }

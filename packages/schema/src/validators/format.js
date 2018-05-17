@@ -1,17 +1,30 @@
 import is from 'is-explicit'
+import argsToConfig from '../util/args-to-config'
+
+/******************************************************************************/
+// Config
+/******************************************************************************/
+
+const formatConfig = argsToConfig([
+  {
+    name: 'regex',
+    type: RegExp,
+    required: true
+  },
+  {
+    name: 'err',
+    type: String,
+    default: 'Incorrect Format.'
+  }
+])
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-// Validates that a string is formatted according to a regex
-// TODO this should be using a argsToConfig function
-function format (regex, err) {
+function format (...args) {
 
-  if (!is(regex, RegExp))
-    throw new Error('format() must be configured with a regular expression')
-
-  err = err || 'Incorrect Format.'
+  const { err, regex } = formatConfig(args)
 
   return value => {
     if (value == null)

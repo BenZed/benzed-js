@@ -24,9 +24,9 @@
   "license": "ISC",
   "description": "Test helpers for the rest of @benzed packages.",
   "dependencies": {
-    "@benzed/immutable": "^1.1.6",
-    "@benzed/schema": "^0.4.0",
-    "@benzed/string": "^0.5.5",
+    "@benzed/immutable": "latest",
+    "@benzed/schema": "latest",
+    "@benzed/string": "latest",
     "args": "^4.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",

@@ -1,6 +1,8 @@
 import { expect } from 'chai'
 import any from './any'
-import { Context, OPTIONAL_CONFIG } from '../util'
+import Context from '../util/context'
+import { OPTIONAL_CONFIG } from '../util/symbols'
+
 import bool from './bool'
 
 // eslint-disable-next-line no-unused-vars

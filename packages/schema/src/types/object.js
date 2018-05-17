@@ -1,47 +1,12 @@
 import { OPTIONAL_CONFIG, TYPE } from '../util/symbols'
-import argsToConfig from '../util/args-to-config'
 import normalizeValidator from '../util/normalize-validator'
-import TypeValidationError from '../util/type-validation-error'
+import ValidationError from '../util/validation-error'
+import validate from '../util/validate'
+import Context from '../util/context'
 
-import validate from '../validate'
+import { objectConfig } from '../util/type-config'
+
 import is from 'is-explicit'
-
-/******************************************************************************/
-// Config
-/******************************************************************************/
-
-const layout = [
-
-  {
-    name: 'err',
-    type: String
-  },
-
-  {
-    name: 'validators',
-    type: Function,
-    count: Infinity,
-    default: []
-  },
-
-  {
-    name: 'shape',
-    type: Object,
-    default: null
-  },
-
-  {
-    name: 'cast',
-    type: Function
-  },
-
-  {
-    name: 'onlyShapeKeys',
-    type: Boolean
-  }
-]
-
-const objectConfig = argsToConfig(layout)
 
 /******************************************************************************/
 // Helper
@@ -62,11 +27,11 @@ function normalizeShape (shape) {
 // Validate Shape
 /******************************************************************************/
 
-function validateShape (shape, obj, context, onlyShapeKeys) {
+function validateShape (shape, obj, context, shapeKeysOnly) {
 
   let async
 
-  if (onlyShapeKeys) for (const key in obj)
+  if (shapeKeysOnly) for (const key in obj)
     if (key in shape === false)
       delete obj[key]
 
@@ -108,7 +73,7 @@ function validateShape (shape, obj, context, onlyShapeKeys) {
 
 function validateObject (value, context, config, skipSelf = false) {
 
-  const { cast, shape, err, validators, onlyShapeKeys } = config
+  const { cast, shape, err, validators, shapeKeysOnly } = config
 
   if (!skipSelf && value != null && cast && !is.plainObject(value))
     value = cast(value)
@@ -123,10 +88,10 @@ function validateObject (value, context, config, skipSelf = false) {
     return value.then(resolved => validateObject(resolved, context, config, true))
 
   if (!skipSelf && value != null && !is.plainObject(value))
-    return new TypeValidationError(err)
+    return new ValidationError(context.path, err, true)
 
   if (value != null && shape)
-    value = validateShape(shape, value, context, onlyShapeKeys)
+    value = validateShape(shape, value, context, shapeKeysOnly)
 
   return value
 }
@@ -142,10 +107,11 @@ function object (...args) {
   config.shape = normalizeShape(config.shape)
   config.validators = config.validators.map(normalizeValidator)
   config.err = config.err || `Must be an Object`
-  if ('onlyShapeKeys' in config === false)
-    config.onlyShapeKeys = !!config.shape
 
-  const object = (value, context) => validateObject(value, context, config)
+  if (config.shapeKeysOnly === undefined)
+    config.shapeKeysOnly = !!config.shape
+
+  const object = (value, context = new Context()) => validateObject(value, context, config)
 
   object[TYPE] = 'Object'
 

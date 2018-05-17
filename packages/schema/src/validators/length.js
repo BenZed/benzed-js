@@ -1,89 +1,29 @@
-import is from 'is-explicit'
 import { hasNumericLength } from '@benzed/array'
+import rangeConfig from '../util/range-config'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-// TODO this should be moved to util so it can be used for multiple validators
-
-const COMPARERS = {
-
-  '>' (value, err) {
-    const min = this
-    return value > min
-      ? value
-      : new Error(err || `must be greather than ${min}.`)
-  },
-
-  '>=' (value, err) {
-    const min = this
-    return value >= min
-      ? value
-      : new Error(err || `must be equal to or greater than ${min}.`)
-  },
-
-  '<=>' (value, err) {
-    const [ min, max ] = this
-    return value >= min && value <= max
-      ? value
-      : new Error(err || `must between ${min} and ${max}.`)
-  },
-
-  '<=' (value, err) {
-    const min = this
-    return value <= min
-      ? value
-      : new Error(err || `must be equal to or less than ${min}.`)
-  },
-
-  '<' (value, err) {
-    const min = this
-    return value < min
-      ? value
-      : new Error(err || `must be less than ${min}.`)
-  }
-
-}
-
-function createComparer (operator, value) {
-
-  if (is(operator, Number)) {
-    const min = operator
-    const max = value
-    return [min, max]::COMPARERS['<=>']
-  }
-
-  if (operator in COMPARERS === false)
-    throw new Error(`${operator} is not a valid comparer.`)
-
-  return value::COMPARERS[operator]
+function defaultLengthError (diff, ...values) {
+  return `length must be ${diff} ${values.join(' and ')}`
 }
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-// validates the length of a numeric length value
-// TODO this should be using a argsToConfig function
-function length (operator, value, err) {
+function length (...args) {
 
-  const compare = createComparer(operator, value)
+  const config = rangeConfig(args)
 
-  return value => {
+  const err = config.err || defaultLengthError
 
-    if (value == null || !hasNumericLength(value))
-      return value
+  return value =>
 
-    const result = compare(value.length, err)
-    if (result instanceof Error) {
-      result.message = 'length ' + result.message
-      return result
-    }
-
-    return value
-
-  }
+    value == null || !hasNumericLength(value)
+      ? value
+      : config.compare(value.length, err)
 
 }
 

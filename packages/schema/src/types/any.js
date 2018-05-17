@@ -1,6 +1,7 @@
-import { OPTIONAL_CONFIG, TYPE } from '../util'
-import { anyTypeConfig } from './type-of'
-import validate from '../validate'
+import normalizeValidator from '../util/normalize-validator'
+import { OPTIONAL_CONFIG, TYPE } from '../util/symbols'
+import { anyTypeConfig } from '../util/type-config'
+import validate from '../util/validate'
 
 /******************************************************************************/
 // Main
@@ -8,7 +9,10 @@ import validate from '../validate'
 
 function any (...args) {
 
-  const { validators } = anyTypeConfig(args)
+  const config = anyTypeConfig(args)
+
+  const validators = config.validators.map(normalizeValidator)
+
   const any = (value, context) => {
 
     const result = validators && validators.length > 0

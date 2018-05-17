@@ -3,9 +3,8 @@ import is from 'is-explicit'
 import { pluck, wrap, unwrap } from '@benzed/array'
 
 import Context from './context'
-
-import validate from '../validate'
-import reduceValidator from './reduce-validator'
+import validate from './validate'
+import normalizeValidator from './normalize-validator'
 
 /******************************************************************************/
 // Validate Layout
@@ -14,7 +13,8 @@ import reduceValidator from './reduce-validator'
 // Be nice to actually use type validators for this, unfortunately they all depend
 // on this function.
 
-const allPass = value => value
+const allValid = value => value
+const allPass = () => true
 
 function checkLayouts (layouts) {
 
@@ -28,20 +28,29 @@ function checkLayouts (layouts) {
     if (!is(layout.name, String) || layout.name.length === 0)
       throw new Error('layout.name needs to be a non empty string')
 
+    if (is(layout.test) && !is(layout.test, Function))
+      throw new Error('layout.test must be a function')
+
+    if (!layout.test)
+      layout.test = allPass
+
     if (!is(layout.count, Number))
       layout.count = 1
 
     layout.required = !!layout.required
 
-    layout.type = layout.type ? wrap(layout.type) : []
-    if (!is.arrayOf(layout.type, Function))
+    layout.type = is(layout.type) ? wrap(layout.type) : []
+    if (layout.type.length > 0 && !is.arrayOf(layout.type, Function))
       throw new Error('layout.type needs to be an array of Functions')
 
-    layout.validate = layout.validate ? wrap(layout.validate) : [ allPass ]
+    if (layout.type.length === 0 && layout.test === allPass)
+      throw new Error('layout.type must be defined if layout.test is not')
+
+    layout.validate = layout.validate ? wrap(layout.validate) : [ allValid ]
     if (!is.arrayOf(layout.validate, Function))
       throw new Error('layout.validate needs to be an array of Functions')
 
-    layout.validate = layout.validate.map(reduceValidator)
+    layout.validate = layout.validate.map(normalizeValidator)
 
   }
 
@@ -66,9 +75,9 @@ function argsToConfig (layouts, masterErrName = 'validator') {
       config = { ...args[0] }
 
     else for (const layout of layouts) {
-      const { name, count, type: Types } = layout
+      const { name, count, test, type: Types } = layout
 
-      const found = args::pluck(arg => is(arg, ...Types), count)
+      const found = args::pluck(arg => test(arg) && (Types.length === 0 || is(arg, ...Types)), count)
 
       if (found.length > 0)
         config[name] = count === 1 ? unwrap(found) : found
@@ -80,13 +89,14 @@ function argsToConfig (layouts, masterErrName = 'validator') {
     // Set defaults and ensure required
     for (const layout of layouts) {
 
-      const { name, default: _default, type, required, count, validate: validators } = layout
+      const { name, type, required, count,
+        default: _default, validate: validators } = layout
 
       if (config[name] === undefined && _default !== undefined)
         config[name] = _default
 
       if (validators !== undefined)
-        config[name] = validate(validators, config[name], new Context())
+        config[name] = validate(validators, config[name])
 
       if (count > 1)
         config[name] = config[name] === undefined ? [] : wrap(config[name])

@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import number from './number'
-import { OPTIONAL_CONFIG } from '../util'
+import { OPTIONAL_CONFIG } from '../util/symbols'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

@@ -26,10 +26,10 @@
     "socket.io-client": "^2.1.0"
   },
   "dependencies": {
-    "@benzed/array": "^1.1.4",
-    "@benzed/async": "^0.9.7",
-    "@benzed/immutable": "^1.1.6",
-    "@benzed/schema": "^0.4.0",
+    "@benzed/array": "latest",
+    "@benzed/async": "latest",
+    "@benzed/immutable": "latest",
+    "@benzed/schema": "latest",
     "@feathersjs/authentication": "^2.1.5",
     "@feathersjs/authentication-jwt": "^2.0.1",
     "@feathersjs/authentication-local": "^1.2.1",

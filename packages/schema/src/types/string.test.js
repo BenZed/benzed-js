@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import string from './string'
-import { OPTIONAL_CONFIG, Context } from '../util'
+import { OPTIONAL_CONFIG } from '../util/symbols'
+import Context from '../util/context'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -38,7 +39,7 @@ describe('string()', () => {
 
     it('cast function', () => {
       const strWithCast = string(value => String(value))
-      expect(strWithCast({ toString () { return 'a-string' } }, new Context()))
+      expect(strWithCast({ toString () { return 'a-string' } }))
         .to.be.equal('a-string')
     })
 

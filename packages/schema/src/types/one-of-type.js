@@ -1,12 +1,12 @@
-import {
-  argsToConfig, normalizeValidator, TypeValidationError,
-  TYPE
+import validate from '../util/validate'
+import normalizeValidator from '../util/normalize-validator'
+import ValidationError from '../util/validation-error'
+import Context from '../util/context'
+import { getTypeName, multiTypeConfig } from '../util/type-config'
+import { TYPE } from '../util/symbols'
 
-} from '../util'
-
-import typeOf, { getTypeName } from './type-of'
+import typeOf from './type-of'
 import is from 'is-explicit'
-import validate from '../validate'
 
 /******************************************************************************/
 // Configure
@@ -24,23 +24,6 @@ const oneOfTypeName = types => {
   return `${names.join(', ')} or ${last}`
 
 }
-
-const multiTypeConfig = argsToConfig([
-  {
-    name: 'types',
-    type: Function,
-    count: Infinity
-  },
-  {
-    name: 'err',
-    type: String
-  },
-  {
-    name: 'validators',
-    type: Function,
-    count: Infinity
-  }
-])
 
 /******************************************************************************/
 // Helper
@@ -92,7 +75,7 @@ function validateOneOfType (value, context, config, index = 0, oneSuccess = fals
   }
 
   if (!oneSuccess)
-    return new TypeValidationError(config.err)
+    return new ValidationError(context.path, config.err, true)
 
   return validators && validators.length > 0
     ? validate(value, validators, context.safe())
@@ -114,7 +97,7 @@ function oneOfType (...args) {
   config.validators = config.validators.map(normalizeValidator)
   config.err = config.err || `Must be either: ${typeNames}`
 
-  const oneOfType = (value, context) => validateOneOfType(value, context, config)
+  const oneOfType = (value, context = new Context()) => validateOneOfType(value, context, config)
 
   oneOfType[TYPE] = typeNames
 

@@ -22,8 +22,8 @@
     "@benzed/dev": "^0.5.2"
   },
   "dependencies": {
-    "@benzed/array": "^1.1.4",
-    "@benzed/immutable": "^1.1.6",
+    "@benzed/array": "latest",
+    "@benzed/immutable": "latest",
     "add-event-listener": "0.0.1",
     "color": "^3.0.0",
     "is-explicit": "^1.4.1",

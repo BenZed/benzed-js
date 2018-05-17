@@ -5,7 +5,9 @@ import {
   required,
   format,
   length,
-  defaultTo
+  defaultTo,
+
+  cast
 
 } from './validators'
 
@@ -14,9 +16,7 @@ import {
   arrayOf, typeOf, oneOf, oneOfType, any
 } from './types'
 
-import {
-  OPTIONAL_CONFIG
-} from './util'
+import { OPTIONAL_CONFIG } from './util/symbols'
 
 /******************************************************************************/
 // Exports
@@ -29,6 +29,8 @@ export {
   Schema, PropTypeSchema,
 
   required, format, length, defaultTo,
+
+  cast,
 
   type, bool, string, number, object, func, array,
   arrayOf, typeOf, oneOf, oneOfType, any, any as group,

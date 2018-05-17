@@ -21,9 +21,9 @@
   "license": "ISC",
   "description": "My own library for manipulating objects immutably.",
   "devDependencies": {
-    "@benzed/dev": "^0.5.2"
+    "@benzed/dev": "latest"
   },
   "dependencies": {
-    "@benzed/array": "^1.1.4"
+    "@benzed/array": "latest"
   }
 }

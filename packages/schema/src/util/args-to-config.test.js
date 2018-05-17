@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 
 import argsToConfig from './args-to-config'
+import { reverse } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -10,7 +11,7 @@ const EXAMPLE_LAYOUT = [{
   type: String
 }]
 
-describe('argsToConfig', () => {
+describe('argsToConfig()', () => {
 
   it('is a function', () => {
     expect(argsToConfig).to.be.instanceof(Function)
@@ -28,14 +29,82 @@ describe('argsToConfig', () => {
         ])).to.throw('layout.name needs to be a non empty string')
     })
 
+  })
+
+  describe('layout.type', () => {
+
     it('each plain object must have one or more functions as types', () => {
-      for (const badValue of [ [], undefined, [''], [{}] ])
+      for (const badValue of [ [], undefined ])
+        expect(() => argsToConfig([
+          {
+            name: 'whatever',
+            type: badValue
+          }
+        ])).to.throw('layout.type must be defined if layout.test is not')
+    })
+
+    it('each type must be a function', () => {
+      for (const badValue of [ [''], [{}] ])
         expect(() => argsToConfig([
           {
             name: 'whatever',
             type: badValue
           }
         ])).to.throw('layout.type needs to be an array of Functions')
+    })
+
+  })
+
+  describe('layout.test', () => {
+
+    it('throws if layout.test is defined but not a function', () => {
+      expect(() => argsToConfig({ name: 'foo', type: String, test: 100 }))
+        .to.throw('layout.test must be a function')
+    })
+
+    it('prevents layout.type from being required', () => {
+      const layout = { name: 'ratings', count: 5, test: n => n >= 0 && n < 5 }
+
+      expect(argsToConfig(layout)).to.not.throw(Error)
+
+      const config = argsToConfig(layout)([ -5, 0, 1, 13, 2, 100, 3, -10, 4, 4.5 ])
+
+      expect(config.ratings).to.be.deep.equal([ 0, 1, 2, 3, 4 ])
+    })
+
+    it('test function can be provided in layout to accompany type', () => {
+
+      const symbolic = Symbol('symbolic')
+
+      const configMethods = argsToConfig([
+        {
+          type: Function,
+          test: f => symbolic in f,
+          count: 1,
+          name: 'symbolic-method'
+        },
+        {
+          type: Function,
+          test: f => symbolic in f === false,
+          count: 1,
+          name: 'regular-method'
+        }
+      ])
+
+      const symMethod = () => 'sym'
+      symMethod[symbolic] = true
+
+      const regMethod = () => 'reg'
+
+      const order1 = [ symMethod, regMethod ]
+      const order2 = order1::reverse()
+
+      // Should work regardless of order
+      for (const order of [ order1, order2 ]) {
+        const config = configMethods(order)
+        expect(config['symbolic-method']).to.have.property(symbolic)
+        expect(config['regular-method']).to.not.have.property(symbolic)
+      }
     })
 
   })
@@ -129,7 +198,6 @@ describe('argsToConfig', () => {
       it('throws as expected', () => {
         expect(() => configRequired({})).to.throw('requires Boolean \'enabled\' property')
       })
-
     })
   })
 })
