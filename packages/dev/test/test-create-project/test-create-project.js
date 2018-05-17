@@ -10,6 +10,10 @@ import expectDependencies from './expect-dependencies'
 
 /* global it describe before */
 
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
 function checkAllRootFiles (projectDir, { api, ui }) {
 
   const ROOT_FILES = [ '.babelrc', '.eslintignore', '.eslintrc.json', '.gitignore', 'package.json' ]
@@ -105,7 +109,7 @@ function checkConfig (projectDir, { ui, api, auth, files, rest, name, socketio }
       })
 
       it(`auth is ${auth ? 'enabled' : 'disabled'}`, () => {
-        expect(json.auth).to.be.equal(auth)
+        expect(!!json.auth).to.be.equal(auth)
       })
 
       it('port defaults to 5100', () => {
@@ -131,10 +135,18 @@ function testCreateProject (options) {
   const projectDir = path.join(dir, name)
   const describer = getDescriber(this)
 
+  let err
+
+  try {
+    createProject(options)
+  } catch (e) {
+    err = e
+  }
+
   describer(`project '${name}' created at ${projectDir}`, () => {
 
     it('completes successfully', () => {
-      expect(() => createProject(options)).to.not.throw(Error)
+      expect(err).to.not.be.instanceof(Error)
     })
 
     it('project is created as a folder in given project directory', () => {
@@ -151,7 +163,9 @@ function testCreateProject (options) {
     checkConfig(projectDir, options)
 
     // TODO
+    // checkScripts
     // checkSrc
+    // checkTest
     // expectZeroLintErrors
     // allScriptsShouldRunWithoutError
 

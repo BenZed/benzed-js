@@ -119,7 +119,7 @@ describe.only('createProject()', () => {
 
     })
 
-    describe.only('creates boss-media-www', function () {
+    describe('creates boss-media-www', function () {
       this.timeout(50000)
 
       const dir = path.resolve(process.cwd(), '../../../')
@@ -141,6 +141,32 @@ describe.only('createProject()', () => {
 
       testCreateProject(options)
 
+    })
+
+    describe.only('creates casino ben', function () {
+      this.timeout(50000)
+
+      const dir = path.resolve(process.cwd(), '../../../')
+
+      // fs.removeSync(path.join(dir, 'casino-ben'))
+
+      const options = {
+        dir: dir,
+        name: 'casino-ben',
+
+        socketio: true,
+        rest: true,
+
+        ui: true,
+        api: true,
+
+        auth: true,
+        files: true,
+
+        routing: true
+      }
+
+      testCreateProject(options)
     })
 
   })

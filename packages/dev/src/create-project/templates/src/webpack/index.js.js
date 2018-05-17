@@ -1,6 +1,6 @@
 import { capitalize } from '@benzed/string'
 
-export default ({ name, frontend, type, ui, api, pretty }) => ui && pretty`
+export default ({ name, frontend, type, ui, api, iff, routing, pretty }) => ui && pretty`
 import 'normalize.css'
 import './public/${name}.css'
 
@@ -11,6 +11,7 @@ import './public/${name}.css'
 const dependencies = Promise.all([
   import('react'),
   import('react-dom'),
+  import('${iff(routing)`react-router-dom`}'),
   import('../ui/root')
 ])
 
@@ -22,11 +23,16 @@ window.addEventListener('load', async () => {
   const [
     { default: React },
     { ${api ? 'hydrate' : 'render'} },
+    { ${iff(routing)`BrowserRouter`} },
     { default: ${frontend::capitalize()} }
   ] = await dependencies
 
   const tag = document.getElementById('${name}')
-  const element = <${frontend::capitalize()} />
+  const element = ${routing ? `<BrowserRouter>
+    <${frontend::capitalize()} />
+  </BrowserRouter>`
+    : `<${frontend::capitalize()} />`
+}
 
   ${api ? 'hydrate' : 'render'}(element, tag)
 })

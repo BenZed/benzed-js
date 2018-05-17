@@ -1,7 +1,15 @@
-export default ({ ui, auth, pretty }) => ui && auth && pretty`
+import Color from 'color'
+
 /******************************************************************************/
-// Login Component Goes Here TODO
+// Data
 /******************************************************************************/
 
-export default () => 'Login'
-`
+export default {
+
+  bg: Color('black'),
+  fg: Color('white'),
+
+  fontTitle: 'Arial Black',
+  fontBody: 'Helvetica'
+
+}
