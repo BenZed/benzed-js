@@ -9,15 +9,17 @@ import is from 'is-explicit'
 // Default Cast
 /******************************************************************************/
 
+const isBoolOrNum = [Boolean, Number]::is
+
 const toString = value => {
 
-  if (is(value, Object) &&
-      is(value.toString, Function) &&
+  if (is.object(value) &&
+      is.func(value.toString) &&
       value.toString !== Object.prototype.toString)
 
     return value.toString()
 
-  if (is(value, Boolean, Number))
+  if (isBoolOrNum(value))
     return `${value}`
 
   return value

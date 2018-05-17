@@ -25,7 +25,7 @@ function required (...args) {
 
   const { err } = configRequired(args)
 
-  const required = value => is(value)
+  const required = value => is.defined(value)
     ? value
     : new Error(err)
 

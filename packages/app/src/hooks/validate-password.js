@@ -50,7 +50,7 @@ function exec (ctx) {
     delete data.passwordConfirm
 
     // only matters if a password was supplied
-    if (!is(password, String)) {
+    if (!is.string(password)) {
 
       // we're deleting the password from the hook, because the hashpassword hook
       // can't handle null values

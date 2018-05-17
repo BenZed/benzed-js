@@ -121,19 +121,19 @@ const autoFillAuth = value => {
   if (!is.plainObject(value))
     return value
 
-  if (!is(value.secret, String)) {
+  if (!is.string(value.secret)) {
     const secret = randomBytes(48).toString('hex')
     value = set(value, 'secret', secret)
   }
 
   // These are the feathers defaults, but they're needed for validation elsewhere
-  if (!is(value.path, String))
+  if (!is.string(value.path))
     value = set(value, 'path', '/authentication')
 
-  if (!is(value.entity, String))
+  if (!is.string(value.entity))
     value = set(value, 'entity', 'user')
 
-  if (!is(value.service, String))
+  if (!is.string(value.service))
     value = set(value, 'service', 'users')
 
   return value
@@ -215,7 +215,7 @@ const validateConfigUrl = Schema(
 
 const validateConfig = (config, ...args) => {
 
-  if (is(config, String))
+  if (is.string(config))
     config = validateConfigUrl(config, ...args)
 
   if (!is.plainObject(config))
@@ -233,13 +233,13 @@ const validateMode = new Schema(string(
 
 const validateClass = app => {
 
-  if (is(app.rest) && !is(app.rest, Function))
+  if (is.defined(app.rest) && !is.func(app.rest))
     throw new Error('app.socketio not configured correctly. Must be a middleware function.')
 
-  if (is(app.socketio) && !is(app.socketio, Function))
+  if (is.defined(app.socketio) && !is.func(app.socketio))
     throw new Error('app.socketio not configured correctly. Must be a middleware function.')
 
-  if (is(app.services) && !is.objectOf(app.services, Function))
+  if (is.defined(app.services) && !is.objectOf.func(app.services))
     throw new Error('app.services not configured correctly. Must be an object of functions.')
 
 }

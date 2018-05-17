@@ -57,7 +57,7 @@ function setupHook (...args) {
 function define (key, value) {
   const obj = this
 
-  Object.defineProperty(obj, key, { value, enumerable: is(key, Symbol) })
+  Object.defineProperty(obj, key, { value, enumerable: is.symbol(key) })
 
   return obj
 }
@@ -113,7 +113,7 @@ class Hook {
     const isCreate = method === 'create'
 
     const isBulkCreate = !isView && isCreate && is(data, Array)
-    const isBulkEditOrDelete = !isView && !isCreate && !is(id)
+    const isBulkEditOrDelete = !isView && !isCreate && !is.defined(id)
 
     const isBefore = type === 'before'
     const isAfter = type === 'after'

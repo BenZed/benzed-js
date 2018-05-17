@@ -8,7 +8,7 @@ import is from 'is-explicit'
 describe('addDependencies', () => {
 
   it('is a function', () => {
-    expect(is(addDependencies, Function)).to.be.equal(true)
+    expect(is.func(addDependencies)).to.be.equal(true)
   })
 
   it('must be bound to context', () => {

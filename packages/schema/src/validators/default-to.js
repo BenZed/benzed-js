@@ -8,7 +8,7 @@ import argsToConfig from '../util/args-to-config'
 const defaultConfig = argsToConfig(
   [{
     name: 'value',
-    test: input => is(input),
+    test: is.defined,
     required: true
   },
   {

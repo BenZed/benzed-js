@@ -10,8 +10,8 @@ class SortablePromiseQueueItem extends PromiseQueue.Item {
   constructor (promiser, order) {
     super(promiser)
 
-    const isFunc = is(order, Function)
-    if (!isFunc && !is(order, Number))
+    const isFunc = is.func(order)
+    if (!isFunc && !is.number(order))
       throw new Error('either a number or function that returns a number must be provided for an item\'s order value')
 
     this.order = isFunc ? order : () => order
@@ -34,7 +34,7 @@ class SortablePromiseQueue extends PromiseQueue {
   constructor (maxConcurrent, sorter = descending) {
     super(maxConcurrent)
 
-    if (is(sorter) && !is(sorter, Function))
+    if (is.func(sorter) && !is.defined(sorter))
       throw new Error('sorter, if defined, must be a function')
 
     this.sorter = sorter
@@ -43,8 +43,8 @@ class SortablePromiseQueue extends PromiseQueue {
   onNext (queue) {
     queue.sort((a, b) => {
 
-      const aOrder = is(a.order, Function) ? a.order() : a.order
-      const bOrder = is(b.order, Function) ? b.order() : b.order
+      const aOrder = is.func(a.order) ? a.order() : a.order
+      const bOrder = is.func(b.order) ? b.order() : b.order
 
       return this.sorter(aOrder, bOrder)
     })

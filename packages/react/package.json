@@ -26,7 +26,7 @@
     "@benzed/immutable": "latest",
     "add-event-listener": "0.0.1",
     "color": "^3.0.0",
-    "is-explicit": "^1.4.1",
+    "is-explicit": "^2.0.0",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",

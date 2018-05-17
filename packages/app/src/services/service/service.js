@@ -28,12 +28,12 @@ const configObject = object({
 })
 
 const defaultToName = (value, { args }) =>
-  is(value, String)
+  is.string(value)
     ? value
     : args[0]
 
 const removeFirstSlash = value => {
-  if (!is(value, String))
+  if (!is.string(value))
     return value
 
   value = value.replace(/^\/+/, '')

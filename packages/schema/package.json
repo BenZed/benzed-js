@@ -26,6 +26,6 @@
   "dependencies": {
     "@benzed/array": "latest",
     "@benzed/immutable": "latest",
-    "is-explicit": "^1.4.1"
+    "is-explicit": "^2.0.0"
   }
 }

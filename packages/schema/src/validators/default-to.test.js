@@ -3,13 +3,15 @@ import defaultTo from './default-to'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('defaultTo()', () => {
+describe.only('defaultTo()', () => {
 
   it('returns a default value if input is null or undefined', () => {
     expect(defaultTo(false)(null)).to.be.equal(false)
   })
 
-  it('returns value otherwise')
+  it('returns value otherwise', () => {
+    expect(defaultTo('string')('foo')).to.be.equal('foo')
+  })
 
   describe('config', () => {
 

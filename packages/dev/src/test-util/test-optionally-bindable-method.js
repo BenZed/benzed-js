@@ -7,7 +7,7 @@ import getDescriber from './get-describer'
 
 function testOptionallyBindableMethod (method, test, name) {
 
-  if (!is(method, Function) || !is(test, Function))
+  if (!is.func(method) || !is.func(test))
     throw new Error('testOptionallyBindableMethod() requires a method to test and a test function.')
 
   const describer = getDescriber(this)

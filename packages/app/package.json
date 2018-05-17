@@ -22,7 +22,7 @@
   "description": "Adaptation of define-utility, that works as a decorator",
   "devDependencies": {
     "@benzed/dev": "^0.5.2",
-    "@feathersjs/client": "^3.4.5",
+    "@feathersjs/client": "^3.5.0",
     "socket.io-client": "^2.1.0"
   },
   "dependencies": {
@@ -43,7 +43,7 @@
     "feathers-memory": "^2.1.1",
     "feathers-mongodb": "^3.1.0",
     "fs-extra": "^6.0.1",
-    "is-explicit": "^1.4.1",
+    "is-explicit": "^2.0.0",
     "mongodb": "^3.1.0-beta4",
     "save-dev": "^2.0.0",
     "uws": "^10.148.0"
