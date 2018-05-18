@@ -6,3 +6,4 @@ lib
 *.temp.js
 *.tgz
 *-old
+test/temp

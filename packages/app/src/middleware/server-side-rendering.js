@@ -1,6 +1,14 @@
 import path from 'path'
 import fs from 'fs'
+import is from 'is-explicit'
+
 import { between } from '@benzed/string'
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const REDIRECT = 301
 
 /******************************************************************************/
 // Helper
@@ -8,14 +16,14 @@ import { between } from '@benzed/string'
 
 class HtmlTemplate {
 
-  open = '<main>'
-  close = '<main/>'
+  open = null
+  close = null
 
   getOpenCloseAndId (htmlStr) {
 
     const mainTag = htmlStr::between('<main', '/>')
     if (mainTag === null)
-      throw new Error('index.html formatted incorrectly, main tag could not be found.')
+      throw new Error('index.html formatted incorrectly, main tag is not self closing or could not be found')
 
     const idAttr = mainTag::between(`id='`, `'`)
     if (idAttr === null)
@@ -74,43 +82,34 @@ class HtmlTemplate {
 
 }
 
-import React from 'react'
-const Test = ({ ssr }) =>
-  React.createElement('h1', {}, [ssr ? 'was rendered serverside' : 'was not rendered serverside'])
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function serverSideRendering (publicDir, routing, UiComponent = Test) {
+function serverSideRendering (publicDir, Component) {
 
-  // TODO check args
+  if (!is.func(Component))
+    throw new Error('serverSideRendering requires a React Component')
 
   const template = new HtmlTemplate(publicDir)
 
   const { createElement } = require('react')
-
-  const StaticRouter = routing
-    ? require('react-router').StaticRouter
-    : null
+  const { StaticRouter } = require('react-router').StaticRouter
 
   return (req, res) => {
 
-    let ui = createElement(UiComponent, { ssr: true })
+    const ui = createElement(Component, { ssr: true })
 
     const context = {}
+    const location = req.url
+    const routed = createElement(StaticRouter, { location, context }, ui)
 
-    if (routing) {
-      const location = req.url
-      ui = createElement(StaticRouter, { location, context }, ui)
-    }
-
-    if (routing && context.url) {
-      res.writeHead(301, { Location: context.url })
+    if (context.url) {
+      res.writeHead(REDIRECT, { Location: context.url })
       res.end()
 
     } else {
-      const payload = template.render(ui)
+      const payload = template.render(routed)
 
       res.write(payload)
       res.end()

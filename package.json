@@ -4,13 +4,19 @@
   "description": "Mono repo for all of BenZeds util and helper classes for scoped npm distribution.",
   "main": "index.js",
   "scripts": {
-    "reinstall": "bash shell/reinstall.sh",
-    "install": "bash shell/install.sh",
-    "update": "bash shell/update.sh",
-    "build": "bash shell/build.sh",
-    "link": "bash shell/link.sh"
+    "reinstall": "bash scripts/reinstall.sh",
+    "install": "bash scripts/install.sh",
+    "update": "bash scripts/update.sh",
+    "build": "bash scripts/build.sh",
+    "link": "node scripts/link.js",
+    "build:dev": "node scripts/build-dev.js"
   },
   "author": "BenZed",
   "license": "ISC",
-  "devDependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "colors": "^1.2.5",
+    "fs-extra": "^6.0.1",
+    "symlinked": "^0.5.0"
+  }
 }

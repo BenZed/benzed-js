@@ -30,6 +30,7 @@
     "@benzed/async": "latest",
     "@benzed/immutable": "latest",
     "@benzed/schema": "latest",
+    "@benzed/string": "latest",
     "@feathersjs/authentication": "^2.1.5",
     "@feathersjs/authentication-jwt": "^2.0.1",
     "@feathersjs/authentication-local": "^1.2.1",
@@ -47,6 +48,7 @@
     "mongodb": "^3.1.0-beta4",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
+    "react-router": "^4.2.0",
     "save-dev": "^2.0.0",
     "styled-components": "^3.2.6",
     "uws": "^10.148.0"

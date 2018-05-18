@@ -1,15 +1,21 @@
-import App from 'src/app'
+const fs = require('fs')
+const path = require('path')
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-class TestApp extends App {
+function getPackages () {
+  const packages = path.resolve(__dirname, '../../packages')
+  const names = fs.readdirSync(packages)
 
+  return {
+    packages, names
+  }
 }
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default TestApp
+module.exports = getPackages
