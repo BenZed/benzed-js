@@ -9,7 +9,6 @@ import {
 import Store from './store'
 import { StoreConsumer } from './context'
 import is from 'is-explicit'
-
 /******************************************************************************/
 //
 /******************************************************************************/
@@ -28,27 +27,27 @@ function toObject (value) {
   return value
 }
 
-// function listenKeys (listeners) {
-//
-//   for (const key in listeners) {
-//     const listen = listeners[key]
-//     if (!is(listen, Array) || (listen.length > 0 && !is.arrayOf(listen, String)))
-//       return new Error('Must be an array of Strings.')
-//   }
-//
-//   return listeners
-// }
-//
-// function storeKeys (stores) {
-//
-//   for (const key in stores) {
-//     const store = stores[key]
-//     if (!is(store, Store))
-//       return new Error('Must be a Store instance.')
-//   }
-//
-//   return stores
-// }
+function listenKeys (listeners) {
+
+  for (const key in listeners) {
+    const listen = listeners[key]
+    if (!is(listen, Array) || (listen.length > 0 && !is.arrayOf(listen, String)))
+      return new Error('Must be an array of Strings.')
+  }
+
+  return listeners
+}
+
+function storeKeys (stores) {
+
+  for (const key in stores) {
+    const store = stores[key]
+    if (!is(store, Store))
+      return new Error('Must be a Store instance.')
+  }
+
+  return stores
+}
 
 /******************************************************************************/
 // Main Component
@@ -56,18 +55,18 @@ function toObject (value) {
 
 class Observer extends React.Component {
 
-  // static propTypes = new PropTypeSchema({
-  //
-  //   stores: object({
-  //     validators: storeKeys
-  //   }),
-  //
-  //   listen: object({
-  //     cast: toObject,
-  //     validators: listenKeys
-  //   })
-  //
-  // })
+  static propTypes = new PropTypeSchema({
+
+    stores: object({
+      validators: storeKeys
+    }),
+
+    listen: object({
+      cast: toObject,
+      validators: listenKeys
+    })
+
+  })
 
   state = {
     stores: null,

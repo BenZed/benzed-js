@@ -24,6 +24,7 @@
   "dependencies": {
     "@benzed/array": "latest",
     "@benzed/immutable": "latest",
+    "@benzed/schema": "latest",
     "add-event-listener": "0.0.1",
     "color": "^3.0.0",
     "is-explicit": "^2.0.0",

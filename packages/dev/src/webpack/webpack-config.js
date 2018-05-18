@@ -147,13 +147,19 @@ function WebpackConfig (config) {
 
   const { name, inputFile, outputDir, htmlTemplate, mode, port } = validateConfig(config)
 
+  const isProduction = mode === 'production'
+
   const entry = {
     [name]: inputFile
   }
 
+  const publicPath = isProduction
+    ? '/static/'
+    : '/'
+
   const output = {
     filename: `[name].js`,
-    publicPath: '/static/',
+    publicPath,
     path: outputDir
   }
 
@@ -169,7 +175,7 @@ function WebpackConfig (config) {
     })
   ]
 
-  if (mode === 'production')
+  if (isProduction)
     plugins.unshift(
       new DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production')
@@ -205,7 +211,7 @@ function WebpackConfig (config) {
 
   }
 
-  if (mode !== 'production') {
+  if (!isProduction) {
 
     delete webpack.node.url
     delete webpack.node.punycode

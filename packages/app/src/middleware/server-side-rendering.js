@@ -112,8 +112,6 @@ function serverSideRendering (publicDir, routing, UiComponent = Test) {
     } else {
       const payload = template.render(ui)
 
-      console.log(payload)
-
       res.write(payload)
       res.end()
     }

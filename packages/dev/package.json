@@ -27,7 +27,7 @@
     "@benzed/immutable": "latest",
     "@benzed/schema": "latest",
     "@benzed/string": "latest",
-    "@benzed/async": "*",
+    "@benzed/async": "latest",
     "args": "^4.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.3",
