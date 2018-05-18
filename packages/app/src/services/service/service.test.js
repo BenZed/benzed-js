@@ -37,13 +37,13 @@ describe('Service', () => {
 
     function noop () {}
 
-    let app, articles, preWareRan
+    let app, articles, middlewareRegistered
     before(async () => {
 
       class HackService extends Service {
 
-        preRegisterWare () {
-          preWareRan = true
+        addMiddleware () {
+          middlewareRegistered = true
           return []
         }
 
@@ -88,7 +88,7 @@ describe('Service', () => {
     })
 
     it('runs registerToFeathers', () => {
-      expect(preWareRan).to.equal(true)
+      expect(middlewareRegistered).to.equal(true)
     })
 
     it('runs compileHooks', () => {

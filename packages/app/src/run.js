@@ -38,7 +38,7 @@ async function run (config) {
   try {
     app = new App(config)
   } catch (err) {
-    console.log(`app could not be configured: ${err.message}`)
+    console.log(`app could not be configured: \n${err}`)
     return app::kill()
   }
 
@@ -46,7 +46,7 @@ async function run (config) {
     await app.initialize()
   } catch (err) {
 
-    app.log`app could not be initialized: ${err.message}`
+    app.log`app could not be initialized: \n${err}`
     return app::kill()
   }
 
@@ -55,7 +55,7 @@ async function run (config) {
     app.log`app listening on ${app.get('port')}`
 
   } catch (err) {
-    app.log`app could not start: ${err.message}`
+    app.log`app could not start: \n${err}`
     return app::kill()
   }
 

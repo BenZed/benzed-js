@@ -1,14 +1,27 @@
-// import { expect } from 'chai'
+import { expect } from 'chai'
+
+import length from './length'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
 describe('length()', () => {
+  const min5 = length('>', 5)
 
-  it('returns an error if value does not have a numeric length')
+  it('returns an error if value does not have a numeric length', () => {
+    expect(min5({ length: 4 })).to.have.property('message', 'length must be greater than 5')
+  })
 
-  it('returns an error if value doesn\'t conform to length operator and value')
+  it('returns value if it does not have length', () => {
+    const sym = Symbol('has-no-length')
+    expect(min5(sym)).to.equal(sym)
+  })
 
-  it('returns value otherwise')
+  it('returns value otherwise', () => {
+    const string = 'long-enough-string'
+    expect(min5(string))
+      .to.be.equal(string)
+  })
 
   describe('configuration', () => {
 

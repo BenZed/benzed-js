@@ -11,8 +11,7 @@ import { Service as MemoryService } from 'feathers-memory'
 /******************************************************************************/
 
 const serviceDummy = {
-  preRegisterWare: () => [],
-  postRegisterWare: () => []
+  addMiddleware: () => []
 }
 
 /******************************************************************************/
@@ -30,7 +29,7 @@ describe('registerToFeathers', () => {
   })
 
   it('is bound to Service instance', () => {
-    expect(() => registerToFeathers({})).to.throw('Cannot read property \'preRegisterWare\' of undefined')
+    expect(() => registerToFeathers({})).to.throw('Cannot read property \'addMiddleware\' of undefined')
   })
 
   // TODO figure out if pre and post ware matter if rest is enabled

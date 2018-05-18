@@ -153,7 +153,7 @@ function WebpackConfig (config) {
 
   const output = {
     filename: `[name].js`,
-    publicPath: '/',
+    publicPath: '/static/',
     path: outputDir
   }
 

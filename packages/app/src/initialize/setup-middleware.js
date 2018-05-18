@@ -23,7 +23,7 @@ function setupMiddleware () {
   const publicDir = configRest && configRest.public
   if (publicDir)
     feathers
-      .use('/', express.static(configRest.public))
+      .use('/static/', express.static(configRest.public))
       .use(serverSideRendering(configRest.public))
 
   feathers

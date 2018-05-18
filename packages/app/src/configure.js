@@ -202,7 +202,7 @@ const validateConfigObject = Schema({
   logging: bool(
     defaultTo(true)
   )
-})
+}, false)
 
 const validateConfigUrl = Schema(
   string(
@@ -222,7 +222,6 @@ const validateConfig = (config, ...args) => {
     throw new Error('must be a plain object or url')
 
   config = validateConfigObject(config, ...args)
-
   return config
 }
 

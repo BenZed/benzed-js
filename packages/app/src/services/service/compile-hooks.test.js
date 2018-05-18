@@ -77,12 +77,12 @@ describe('compileHooks()', () => {
   describe('adds shortcut hooks via app or service config', () => {
 
     describe('soft-delete', () => {
-      it('app.config[serviceName].softDelete', () => {
+      it('app.config[serviceName].soft-delete', () => {
         const dummyService = createDummyService()
 
         const hooks = dummyService::compileHooks(
           app,
-          { softDelete: {} }
+          { 'soft-delete': {} }
         )
 
         expect(hooks.before.all).to.have.length(1)
@@ -120,7 +120,7 @@ describe('compileHooks()', () => {
         app,
         {
           auth: true,
-          softDelete: {}
+          'soft-delete': {}
         }
       )
 
@@ -148,7 +148,7 @@ describe('compileHooks()', () => {
           })
         })
 
-        const hooks = dummyService::compileHooks(app, { auth: false, softDelete: false })
+        const hooks = dummyService::compileHooks(app, { auth: false, 'soft-delete': false })
         expect(hooks).to.have.property('before')
         expect(hooks.before).to.have.property('create')
         expect(hooks.before.create).to.have.length(1)
@@ -157,5 +157,4 @@ describe('compileHooks()', () => {
       it('error')
     })
   })
-
 })

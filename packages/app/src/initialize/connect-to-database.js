@@ -11,7 +11,7 @@ async function tryConnect (uri, database, createProcessOnFail = true) {
 
   try {
 
-    const client = await MongoClient.connect(uri)
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true })
     app.database.link = client.db(database)
 
   } catch (err) {

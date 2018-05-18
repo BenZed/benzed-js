@@ -71,7 +71,7 @@ function addQuickHooks (app, config) {
     service.before({ all: jwtAuth() })
 
   // SoftDelete
-  const softDeleteOptions = config.softDelete
+  const softDeleteOptions = config['soft-delete']
   if (softDeleteOptions)
     service.before({ all: softDelete(softDeleteOptions) })
 

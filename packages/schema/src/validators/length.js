@@ -1,5 +1,6 @@
 import { hasNumericLength } from '@benzed/array'
 import rangeConfig from '../util/range-config'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Helper
@@ -19,11 +20,17 @@ function length (...args) {
 
   const err = config.err || defaultLengthError
 
-  return value =>
+  return value => {
 
-    value == null || !hasNumericLength(value)
-      ? value
-      : config.compare(value.length, err)
+    if (value == null || !hasNumericLength(value))
+      return value
+
+    const result = config.compare(value.length, err)
+    if (is(result, Error))
+      return result
+
+    return value
+  }
 
 }
 

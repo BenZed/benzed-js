@@ -44,10 +44,10 @@ const removeFirstSlash = value => {
 const validateConfig = new Schema({
   path: string(defaultToName, removeFirstSlash),
   auth: bool(defaultTo(true)),
-  softDelete: configObject,
+  'soft-delete': configObject,
   versions: configObject,
-  liveEdit: configObject
-})
+  'live-edit': configObject
+}, false)
 
 const validateName = new Schema(
   string(required('Name is required.'))
@@ -92,7 +92,7 @@ class Service {
     const {
       path,
       // versions,
-      // liveEdit,
+      // 'live-edit': liveEdit,
       paginate
     } = config = validateConfig(config, name)
     name = validateName(name)
@@ -137,16 +137,9 @@ class Service {
   }
 
   // Life Cycle
+  addMiddleware (config, app) {}
 
-  preRegisterWare () {
-    return []
-  }
-
-  postRegisterWare () {
-    return []
-  }
-
-  addHooks () {}
+  addHooks (config, app) {}
 
 }
 

@@ -1,40 +1,25 @@
 import { expect } from 'chai'
 import { capitalize } from '../src'
+import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-const syntax = {
-  argument: a => capitalize(a),
-  bound: a => a::capitalize()
-}
+Test.optionallyBindableMethod(capitalize, capitalize => {
 
-describe('capitalize()', () => {
+  describe('capitalizes strings', () => {
 
-  for (const method in syntax) {
+    const tests = [
+      { in: 'whatever', out: 'Whatever' },
+      { in: 'a', out: 'A' },
+      { in: 'ace of base', out: 'Ace of base' },
+      { in: '1twothree', out: '1twothree' },
+      { in: 'foobar', out: 'Foobar' }
+    ]
 
-    const func = syntax[method]
-
-    describe(`${method} syntax:`, () => {
-
-      describe('capitalizes strings', () => {
-
-        const tests = [
-          { in: 'whatever', out: 'Whatever' },
-          { in: 'a', out: 'A' },
-          { in: 'ace of base', out: 'Ace of base' },
-          { in: '1twothree', out: '1twothree' },
-          { in: 'foobar', out: 'Foobar' }
-        ]
-
-        for (const test of tests)
-          it(`${test.in} => ${test.out}`, () => {
-            expect(func(test.in)).to.equal(test.out)
-          })
-
+    for (const test of tests)
+      it(`${test.in} => ${test.out}`, () => {
+        expect(capitalize(test.in)).to.equal(test.out)
       })
-
-    })
-
-  }
+  })
 
 })

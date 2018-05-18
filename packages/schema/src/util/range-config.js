@@ -8,12 +8,6 @@ import is from 'is-explicit'
 const OPERATORS = [ '>', '>=', '<=>', '<=', '<' ]
 
 /******************************************************************************/
-// Helper
-/******************************************************************************/
-
-const isNumber = num => is(num, Number)
-
-/******************************************************************************/
 // Comparer
 /******************************************************************************/
 
@@ -59,7 +53,7 @@ const COMPARERS = {
 function handleError (err = defaultError, diff, ...values) {
   const msg = is(err, String)
     ? err
-    : err || defaultError(diff, ...values)
+    : (err || defaultError)(diff, ...values)
 
   return new Error(msg)
 }
@@ -109,10 +103,10 @@ const operatorConfig = argsToConfig([
 function checkExplicitConfig (operator, numbers) {
 
   const isBetween = operator === '<=>'
-  if (isBetween === isNumber(numbers.value))
+  if (isBetween === is.number(numbers.value))
     throw new Error(`value must ${isBetween ? 'not ' : ''}be defined for ${operator}`)
 
-  if (isBetween !== isNumber(numbers.min) || isBetween !== !isNumber(numbers.max))
+  if (isBetween !== is.number(numbers.min) || isBetween !== !is.number(numbers.max))
     throw new Error(`min and max must ${!isBetween ? 'not ' : ''}be defined for ${operator}`)
 
   if (isBetween && numbers.min > numbers.max)
@@ -132,12 +126,12 @@ function fixImplicitConfig (operator, numbers) {
     min = Math.min(numbers)
     max = Math.max(numbers)
   } else
-    [ value ] = numbers.filter(isNumber)
+    [ value ] = numbers.filter(is.number)
 
-  if (isBetween && (!isNumber(min) || !isNumber(max)))
+  if (isBetween && (!is.number(min) || !is.number(max)))
     throw new Error(`${operator} needs two numbers to compare`)
 
-  if (!isBetween && !isNumber(value))
+  if (!isBetween && !is.number(value))
     throw new Error(`${operator} needs one number to compare`)
 
   return getComparer({ operator, min, max, value })
