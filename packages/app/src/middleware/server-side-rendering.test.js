@@ -86,6 +86,8 @@ const ExampleRoutesComponent = ({ ssr }) => [
   <Ssr key='rendered' ssr={ssr}/>,
   <Switch key='routes'>
     <Route exact path='/' component={Page}/>
+    <Route exact path='/foo' component={Page}/>
+    <Route exact path='/bar' component={Page}/>
   </Switch>
 ]
 
@@ -167,14 +169,15 @@ describe.only('serverSideRender()', () => {
         expect(app.listener).to.not.equal(null)
       })
 
-      it('accepts requests', async () => {
-        const address = `http://localhost:${app.get('port')}`
-        const res = await fetch(address)
-        const body = await res.text()
+      for (const endpoint of [ '/', '/foo', '/bar' ])
+        it(`correctly goes to endpoint ${endpoint}`, async () => {
+          const address = `http://localhost:${app.get('port')}${endpoint}`
+          const res = await fetch(address)
+          const body = await res.text()
 
-        const pageComponentOutput = body::between('<h2>', '</h2>')
-        expect(pageComponentOutput).to.be.equal('<h2>@/</h2>')
-      })
+          const pageComponentOutput = body::between('<h2>', '</h2>')
+          expect(pageComponentOutput).to.be.equal(`<h2>@${endpoint}</h2>`)
+        })
     })
   })
 })
