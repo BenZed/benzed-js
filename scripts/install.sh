@@ -1,4 +1,4 @@
 for d in ./packages/*
 do
-  ( echo installing $d; cd $d && npm i)
+  ( echo installing $d; cd $d; npm i )
 done

@@ -13,7 +13,10 @@
   },
   "author": "BenZed",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "is-explicit": "^2.0.0"
+  },
   "devDependencies": {
     "colors": "^1.2.5",
     "fs-extra": "^6.0.1",

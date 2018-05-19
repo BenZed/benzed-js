@@ -24,7 +24,7 @@ function setupMiddleware () {
   if (publicDir)
     feathers
       .use('/static/', express.static(configRest.public))
-      .use(serverSideRendering(configRest.public, app.UiComponent))
+      .use(serverSideRendering(configRest.public, app.RoutesComponent))
 
   feathers
     .use(express.errorHandler())

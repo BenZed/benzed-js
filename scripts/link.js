@@ -83,10 +83,8 @@ eachPackage((name, dir) => {
       const name = packageName.replace('@benzed/', '')
       const fromDir = path.resolve(moduleDir, name)
       const toDir = path.resolve(__dirname, `../packages/${name}`)
-      fs.linkSync(fromDir, toDir, 'dir')
+      fs.symlinkSync(toDir, fromDir, 'dir')
     }
   }
-
-  process.exit()
 
 })

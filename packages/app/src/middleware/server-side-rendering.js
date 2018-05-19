@@ -86,19 +86,19 @@ class HtmlTemplate {
 // Main
 /******************************************************************************/
 
-function serverSideRendering (publicDir, Component) {
+function serverSideRendering (publicDir, RoutesComponent) {
 
-  if (!is.func(Component))
+  if (!is.func(RoutesComponent))
     throw new Error('serverSideRendering requires a React Component')
 
   const template = new HtmlTemplate(publicDir)
 
   const { createElement } = require('react')
-  const { StaticRouter } = require('react-router').StaticRouter
+  const { StaticRouter } = require('react-router')
 
   return (req, res) => {
 
-    const ui = createElement(Component, { ssr: true })
+    const ui = createElement(RoutesComponent, { ssr: true })
 
     const context = {}
     const location = req.url
@@ -114,9 +114,7 @@ function serverSideRendering (publicDir, Component) {
       res.write(payload)
       res.end()
     }
-
   }
-
 }
 
 /******************************************************************************/
