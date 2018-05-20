@@ -1,25 +1,10 @@
-import App from 'src/app'
+import TestApp from '../../test-app'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-class TestBackend extends App {
-
-  constructor (override = {}) {
-    const config = {
-      ...override,
-      rest: true,
-      port: 6789
-    }
-
-    super(config)
-  }
-
-  RouteComponent = () =>
-    <div>
-      TEMPORARY UI COMPONENT
-    </div>
+class BasicWebpackedApp extends TestApp {
 
 }
 
@@ -27,4 +12,4 @@ class TestBackend extends App {
 // Exports
 /******************************************************************************/
 
-export default TestBackend
+export default BasicWebpackedApp

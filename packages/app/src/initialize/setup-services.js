@@ -70,9 +70,7 @@ function setupServices () {
 
     } else
       app::service(setupConfig, serviceName, app)
-
   }
-
 }
 
 /******************************************************************************/

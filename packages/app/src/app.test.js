@@ -2,7 +2,10 @@ import { expect } from 'chai'
 
 import App from './app'
 
-import { CONFIG_OBJ } from 'test/util'
+const CONFIG = {
+  port: 4315,
+  socketio: true
+}
 
 /******************************************************************************/
 //
@@ -18,7 +21,7 @@ describe('App', () => {
 
     before(() => {
       try {
-        app = new App(CONFIG_OBJ)
+        app = new App(CONFIG)
       } catch (err) {
         console.error(err)
       }

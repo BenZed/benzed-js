@@ -2,7 +2,6 @@ require('colors')
 
 const fs = require('fs-extra')
 const path = require('path')
-const symlinked = require('symlinked')
 const { spawn, execSync } = require('child_process')
 
 const { eachPackage, getPackages, packageLog } = require('./helper')

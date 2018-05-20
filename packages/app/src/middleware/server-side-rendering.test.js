@@ -1,11 +1,19 @@
 import { expect } from 'chai'
 import serverSideRender from './server-side-rendering'
 import setupProviders from '../initialize/setup-providers'
-import path from 'path'
-import fs from 'fs-extra'
+
 import React from 'react'
-import App from 'src/app'
+import fs from 'fs-extra'
+import path from 'path'
+
+import {
+  createProjectAppAndTest,
+  createProjectIndexHtml,
+  createProjectFromPrefab,
+  TestApp } from 'test-util/test-project'
+
 import fetch from 'isomorphic-fetch'
+
 import { Switch, Route } from 'react-router'
 import { between } from '@benzed/string'
 
@@ -14,113 +22,13 @@ import 'colors'
 /* global describe it before after beforeEach afterEach */
 
 /******************************************************************************/
-// DATA
-/******************************************************************************/
-
-const TEMP_DIR = path.resolve(__dirname, '../../temp')
-
-/******************************************************************************/
-// Index Html
-/******************************************************************************/
-
-function testIndexHtml (id = 'test-project') {
-  return `<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='UTF-8'>
-  </head>
-  <body>
-    <main id='${id}'/>
-  </body>
-</html>
-`
-}
-
-function createTestIndexHtml (id, subPath = '') {
-  const url = path.join(TEMP_DIR + subPath, 'index.html')
-
-  if (fs.existsSync(url))
-    fs.removeSync(url)
-
-  fs.ensureFileSync(url)
-  fs.writeFileSync(url, testIndexHtml(id))
-
-  return path.dirname(url)
-}
-
-/******************************************************************************/
-// Fake Req / Res
-/******************************************************************************/
-
-function fakeCall (url) {
-  const middleware = this
-
-  const req = { url }
-  const res = {
-    body: [],
-    head: [],
-    ended: false,
-    write (value) { this.body.push(value) },
-    writeHead (...args) { this.head.push(args) },
-    end () { this.ended = true }
-  }
-
-  middleware(req, res)
-
-  return res
-}
-
-/******************************************************************************/
-// Components
-/******************************************************************************/
-
-const Ssr = ({ ssr }) =>
-  <h1>
-    {ssr ? 'rendered server-side' : 'rendered client-side'}
-  </h1>
-
-const Page = ({ location }) =>
-  <h2>{'@' + location.pathname}</h2>
-
-const ExampleRoutesComponent = ({ ssr }) => [
-  <Ssr key='rendered' ssr={ssr}/>,
-  <Switch key='routes'>
-    <Route exact path='/' component={Page}/>
-    <Route exact path='/foo' component={Page}/>
-    <Route exact path='/bar' component={Page}/>
-  </Switch>
-]
-
-/******************************************************************************/
 // Tests
 /******************************************************************************/
 
-describe.only('serverSideRender()', () => {
+describe('serverSideRender()', () => {
 
   it('is a function', () => {
     expect(serverSideRender).to.be.instanceof(Function)
-  })
-
-  it('writes a react component into an html template to reponse', () => {
-    const id = 'example-project'
-    const publicDir = createTestIndexHtml(id)
-    const ssr = serverSideRender(publicDir, ExampleRoutesComponent)
-
-    const res = ssr::fakeCall('/')
-
-    expect(res.body).to.have.length(1)
-
-    const html = res.body[0]
-
-    expect(html).to.include(`<main id='${id}'>`)
-    expect(html).to.include('</head>')
-    expect(html).to.include('</html>')
-
-    const SsrComponentOutput = html::between('<h1>', '</h1>')
-    const PageComponentOutput = html::between('<h2>', '</h2>')
-
-    expect(SsrComponentOutput).to.include('rendered server-side')
-    expect(PageComponentOutput).to.equal('<h2>@/</h2>')
   })
 
   describe('public dir first arg', () => {
@@ -138,46 +46,91 @@ describe.only('serverSideRender()', () => {
 
   describe('in a basic app', () => {
 
-    class BasicSsrTestApp extends App {
-      constructor (override = {}) {
-        super({ rest: true, port: 6789, ...override })
-        this.initialize()
-      }
+    const Ssr = ({ ssr }) =>
+      <h1>
+        { ssr ? 'rendered server-side' : 'rendered client-side' }
+      </h1>
+
+    const Page = ({ location }) =>
+      <h2>{'@' + location.pathname}</h2>
+
+    const ExampleRoutesComponent = ({ ssr }) => [
+      <Ssr key='rendered' ssr={ssr}/>,
+      <Switch key='routes'>
+        <Route exact path='/' component={Page}/>
+        <Route exact path='/foo' component={Page}/>
+        <Route exact path='/bar' component={Page}/>
+        <Route exact path='/bar/wise' component={Page}/>
+      </Switch>
+    ]
+
+    class BasicSsrTestApp extends TestApp {
 
       RoutesComponent = ExampleRoutesComponent
 
       initialize () {
-        const dir = createTestIndexHtml('ssr-test-app', '/ssr-test-app')
         this::setupProviders()
-        this.feathers.use(serverSideRender(dir, this.RoutesComponent))
+        const { public: _public } = this.get('rest')
+        this.feathers.use(serverSideRender(_public, this.RoutesComponent))
       }
     }
 
-    let app
+    const name = 'basic-ssr-test-app'
+    const basicConfig = {
+      App: BasicSsrTestApp,
+      name,
+      rest: {
+        public: createProjectIndexHtml(name)
+      }
+    }
 
-    before(() => {
-      app = new BasicSsrTestApp()
-      return app.start()
-    })
+    createProjectAppAndTest(basicConfig, state => {
 
-    after(() => {
-      app && app.end()
-    })
-
-    describe('serves different routes given by RoutesComponent', () => {
       it('app starts', () => {
-        expect(app.listener).to.not.equal(null)
+        expect(state.app.listener).to.not.equal(null)
       })
 
-      for (const endpoint of [ '/', '/foo', '/bar' ])
+      for (const endpoint of [ '/', '/foo', '/bar', '/bar/wise' ])
         it(`correctly goes to endpoint ${endpoint}`, async () => {
-          const address = `http://localhost:${app.get('port')}${endpoint}`
-          const res = await fetch(address)
+          const res = await fetch(state.address + endpoint)
           const body = await res.text()
 
           const pageComponentOutput = body::between('<h2>', '</h2>')
           expect(pageComponentOutput).to.be.equal(`<h2>@${endpoint}</h2>`)
         })
+    })
+  })
+
+  describe('in a webpacked app', () => {
+
+    const { App } = createProjectFromPrefab('basic-webpacked-app')
+
+    createProjectAppAndTest({ App }, state => {
+
+      it('app starts', () => {
+        expect(state.app.listener).to.not.equal(null)
+      })
+
+      it('serves component', async () => {
+        const res = await fetch(state.address + '/somewhere/else')
+        const body = await res.text()
+
+        const mountedMain = body::between('<main', '</main')
+        expect(mountedMain).to.not.be.equal(null)
+        expect(mountedMain).to.include('serverside')
+      })
+
+      it('serves static assets as well', async () => {
+        const res = await fetch(state.address + '/app.js.map')
+        const body = await res.text()
+
+        const publicDir = state.app.get(['rest', 'public'])
+
+        const equivalentFile = path.join(publicDir, 'app.js.map')
+        expect(body).to.be.equal(
+          fs.readFileSync(equivalentFile, 'utf-8')
+        )
+      })
     })
   })
 })

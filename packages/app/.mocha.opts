@@ -1,5 +1,5 @@
 --require babel-register
 --require babel-polyfill
---require ./test/index.js
+--require ./test-util
 --bail
 src/**/*.test.js

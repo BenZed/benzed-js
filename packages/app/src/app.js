@@ -92,7 +92,6 @@ class App {
     await new Promise(resolve => listener.once('listening', resolve))
 
     this.listener = listener
-
     return listener
   }
 
@@ -100,6 +99,8 @@ class App {
 
     if (this.listener)
       await this.listener.close()
+
+    this.listener = null
 
     if (this.database && this.database.process)
       await new Promise(resolve => {

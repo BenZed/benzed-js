@@ -1,19 +1,11 @@
 import socketio from 'socket.io-client'
 import feathers from '@feathersjs/client'
-import path from 'path'
 
-export const CONFIG_URL = path.resolve(__dirname, './config')
+/******************************************************************************/
+// Exports
+/******************************************************************************/
 
-export const CONFIG_OBJ = {
-  'test-value': 'foobar',
-  rest: {
-    public: path.join(__dirname, './public'),
-    favicon: path.join(__dirname, './public/favicon.ico')
-  },
-  port: 4567
-}
-
-export function testClient (numberOrApp = 5000) {
+export default function testClient (numberOrApp = 5000) {
 
   const port = typeof numberOrApp === 'object'
     ? numberOrApp.get('port')

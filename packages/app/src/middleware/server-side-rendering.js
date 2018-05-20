@@ -14,10 +14,25 @@ const REDIRECT = 301
 // Helper
 /******************************************************************************/
 
+class ClientError extends Error {
+
+  constructor (errToWrap) {
+    super(errToWrap.message)
+    for (const key in errToWrap)
+      if (key !== 'constructor' && key !== 'stack')
+        this[key] = errToWrap[key]
+
+    delete this.stack
+  }
+
+}
+
 class HtmlTemplate {
 
   open = null
   close = null
+  id = null
+  component = null
 
   getOpenCloseAndId (htmlStr) {
 
@@ -46,7 +61,32 @@ class HtmlTemplate {
 
   }
 
-  constructor (dir) {
+  embedStyleAndPropsIntoOpen (sheet, props) {
+
+    let { open } = this
+
+    const styles = sheet.getStyleTags()
+
+    // don't serialize ssr, because when the client parses it, it should not be true
+    const json = { ...props }
+    delete json.ssr
+    if (!json.error)
+      delete json.error
+
+    const cdata = Object.keys(json).length > 0
+      ? `<script id='${this.id + '-serialized'}' type='application/json'>` +
+          `<![CDATA[${JSON.stringify(json)}]]>` +
+        `</script>`
+
+      : ''
+
+    if (styles || cdata)
+      open = open.replace('</head>', styles + cdata + '</head>')
+
+    return open
+  }
+
+  constructor (dir, component) {
 
     const indexHtml = path.join(dir, 'index.html')
     if (!fs.existsSync(indexHtml))
@@ -61,16 +101,18 @@ class HtmlTemplate {
     this.open = open
     this.close = close
     this.id = id
+    this.component = component
   }
 
-  render (element) {
+  render (element, props) {
     const { renderToString } = require('react-dom/server')
     const { ServerStyleSheet } = require('styled-components')
 
     const sheet = new ServerStyleSheet()
     sheet.collectStyles(element)
 
-    const open = this.open.replace('</head>', sheet.getStyleTags() + '</head>')
+    const open = this.embedStyleAndPropsIntoOpen(sheet, props)
+
     const { id, close } = this
 
     return open +
@@ -80,25 +122,18 @@ class HtmlTemplate {
     close
   }
 
-}
+  handleRequest (err, req, res, next) {
 
-/******************************************************************************/
-// Main
-/******************************************************************************/
+    const { component } = this
+    const { createElement } = require('react')
+    const { StaticRouter } = require('react-router')
 
-function serverSideRendering (publicDir, RoutesComponent) {
+    const props = {
+      ssr: true,
+      error: err && new ClientError(err)
+    }
 
-  if (!is.func(RoutesComponent))
-    throw new Error('serverSideRendering requires a React Component')
-
-  const template = new HtmlTemplate(publicDir)
-
-  const { createElement } = require('react')
-  const { StaticRouter } = require('react-router')
-
-  return (req, res) => {
-
-    const ui = createElement(RoutesComponent, { ssr: true })
+    const ui = createElement(component, props)
 
     const context = {}
     const location = req.url
@@ -109,12 +144,37 @@ function serverSideRendering (publicDir, RoutesComponent) {
       res.end()
 
     } else {
-      const payload = template.render(routed)
+      const payload = this.render(routed, props)
 
+      if (err)
+        res.status(err.code || 500)
       res.write(payload)
       res.end()
     }
+
   }
+
+}
+
+/******************************************************************************/
+// Main
+/******************************************************************************/
+
+function serverSideRendering (publicDir, routesComponent) {
+
+  if (!is.func(routesComponent))
+    throw new Error('serverSideRendering requires a React Component')
+
+  const template = new HtmlTemplate(publicDir, routesComponent)
+
+  return [
+    // Express must count Function.length to determine a method is an Error
+    // handler or not, so the handle request msut be sent back with two signatures
+    (req, res, next) => template.handleRequest(null, req, res, next),
+
+    (err, req, res, next) => template.handleRequest(err, req, res, next)
+
+  ]
 }
 
 /******************************************************************************/

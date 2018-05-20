@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import is from 'is-explicit'
 
-import { Schema,
+import { Schema, cast,
   object, arrayOf, string, bool, number,
   required, length, format, defaultTo
 } from '@benzed/schema'
@@ -164,36 +164,33 @@ const validateConfigObject = Schema({
 
   }),
 
-  socketio: bool(
+  socketio: object(
+    cast(boolToObject),
     requiredIfNo('rest')
   ),
 
   mongodb: object({
+    username: string(),
+    password: string(),
+    database: string(required),
+    hosts: arrayOf(
+      string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
+      required,
+      length('>=', 1)
+    )
+  },
+  requiredIf('auth')
+  ),
 
-    shape: {
-      username: string(),
-      password: string(),
-      database: string(required),
-      hosts: arrayOf(
-        string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
-        required,
-        length('>=', 1)
-      )
-    },
+  services: object(
+    cast(boolToObject),
+    eachKeyMustBeObject
+  ),
 
-    validators: requiredIf('auth')
-
-  }),
-
-  services: object({
-    cast: boolToObject,
-    validators: eachKeyMustBeObject
-  }),
-
-  auth: object({
-    cast: boolToObject,
-    validators: autoFillAuth
-  }),
+  auth: object(
+    cast(boolToObject),
+    autoFillAuth
+  ),
 
   port: number(
     required

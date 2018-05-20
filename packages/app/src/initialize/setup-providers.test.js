@@ -1,12 +1,9 @@
 import { expect } from 'chai'
-import App from 'src'
-import { testClient, CONFIG_OBJ } from 'test/util'
-import { copy, set } from '@benzed/immutable'
-import { milliseconds } from '@benzed/async'
-import setupProviders from './setup-providers'
 
-const RT_CONFIG = CONFIG_OBJ::copy()
-delete RT_CONFIG.rest
+import { createProjectAppAndTest, TestApp } from 'test-util/test-project'
+import { milliseconds } from '@benzed/async'
+
+import setupProviders from './setup-providers'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -36,12 +33,20 @@ describe('setupProviders()', () => {
 
     describe('setup', () => {
 
-      class SocketioMiddlewareApp extends App {
+      class SocketioMiddlewareApp extends TestApp {
 
         socketioMiddlewareRan = 0
         testMessagesReceived = 0
         noticesReceived = 0
         runsBound = false
+
+        async afterStart (state) {
+          await state.client.connect()
+          state.client.noticesReceived = 0
+          state.client.io.on('test-notice', () => state.client.noticesReceived++)
+          state.client.io.emit('test-message')
+          await milliseconds(25)
+        }
 
         socketio (io) {
           if (this && 'runsBound' in this)
@@ -58,55 +63,36 @@ describe('setupProviders()', () => {
         }
       }
 
-      let app, client
-      before(async () => {
-        try {
-          app = new SocketioMiddlewareApp(RT_CONFIG::set('socketio', true))
-          app::setupProviders()
-          await app.start()
+      createProjectAppAndTest({ App: SocketioMiddlewareApp, socketio: true }, state => {
+        it('creates a socket.io server', () => {
+          expect(state.app.feathers.io.constructor.name).to.be.equal('Server')
+        })
 
-          client = testClient(app)
-          await client.connect()
-          client.io.emit('test-message')
-          client.io.on('test-notice', () => app.noticesReceived++)
+        it('clients can connect with socket.io-client', () => {
+          expect(state.client.io.connected).to.be.equal(true)
+        })
 
-          await milliseconds(5)
+        it('app can be extended with a socketio() function that acts as middleware',
+          () => {
+            expect(state.app.socketioMiddlewareRan).to.be.equal(1)
+          })
 
-        } catch (err) {
-          console.log(err)
-          throw err
-        }
+        it('socketio() function runs bound',
+          () => {
+            expect(state.app.runsBound).to.be.equal(true)
+          })
+
+        it('app receives client messages',
+          () => {
+            expect(state.app.testMessagesReceived).to.be.equal(1)
+          })
+
+        it('client receives app messages',
+          () => {
+            expect(state.client.noticesReceived).to.be.equal(1)
+          })
       })
 
-      it('creates a socket.io server', () => {
-        expect(app.feathers.io.constructor.name).to.be.equal('Server')
-      })
-
-      it('clients can connect with socket.io-client', () => {
-        expect(client.io.connected).to.be.equal(true)
-      })
-
-      it('app can be extended with a socketio() function that acts as middleware',
-        () => {
-          expect(app.socketioMiddlewareRan).to.be.equal(1)
-        })
-
-      it('socketio() function runs bound',
-        () => {
-          expect(app.runsBound).to.be.equal(true)
-        })
-
-      it('app receives client messages',
-        () => {
-          expect(app.testMessagesReceived).to.be.equal(1)
-        })
-
-      it('client receives app messages',
-        () => {
-          expect(app.noticesReceived).to.be.equal(1)
-        })
-
-      after(() => app && app.end())
     })
   })
 

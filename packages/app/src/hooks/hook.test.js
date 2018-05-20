@@ -1,6 +1,3 @@
-// import { expect } from 'chai'
-//
-// import Hook from './hook'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
