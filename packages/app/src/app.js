@@ -66,15 +66,7 @@ class App {
 
   }
 
-  get (path) {
-    const { settings } = this.feathers
-    return get.mut(settings, path)
-  }
-
-  set (path, value) {
-    const { settings } = this.feathers
-    return set.mut(settings, path, value)
-  }
+  // Setup Methods
 
   async initialize () {
     this::setupProviders()
@@ -108,6 +100,24 @@ class App {
         this.database.process.kill()
       })
 
+  }
+
+  // Implementable Client Methods
+
+  // getClientComponent (req, res) {}
+
+  // onSerializeClient (req, res) {}
+
+  // Utility Methods
+
+  get (path) {
+    const { settings } = this.feathers
+    return get.mut(settings, path)
+  }
+
+  set (path, value) {
+    const { settings } = this.feathers
+    return set.mut(settings, path, value)
   }
 
   log = (strings, ...params) => {

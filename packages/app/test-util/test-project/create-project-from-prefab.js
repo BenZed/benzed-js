@@ -23,11 +23,8 @@ function createProjectWebpackedUi (name) {
     execSync(`webpack --config ${webpackConfig}`)
 
   const App = require(path.join(prefabFolder, 'app')).default
-  const RoutesComponent = require(path.join(prefabFolder, 'component')).default
 
   class PrefabApp extends App {
-
-    RoutesComponent = RoutesComponent
 
     constructor (config = {}, mode) {
       if (is.plainObject(config))

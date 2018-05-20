@@ -10,7 +10,9 @@ import {
   createProjectAppAndTest,
   createProjectIndexHtml,
   createProjectFromPrefab,
-  TestApp } from 'test-util/test-project'
+  TestApp,
+  TestBrowser
+} from 'test-util/test-project'
 
 import fetch from 'isomorphic-fetch'
 
@@ -25,7 +27,7 @@ import 'colors'
 // Tests
 /******************************************************************************/
 
-describe('serverSideRender()', () => {
+describe.only('serverSideRender()', () => {
 
   it('is a function', () => {
     expect(serverSideRender).to.be.instanceof(Function)
@@ -46,32 +48,37 @@ describe('serverSideRender()', () => {
 
   describe('in a basic app', () => {
 
-    const Ssr = ({ ssr }) =>
+    const Ssr = ({ hydrated }) =>
       <h1>
-        { ssr ? 'rendered server-side' : 'rendered client-side' }
+        { hydrated ? 'rendered server-side' : 'rendered client-side' }
       </h1>
 
     const Page = ({ location }) =>
       <h2>{'@' + location.pathname}</h2>
 
-    const ExampleRoutesComponent = ({ ssr }) => [
-      <Ssr key='rendered' ssr={ssr}/>,
+    const ExampleRoutesComponent = ({ hydrated }) => [
+      <Ssr key='rendered' hydrated={hydrated}/>,
       <Switch key='routes'>
         <Route exact path='/' component={Page}/>
-        <Route exact path='/foo' component={Page}/>
-        <Route exact path='/bar' component={Page}/>
-        <Route exact path='/bar/wise' component={Page}/>
+        <Route path='/foo' component={Page}/>
+        <Route path='/bar' component={Page}/>
+        <Route path='/bar/wise' component={Page}/>
       </Switch>
     ]
 
     class BasicSsrTestApp extends TestApp {
 
-      RoutesComponent = ExampleRoutesComponent
+      getClientComponent () {
+        return ExampleRoutesComponent
+      }
 
       initialize () {
         this::setupProviders()
         const { public: _public } = this.get('rest')
-        this.feathers.use(serverSideRender(_public, this.RoutesComponent))
+        this.feathers.use(serverSideRender({
+          publicDir: _public,
+          getComponent: ::this.getClientComponent
+        }))
       }
     }
 
@@ -111,9 +118,12 @@ describe('serverSideRender()', () => {
         expect(state.app.listener).to.not.equal(null)
       })
 
-      it('serves component', async () => {
-        const res = await fetch(state.address + '/somewhere/else')
+      it('serves component and style tags', async () => {
+        const res = await fetch(state.address)
         const body = await res.text()
+
+        const styleTags = body::between('<style data-styled-components', '</style>')
+        expect(styleTags).to.not.be.equal(null)
 
         const mountedMain = body::between('<main', '</main')
         expect(mountedMain).to.not.be.equal(null)
@@ -130,6 +140,84 @@ describe('serverSideRender()', () => {
         expect(body).to.be.equal(
           fs.readFileSync(equivalentFile, 'utf-8')
         )
+      })
+
+      it('client side code takes over without issue', async function () {
+
+        this.timeout(5000)
+
+        const browser = new TestBrowser(state.address)
+        await browser.untilFetched()
+        await browser.untilLoaded()
+
+        const main = browser.document.getElementById('basic-webpacked-app')
+        expect(main.innerHTML).to.include('clientside')
+        expect(browser.fetched).to.include('serverside')
+      })
+
+      it('client side receives props serialized from server', async function () {
+
+        this.timeout(5000)
+        const browser = new TestBrowser(state.address + '/foobar')
+        await browser.untilFetched()
+
+        const serverStatusTag = browser.fetched::between('<h4 id="serialized-data', '</h4>')
+        expect(serverStatusTag).to.include('foobar')
+
+        await browser.untilLoaded()
+        const clientStatusTag = browser.document.getElementById('serialized-data')
+        expect(clientStatusTag).to.have.property('textContent', 'foobar')
+
+      })
+
+      it('client side receives server errors', async function () {
+        this.timeout(5000)
+        const browser = new TestBrowser(state.address + '/bad/route')
+        await browser.untilFetched()
+
+        const serverErrorTag = browser.fetched::between('<div id="server-error"', '</div>')
+        expect(serverErrorTag).to.include('you cannot go to /bad/route')
+
+        await browser.untilLoaded()
+        const clientErrorTag = browser.document.getElementById('server-error')
+        expect(clientErrorTag).to.have.property('innerHTML', '<h3>you cannot go to /bad/route</h3>')
+      })
+
+    })
+  })
+
+  describe('in a webpacked app without a react component getter', () => {
+
+    const { App } = createProjectFromPrefab('basic-webpacked-app')
+
+    class NoClientComponentReactApp extends App {
+      getClientComponent = null
+    }
+
+    createProjectAppAndTest({ App: NoClientComponentReactApp }, state => {
+
+      it('app starts', () => {
+        expect(state.app.listener).to.not.equal(null)
+      })
+
+      it('serves index.html, which gets taken over by client', async () => {
+        const browser = new TestBrowser(state.address + '/wherever')
+        await browser.untilFetched()
+        expect(browser.fetched).to.include('<main id=\'basic-webpacked-app\'></main>')
+
+        await browser.untilLoaded()
+        const main = browser.document.getElementById('basic-webpacked-app')
+        expect(main.innerHTML).to.include('<h1>current page: /wherever</h1>')
+      })
+
+      it('retreives props serialized from server, which client then uses', async () => {
+        const browser = new TestBrowser(state.address + '/foobar')
+        await browser.untilFetched()
+        expect(browser.fetched).to.include(`"status":"foobar"`)
+
+        await browser.untilLoaded()
+        const main = browser.document.getElementById('basic-webpacked-app')
+        expect(main.innerHTML).to.include('<h4 id="serialized-data">foobar</h4>')
       })
     })
   })

@@ -17,12 +17,13 @@ function setupMiddleware () {
   const express = require('@feathersjs/express')
 
   const hasPublic = !!rest.public
-  const hasReactRoutes = !!app.RoutesComponent
+  const hasSSR = (app.getClientComponent || app.onSerializeClient) && hasPublic
+
   if (hasPublic) {
     // If there is a react component to serve ssr with, we don't want to statically
     // serve the index.html, because ssr will serve one embedded with react generated
     // markup.
-    const options = { index: !hasReactRoutes }
+    const options = { index: hasSSR ? false : 'index.html' }
     feathers.use('/', express.static(rest.public, options))
   }
 
@@ -30,12 +31,17 @@ function setupMiddleware () {
   if (app.rest)
     app.rest(rest.public)
 
-  if (hasPublic && hasReactRoutes)
+  if (hasPublic && hasSSR)
     feathers
-      .use(serverSideRendering(rest.public, app.RoutesComponent))
+      .use(serverSideRendering({
+        publicDir: rest.public,
+        getComponent: app.getClientComponent && ::app.getClientComponent,
+        serializer: app.onSerializeClient && ::app.onSerializeClient
+      }))
+
   // ssr will also handle errors, so we only need to register middleware if there
-  // is no RoutesComponent
-  else
+  // is no client componetn
+  if (!app.getClientComponent)
     feathers
       .use(express.notFound({ verbose: true }))
       .use(express.errorHandler({ html: hasPublic }))

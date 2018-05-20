@@ -1,6 +1,5 @@
 import path from 'path'
 import fs from 'fs'
-import is from 'is-explicit'
 
 import { between } from '@benzed/string'
 
@@ -10,29 +9,17 @@ import { between } from '@benzed/string'
 
 const REDIRECT = 301
 
+const noop = () => null
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
-
-class ClientError extends Error {
-
-  constructor (errToWrap) {
-    super(errToWrap.message)
-    for (const key in errToWrap)
-      if (key !== 'constructor' && key !== 'stack')
-        this[key] = errToWrap[key]
-
-    delete this.stack
-  }
-
-}
 
 class HtmlTemplate {
 
   open = null
   close = null
   id = null
-  component = null
 
   getOpenCloseAndId (htmlStr) {
 
@@ -65,13 +52,14 @@ class HtmlTemplate {
 
     let { open } = this
 
-    const styles = sheet.getStyleTags()
-
-    // don't serialize ssr, because when the client parses it, it should not be true
     const json = { ...props }
-    delete json.ssr
+
+    // clean up things that shouldn't go client side
     if (!json.error)
       delete json.error
+    else
+      delete json.error.stack
+    delete json.hydrated
 
     const cdata = Object.keys(json).length > 0
       ? `<script id='${this.id + '-serialized'}' type='application/json'>` +
@@ -80,17 +68,18 @@ class HtmlTemplate {
 
       : ''
 
+    const styles = sheet.getStyleTags()
     if (styles || cdata)
       open = open.replace('</head>', styles + cdata + '</head>')
 
     return open
   }
 
-  constructor (dir, component) {
+  constructor ({ publicDir, getComponent, serializer }) {
 
-    const indexHtml = path.join(dir, 'index.html')
+    const indexHtml = path.join(publicDir, 'index.html')
     if (!fs.existsSync(indexHtml))
-      throw new Error(`no index.html file in public directory: ${dir}`)
+      throw new Error(`no index.html file in public directory: ${publicDir}`)
 
     const indexStr = fs
       .readFileSync(indexHtml)
@@ -101,10 +90,12 @@ class HtmlTemplate {
     this.open = open
     this.close = close
     this.id = id
-    this.component = component
+    this.getComponent = getComponent || noop
+    this.serializer = serializer || noop
   }
 
   render (element, props) {
+
     const { renderToString } = require('react-dom/server')
     const { ServerStyleSheet } = require('styled-components')
 
@@ -122,32 +113,39 @@ class HtmlTemplate {
     close
   }
 
-  handleRequest (err, req, res, next) {
+  handleRequest (error, req, res, next) {
 
-    const { component } = this
-    const { createElement } = require('react')
-    const { StaticRouter } = require('react-router')
-
+    const serialized = (!error && this.serializer(req, res)) || {}
     const props = {
-      ssr: true,
-      error: err && new ClientError(err)
+      hydrated: true,
+      error,
+      ...serialized
     }
 
-    const ui = createElement(component, props)
+    let context
+    let ui = null
 
-    const context = {}
-    const location = req.url
-    const routed = createElement(StaticRouter, { location, context }, ui)
+    const Component = this.getComponent(req, res)
+    if (Component) {
+      const React = require('react')
+      const { StaticRouter } = require('react-router')
 
-    if (context.url) {
+      context = {}
+
+      ui = <StaticRouter location={req.url} context={context}>
+        <Component {...props}/>
+      </StaticRouter>
+    }
+
+    if (context && context.url) {
       res.writeHead(REDIRECT, { Location: context.url })
       res.end()
 
     } else {
-      const payload = this.render(routed, props)
+      const payload = this.render(ui, props)
 
-      if (err)
-        res.status(err.code || 500)
+      if (error)
+        res.status(error.code || 500)
       res.write(payload)
       res.end()
     }
@@ -160,21 +158,23 @@ class HtmlTemplate {
 // Main
 /******************************************************************************/
 
-function serverSideRendering (publicDir, routesComponent) {
+function serverSideRendering (config) {
 
-  if (!is.func(routesComponent))
-    throw new Error('serverSideRendering requires a React Component')
+  const template = new HtmlTemplate(config)
 
-  const template = new HtmlTemplate(publicDir, routesComponent)
+  // Express must count Function.length to determine a method is an Error
+  // handler or not, so the handle request msut be sent back with two signatures
 
-  return [
-    // Express must count Function.length to determine a method is an Error
-    // handler or not, so the handle request msut be sent back with two signatures
-    (req, res, next) => template.handleRequest(null, req, res, next),
-
-    (err, req, res, next) => template.handleRequest(err, req, res, next)
-
+  const middleware = [
+    (req, res, next) => template.handleRequest(null, req, res, next)
   ]
+
+  if (config.getComponent) middleware.push(
+    (err, req, res, next) => template.handleRequest(err, req, res, next)
+  )
+
+  return middleware
+
 }
 
 /******************************************************************************/

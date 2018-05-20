@@ -11,7 +11,7 @@ function seconds (num) {
 
 function milliseconds (num) {
 
-  return new Promise(resolve => setTimeout(resolve, num))
+  return new Promise(resolve => setTimeout(() => resolve(num), num))
 
 }
 

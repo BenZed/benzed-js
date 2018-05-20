@@ -11,10 +11,10 @@ class TestApp extends App {
 
     setTimeout(() => {
       if (this.listener) {
-        console.log('test-app still listening after 1 second. Shutting down.')
+        console.log('test-app still listening after 5 seconds. Shutting down.')
         this.end()
       }
-    }, 1000)
+    }, 5000)
 
     return promise
   }
