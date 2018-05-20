@@ -27,23 +27,126 @@ import 'colors'
 // Tests
 /******************************************************************************/
 
-describe.only('serverSideRender()', () => {
+function expectBadlyFormedIndexHtml (doWithContents, doWithExpect) {
+  const publicDir = createProjectIndexHtml('badly-formed')
+  const index = path.join(publicDir, 'index.html')
+
+  let contents = fs.readFileSync(index, 'utf-8')
+  contents = doWithContents(contents)
+  fs.writeFileSync(index, contents, 'utf-8')
+
+  const test = expect(() => serverSideRender({
+    publicDir,
+    getComponent: () => {},
+    serializer: () => {}
+  })).to
+
+  doWithExpect(test)
+
+  fs.removeSync(path.dirname(publicDir))
+}
+
+describe('serverSideRender()', () => {
 
   it('is a function', () => {
     expect(serverSideRender).to.be.instanceof(Function)
   })
 
-  describe('public dir first arg', () => {
-    it('throws if public dir does not have an index.html')
-    it('throws if index.html doesn\'t have main tag')
-    it('throws if main tag is missing id')
-    it('throws if id is empty')
-    it('throws if missing head tag')
-  })
+  describe('configuration', () => {
+    describe('publicDir string', () => {
+      it('must be a string', () => {
+        expect(() => serverSideRender({
+          publicDir: {}
+        })).to.throw(`publicDir Must be of type: String`)
+      })
+      it('throws if public dir does not have an index.html', () => {
+        expect(() => serverSideRender({
+          publicDir: __dirname
+        })).to.throw(`publicDir Missing index.html file: ${__dirname}`)
+      })
+      it('throws if index.html doesn\'t have main tag', () => {
+        expectBadlyFormedIndexHtml(
+          contents => contents.replace(/main/g, 'div'),
+          to => to.throw(`main tag is not self closing or could not be found`)
+        )
+      })
+      it('throws if main tag is missing id', () => {
+        expectBadlyFormedIndexHtml(
+          contents => contents.replace('id=\'badly-formed\'', ''),
+          to => to.throw(`main tag does not have an id attribute`)
+        )
+      })
+      it('throws if id is empty', () => {
+        expectBadlyFormedIndexHtml(
+          contents => contents.replace('id=\'badly-formed\'', 'id=\'\''),
+          to => to.throw(`id is empty`)
+        )
+      })
+      it('throws if missing head tag', () => {
+        expectBadlyFormedIndexHtml(
+          contents => contents.replace('</head>', ''),
+          to => to.throw(`missing </head> tag`)
+        )
+      })
+      it('is required', () => {
+        expect(() => serverSideRender({})).to.throw('publicDir is Required.')
+      })
+    })
 
-  describe('component second arg', () => {
-    it('must be a function')
-    it('expected to be a react component')
+    describe('getComponent function', () => {
+      it('must be a function', () => {
+        const publicDir = createProjectIndexHtml('ssr-config-test')
+        expect(() => serverSideRender({
+          publicDir,
+          getComponent: {}
+        })).to.throw('getComponent Must be of type: Function')
+      })
+    })
+
+    describe('serializer function', () => {
+      it('must be a function', () => {
+        const publicDir = createProjectIndexHtml('ssr-config-test')
+        expect(() => serverSideRender({
+          publicDir,
+          getComponent: () => () => <h1>YO</h1>,
+          serializer: {}
+        })).to.throw('serializer Must be of type: Function')
+      })
+    })
+
+    describe('getComponent and serializer', () => {
+
+      let getComponent, serializer, publicDir
+      before(() => {
+        getComponent = () => () => <h1>I am I compoennt</h1>
+        serializer = () => null
+        publicDir = createProjectIndexHtml('ssr-config-test')
+      })
+
+      it('one or the other must be defined', () => {
+        const msg = 'Either getComponent or serializer must be defined'
+        expect(() => serverSideRender({ publicDir, getComponent }))
+          .to.not.throw(msg)
+        expect(() => serverSideRender({ publicDir, serializer }))
+          .to.not.throw(msg)
+        expect(() => serverSideRender({ publicDir }))
+          .to.throw(msg)
+      })
+
+      it('if getComponent is defined, two middleware functions are returned', () => {
+        let middleware = serverSideRender({ publicDir, getComponent })
+        expect(middleware).to.have.length(2)
+
+        middleware = serverSideRender({ publicDir, getComponent, serializer })
+        expect(middleware).to.have.length(2)
+      })
+
+      it('if only serializer is defined, one middleware function is returned', () => {
+        const middleware = serverSideRender({ publicDir, serializer })
+        expect(middleware).to.have.length(1)
+      })
+
+    })
   })
 
   describe('in a basic app', () => {

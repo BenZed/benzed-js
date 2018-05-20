@@ -15,10 +15,6 @@ import { randomBytes } from 'crypto'
 // Config Validators
 /******************************************************************************/
 
-function hasValidHtml () {
-  return value => value
-}
-
 function trim (value) {
   return value && value.trim()
 }
@@ -47,7 +43,8 @@ function fsContainsConfigJson (value, { args }) {
 }
 
 function fsContains (...names) {
-  return value => {
+  return (value, ctx) => {
+
     if (!value)
       return value
 
@@ -139,67 +136,101 @@ const autoFillAuth = value => {
   return value
 }
 
+const fixPathOrEnv = value => {
+
+  const isEnvVariableName = /^([A-Z]|_)+$/.test(value)
+  if (isEnvVariableName)
+    return process.env[value]
+
+  const isRelativePath = /^\.\.?\//.test(value)
+  if (isRelativePath)
+    return path.join(process.cwd(), value)
+
+  return value
+}
+
+const finishPathsAndLinkToEnv = value => {
+
+  if (!is.plainObject(value))
+    return value
+
+  for (const key in value) {
+    if (is.plainObject(value[key]))
+      value[key] = finishPathsAndLinkToEnv(value[key])
+
+    if (!is.string(value[key]))
+      continue
+
+    value[key] = fixPathOrEnv(value[key])
+
+  }
+
+  return value
+}
 /******************************************************************************/
 // Schemas
 /******************************************************************************/
 
-const validateConfigObject = Schema({
+const ALLOW_ARBITRARY_KEYS = false
+const validateConfigObject = Schema(
+  {
 
-  rest: object({
+    rest: object(
+      ALLOW_ARBITRARY_KEYS,
+      cast(boolToObject),
+      requiredIfNo('socketio'),
+      {
+        public: string(
+          fsExists('directory'),
+          fsContains('index.html')
+        ),
+        favicon: string(
+          fsExists('.png', '.jpeg', '.jpg', '.svg', '.ico')
+        )
+      }
+    ),
 
-    cast: boolToObject,
+    socketio: object(
+      cast(boolToObject),
+      requiredIfNo('rest')
+    ),
 
-    shape: {
-      public: string(
-        fsExists('directory'),
-        fsContains('index.html'),
-        hasValidHtml()
-      ),
-      favicon: string(
-        fsExists('.png', '.jpeg', '.jpg', '.svg', '.ico')
-      )
-    },
+    mongodb: object(
+      {
+        username: string(),
+        password: string(),
+        database: string(required),
+        hosts: arrayOf(
+          string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
+          required,
+          length('>=', 1)
+        )
+      },
+      ALLOW_ARBITRARY_KEYS,
+      requiredIf('auth')
+    ),
 
-    validators: requiredIfNo('socketio')
+    services: object(
+      cast(boolToObject),
+      eachKeyMustBeObject
+    ),
 
-  }),
+    auth: object(
+      cast(boolToObject),
+      autoFillAuth
+    ),
 
-  socketio: object(
-    cast(boolToObject),
-    requiredIfNo('rest')
-  ),
+    port: number(
+      required
+    ),
 
-  mongodb: object({
-    username: string(),
-    password: string(),
-    database: string(required),
-    hosts: arrayOf(
-      string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
-      required,
-      length('>=', 1)
+    logging: bool(
+      defaultTo(true)
     )
   },
-  requiredIf('auth')
-  ),
-
-  services: object(
-    cast(boolToObject),
-    eachKeyMustBeObject
-  ),
-
-  auth: object(
-    cast(boolToObject),
-    autoFillAuth
-  ),
-
-  port: number(
-    required
-  ),
-
-  logging: bool(
-    defaultTo(true)
-  )
-}, false)
+  ALLOW_ARBITRARY_KEYS,
+  finishPathsAndLinkToEnv
+)
 
 const validateConfigUrl = Schema(
   string(

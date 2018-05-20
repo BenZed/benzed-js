@@ -4,9 +4,9 @@ export default ({ api, backend, name, pretty }) => {
 
   const className = `${name}-${backend}`::toCamelCase()::capitalize()
 
-  return api && `import ${className} from '../api/${backend}'
+  return api && `import { run } from '@benzed/app'
+import ${className} from '../api'
 import path from 'path'
-import { run } from '@benzed/app'
 
 /******************************************************************************/
 // Setup

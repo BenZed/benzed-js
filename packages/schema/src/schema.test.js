@@ -3,6 +3,7 @@ import Schema from './schema'
 
 import { string, number, oneOfType } from './types'
 import { required } from './validators'
+import { TYPE } from './util/symbols'
 
 /******************************************************************************/
 // Temp
@@ -48,6 +49,33 @@ describe('Schema', () => {
         expect(() => Schema(almostValue)).to.throw('Schema must be defined with a type function, or an array or plain object thereof')
     })
 
+  })
+
+  describe.only('plain object input', () => {
+    it('act as object() type validator', () => {
+      const schema = new Schema({
+        name: string,
+        age: number
+      })
+
+      expect(() => schema('string')).to.throw('Must be an Object')
+    })
+    it.only('additional arguments act as args for config', () => {
+      const schema = new Schema({
+        name: string,
+        age: number
+      },
+      false // should allow for arbitrary shape keys
+      )
+
+      expect(schema({
+        name: 'joe',
+        job: 'cook'
+      })).to.deep.equal({
+        name: 'joe',
+        job: 'cook'
+      })
+    })
   })
 
   it('returns a validator', () => {

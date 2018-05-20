@@ -7,6 +7,10 @@ import { expect } from 'chai'
 
 import expectFile from './expect-file'
 import expectDependencies from './expect-dependencies'
+import expectBabelBuild from './expect-babel-build'
+import expectNoLintErrors from './expect-no-lint-errors'
+import expectWebpackBuild from './expect-webpack-build'
+import expectServe from './expect-serve'
 
 /* global it describe before */
 
@@ -95,8 +99,8 @@ function checkConfig (projectDir, { ui, api, auth, files, rest, name, socketio }
       it(`rest is ${ui ? 'defined' : 'not defined'} as object`, () => {
         expect(json.rest instanceof Object).to.be.equal(ui)
         if (ui) {
-          expect(json.rest.public).to.be.equal('../dist/public')
-          expect(json.rest.favicon).to.be.equal('../dist/public/favicon.ico')
+          expect(json.rest.public).to.be.equal('./dist/public')
+          expect(json.rest.favicon).to.be.equal(null)
         }
       })
 
@@ -161,6 +165,15 @@ function testCreateProject (options) {
     checkAllRootFiles(projectDir, options)
     checkRootDependencies(projectDir, options)
     checkConfig(projectDir, options)
+
+    expectBabelBuild(projectDir, options)
+    expectNoLintErrors(projectDir, options)
+
+    if (options.ui)
+      expectWebpackBuild(projectDir, options)
+
+    if (options.api)
+      expectServe(projectDir, options)
 
     // TODO
     // checkScripts

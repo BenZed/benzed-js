@@ -8,8 +8,8 @@ export default ({ ui, files, auth, api, socketio, rest, pretty, name }) => api &
 
   rest: rest && ui
     ? {
-      public: '../dist/public',
-      favicon: '../dist/public/favicon.ico'
+      public: './dist/public',
+      favicon: null
     }
     : rest,
 

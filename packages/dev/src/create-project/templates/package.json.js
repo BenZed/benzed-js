@@ -8,12 +8,12 @@ export default ({ ui, api, name }) => {
     'lint': 'eslint src --fix',
     'test': 'mocha --options .mocha.opts',
     'test:dev': 'npx watch \'npm run test\' src',
-    'build': `rm -rf ${build}; mkdir ${build}; babel src --out-dir ${build} --copy-files`,
-    'build:dev': 'npm run build -- --watch'
+    'babel': `rm -rf ${build}; mkdir ${build}; babel src --out-dir ${build} --copy-files`,
+    'babel:dev': 'npm run babel -- --watch'
   }
 
   if (!api) {
-    scripts['prepublishOnly'] = 'npm run lint && npm run test && npm run build'
+    scripts['prepublishOnly'] = 'npm run lint && npm run test && npm run babel'
     scripts['release:patch'] = 'npm version patch && npm publish'
     scripts['release:minor'] = 'npm version minor && npm publish'
     scripts['release:major'] = 'npm version major && npm publish'
@@ -27,8 +27,12 @@ export default ({ ui, api, name }) => {
   if (api) {
     scripts['serve'] = `node ./${build}/scripts/serve.js`
     scripts['serve:dev'] = `NODE_ENV=development nodemon --watch ${build}/api ./${build}/scripts/serve.js`
-    scripts['start'] = `npm i && npm run lint && npm run test && npm run build ${ui ? '&& npm run webpack ' : ''}&& npm run serve`
   }
+
+  scripts['build'] = `npm i && npm run lint && npm run babel ${ui ? '&& npm run webpack ' : ''}&& npm run test`
+
+  if (api)
+    scripts['start'] = `npm run build && npm run serve`
 
   const pkg = {
     name,

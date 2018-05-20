@@ -220,7 +220,6 @@ describe('config app instance', () => {
         for (const badValue of badValues)
           expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'public' ], badValue)).to.throw('must contain files \'index.html\'')
       })
-      it('index.html must be formatted correctly')
     })
     describe('config.rest.favicon', () => {
       it('must be a string', () => {
@@ -345,7 +344,7 @@ describe('config app instance', () => {
 
       describe('each string must be a url formatted', () => {
 
-        for (const badValue of ['name@email.com', 'CONST_THING', 'ahh mazing', 'foo[bar]']) {
+        for (const badValue of ['name@email.com', 'CONST_thing', 'ahh mazing', 'foo[bar]']) {
           const bad = withDB::set(['mongodb', 'hosts'], badValue)
           it(`'${badValue}' should throw`, () => {
             expectNewTestApp(bad).to.throw('hosts Must be a url.')
@@ -386,6 +385,56 @@ describe('config app instance', () => {
     })
   })
 
+})
+
+describe('config autocompletes', () => {
+  it('relative paths convert to absolute paths', () => {
+
+    const upOne = '../to/some/dir'
+    const acrossOne = './to/some/dir'
+    const absolute = '/should/stay/absolue'
+
+    const withPath = CONFIG_OBJ::set(
+      'up-one', upOne
+    )::set(
+      'across-one', acrossOne
+    )::set(
+      'absolute', absolute
+    )
+
+    const cwd = process.cwd()
+
+    const app = new TestApp(withPath)
+    const { settings } = app.feathers
+
+    expect(settings).to.have.property('up-one')
+    expect(settings['up-one']).to.be.equal(path.resolve(cwd, upOne))
+
+    expect(settings).to.have.property('across-one')
+    expect(settings['across-one']).to.be.equal(path.resolve(cwd, acrossOne))
+
+    expect(settings).to.have.property('absolute')
+    expect(settings['absolute']).to.be.equal(absolute)
+
+  })
+  it('UPPER_SNAKE_CASE values read from process.env', () => {
+
+    const key = 'some-hidden-variable'
+    const value = 'SECRET_KEY_THING'
+    const withSecret = CONFIG_OBJ::set(
+      key, value
+    )
+
+    const ONE_MILLION = '1000000'
+    process.env[value] = ONE_MILLION
+
+    const app = new TestApp(withSecret)
+    const { settings } = app.feathers
+
+    expect(settings).to.have.property(key)
+    expect(settings[key]).to.be.equal(ONE_MILLION)
+
+  })
 })
 
 describe('config app class extension', () => {

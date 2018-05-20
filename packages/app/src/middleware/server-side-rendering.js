@@ -2,6 +2,8 @@ import path from 'path'
 import fs from 'fs'
 
 import { between } from '@benzed/string'
+import { Schema, string, func, required } from '@benzed/schema'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Data
@@ -10,6 +12,25 @@ import { between } from '@benzed/string'
 const REDIRECT = 301
 
 const noop = () => null
+
+/******************************************************************************/
+// Validation
+/******************************************************************************/
+
+const mustHaveIndexHtml = publicDir => {
+  const indexHtml = path.join(publicDir, 'index.html')
+
+  if (!fs.existsSync(indexHtml))
+    throw new Error(`Missing index.html file: ${publicDir}`)
+
+  return publicDir
+}
+
+const validateConfig = new Schema({
+  publicDir: string(required, mustHaveIndexHtml),
+  getComponent: func,
+  serializer: func
+})
 
 /******************************************************************************/
 // Helper
@@ -75,12 +96,13 @@ class HtmlTemplate {
     return open
   }
 
-  constructor ({ publicDir, getComponent, serializer }) {
+  constructor (config) {
+
+    const { publicDir, getComponent, serializer } = validateConfig(config)
+    if (!getComponent && !serializer)
+      throw new Error('Either getComponent or serializer must be defined.')
 
     const indexHtml = path.join(publicDir, 'index.html')
-    if (!fs.existsSync(indexHtml))
-      throw new Error(`no index.html file in public directory: ${publicDir}`)
-
     const indexStr = fs
       .readFileSync(indexHtml)
       .toString()
@@ -115,7 +137,10 @@ class HtmlTemplate {
 
   handleRequest (error, req, res, next) {
 
-    const serialized = (!error && this.serializer(req, res)) || {}
+    let serialized = !error && this.serializer(req, res)
+    if (!is.plainObject(serialized))
+      serialized = {}
+
     const props = {
       hydrated: true,
       error,
