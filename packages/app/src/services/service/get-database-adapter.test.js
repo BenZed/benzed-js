@@ -21,7 +21,7 @@ describe('getDatabaseAdapter()', () => {
         port: 6234,
         logging: false,
         mongodb: {
-          hosts: [ 'localhost:6235' ],
+          hosts: [ 'localhost:5716' ],
           database: 'test-db'
         },
         socketio: true

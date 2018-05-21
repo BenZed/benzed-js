@@ -20,6 +20,7 @@ function setupProviders () {
 
     feathers = app.feathers = express(feathers)
     feathers
+      .configure(express.rest())
       .options('*', cors())
       .use(cors())
       .use(compress())

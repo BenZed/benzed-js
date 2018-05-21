@@ -16,6 +16,37 @@ const dependencies = Promise.all([
 ])
 
 /******************************************************************************/
+// Helper
+/******************************************************************************/
+
+${iff(api)`function getServerProps () {
+  const serverPropsTag = document.getElementById('${name}-server-props')
+
+  let props
+  try {
+    const json = serverPropsTag
+      .textContent
+      .replace('<![CDATA[', '')
+      .replace(']]>', '')
+
+    props = JSON.parse(json)
+  } catch (err) {
+    // it could be that the server sent bad data, but generally any failure
+    // will simply mean no data has been sent
+  }
+
+  // make double sure we're sending back an object
+  return props !== null && typeof props === 'object'
+    ? props
+    : {}
+
+}`}
+
+function getMainTag () {
+  return document.getElementById('${name}')
+}
+
+/******************************************************************************/
 // Execute
 /******************************************************************************/
 
@@ -27,14 +58,16 @@ window.addEventListener('load', async () => {
     { default: ${frontend::capitalize()} }
   ] = await dependencies
 
-  const tag = document.getElementById('${name}')
+  ${iff(api)`const props = getServerProps()`}
+  const main = getMainTag()
+
   const element = ${routing ? `<BrowserRouter>
-    <${frontend::capitalize()} />
+    <${frontend::capitalize()} ${api ? '{...props} ' : ''}/>
   </BrowserRouter>`
-    : `<${frontend::capitalize()} />`
+    : `<${frontend::capitalize()} ${api ? '{...props} ' : ''}/>`
 }
 
-  ${api ? 'hydrate' : 'render'}(element, tag)
+  ${api ? 'hydrate' : 'render'}(element, main)
 })
 `
 

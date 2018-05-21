@@ -3,9 +3,7 @@ import { expect } from 'chai'
 import bool from './bool'
 import number from './number'
 import arrayOf from './array-of'
-// import oneOfType from './one-of-type'
-
-import Context from '../util/context'
+import oneOfType from './one-of-type'
 
 import { expectResolve } from '@benzed/dev'
 

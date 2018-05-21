@@ -6,7 +6,7 @@ import { Test } from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(pluck, pluck => {
+Test.optionallyBindableMethod(pluck, pluck => {
 
   const arr = [ 1, 2, 3, 4, 5, 6, 7, 8 ]
   let even

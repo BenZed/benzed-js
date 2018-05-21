@@ -1,6 +1,6 @@
 {
   "name": "@benzed/async",
-  "version": "0.9.7",
+  "version": "0.10.0",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -22,5 +22,8 @@
   "description": "My own async utilities.",
   "devDependencies": {
     "@benzed/dev": "latest"
+  },
+  "dependencies": {
+    "is-explicit": "^2.0.0"
   }
 }

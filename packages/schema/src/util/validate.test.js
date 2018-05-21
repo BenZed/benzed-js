@@ -3,7 +3,6 @@ import { expect } from 'chai'
 import { string } from '../types'
 
 import validate from './validate'
-import Context from './context'
 import ValidationError from './validation-error'
 
 import { expectReject } from '@benzed/dev'

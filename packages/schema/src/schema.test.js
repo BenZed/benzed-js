@@ -3,7 +3,7 @@ import Schema from './schema'
 
 import { string, number, oneOfType } from './types'
 import { required } from './validators'
-import { TYPE } from './util/symbols'
+// import { TYPE } from './util/symbols'
 
 /******************************************************************************/
 // Temp
@@ -51,7 +51,7 @@ describe('Schema', () => {
 
   })
 
-  describe.only('plain object input', () => {
+  describe('plain object input', () => {
     it('act as object() type validator', () => {
       const schema = new Schema({
         name: string,
@@ -60,7 +60,7 @@ describe('Schema', () => {
 
       expect(() => schema('string')).to.throw('Must be an Object')
     })
-    it.only('additional arguments act as args for config', () => {
+    it('additional arguments act as args for config', () => {
       const schema = new Schema({
         name: string,
         age: number

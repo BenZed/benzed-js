@@ -67,9 +67,7 @@ function createMongoProcess (uri, database) {
     ])
 
     app.database.process.on('exit', onError)
-
     app.database.process.on('error', onError)
-
     app.database.process.stdout.on('data', msg => {
       if (msg.includes(`waiting for connections on port ${port}`))
         resolve(app.database.process)

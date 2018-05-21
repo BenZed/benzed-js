@@ -83,7 +83,7 @@ class HtmlTemplate {
     delete json.hydrated
 
     const cdata = Object.keys(json).length > 0
-      ? `<script id='${this.id + '-serialized'}' type='application/json'>` +
+      ? `<script id='${this.id + '-server-props'}' type='application/json'>` +
           `<![CDATA[${JSON.stringify(json)}]]>` +
         `</script>`
 

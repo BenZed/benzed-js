@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -9,6 +9,9 @@
     "test:dev": "npx watch 'npm run test' src test",
     "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
     "build:dev": "npm run build -- --watch",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
     "webpack": "NODE_ENV=production webpack",
     "webpack:dev": "NODE_ENV=development webpack-dev-server",
     "lint": "eslint src --fix"

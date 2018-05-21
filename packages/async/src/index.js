@@ -1,7 +1,7 @@
 import PromiseQueue from './promise-queue'
 import SortablePromiseQueue from './sortable-promise-queue'
 
-import { seconds, milliseconds } from './delays'
+import { until, seconds, milliseconds } from './delays'
 
 /******************************************************************************/
 // Extend
@@ -17,6 +17,6 @@ export {
 
   PromiseQueue, SortablePromiseQueue,
 
-  seconds, milliseconds
+  seconds, milliseconds, until
 
 }

@@ -112,8 +112,21 @@ describe('WebpackConfig', () => {
         expect(wc.resolve.extensions).to.not.include('.jsx')
       })
       it('resolves src root', () => {
-        const SRC = path.resolve(__dirname, '../src')
-        expect(wc.resolve.modules.includes(SRC))
+        const SRC = path.join(process.cwd(), 'src')
+        expect(wc.resolve.modules).to.include(SRC)
+      })
+      it('has node config for non-browser modules', () => {
+        const { node } = wc
+
+        const NON_BROWSER_MODULES = [
+          'fs', 'child_process', 'cluster', 'http', 'https', 'net', 'os', 'readline',
+          'tls', 'tty', 'v8', 'vm', 'zlib', 'module'
+        ]
+
+        const keys = Object.keys(node)
+
+        expect(keys).to.have.length(NON_BROWSER_MODULES.length)
+        expect(keys).to.deep.equal(NON_BROWSER_MODULES)
       })
     }
 
@@ -134,15 +147,6 @@ describe('WebpackConfig', () => {
         expect(plugins.filter(p => p.constructor.name === 'HtmlWebpackPlugin')).to.have.length(1)
       })
 
-      it('has node config for core/non-browser modules except url and punycode', () => {
-        const { node } = dev
-
-        const libs = require('repl')._builtinLibs.filter(l => l !== 'url' && l !== 'punycode')
-        const keys = Object.keys(node)
-        expect(keys).to.have.length(libs.length)
-        expect(keys).to.deep.equal(libs)
-      })
-
       agnosticEnvTests(dev)
 
     })
@@ -155,15 +159,6 @@ describe('WebpackConfig', () => {
       })
 
       agnosticEnvTests(prod)
-
-      it('has node config for core/non-browser modules ', () => {
-        const { node } = prod
-
-        const libs = require('repl')._builtinLibs
-        const keys = Object.keys(node)
-        expect(keys).to.have.length(libs.length)
-        expect(keys).to.deep.equal(libs)
-      })
 
       it('has define webpack plugin', () => {
         const { plugins } = prod

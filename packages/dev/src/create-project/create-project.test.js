@@ -28,7 +28,7 @@ fs.ensureDirSync(
 // Test
 /******************************************************************************/
 
-describe.only('createProject()', () => {
+describe('createProject()', () => {
 
   it('is a function', () => {
     expect(testCreateProject).to.be.instanceof(Function)
@@ -143,7 +143,7 @@ describe.only('createProject()', () => {
 
     })
 
-    describe.only('creates casino ben', function () {
+    describe('creates casino ben', function () {
       this.timeout(50000)
 
       const dir = path.resolve(process.cwd(), '../../../')

@@ -15,8 +15,33 @@ function milliseconds (num) {
 
 }
 
+async function until (config) {
+
+  if (typeof config === 'function')
+    config = { condition: config }
+
+  const {
+    condition,
+    timeout = Infinity,
+    interval = 50,
+    err = `condition could not be met in ${timeout} ms`
+  } = config
+
+  if (typeof condition !== 'function')
+    throw new Error('condition must be a function')
+
+  let ms = 0
+  while (!condition()) {
+    ms += await milliseconds(interval)
+    if (ms >= timeout)
+      throw new Error(err)
+  }
+
+  return ms
+}
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { seconds, milliseconds }
+export { until, seconds, milliseconds }

@@ -125,13 +125,11 @@ const rules = [
 ]
 
 const resolve = {
-  extensions: [ '.js', '.json' ] // ,
-  // modules: [
-  //   'node_modules'
-  //
-  //   // TODO fix this
-  //   // path.resolve(__dirname, '../src')
-  // ]
+  extensions: [ '.js', '.json' ],
+  modules: [
+    'node_modules',
+    path.join(process.cwd(), 'src')
+  ]
 }
 
 /******************************************************************************/

@@ -2,7 +2,6 @@ import is from 'is-explicit'
 
 import { pluck, wrap, unwrap } from '@benzed/array'
 
-import Context from './context'
 import validate from './validate'
 import normalizeValidator from './normalize-validator'
 

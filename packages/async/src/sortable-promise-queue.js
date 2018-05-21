@@ -34,7 +34,7 @@ class SortablePromiseQueue extends PromiseQueue {
   constructor (maxConcurrent, sorter = descending) {
     super(maxConcurrent)
 
-    if (is.func(sorter) && !is.defined(sorter))
+    if (!is.func(sorter))
       throw new Error('sorter, if defined, must be a function')
 
     this.sorter = sorter

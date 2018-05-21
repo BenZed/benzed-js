@@ -31,7 +31,8 @@ function expectBabelBuild (projectDir, options) {
     })
 
     it('copies all files', () => {
-      expect(output).to.include('rm -rf dist; mkdir dist; babel src --out-dir dist --copy-files')
+      const build = options.api ? 'dist' : 'lib'
+      expect(output).to.include(`rm -rf ${build}; mkdir ${build}; babel src --out-dir ${build} --copy-files`)
     })
   })
 
