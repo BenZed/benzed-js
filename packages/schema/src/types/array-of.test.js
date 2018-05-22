@@ -67,8 +67,7 @@ describe('arrayOf()', () => {
             .to.have.property('message', 'Must be an Array of Boolean')
         })
 
-        it.skip('oneOfType example', () => {
-
+        it('oneOfType example', () => {
           const arrayOfBoolOrNumber = arrayOf(
             oneOfType(bool, number)
           )
@@ -76,11 +75,8 @@ describe('arrayOf()', () => {
           const mixedBoolNum = [ 2, true, false, 100 ]
           expect(arrayOfBoolOrNumber(mixedBoolNum))
             .to.deep.equal([ 2, true, false, 100 ])
-
         })
-
       })
-
     })
 
     describe('err', () => {

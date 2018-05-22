@@ -83,20 +83,19 @@ const operatorConfig = argsToConfig([
   },
   {
     name: 'err',
-    type: [String, Function],
-    test: value => !OPERATORS.includes(value)
+    test: [[String, Function]::is, value => !OPERATORS.includes(value)]
   },
   {
     name: 'min',
-    type: Number
+    test: is.number
   },
   {
     name: 'max',
-    type: Number
+    test: is.number
   },
   {
     name: 'value',
-    type: Number
+    test: is.number
   }
 ])
 
@@ -154,6 +153,8 @@ const rangeConfig = (args) => {
     ? checkExplicitConfig(operator, numbers)
     : fixImplicitConfig(operator, numbers)
 
+  // TODO
+  // change this so that it only returns a compare function
   return { compare, err }
 }
 

@@ -31,27 +31,24 @@ function normalizeValidators (validators) {
 const typeLayout = [
   {
     name: 'type',
-    type: Function,
     required: true,
-    test: hasCastSymbol(false),
+    test: [is.func, hasCastSymbol(false)],
     validate: normalizeValidators
   },
   {
     name: 'err',
-    type: String
+    test: is.string
   },
   {
     name: 'validators',
-    type: Function,
     count: Infinity,
     default: [],
-    test: hasCastSymbol(false),
+    test: [is.func, hasCastSymbol(false)],
     validate: normalizeValidators
   },
   {
     name: 'cast',
-    type: Function,
-    test: hasCastSymbol(true)
+    test: [is.func, hasCastSymbol(true)]
   }
 ]
 
@@ -73,11 +70,11 @@ const objectConfig = argsToConfig(
     },
     {
       name: 'shapeKeysOnly',
-      type: Boolean
+      test: is.bool
     },
     {
       name: 'cast',
-      type: Function
+      test: is.func
     })
 )
 

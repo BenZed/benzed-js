@@ -35,7 +35,7 @@ describe('Schema', () => {
 
     })
 
-    it.skip('can be a type function', () => {
+    it('can be a type function', () => {
 
       expect(() => Schema(oneOfType(number, string))).to.not.throw()
 

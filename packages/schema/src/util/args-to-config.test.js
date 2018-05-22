@@ -2,13 +2,14 @@ import { expect } from 'chai'
 
 import argsToConfig from './args-to-config'
 import { reverse } from '@benzed/immutable'
+import is from 'is-explicit'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
 const EXAMPLE_LAYOUT = [{
   name: 'err',
-  type: String
+  test: is.string
 }]
 
 describe('argsToConfig()', () => {
@@ -31,34 +32,10 @@ describe('argsToConfig()', () => {
 
   })
 
-  describe('layout.type', () => {
-
-    it('each plain object must have one or more functions as types', () => {
-      for (const badValue of [ [], undefined ])
-        expect(() => argsToConfig([
-          {
-            name: 'whatever',
-            type: badValue
-          }
-        ])).to.throw('layout.type must be defined if layout.test is not')
-    })
-
-    it('each type must be a function', () => {
-      for (const badValue of [ [''], [{}] ])
-        expect(() => argsToConfig([
-          {
-            name: 'whatever',
-            type: badValue
-          }
-        ])).to.throw('layout.type needs to be an array of Functions')
-    })
-
-  })
-
   describe('layout.test', () => {
 
     it('throws if layout.test is defined but not a function', () => {
-      expect(() => argsToConfig({ name: 'foo', type: String, test: 100 }))
+      expect(() => argsToConfig({ name: 'foo', test: 100 }))
         .to.throw('layout.test must be a function')
     })
 
@@ -72,20 +49,18 @@ describe('argsToConfig()', () => {
       expect(config.ratings).to.be.deep.equal([ 0, 1, 2, 3, 4 ])
     })
 
-    it('test function can be provided in layout to accompany type', () => {
+    it('test function can be grouped', () => {
 
       const symbolic = Symbol('symbolic')
 
       const configMethods = argsToConfig([
         {
-          type: Function,
-          test: f => symbolic in f,
+          test: [ is.func, f => symbolic in f ],
           count: 1,
           name: 'symbolic-method'
         },
         {
-          type: Function,
-          test: f => symbolic in f === false,
+          test: [ is.func, f => symbolic in f === false ],
           count: 1,
           name: 'regular-method'
         }
@@ -96,7 +71,7 @@ describe('argsToConfig()', () => {
 
       const regMethod = () => 'reg'
 
-      const order1 = [ symMethod, regMethod ]
+      const order1 = [ 'foo', true, false, symMethod, regMethod ]
       const order2 = order1::reverse()
 
       // Should work regardless of order
@@ -118,7 +93,7 @@ describe('argsToConfig()', () => {
     it('function parses an array into an object according to layout', () => {
       const configErr = argsToConfig({
         name: 'err',
-        type: String
+        test: is.string
       })
 
       const args = ['You messed up.']
@@ -130,7 +105,7 @@ describe('argsToConfig()', () => {
     it('if count is above 1, results are placed into an array', () => {
       const configEnum = argsToConfig({
         name: 'enum',
-        type: [String, Number],
+        test: [String, Number]::is,
         count: 4
       })
 
@@ -144,7 +119,7 @@ describe('argsToConfig()', () => {
       const def = 'Yes'
       const configValue = argsToConfig({
         name: 'value',
-        type: String,
+        test: is.string,
         default: def
       })
 
@@ -157,11 +132,11 @@ describe('argsToConfig()', () => {
 
       const configParse = argsToConfig({
         name: 'parse',
-        type: Boolean,
+        test: is.bool,
         required: true
       })
 
-      expect(() => configParse([])).to.throw('Boolean \'parse\' property')
+      expect(() => configParse([])).to.throw('requires \'parse\' property')
     })
 
     describe('if args consist of a single plain object', () => {
@@ -169,12 +144,12 @@ describe('argsToConfig()', () => {
       const configRequired = argsToConfig([
         {
           name: 'err',
-          type: String,
+          test: is.string,
           default: 'is Required.'
         },
         {
           name: 'enabled',
-          type: Boolean,
+          test: is.bool,
           required: true
         }
       ])
@@ -196,7 +171,7 @@ describe('argsToConfig()', () => {
       })
 
       it('throws as expected', () => {
-        expect(() => configRequired({})).to.throw('requires Boolean \'enabled\' property')
+        expect(() => configRequired({})).to.throw('requires \'enabled\' property')
       })
     })
   })

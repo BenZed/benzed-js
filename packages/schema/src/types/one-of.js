@@ -2,6 +2,7 @@ import Context from '../util/context'
 import argsToConfig from '../util/args-to-config'
 import ValidationError from '../util/validation-error'
 import { TYPE } from '../util/symbols'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Helper
@@ -10,11 +11,11 @@ import { TYPE } from '../util/symbols'
 const oneOfTypeConfig = argsToConfig([
   {
     name: 'values',
-    type: Array
+    test: Array::is
   },
   {
     name: 'err',
-    type: String
+    test: is.string
   }
 ])
 
@@ -29,7 +30,7 @@ function oneOf (...args) {
   const { values } = config
   let { err } = config
 
-  err = err || `Must be one of: ${values}`
+  err = err || `Must be one of: ${values.join(', ')}`
 
   const oneOf = (value, context = new Context()) => {
 

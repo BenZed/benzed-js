@@ -27,23 +27,21 @@ function checkLayouts (layouts) {
     if (!is.string(layout.name) || layout.name.length === 0)
       throw new Error('layout.name needs to be a non empty string')
 
-    if (is.defined(layout.test) && !is.func(layout.test))
+    if (is.defined(layout.test) && !(is.func(layout.test) || is.arrayOf.func(layout.test)))
       throw new Error('layout.test must be a function')
 
     if (!layout.test)
       layout.test = allPass
 
+    if (is.arrayOf.func(layout.test)) {
+      const tests = layout.test
+      layout.test = arg => tests.every(test => test(arg))
+    }
+
     if (!is(layout.count, Number))
       layout.count = 1
 
     layout.required = !!layout.required
-
-    layout.type = is.defined(layout.type) ? wrap(layout.type) : []
-    if (layout.type.length > 0 && !is.arrayOf.func(layout.type))
-      throw new Error('layout.type needs to be an array of Functions')
-
-    if (layout.type.length === 0 && layout.test === allPass)
-      throw new Error('layout.type must be defined if layout.test is not')
 
     layout.validate = layout.validate ? wrap(layout.validate) : [ allValid ]
     if (!is.arrayOf.func(layout.validate))
@@ -60,7 +58,10 @@ function checkLayouts (layouts) {
 // Move
 /******************************************************************************/
 
-function argsToConfig (layouts, masterErrName = 'validator') {
+function argsToConfig (
+  layouts,
+  masterErrName = 'validator',
+  allowSingleObjectConfig = true) {
 
   layouts = checkLayouts(layouts)
 
@@ -70,13 +71,15 @@ function argsToConfig (layouts, masterErrName = 'validator') {
 
     args = [ ...wrap(args) ]
 
-    if (args.length === 1 && is.plainObject(args[0]))
-      config = { ...args[0] }
+    const arg0 = args[0]
+
+    if (allowSingleObjectConfig && args.length === 1 && is.plainObject(arg0))
+      config = { ...arg0 }
 
     else for (const layout of layouts) {
-      const { name, count, test, type: Types } = layout
+      const { name, count, test } = layout
 
-      const found = args::pluck(arg => test(arg) && (Types.length === 0 || is(arg, Types)), count)
+      const found = pluck(args, test, count)
 
       if (found.length > 0)
         config[name] = count === 1 ? unwrap(found) : found
@@ -88,7 +91,7 @@ function argsToConfig (layouts, masterErrName = 'validator') {
     // Set defaults and ensure required
     for (const layout of layouts) {
 
-      const { name, type, required, count,
+      const { name, required, count,
         default: _default, validate: validators } = layout
 
       if (config[name] === undefined && _default !== undefined)
@@ -101,11 +104,11 @@ function argsToConfig (layouts, masterErrName = 'validator') {
         config[name] = config[name] === undefined ? [] : wrap(config[name])
 
       if (config[name] === undefined && required)
-        throw new Error(`${errName} config requires ${type.map(t => t.name).join(' or ')} '${name}' property.`)
+        throw new Error(`${errName} config requires '${name}' property.`)
 
     }
 
-    // Remove keys that arn't supposed to be in config
+    // TODO Remove keys that arn't supposed to be in config
     for (const key in config)
       if (!layouts.some(layout => layout.name === key))
         delete config[key]

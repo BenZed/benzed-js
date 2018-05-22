@@ -13,7 +13,7 @@ const defaultConfig = argsToConfig(
   },
   {
     name: 'call',
-    type: Boolean,
+    test: is.bool,
     default: true
   }
   ])

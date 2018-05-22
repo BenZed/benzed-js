@@ -8,12 +8,12 @@ import argsToConfig from '../util/args-to-config'
 const formatConfig = argsToConfig([
   {
     name: 'regex',
-    type: RegExp,
+    test: RegExp::is,
     required: true
   },
   {
     name: 'err',
-    type: String,
+    test: is.string,
     default: 'Incorrect Format.'
   }
 ])

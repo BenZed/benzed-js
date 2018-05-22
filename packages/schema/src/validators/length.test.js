@@ -6,7 +6,10 @@ import length from './length'
 /* global describe it before after beforeEach afterEach */
 
 describe('length()', () => {
-  const min5 = length('>', 5)
+  let min5
+  before(() => {
+    min5 = length('>', 5)
+  })
 
   it('returns an error if value does not have a numeric length', () => {
     expect(min5({ length: 4 })).to.have.property('message', 'length must be greater than 5')

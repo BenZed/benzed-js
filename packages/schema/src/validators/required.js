@@ -12,7 +12,7 @@ const nonEmpty = err => is(err, String) && err.length > 0
 
 const configRequired = argsToConfig({
   name: 'err',
-  type: String,
+  test: is.string,
   default: 'is Required.',
   validate: nonEmpty
 })

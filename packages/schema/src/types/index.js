@@ -7,6 +7,7 @@ import func from './func'
 import object from './object'
 import arrayOf from './array-of'
 import oneOf from './one-of'
+import oneOfType from './one-of-type'
 
 export {
 
@@ -19,5 +20,6 @@ export {
   object,
   arrayOf,
 
-  oneOf
+  oneOf,
+  oneOfType
 }

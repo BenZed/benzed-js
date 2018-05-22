@@ -15,7 +15,7 @@ function milliseconds (num) {
 
 }
 
-async function until (config) {
+async function until (config = {}) {
 
   if (typeof config === 'function')
     config = { condition: config }
@@ -23,21 +23,25 @@ async function until (config) {
   const {
     condition,
     timeout = Infinity,
-    interval = 50,
+    interval = 25,
     err = `condition could not be met in ${timeout} ms`
   } = config
 
   if (typeof condition !== 'function')
     throw new Error('condition must be a function')
 
-  let ms = 0
-  while (!condition()) {
-    ms += await milliseconds(interval)
-    if (ms >= timeout)
+  const start = Date.now()
+  let delta = 0
+
+  while (!condition(delta)) {
+    await milliseconds(interval)
+
+    delta = Date.now() - start
+    if (delta >= timeout)
       throw new Error(err)
   }
 
-  return ms
+  return delta
 }
 
 /******************************************************************************/
