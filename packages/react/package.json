@@ -22,7 +22,7 @@
   "license": "ISC",
   "description": "React components, classes, helpers",
   "devDependencies": {
-    "@benzed/dev": "^0.5.2"
+    "@benzed/dev": "^0.7.0"
   },
   "dependencies": {
     "@benzed/array": "latest",

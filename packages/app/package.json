@@ -21,12 +21,12 @@
   "license": "ISC",
   "description": "Adaptation of define-utility, that works as a decorator",
   "devDependencies": {
-    "@benzed/dev": "^0.5.2",
+    "@benzed/dev": "^0.7.0",
     "@feathersjs/client": "^3.5.0",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "^11.10.0",
     "react-router-dom": "^4.2.2",
-    "socket.io-client": "^2.1.0"
+    "socket.io-client": "^2.1.1"
   },
   "dependencies": {
     "@benzed/array": "latest",
