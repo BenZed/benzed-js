@@ -22,8 +22,9 @@ function addFrontEndListener (FrontEnd, props = {}) {
         const dataTags = document.querySelectorAll('[type=\'application/json\']')
 
         const json = dataTags.length > 0
-          ? dataTags[0].textContent.replace('<![CDATA[', '').replace(']]>', '')
+          ? dataTags[0].textContent
           : null
+
         const serverProps = json && JSON.parse(json)
 
         hydrate(

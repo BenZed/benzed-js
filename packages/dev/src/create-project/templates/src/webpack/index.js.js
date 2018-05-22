@@ -20,16 +20,16 @@ const dependencies = Promise.all([
 /******************************************************************************/
 
 ${iff(api)`function getServerProps () {
-  const serverPropsTag = document.getElementById('${name}-server-props')
 
   let props
   try {
-    const json = serverPropsTag
-      .textContent
-      .replace('<![CDATA[', '')
-      .replace(']]>', '')
 
-    props = JSON.parse(json)
+    const serverPropsTag = document.getElementById('${name}-server-props')
+
+    props = JSON.parse(serverPropsTag.textContent)
+
+    serverPropsTag.textContent = ''
+
   } catch (err) {
     // it could be that the server sent bad data, but generally any failure
     // will simply mean no data has been sent

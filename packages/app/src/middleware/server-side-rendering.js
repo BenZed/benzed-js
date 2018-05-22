@@ -1,8 +1,10 @@
 import path from 'path'
 import fs from 'fs'
 
+import { copy } from '@benzed/immutable'
 import { between } from '@benzed/string'
 import { Schema, string, func, required } from '@benzed/schema'
+
 import is from 'is-explicit'
 
 /******************************************************************************/
@@ -10,6 +12,8 @@ import is from 'is-explicit'
 /******************************************************************************/
 
 const REDIRECT = 301
+
+const UNFETCHED = Symbol('not-yet-fetched')
 
 const noop = () => null
 
@@ -33,7 +37,7 @@ const validateConfig = new Schema({
 })
 
 /******************************************************************************/
-// Helper
+// HtmlTemplate
 /******************************************************************************/
 
 class HtmlTemplate {
@@ -69,7 +73,7 @@ class HtmlTemplate {
 
   }
 
-  embedStyleAndPropsIntoOpen (sheet, props) {
+  embedStyleAndPropsIntoOpen (styles, props) {
 
     let { open } = this
 
@@ -84,12 +88,11 @@ class HtmlTemplate {
 
     const cdata = Object.keys(json).length > 0
       ? `<script id='${this.id + '-server-props'}' type='application/json'>` +
-          `<![CDATA[${JSON.stringify(json)}]]>` +
+          JSON.stringify(json) +
         `</script>`
 
       : ''
 
-    const styles = sheet.getStyleTags()
     if (styles || cdata)
       open = open.replace('</head>', styles + cdata + '</head>')
 
@@ -122,22 +125,32 @@ class HtmlTemplate {
     const { ServerStyleSheet } = require('styled-components')
 
     const sheet = new ServerStyleSheet()
-    sheet.collectStyles(element)
+    const reacted = renderToString(
+      sheet.collectStyles(element)
+    )
+    const styles = sheet.getStyleTags()
 
-    const open = this.embedStyleAndPropsIntoOpen(sheet, props)
+    const open = this.embedStyleAndPropsIntoOpen(styles, props)
 
     const { id, close } = this
 
     return open +
       `<main id='${id}'>` +
-        renderToString(element) +
+        reacted +
       `</main>` +
     close
   }
 
-  handleRequest (error, req, res, next) {
+  handleRequest (error, req, res, { serialized, Component }) {
 
-    let serialized = !error && this.serializer(req, res)
+    if (serialized === UNFETCHED && !error)
+      serialized = this.serializer(req, res)
+
+    if (is(serialized, Promise))
+      return serialized.then(serialized =>
+        this.handleRequest(error, req, res, { serialized, Component })
+      )
+
     if (!is.plainObject(serialized))
       serialized = {}
 
@@ -150,8 +163,15 @@ class HtmlTemplate {
     let context
     let ui = null
 
-    const Component = this.getComponent(req, res)
-    if (Component) {
+    if (Component === UNFETCHED)
+      Component = this.getComponent(req, res)
+
+    if (is(Component, Promise))
+      return Component.then(Component =>
+        this.handleRequest(error, req, res, { serialized, Component })
+      )
+
+    if (is.func(Component)) {
       const React = require('react')
       const { StaticRouter } = require('react-router')
 
@@ -177,6 +197,11 @@ class HtmlTemplate {
 
   }
 
+  initHandleRequestState = {
+    serialized: UNFETCHED,
+    Component: UNFETCHED
+  }::copy
+
 }
 
 /******************************************************************************/
@@ -191,11 +216,21 @@ function serverSideRendering (config) {
   // handler or not, so the handle request msut be sent back with two signatures
 
   const middleware = [
-    (req, res, next) => template.handleRequest(null, req, res, next)
+    (req, res, next) => template.handleRequest(
+      null,
+      req,
+      res,
+      template.initHandleRequestState()
+    )
   ]
 
   if (config.getComponent) middleware.push(
-    (err, req, res, next) => template.handleRequest(err, req, res, next)
+    (err, req, res, next) => template.handleRequest(
+      err,
+      req,
+      res,
+      template.initHandleRequestState()
+    )
   )
 
   return middleware
