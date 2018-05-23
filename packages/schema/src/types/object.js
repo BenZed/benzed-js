@@ -43,8 +43,12 @@ function validateShape (shape, obj, context, shapeKeysOnly) {
       async = async || { keys: [], promises: [] }
       async.keys.push(key)
       async.promises.push(result)
+    }
 
-    } else if (result !== undefined)
+    if (is(result, Error))
+      return result
+
+    if (result !== undefined)
       obj[key] = result
 
   }

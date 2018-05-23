@@ -1,7 +1,10 @@
 import { expect } from 'chai'
 
-import { object, string, number } from '../types'
-import { cast } from '../validators'
+import { object, string, number, bool, oneOf } from '../types'
+import { cast, required, length } from '../validators'
+
+import ValidationError from '../util/validation-error'
+import Context from '../util/context'
 
 // import { defaultTo, required } from '../validators'
 
@@ -22,6 +25,7 @@ describe('object()', () => {
     name: string,
     age: number
   },
+
   cast(nameToPerson, ageToPerson))
 
   it('returns an error if an input is not an object', () => {
@@ -121,9 +125,81 @@ describe('object()', () => {
       })
 
       expect(youngResult).to.have.property('message', 'retirees only')
+    })
+  })
+
+  describe('error behaviour', () => {
+
+    let obj, context
+    before(() => {
+      obj = object({
+        name: string(required),
+        age: number(required),
+        meta: {
+          code: string(required, length('<=', 3)),
+          direction: oneOf(['n', 'w', 'e', 's']),
+          urgent: bool(
+            required,
+            (value, ctx) =>
+              value && (!ctx.data.meta || ctx.data.meta.code !== 'ace')
+                ? new Error('can only be true if meta.code is set to \'ace\'')
+                : value
+          )
+        }
+      }, false)
+      context = new Context().safe()
+    })
+
+    it('appends keys to context path', () => {
+
+      const err = obj({
+        name: undefined
+      }, context)
+
+      expect(err).to.be.instanceof(ValidationError)
+      expect(err).to.have.property('message', 'name is Required.')
+      expect(err).to.have.deep.property('path', ['name'])
+      expect(err).to.have.property('rawMessage', 'is Required.')
+    })
+
+    it('on deep paths', () => {
+
+      const err = obj({
+        name: 'Ben',
+        age: 33,
+        meta: {
+          code: 'ace',
+          direction: '??'
+        }
+      }, context)
+
+      expect(err).to.be.instanceof(ValidationError)
+      expect(err).to.have.property('message', 'meta.direction Must be one of: n, w, e, s')
+      expect(err).to.have.deep.property('path', ['meta', 'direction'])
+      expect(err).to.have.property('rawMessage', 'Must be one of: n, w, e, s')
 
     })
 
-  })
+    it('on deep paths with custom validators', () => {
+      const data = {
+        name: 'Ben',
+        age: 33,
+        meta: {
+          code: 'ret',
+          direction: 'n',
+          urgent: true
+        }
+      }
 
+      const context = new Context(data).safe()
+
+      const err = obj(data, context)
+
+      expect(err).to.be.instanceof(ValidationError)
+      expect(err).to.have.property('message', 'meta.urgent can only be true if meta.code is set to \'ace\'')
+      expect(err).to.have.deep.property('path', ['meta', 'urgent'])
+      expect(err).to.have.property('rawMessage', 'can only be true if meta.code is set to \'ace\'')
+    })
+
+  })
 })

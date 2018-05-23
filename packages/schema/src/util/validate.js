@@ -10,10 +10,14 @@ import is from 'is-explicit'
 
 function handleError (ctx, err) {
 
+  const vErr = is(err, ValidationError)
+    ? err
+    : new ValidationError(ctx.path, err.rawMessage || err.message)
+
   if (ctx.throw)
-    throw new ValidationError(ctx.path, err.message)
+    throw vErr
   else
-    return err
+    return vErr
 }
 
 function validateAll (validators, value, context, index = 0) {

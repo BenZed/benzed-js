@@ -35,11 +35,18 @@ const COMPARERS = {
       : handleError(err, 'between', min, max)
   },
 
+  // '==' (value) {
+  //   const [ _value, err ] = this
+  //   return value === _value
+  //     ? value
+  //     : handleError(err, 'equal to', _value)
+  // },
+
   '<=' (value) {
     const [ max, err ] = this
     return value <= max
       ? value
-      : handleError(err, 'equal to less than', max)
+      : handleError(err, 'equal to or less than', max)
   },
 
   '<' (value) {

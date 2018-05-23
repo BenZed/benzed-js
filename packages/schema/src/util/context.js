@@ -13,7 +13,7 @@ class Context {
   }
 
   push (key) {
-    const context = new Context(this.data, this.args, this.path)
+    const context = this.copy()
 
     context.path.push(key)
 
@@ -21,8 +21,15 @@ class Context {
   }
 
   safe () {
-    const context = new Context(this.data, this.args, this.path)
+    const context = this.copy()
     context.throw = false
+
+    return context
+  }
+
+  copy () {
+    const context = new Context(this.data, this.args, this.path)
+    context.throw = this.throw
 
     return context
   }

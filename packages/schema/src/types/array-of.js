@@ -25,7 +25,7 @@ function firstErrorOrArray (array) {
 }
 
 function handleError (err, msg, context) {
-  return err.isTypeError
+  return err.isInvalidType
     ? new ValidationError(context.path, msg, true)
     : err
 }

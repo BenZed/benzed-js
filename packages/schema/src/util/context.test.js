@@ -46,18 +46,43 @@ describe('Context', () => {
 
   describe('push()', () => {
 
-    it('returns a new context with a appended path', () => {
-
-      const context = new Context(data, args, path)
-
-      const context2 = context.push('key')
-
-      expect(context2).to.not.equal(context)
-      expect(context2.path).to.deep.equal([ ...path, 'key' ])
-      expect(context.path).to.deep.equal(path)
-
+    let c1, c2
+    before(() => {
+      c1 = new Context(data, args, path)
+      c2 = c1.push('key')
     })
 
+    it('returns a new context with a appended path', () => {
+      expect(c2.path).to.deep.equal([ ...c1.path, 'key' ])
+      expect(c1.path).to.deep.equal(path)
+    })
+
+    it('returns a copy', () => {
+      expect(c2).to.not.equal(c1)
+    })
+
+    it('copies .throw property', () => {
+      const c3 = c2.safe()
+      const c4 = c3.push('oy')
+      expect(c4).to.have.property('throw', c3.throw)
+    })
+  })
+
+  describe('safe()', () => {
+    let c1
+    before(() => {
+      c1 = new Context({}, [], ['okay'])
+    })
+
+    it('returns a new context with .throw disabled', () => {
+      expect(c1).to.have.property('throw', true)
+      expect(c1.safe()).to.have.property('throw', false)
+    })
+
+    it('returns a copy', () => {
+      const c2 = c1.safe()
+      expect(c2).to.not.equal(c1)
+    })
   })
 
 })
