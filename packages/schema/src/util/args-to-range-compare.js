@@ -13,36 +13,37 @@ const OPERATORS = [ '>', '>=', '<=>', '<=', '<' ]
 
 const COMPARERS = {
 
-  '>' (value, err) {
-    const min = this
+  '>' (value) {
+    const [ min, err ] = this
     return value > min
       ? value
       : handleError(err, 'greater than', min)
   },
 
-  '>=' (value, err) {
-    const min = this
+  '>=' (value) {
+    const [ min, err ] = this
     return value >= min
       ? value
       : handleError(err, 'equal to or greater than', min)
   },
 
-  '<=>' (value, err) {
-    const [ min, max ] = this
-    return value >= min && value <= max
+  '<=>' (value) {
+    const [ min, max, err ] = this
+
+    return value >= min && value < max
       ? value
       : handleError(err, 'between', min, max)
   },
 
-  '<=' (value, err) {
-    const max = this
+  '<=' (value) {
+    const [ max, err ] = this
     return value <= max
       ? value
       : handleError(err, 'equal to less than', max)
   },
 
-  '<' (value, err) {
-    const max = this
+  '<' (value) {
+    const [ max, err ] = this
     return value < max
       ? value
       : handleError(err, 'less than', max)
@@ -62,11 +63,11 @@ function defaultError (diff, ...values) {
   return `must be ${diff} ${values.join(' and ')}`
 }
 
-function getComparer ({ operator, value, min, max }) {
+function getComparer ({ operator, value, min, max, err }) {
 
   const num = operator === '<=>'
-    ? [min, max]
-    : value
+    ? [min, max, err]
+    : [value, err]
 
   return num::COMPARERS[operator]
 }
@@ -105,27 +106,30 @@ function checkExplicitConfig (operator, numbers) {
   if (isBetween === is.number(numbers.value))
     throw new Error(`value must ${isBetween ? 'not ' : ''}be defined for ${operator}`)
 
-  if (isBetween !== is.number(numbers.min) || isBetween !== !is.number(numbers.max))
+  if (isBetween !== is.number(numbers.min) || isBetween !== is.number(numbers.max))
     throw new Error(`min and max must ${!isBetween ? 'not ' : ''}be defined for ${operator}`)
 
   if (isBetween && numbers.min > numbers.max)
     throw new Error(`min must be below max for ${operator}`)
 
-  return getComparer({ operator, ...numbers })
+  return { operator, ...numbers }
 }
 
 function fixImplicitConfig (operator, numbers) {
 
   const isBetween = operator === '<=>'
-  numbers = Object.values(numbers)
+  numbers = Object
+    .values(numbers)
+    .filter(is.number)
+
   numbers.sort()
 
   let min, max, value
-  if (isBetween) {
-    min = Math.min(numbers)
-    max = Math.max(numbers)
-  } else
-    [ value ] = numbers.filter(is.number)
+  if (isBetween && numbers.length >= 2) {
+    min = Math.min(...numbers)
+    max = Math.max(...numbers)
+  } else if (!isBetween)
+    [ value ] = numbers
 
   if (isBetween && (!is.number(min) || !is.number(max)))
     throw new Error(`${operator} needs two numbers to compare`)
@@ -133,7 +137,7 @@ function fixImplicitConfig (operator, numbers) {
   if (!isBetween && !is.number(value))
     throw new Error(`${operator} needs one number to compare`)
 
-  return getComparer({ operator, min, max, value })
+  return { operator, min, max, value }
 
 }
 
@@ -141,25 +145,28 @@ function fixImplicitConfig (operator, numbers) {
 // Main
 /******************************************************************************/
 
-const rangeConfig = (args) => {
+const argsToRangeCompare = args => {
+
+  if (!is(args, Array))
+    throw new Error('arsgToRangeCompare expects an array of arguments')
 
   const isExplicitObject = args.length === 1 && is.plainObject(args[0])
 
   const { err, operator, ...numbers } = operatorConfig(args)
   if (operator in COMPARERS === false)
-    throw new Error(`${operator} is not a valid comparer.`)
+    throw new Error(`${String(operator)} is not a valid operator`)
 
-  const compare = isExplicitObject
+  const config = isExplicitObject
     ? checkExplicitConfig(operator, numbers)
     : fixImplicitConfig(operator, numbers)
 
-  // TODO
-  // change this so that it only returns a compare function
-  return { compare, err }
+  config.err = err
+
+  return getComparer(config)
 }
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default rangeConfig
+export default argsToRangeCompare

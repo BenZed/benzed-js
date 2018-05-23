@@ -20,7 +20,7 @@ import { OPTIONAL_CONFIG } from './util/symbols'
 import argsToConfig from './util/args-to-config'
 
 // TODO rename everywhere
-import argsToRangeCompare from './util/range-config'
+import argsToRangeCompare from './util/args-to-range-compare'
 
 /******************************************************************************/
 // Exports
