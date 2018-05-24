@@ -10,7 +10,7 @@ const castConfig = argsToConfig({
   test: is.func,
   name: 'casters',
   count: Infinity
-})
+}, 'cast')
 
 /******************************************************************************/
 // Main

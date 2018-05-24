@@ -15,7 +15,7 @@ const configRequired = argsToConfig({
   test: is.string,
   default: 'is Required.',
   validate: nonEmpty
-})
+}, 'required')
 
 /******************************************************************************/
 // Main

@@ -5,7 +5,7 @@ import length from './length'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('length()', () => {
+describe.only('length()', () => {
   let min5
   before(() => {
     min5 = length('>', 5)
@@ -26,18 +26,8 @@ describe('length()', () => {
       .to.be.equal(string)
   })
 
-  describe('configuration', () => {
-
-    it('operator string')
-
-    it('value number')
-
-    it('err string')
-
-    it('min number')
-
-    it('max number')
-
-  })
+  // Consumes the same configuration as argsToRangeCompare. Maybe I should make
+  // a generic test? TODO
+  // describe('configuration')
 
 })

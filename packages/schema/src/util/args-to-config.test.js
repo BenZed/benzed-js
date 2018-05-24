@@ -84,6 +84,33 @@ describe('argsToConfig()', () => {
 
   })
 
+  describe('layout.default', () => {
+
+    it('describes the default value if one cannot be found', () => {
+
+      const layout = [{
+        name: 'value',
+        test: is.defined,
+        required: true
+      }, {
+        name: 'flag',
+        test: is.bool,
+        default: true
+      }]
+
+      const easyConfg = argsToConfig(layout)
+
+      const config = easyConfg(['value'])
+      expect(config).to.have.property('flag', true)
+      expect(config).to.have.property('value', 'value')
+
+      const config2 = easyConfg(['value', false])
+      expect(config2).to.have.property('value', 'value')
+      expect(config2).to.have.property('flag', false)
+    })
+
+  })
+
   describe('usage', () => {
 
     it('returns a function', () => {
@@ -96,10 +123,11 @@ describe('argsToConfig()', () => {
         test: is.string
       })
 
-      const args = ['You messed up.']
+      const msg = 'You messed up.'
+      const args = [msg]
       const config = configErr(args)
 
-      expect(config).to.have.property('err', args[0])
+      expect(config).to.have.property('err', msg)
     })
 
     it('if count is above 1, results are placed into an array', () => {
@@ -110,7 +138,7 @@ describe('argsToConfig()', () => {
       })
 
       const args = ['one', 2, 'three', 'four']
-      const config = configEnum(args)
+      const config = configEnum([...args])
       expect(config.enum).to.deep.equal(args)
     })
 
@@ -157,6 +185,10 @@ describe('argsToConfig()', () => {
       const args = [{ err: 'Must have.', enabled: false }]
       const config = configRequired(args)
 
+      it('throws if args is not an array', () => {
+        expect(() => configRequired('one', 2)).to.throw('args must be an array')
+      })
+
       it('that object is used as config', () => {
         expect(config).to.have.property('err', args[0].err)
       })
@@ -166,12 +198,12 @@ describe('argsToConfig()', () => {
       })
 
       it('defaults values as expected', () => {
-        const config = configRequired({ enabled: true })
+        const config = configRequired([{ enabled: true }])
         expect(config).to.have.property('err', 'is Required.')
       })
 
       it('throws as expected', () => {
-        expect(() => configRequired({})).to.throw('requires \'enabled\' property')
+        expect(() => configRequired([{}])).to.throw('requires \'enabled\' property')
       })
     })
   })

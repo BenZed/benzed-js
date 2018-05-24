@@ -13,27 +13,30 @@ const defaultConfig = argsToConfig(
   },
   {
     name: 'call',
-    test: is.bool,
-    default: true
-  }
-  ])
+    test: is.bool
+  }],
+  'defaultTo')
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function defaultTo (args) {
+function defaultTo (...args) {
 
-  const { value: defaultValue, call } = defaultConfig(args)
+  const { value, call } = defaultConfig(args)
 
-  const getDefaultValue = call && is(defaultValue, Function)
-    ? defaultValue
-    : () => defaultValue
+  const valueIsFunc = is.func(value)
+  if (!valueIsFunc && call)
+    throw new Error('defaultTo config.call cannot be enabled if config.value is not a function')
+
+  const getValue = call !== false && valueIsFunc
+    ? value
+    : () => value
 
   const defaultTo = (value, context) => {
     const result = value == null
 
-      ? getDefaultValue(context)
+      ? getValue(context)
       : value
 
     return result

@@ -16,7 +16,7 @@ const formatConfig = argsToConfig([
     test: is.string,
     default: 'Incorrect Format.'
   }
-])
+], 'format')
 
 /******************************************************************************/
 // Main
@@ -26,15 +26,10 @@ function format (...args) {
 
   const { err, regex } = formatConfig(args)
 
-  return value => {
-    if (value == null)
-      return value
-
-    if (!is(value, String) || !regex.test(value))
-      return Error(err)
-
-    return value
-  }
+  return value =>
+    !is.string(value) || regex.test(value)
+      ? value
+      : Error(err)
 
 }
 

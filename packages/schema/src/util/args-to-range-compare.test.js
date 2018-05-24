@@ -4,7 +4,7 @@ import { inspect } from 'util'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('argsToRangeCompare()', () => {
+describe.only('argsToRangeCompare()', () => {
 
   it('is a function', () => {
     expect(argsToRangeCompare).to.be.instanceof(Function)
@@ -31,7 +31,7 @@ describe('argsToRangeCompare()', () => {
 
   })
 
-  const OPS = [ '>', '>=', '<=', '<' ]
+  const OPS = [ '>', '>=', '==', '<=', '<' ] // not in-between ops
 
   describe('configuration', () => {
 
@@ -72,14 +72,14 @@ describe('argsToRangeCompare()', () => {
       })
 
       describe('implicit config', () => {
-        describe('value is inferred for <=> operator', () => {
+        describe('min and max is inferred for <=> operator', () => {
           for (const [min, max] of [[0, 1], [1, 0], [-1, 1]])
             it(`<=> ${min} ${max}`, () => {
               expect(() => argsToRangeCompare(['<=>', min, max]))
                 .to.not.throw(Error)
             })
         })
-        describe(`min and max is inferred for ${OPS} operator`, () => {
+        describe(`value is inferred for ${OPS} operator`, () => {
           for (const operator of OPS)
             it(`${operator} 0`, () => {
               expect(() => argsToRangeCompare([operator, 0]))

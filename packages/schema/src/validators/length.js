@@ -20,7 +20,7 @@ function length (...args) {
 
   return value => {
 
-    if (value == null || !hasNumericLength(value))
+    if (!hasNumericLength(value))
       return value
 
     const result = compare(value.length)

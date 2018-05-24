@@ -56,10 +56,10 @@ const typeLayout = [
 // Type Configurations
 /******************************************************************************/
 
-const anyTypeConfig = argsToConfig(typeLayout[2])
-const typeConfig = argsToConfig(typeLayout)
-const specificTypeConfig = argsToConfig(typeLayout.slice(1))
-const arrayTypeConfig = argsToConfig(typeLayout.slice(0, 3))
+const anyTypeConfig = argsToConfig(typeLayout[2], 'anyType')
+const typeConfig = argsToConfig(typeLayout, 'type')
+const specificTypeConfig = argsToConfig(typeLayout.slice(1), 'type')
+const arrayTypeConfig = argsToConfig(typeLayout.slice(0, 3), 'arrayType')
 
 const objectConfig = argsToConfig(
   typeLayout

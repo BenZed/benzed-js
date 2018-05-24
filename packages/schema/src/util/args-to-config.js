@@ -65,11 +65,12 @@ function argsToConfig (
 
   layouts = checkLayouts(layouts)
 
-  return (args, errName = masterErrName) => {
+  return (args = [], errName = masterErrName) => {
 
     let config = {}
 
-    args = [ ...wrap(args) ]
+    if (!is(args, Array))
+      throw new Error('args must be an array')
 
     const arg0 = args[0]
 

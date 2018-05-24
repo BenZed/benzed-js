@@ -5,7 +5,7 @@ import is from 'is-explicit'
 // Data
 /******************************************************************************/
 
-const OPERATORS = [ '>', '>=', '<=>', '<=', '<' ]
+const OPERATORS = [ '>', '>=', '==', '<=>', '<=', '<' ]
 
 /******************************************************************************/
 // Comparer
@@ -35,12 +35,12 @@ const COMPARERS = {
       : handleError(err, 'between', min, max)
   },
 
-  // '==' (value) {
-  //   const [ _value, err ] = this
-  //   return value === _value
-  //     ? value
-  //     : handleError(err, 'equal to', _value)
-  // },
+  '==' (value) {
+    const [ _value, err ] = this
+    return value === _value
+      ? value
+      : handleError(err, 'equal to', _value)
+  },
 
   '<=' (value) {
     const [ max, err ] = this
