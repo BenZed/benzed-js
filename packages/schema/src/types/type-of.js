@@ -1,10 +1,11 @@
 import is from 'is-explicit'
 
+import validate from '../util/validate'
 import ValidationError from '../util/validation-error'
+
 import { typeConfig, getTypeName } from '../util/type-config'
 import { TYPE } from '../util/symbols'
 
-import validate from '../util/validate'
 import Context from '../util/context'
 
 /******************************************************************************/

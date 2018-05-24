@@ -13,20 +13,24 @@ import Context from '../util/context'
 
 describe('object()', () => {
 
-  const nameToPerson = name => typeof name === 'string'
-    ? { name, age: 0 }
-    : name
+  let person
+  before(() => {
+    const nameToPerson = name => typeof name === 'string'
+      ? { name, age: 0 }
+      : name
 
-  const ageToPerson = age => typeof age === 'number'
-    ? { name: 'Jane Doe', age }
-    : age
+    const ageToPerson = age => typeof age === 'number'
+      ? { name: 'Jane Doe', age }
+      : age
 
-  const person = object({
-    name: string,
-    age: number
-  },
-
-  cast(nameToPerson, ageToPerson))
+    person = object(
+      {
+        name: string,
+        age: number
+      },
+      cast(nameToPerson, ageToPerson)
+    )
+  })
 
   it('returns an error if an input is not an object', () => {
     expect(person(true))

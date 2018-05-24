@@ -1,7 +1,6 @@
 import { wrap } from '@benzed/array'
 import is from 'is-explicit'
 
-import normalizeValidator from '../util/normalize-validator'
 import ValidationError from '../util/validation-error'
 import { getTypeName, arrayTypeConfig } from '../util/type-config'
 import validate from '../util/validate'
@@ -74,11 +73,6 @@ function arrayOf (...args) {
 
   const config = arrayTypeConfig(args, 'arrayOf')
 
-  // Because arrayOf can use other type functions, this is an elegant way to
-  // reduce methods that have OPTIONAL_CONFIG enabled
-  config.type = normalizeValidator(config.type)
-  config.validators = config.validators.map(normalizeValidator)
-
   const typeName = arrayTypeName(config.type)
 
   config.err = config.err || `Must be an ${typeName}`
@@ -89,7 +83,8 @@ function arrayOf (...args) {
     ? config.type
     : typeOf(config.type)
 
-  const arrayOf = (array, context = new Context()) => validateArrayOf(array, context, config)
+  const arrayOf = (array, context = new Context()) =>
+    validateArrayOf(array, context, config)
 
   arrayOf[TYPE] = typeName
 

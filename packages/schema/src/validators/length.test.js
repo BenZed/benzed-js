@@ -5,7 +5,7 @@ import length from './length'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('length()', () => {
+describe('length()', () => {
   let min5
   before(() => {
     min5 = length('>', 5)

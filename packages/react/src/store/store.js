@@ -5,9 +5,9 @@ import { wrap } from '@benzed/array'
 // Data
 /******************************************************************************/
 
-const SUBSCRIBERS = Symbol('subscribers')
-
 const ANY = Symbol('update-on-any-path')
+
+const SUBSCRIBERS = Symbol('subscribers')
 
 const STATE_UNCHANGED = Symbol('state-unchanged')
 
@@ -18,7 +18,8 @@ const STATE_UNCHANGED = Symbol('state-unchanged')
 function buildState (store, path, value) {
 
   const [ key ] = path
-  if (key in store === false || store[key] instanceof Function)
+
+  if (key in store === false || store[key] instanceof Function || key === SUBSCRIBERS)
     throw new Error(`Cannot set ${path.join('.')}, ${key} is not a valid state property.`)
 
   const isEqual = equals(
@@ -49,13 +50,15 @@ function notifySubscribers (store, path, state) {
       const subPathLength = sub.path.length
 
       const atMaxSubPathIndex = i === subPathLength - 1 || atMaxPathIndex
+      // if the subscription path ands at an object, it will receive a state
+      // update on alteration of any property in that nested path
       const subKey = subPathLength > i
         ? sub.path[i]
         : ANY
 
       let finished = false
 
-      // path mismatch, this state change is not for this subscriber
+      // subscription path mismatch, this state change is not for this subscriber
       if (subKey !== ANY && subKey !== stateKey)
         finished = true
 
@@ -102,7 +105,6 @@ class Store {
     applyState(this, state)
 
     notifySubscribers(this, path, state)
-
   }
 
   get (path) {

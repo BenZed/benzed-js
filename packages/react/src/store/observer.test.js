@@ -55,8 +55,7 @@ describe('Observer component', () => {
       const messageList = renderer.create(
         <Observer
           stores={{ messages }}
-          listen='messages'
-        >
+          listen='messages'>
           <Messages/>
         </Observer>
       )

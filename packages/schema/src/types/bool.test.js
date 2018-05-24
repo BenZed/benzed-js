@@ -8,7 +8,10 @@ import { OPTIONAL_CONFIG } from '../util/symbols'
 
 describe('bool()', () => {
 
-  const b = bool()
+  let b
+  before(() => {
+    b = bool()
+  })
 
   it('returns if value could not be cast to bool', () => {
     expect(

@@ -44,7 +44,6 @@ describe('Store', () => {
       score.setPoints(100)
       expect(points).to.be.equal(100)
     })
-
   })
 
   describe('methods', () => {
@@ -123,7 +122,6 @@ describe('Store', () => {
 
         expect(meta.data).to.not.equal(data)
       })
-
     })
 
     describe('get', () => {
@@ -140,7 +138,6 @@ describe('Store', () => {
       it('gotten value is not copy', () => {
         expect(meta.get('data')).to.be.equal(meta.data)
       })
-
     })
 
     describe('copy', () => {
@@ -160,7 +157,6 @@ describe('Store', () => {
       it('returns copied values', () => {
         expect(meta.copy().data).to.not.equal(meta.data)
       })
-
     })
 
     describe('equals', () => {
@@ -226,15 +222,12 @@ describe('Store', () => {
         meta.set('status', 'green')
         expect(calls).to.equal(2)
         expect(length).to.equal(80)
-
       })
-
     })
 
     describe('unsubscribe', () => {
 
       it('removes subscribers', () => {
-
         const meta = new MetaStore()
 
         let calls = 0
@@ -249,11 +242,7 @@ describe('Store', () => {
         meta.unsubscribe(setter)
         meta.set('status', 'blue')
         expect(calls).to.equal(2)
-
       })
-
     })
-
   })
-
 })

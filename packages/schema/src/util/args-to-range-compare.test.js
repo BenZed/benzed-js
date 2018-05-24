@@ -4,7 +4,7 @@ import { inspect } from 'util'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('argsToRangeCompare()', () => {
+describe('argsToRangeCompare()', () => {
 
   it('is a function', () => {
     expect(argsToRangeCompare).to.be.instanceof(Function)

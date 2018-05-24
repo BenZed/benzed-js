@@ -1,23 +1,10 @@
-import Context from '../util/context'
-import argsToConfig from '../util/args-to-config'
+import validate from '../util/validate'
 import ValidationError from '../util/validation-error'
+
+import { enumTypeConfig } from '../util/type-config'
 import { TYPE } from '../util/symbols'
-import is from 'is-explicit'
 
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-const oneOfTypeConfig = argsToConfig([
-  {
-    name: 'values',
-    test: Array::is
-  },
-  {
-    name: 'err',
-    test: is.string
-  }
-])
+import Context from '../util/context'
 
 /******************************************************************************/
 // Main
@@ -25,21 +12,24 @@ const oneOfTypeConfig = argsToConfig([
 
 function oneOf (...args) {
 
-  const config = oneOfTypeConfig(args)
+  const config = enumTypeConfig(args)
 
-  const { values } = config
+  const { cast, validators, values } = config
   let { err } = config
 
-  err = err || `Must be one of: ${values.join(', ')}`
+  err = config.err || `Must be one of: ${values.join(', ')}`
 
   const oneOf = (value, context = new Context()) => {
 
-    if (value == null)
-      return value
+    if (cast && value != null && !values.includes(value))
+      value = cast(value)
 
-    return values.includes(value)
-      ? value
-      : new ValidationError(context.path, err, true)
+    if (value != null && !values.includes(value))
+      return new ValidationError(context.path, err, true)
+
+    return validators && validators.length > 0
+      ? validate(validators, value, context.safe())
+      : value
   }
 
   oneOf[TYPE] = 'Enumeration'

@@ -14,7 +14,10 @@ describe('typeOf()', () => {
 
   function Foo () {}
 
-  const foo = typeOf(Foo)
+  let foo
+  before(() => {
+    foo = typeOf(Foo)
+  })
 
   it('returns error if input is not of specified type', () => {
     expect(foo('not-foo'))

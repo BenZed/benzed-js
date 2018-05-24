@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import oneOf from './one-of'
+import { required, cast } from '../validators'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -38,6 +39,18 @@ describe('oneOf', () => {
       })
       expect(oneOfCode(403)).to.have.property('message', 'Must be between 400 and 402')
     })
-  })
 
+    it('cast function', () => {
+      const oneOrTwo = oneOf(cast(parseInt), [1, 2])
+
+      expect(oneOrTwo('1')).to.be.equal(1)
+      expect(oneOrTwo('3')).to.have.property('message', 'Must be one of: 1, 2')
+    })
+
+    it('validators array', () => {
+      const fooOrBarRequired = oneOf(['foo', 'bar'], required)
+
+      expect(fooOrBarRequired(null)).to.have.property('message', 'is Required.')
+    })
+  })
 })

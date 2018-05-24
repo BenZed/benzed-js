@@ -7,7 +7,10 @@ import { OPTIONAL_CONFIG } from '../util/symbols'
 
 describe('number()', () => {
 
-  const num = number()
+  let num
+  before(() => {
+    num = number()
+  })
 
   it('returns if value could not be cast to number', () => {
     expect(
@@ -79,7 +82,5 @@ describe('number()', () => {
         num(obj2)
       ).to.have.property('message', 'Must be of type: Number')
     })
-
   })
-
 })

@@ -5,6 +5,9 @@ import number from './number'
 
 import func from './func'
 import object from './object'
+
+import typeOf from './type-of'
+
 import arrayOf from './array-of'
 import oneOf from './one-of'
 import oneOfType from './one-of-type'
@@ -21,5 +24,6 @@ export {
   arrayOf,
 
   oneOf,
+  typeOf,
   oneOfType
 }

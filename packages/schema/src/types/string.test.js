@@ -7,7 +7,10 @@ import { OPTIONAL_CONFIG } from '../util/symbols'
 
 describe('string()', () => {
 
-  const str = string()
+  let str
+  before(() => {
+    str = string()
+  })
 
   it('returns if value could not be cast to string', () => {
     expect(

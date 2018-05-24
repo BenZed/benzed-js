@@ -9,7 +9,10 @@ import number from './number'
 
 describe('oneOfType()', () => {
 
-  const isBoolOrNumber = oneOfType(Boolean, Number)
+  let isBoolOrNumber
+  before(() => {
+    isBoolOrNumber = oneOfType(Boolean, Number)
+  })
 
   it('returns an error if input is not one of many types', () => {
     expect(isBoolOrNumber('lol'))

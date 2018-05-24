@@ -3,11 +3,13 @@ import { TYPE, CAST } from './symbols'
 import argsToConfig from './args-to-config'
 import normalizeValidator from './normalize-validator'
 
-import { shift, push, pop, set } from '@benzed/immutable'
+import { shift, unshift, push, pop, set } from '@benzed/immutable'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
+
+const isArray = Array::is
 
 const hasCastSymbol = has =>
   func => is(func, Function) && CAST in func === has
@@ -18,7 +20,10 @@ function getTypeName (type) {
 
 function normalizeValidators (validators) {
 
-  return validators instanceof Array
+  if (!validators)
+    return validators
+
+  return isArray(validators)
     ? validators.map(normalizeValidator)
     : normalizeValidator(validators)
 
@@ -48,7 +53,8 @@ const typeLayout = [
   },
   {
     name: 'cast',
-    test: [is.func, hasCastSymbol(true)]
+    test: [is.func, hasCastSymbol(true)],
+    validate: normalizeValidators
   }
 ]
 
@@ -56,10 +62,35 @@ const typeLayout = [
 // Type Configurations
 /******************************************************************************/
 
-const anyTypeConfig = argsToConfig(typeLayout[2], 'anyType')
 const typeConfig = argsToConfig(typeLayout, 'type')
-const specificTypeConfig = argsToConfig(typeLayout.slice(1), 'type')
-const arrayTypeConfig = argsToConfig(typeLayout.slice(0, 3), 'arrayType')
+
+const anyTypeConfig = argsToConfig(typeLayout[2], 'anyType')
+
+const specificTypeConfig = argsToConfig(
+  typeLayout
+    ::shift(),
+
+  'type'
+)
+
+const arrayTypeConfig = argsToConfig(
+  typeLayout
+    ::pop(),
+
+  'arrayType'
+)
+
+const enumTypeConfig = argsToConfig(
+  typeLayout
+    ::shift()
+    ::unshift({
+      name: 'values',
+      required: true,
+      test: Array::is
+    }),
+
+  'enumType'
+)
 
 const objectConfig = argsToConfig(
   typeLayout
@@ -75,14 +106,18 @@ const objectConfig = argsToConfig(
     {
       name: 'cast',
       test: is.func
-    })
+    }),
+
+  'objectType'
 )
 
 const multiTypeConfig = argsToConfig(
   typeLayout
     ::set([0, 'count'], Infinity)
     ::set([0, 'name'], 'types')
-    ::pop()
+    ::pop(),
+
+  'multiType'
 )
 
 /******************************************************************************/
@@ -98,6 +133,7 @@ export {
   objectConfig,
   arrayTypeConfig,
   multiTypeConfig,
+  enumTypeConfig,
 
   typeLayout,
   getTypeName

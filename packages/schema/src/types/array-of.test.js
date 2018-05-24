@@ -12,9 +12,11 @@ import { expectResolve } from '@benzed/dev'
 
 describe('arrayOf()', () => {
 
-  const arrayOfNumber = arrayOf(Number)
-
-  const arrayOfBool = arrayOf(bool)
+  let arrayOfNumber, arrayOfBool
+  before(() => {
+    arrayOfNumber = arrayOf(Number)
+    arrayOfBool = arrayOf(bool)
+  })
 
   it('errors if value cannot be cast to an Array of type', () => {
     expect(arrayOfNumber([ 1, 2, 3, 'nerd' ]))
