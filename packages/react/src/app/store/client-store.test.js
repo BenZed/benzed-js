@@ -27,9 +27,12 @@ describe.only('Client Store', () => {
 
   describe('construct', () => {
 
-    let client
+    let client, FEATHERS
     before(() => {
       client = new ClientStore(CONFIG)
+      FEATHERS = Object
+        .getOwnPropertySymbols(client)
+        .filter(sym => String(sym).includes('feathers-client-instance'))[0]
     })
 
     describe('configuration', () => {
@@ -96,12 +99,14 @@ describe.only('Client Store', () => {
     })
 
     it('creates an instance of feathers client', () => {
-      const [ FEATHERS ] = Object.getOwnPropertySymbols(client)
-      expect(typeof FEATHERS).to.be.equal('symbol')
+
       const feathers = client[FEATHERS]
 
-      expect(feathers).to.be.instanceof(Object)
-      expect(feathers.methods).to.be
+      expect(feathers)
+        .to.be.instanceof(Object)
+
+      expect(feathers.methods)
+        .to.be
         .deep.equal(['find', 'get', 'create', 'update', 'patch', 'remove'])
     })
 
@@ -124,5 +129,48 @@ describe.only('Client Store', () => {
         client.config = null
       }).to.throw('Cannot set property config')
     })
+
+    describe('creates feathers client adapter based on config.provider', () => {
+
+      describe('if rest, uses custom setupRest functionality', () => {
+
+        let someService
+        before(() => {
+          someService = client.service('some-service')
+        })
+
+        it('has fetch as rest property', () => {
+          expect(client[FEATHERS]).to.have.property('rest', fetch)
+        })
+
+        it('has custom service getter function', () => {
+          expect(client[FEATHERS]).to.have.property('defaultService')
+          const defaultService = client[FEATHERS].defaultService
+          expect(defaultService).to.have.property('name', 'bound getClientStoreFetchService')
+        })
+
+        it('retreived services base url comes from client', () => {
+          client.set('host', 'nowhere')
+          expect(someService).to.have.property('base', 'nowhere/some-service')
+
+          client.set('host', 'somewhere')
+          expect(someService).to.have.property('base', 'somewhere/some-service')
+
+        })
+
+        it('retreived services are not instanced every time', () => {
+          expect(client.service('some-service')).to.be.equal(someService)
+        })
+
+      })
+
+      describe('socketio', () => {
+
+        it('uses socket io functionality')
+
+      })
+
+    })
+
   })
 })
