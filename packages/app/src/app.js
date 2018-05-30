@@ -1,5 +1,6 @@
 import feathers from '@feathersjs/feathers'
 import { get, set } from '@benzed/immutable'
+import is from 'is-explicit'
 
 import {
   validateMode,
@@ -74,6 +75,10 @@ class App {
     await this::connectToDatabase()
     this::setupServices()
     this::setupMiddleware()
+
+    if (is.func(this.onInitialize))
+      await this.onInitialize()
+
   }
 
   async start () {
@@ -84,6 +89,10 @@ class App {
     await new Promise(resolve => listener.once('listening', resolve))
 
     this.listener = listener
+
+    if (is.func(this.onStart))
+      await this.onStart()
+
     return listener
   }
 
@@ -105,8 +114,11 @@ class App {
   // Implementable Client Methods
 
   // getClientComponent (req, res) {}
-
   // onSerializeClient (req, res) {}
+
+  // LifeCycle Methods
+  // onInitialize () {}
+  // onStart () {}
 
   // Utility Methods
 

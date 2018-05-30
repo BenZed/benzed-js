@@ -169,6 +169,32 @@ describe('createProject()', () => {
       testCreateProject(options)
     })
 
+    describe.only('creates animated svg example', function () {
+      this.timeout(50000)
+
+      const dir = path.resolve(process.cwd(), '../../../')
+
+      // fs.removeSync(path.join(dir, 'casino-ben'))
+
+      const options = {
+        dir: dir,
+        name: 'svg-anim-example',
+
+        socketio: false,
+        rest: false,
+
+        ui: true,
+        api: false,
+
+        auth: false,
+        files: false,
+
+        routing: true
+      }
+
+      testCreateProject(options)
+    })
+
   })
 
 })

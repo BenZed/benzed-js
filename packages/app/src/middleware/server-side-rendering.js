@@ -124,11 +124,15 @@ class HtmlTemplate {
     const { renderToString } = require('react-dom/server')
     const { ServerStyleSheet } = require('styled-components')
 
-    const sheet = new ServerStyleSheet()
-    const reacted = renderToString(
-      sheet.collectStyles(element)
-    )
-    const styles = sheet.getStyleTags()
+    let reacted = ''
+    let styles = ''
+    if (element) {
+      const sheet = new ServerStyleSheet()
+      reacted = renderToString(
+        sheet.collectStyles(element)
+      )
+      styles = sheet.getStyleTags()
+    }
 
     const open = this.embedStyleAndPropsIntoOpen(styles, props)
 

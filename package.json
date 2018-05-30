@@ -18,7 +18,6 @@
     "is-explicit": "^2.0.0"
   },
   "devDependencies": {
-    "colors": "^1.3.0",
-    "fs-extra": "^6.0.1"
+    "colors": "^1.3.0"
   }
 }

@@ -27,11 +27,12 @@ describe.only('Client Store', () => {
 
   describe('construct', () => {
 
-    let client, FEATHERS
+    let restClient, socketIoClient, FEATHERS
     before(() => {
-      client = new ClientStore(CONFIG)
+      restClient = new ClientStore(CONFIG)
+      socketIoClient = new ClientStore(CONFIG::set('provider', 'socketio'))
       FEATHERS = Object
-        .getOwnPropertySymbols(client)
+        .getOwnPropertySymbols(restClient)
         .filter(sym => String(sym).includes('feathers-client-instance'))[0]
     })
 
@@ -100,7 +101,7 @@ describe.only('Client Store', () => {
 
     it('creates an instance of feathers client', () => {
 
-      const feathers = client[FEATHERS]
+      const feathers = restClient[FEATHERS]
 
       expect(feathers)
         .to.be.instanceof(Object)
@@ -111,7 +112,7 @@ describe.only('Client Store', () => {
     })
 
     it('stores config in client.config', () => {
-      expect(client.config).to.be.deep.equal({
+      expect(restClient.config).to.be.deep.equal({
         hosts: ['http://localhost:3200'],
         provider: 'rest',
         auth: 'benzed-jwt'
@@ -120,13 +121,13 @@ describe.only('Client Store', () => {
 
     it('client.config is frozen', () => {
       expect(() => {
-        client.config.provider = 'socketio'
+        restClient.config.provider = 'socketio'
       }).to.throw('Cannot assign to read only property')
     })
 
     it('client.config cannot be changed', () => {
       expect(() => {
-        client.config = null
+        restClient.config = null
       }).to.throw('Cannot set property config')
     })
 
@@ -136,37 +137,38 @@ describe.only('Client Store', () => {
 
         let someService
         before(() => {
-          someService = client.service('some-service')
+          someService = restClient.service('some-service')
         })
 
         it('has fetch as rest property', () => {
-          expect(client[FEATHERS]).to.have.property('rest', fetch)
+          expect(restClient[FEATHERS]).to.have.property('rest', fetch)
         })
 
         it('has custom service getter function', () => {
-          expect(client[FEATHERS]).to.have.property('defaultService')
-          const defaultService = client[FEATHERS].defaultService
+          expect(restClient[FEATHERS]).to.have.property('defaultService')
+          const defaultService = restClient[FEATHERS].defaultService
           expect(defaultService).to.have.property('name', 'bound getClientStoreFetchService')
         })
 
         it('retreived services base url comes from client', () => {
-          client.set('host', 'nowhere')
+          restClient.set('host', 'nowhere')
           expect(someService).to.have.property('base', 'nowhere/some-service')
 
-          client.set('host', 'somewhere')
+          restClient.set('host', 'somewhere')
           expect(someService).to.have.property('base', 'somewhere/some-service')
-
         })
 
         it('retreived services are not instanced every time', () => {
-          expect(client.service('some-service')).to.be.equal(someService)
+          expect(restClient.service('some-service')).to.be.equal(someService)
         })
 
       })
 
       describe('socketio', () => {
 
-        it('uses socket io functionality')
+        // it('uses socket io functionality', () => {
+        //   console.log(socketIoClient[FEATHERS])
+        // })
 
       })
 

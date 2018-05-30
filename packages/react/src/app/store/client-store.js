@@ -2,7 +2,7 @@ import is from 'is-explicit'
 
 import feathers from '@feathersjs/feathers'
 import FetchService from '@feathersjs/rest-client/lib/fetch'
-import SocketIoService from '@feathersjs/transport-commons/client'
+import SocketIOService from '@feathersjs/transport-commons/client'
 
 import { Schema, arrayOf, string, required, oneOf, cast, length } from '@benzed/schema'
 import { until } from '@benzed/async'
@@ -20,6 +20,12 @@ const FEATHERS = Symbol('feathers-client-instance')
 
 const CONFIG = Symbol('configuration')
 
+const IO_OPT = {
+  autoConnect: false,
+  reconnection: false,
+  timeout: 2500,
+  forceNew: true
+}
 /******************************************************************************/
 // Validation
 /******************************************************************************/
@@ -90,29 +96,41 @@ function getClientStoreFetchService (name) {
 // Custom SocketIO Setup
 /******************************************************************************/
 
-class ClientStoreSocketIoService extends SocketIoService {
+class ClientStoreSocketIOService extends SocketIOService {
+
+  constructor ({ client, ...settings }) {
+
+    const feathers = client[FEATHERS]
+
+    const events = Object
+      .keys(feathers.eventMappings || {})
+      .map(method => feathers.eventMappings[method])
+
+    super({
+      ...settings,
+      events,
+      connection: feathers.io,
+      method: 'emit'
+    })
+
+  }
 
 }
 
-function getClientStoreSocketIoService (name) {
+function getClientStoreSocketIOService (name) {
 
   const client = this
   const feathers = client[FEATHERS]
 
   const { services } = feathers
 
-  if (!services[name]) {
-
-    const events = Object.keys(feathers.eventMappings || {})
-      .map(method => feathers.eventMappings[method])
-
-    services[name] = new ClientStoreSocketIoService({
+  if (!services[name])
+    services[name] = new ClientStoreSocketIOService({
       name,
-      events,
-      connection: feathers.io,
-      method: 'emit'
+      client
     })
-  }
+
+  return services[name]
 
 }
 
@@ -145,11 +163,12 @@ class ClientStore extends Store {
 
     const { provider, auth } = this[CONFIG]
     if (provider === 'rest') {
-      feathers.rest = fetch
-      feathers.defaultService = this::getClientStoreFetchService
+      this[FEATHERS].rest = fetch
+      this[FEATHERS].defaultService = this::getClientStoreFetchService
     } else {
-      feathers.io = io()
-      feathers.defaultService = this::getClientStoreSocketIoService
+      this[FEATHERS].io = io(IO_OPT)
+      this[FEATHERS].defaultService = this::getClientStoreSocketIOService
+      this[]
     }
   }
 

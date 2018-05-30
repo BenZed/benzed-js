@@ -32,7 +32,7 @@
     "@benzed/schema": "latest",
     "@feathersjs/authentication-client": "^1.0.2",
     "@feathersjs/rest-client": "^1.4.0",
-    "@feathersjs/socketio-client": "^1.1.0",
+    "@feathersjs/transport-commons": "^4.0.0",
     "add-event-listener": "0.0.1",
     "color": "^3.0.0",
     "is-explicit": "^2.0.0",

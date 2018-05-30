@@ -1,10 +1,13 @@
 import { Service, FileService, UserService } from '../services'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
 const FILE_SERVICE_NAME = 'files'
+
+const SERVICE_METHODS = [ 'find', 'get', 'create', 'remove', 'patch', 'update', 'setup' ]
 
 /******************************************************************************/
 // Helpers
@@ -20,13 +23,10 @@ function assertServicesMissingConfig (config, services) {
 
 }
 
-function isServiceConstructor (input) {
-
-  const { prototype } = input
-
-  return prototype &&
-    (prototype.constructor === Service ||
-    prototype instanceof Service)
+function isGenericFeatherService (instance) {
+  return !is.subclassOf(instance, Service) &&
+    is.object(instance) &&
+    SERVICE_METHODS.some(name => is.func(instance[name]))
 }
 
 /******************************************************************************/
@@ -64,12 +64,14 @@ function setupServices () {
     if (service instanceof Function === false)
       throw new Error('service must be a function or a Service instance')
 
-    if (isServiceConstructor(service)) {
+    if (is.instanceable(service)) {
       const Service = service
-      void new Service(setupConfig, serviceName, app)
+      const instance = new Service(setupConfig, serviceName, app)
+      if (isGenericFeatherService(instance))
+        feathers.use(serviceName, instance)
 
     } else
-      app::service(setupConfig, serviceName, app)
+      service(setupConfig, serviceName, app)
   }
 }
 

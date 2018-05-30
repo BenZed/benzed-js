@@ -64,6 +64,7 @@ const validateApp = value => {
 // Helper
 /******************************************************************************/
 
+// TODO move this to setup-services so it works with generic services as well
 function addServiceShortCut (name) {
 
   const app = this
@@ -91,9 +92,9 @@ class Service {
 
     const {
       path,
+      paginate // ,
       // versions,
       // 'live-edit': liveEdit,
-      paginate
     } = config = validateConfig(config, name)
     name = validateName(name)
     app = validateApp(app)

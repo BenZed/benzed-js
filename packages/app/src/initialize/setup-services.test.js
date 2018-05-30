@@ -41,7 +41,6 @@ describe('setupServices()', () => {
 
       expect(msgApp::setupServices).to.not.throw(Error)
       expect(msgApp.messagesSetup).to.be.equal(true)
-
     })
 
     it('uses extended Service constructors', () => {
@@ -108,6 +107,15 @@ describe('setupServices()', () => {
       app2::setupServices()
       expect(app2.feathers.service('articles')).to.be.instanceof(Object)
 
+    })
+
+    it('uses regular functions', () => {
+      it('called with config, serviceName, app')
+      it('expects regular functions to setup a service')
+    })
+
+    it('uses generic service classes', () => {
+      it('must have a get, find, create, update, remove, patch or setup')
     })
 
     describe('auth users service', () => {

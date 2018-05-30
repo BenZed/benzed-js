@@ -116,7 +116,7 @@ const rules = [
     use: [ 'url-loader?limit=10000' ]
   },
   {
-    test: /\.(ttf|eot|ico|png|gif|mp4|jpg|svg)(\?.+)?$/,
+    test: /\.(ttf|eot|ico|png|gif|mp4|jpe?g|svg)(\?.+)?$/,
     loader: 'file-loader',
     options: {
       name: '[name]_[hash].[ext]'
