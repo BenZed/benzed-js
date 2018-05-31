@@ -32,7 +32,8 @@ describe('seconds', () => {
   it('resolves after a set number of seconds', async () => {
     const start = Date.now()
     await seconds(0.015)
-    expect(Date.now() - start >= 15).to.be.equal(true)
+    const time = Date.now() - start
+    expect(time >= 15).to.be.equal(true)
   })
   it('returns number of milliseconds waited', async () => {
     expect(await seconds(0.025)).to.be.equal(25)
@@ -64,6 +65,41 @@ describe('until', () => {
         await until(delta => { _delta = delta; return _delta >= 25 })
 
         expect(_delta >= 25).to.be.equal(true)
+      })
+    })
+
+    describe('async condition function', () => {
+      it('condition function can be asyncronous', async () => {
+
+        const asyncCondition = async () => {
+          await milliseconds(10)
+          return true
+        }
+
+        const ms = await until(asyncCondition)
+        expect(ms >= 10 && ms < 25).to.be.equal(true)
+      })
+
+      it('time taken resolving condition is subtracted from interval', async () => {
+
+        let _i = 0
+        const interval = 5
+
+        const asyncCondition = async () => {
+          _i++
+          await milliseconds(interval - 1)
+          return _i >= 10
+        }
+
+        const ms = await until({
+          condition: asyncCondition,
+          interval
+        })
+
+        expect(
+          ms >= _i * interval &&
+          ms < (_i + 1) * interval
+        ).to.be.equal(true)
       })
     })
 

@@ -19,7 +19,7 @@ class TestApp extends App {
     return promise
   }
 
-  onInitialize () {}
+  beforeInitialize () {}
 
   beforeStart () {}
   afterStart () {}

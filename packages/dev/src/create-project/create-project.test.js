@@ -119,81 +119,29 @@ describe('createProject()', () => {
 
     })
 
-    describe('creates boss-media-www', function () {
-      this.timeout(50000)
-
-      const dir = path.resolve(process.cwd(), '../../../')
-
-      const options = {
-        dir: dir,
-        name: 'boss-media-www',
-
-        socketio: false,
-        rest: true,
-
-        ui: true,
-        api: true,
-
-        auth: false,
-        files: false,
-        routing: true
-      }
-
-      testCreateProject(options)
-
-    })
-
-    describe('creates casino ben', function () {
-      this.timeout(50000)
-
-      const dir = path.resolve(process.cwd(), '../../../')
-
-      // fs.removeSync(path.join(dir, 'casino-ben'))
-
-      const options = {
-        dir: dir,
-        name: 'casino-ben',
-
-        socketio: true,
-        rest: true,
-
-        ui: true,
-        api: true,
-
-        auth: true,
-        files: true,
-
-        routing: true
-      }
-
-      testCreateProject(options)
-    })
-
-    describe.only('creates animated svg example', function () {
-      this.timeout(50000)
-
-      const dir = path.resolve(process.cwd(), '../../../')
-
-      // fs.removeSync(path.join(dir, 'casino-ben'))
-
-      const options = {
-        dir: dir,
-        name: 'svg-anim-example',
-
-        socketio: false,
-        rest: false,
-
-        ui: true,
-        api: false,
-
-        auth: false,
-        files: false,
-
-        routing: true
-      }
-
-      testCreateProject(options)
-    })
+    // describe('creates boss-media-www', function () {
+    //   this.timeout(50000)
+    //
+    //   const dir = path.resolve(process.cwd(), '../../../')
+    //
+    //   const options = {
+    //     dir: dir,
+    //     name: 'boss-media-www',
+    //
+    //     socketio: false,
+    //     rest: true,
+    //
+    //     ui: true,
+    //     api: true,
+    //
+    //     auth: false,
+    //     files: false,
+    //     routing: true
+    //   }
+    //
+    //   testCreateProject(options)
+    //
+    // })
 
   })
 

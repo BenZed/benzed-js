@@ -40,11 +40,14 @@ function setupMiddleware () {
       }))
 
   // ssr will also handle errors, so we only need to register middleware if there
-  // is no client componetn
+  // is no client component
   if (!app.getClientComponent)
     feathers
       .use(express.notFound({ verbose: true }))
-      .use(express.errorHandler({ html: hasPublic }))
+      .use(express.errorHandler({
+        html: hasPublic,
+        logger: app.log
+      }))
 }
 
 /******************************************************************************/

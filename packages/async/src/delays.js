@@ -3,17 +3,16 @@
 // Main
 /******************************************************************************/
 
-function seconds (num) {
+const seconds = num =>
+  milliseconds(num * 1000)
 
-  return milliseconds(num * 1000)
-
-}
-
-function milliseconds (num) {
-
-  return new Promise(resolve => setTimeout(() => resolve(num), num))
-
-}
+const milliseconds = num =>
+  new Promise(
+    resolve => setTimeout(
+      () => resolve(num),
+      num
+    )
+  )
 
 async function until (config = {}) {
 
@@ -23,25 +22,40 @@ async function until (config = {}) {
   const {
     condition,
     timeout = Infinity,
-    interval = 25,
+    interval: intervalDelay = 25,
     err = `condition could not be met in ${timeout} ms`
   } = config
 
   if (typeof condition !== 'function')
     throw new Error('condition must be a function')
 
-  const start = Date.now()
-  let delta = 0
+  const totalStart = Date.now()
+  let totalDelta = 0
 
-  while (!condition(delta)) {
-    await milliseconds(interval)
+  while (true) {
 
-    delta = Date.now() - start
-    if (delta >= timeout)
+    let intervalDelta = 0
+
+    let result = condition(totalDelta)
+    if (result instanceof Promise) {
+      const intervalStart = Date.now()
+      result = await result
+      intervalDelta = Date.now() - intervalStart
+    }
+
+    const remainingIntervalDelay = intervalDelay - intervalDelta
+    if (!result && remainingIntervalDelay > 0)
+      await milliseconds(remainingIntervalDelay)
+
+    totalDelta = Date.now() - totalStart
+    if (totalDelta >= timeout)
       throw new Error(err)
+
+    if (result)
+      break
   }
 
-  return delta
+  return totalDelta
 }
 
 /******************************************************************************/

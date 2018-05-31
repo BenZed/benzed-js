@@ -1,5 +1,6 @@
 import feathers from '@feathersjs/feathers'
 import { get, set } from '@benzed/immutable'
+import { milliseconds } from '@benzed/async'
 import is from 'is-explicit'
 
 import {
@@ -40,6 +41,30 @@ import {
 // sensible handling of added services or rest/socket middleware
 
 /******************************************************************************/
+// Data
+/******************************************************************************/
+
+const EXIT_ERROR = 1
+
+const KILL_WAIT = 500 // ms
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+async function kill () {
+
+  const app = this
+
+  if (app)
+    await app.end()
+
+  await milliseconds(KILL_WAIT)
+
+  process.exit(EXIT_ERROR)
+}
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
@@ -47,6 +72,37 @@ import {
 // add services/middleware
 
 class App {
+
+  static async run (config) {
+
+    const App = this
+    let app
+
+    try {
+      app = new App(config)
+    } catch (err) {
+      console.log(`app could not be configured: \n${err}`)
+      return app::kill()
+    }
+
+    try {
+      await app.initialize()
+    } catch (err) {
+
+      app.log`app could not be initialized: \n${err}`
+      return app::kill()
+    }
+
+    try {
+      await app.start()
+      app.log`app listening on ${app.get('port')}`
+
+    } catch (err) {
+      app.log`app could not start: \n${err}`
+      return app::kill()
+    }
+
+  }
 
   listener = null
   database = null

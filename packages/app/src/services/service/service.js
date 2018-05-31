@@ -76,7 +76,8 @@ function addServiceShortCut (name) {
     get () {
       return this.feathers.service(name)
     },
-    configurable: false
+    configurable: false,
+    enumerable: true
   }
 
   Object.defineProperty(app, name, getter)

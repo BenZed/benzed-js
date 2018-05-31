@@ -2,6 +2,10 @@ import { expect } from 'chai'
 import ClientStore from './client-store'
 import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
 import { set } from '@benzed/immutable'
+import io from 'socket.io-client'
+
+import { expectReject, expectResolve } from '@benzed/dev'
+import { milliseconds } from '@benzed/async'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -27,9 +31,10 @@ describe.only('Client Store', () => {
 
   describe('construct', () => {
 
-    let restClient, socketIoClient, FEATHERS
+    let restClient, restClientNoAuth, socketIoClient, FEATHERS
     before(() => {
       restClient = new ClientStore(CONFIG)
+      restClientNoAuth = new ClientStore(CONFIG::set('auth', false))
       socketIoClient = new ClientStore(CONFIG::set('provider', 'socketio'))
       FEATHERS = Object
         .getOwnPropertySymbols(restClient)
@@ -71,11 +76,14 @@ describe.only('Client Store', () => {
           expectNewClient(CONFIG::set('auth', 'null'))
             .to.not.throw('auth is Required.')
         })
-        it('true gets cast to a default token key', () => {
+        it('true gets cast to a default auth options object', () => {
           expectNewClient(CONFIG::set('auth', true), true)
             .to.have.deep.property('config', {
               ...CONFIG,
-              auth: 'benzed-jwt'
+              auth: {
+                storageKey: 'benzed-jwt',
+                cookie: 'benzed-jwt'
+              }
             })
         })
         it('false gets cast to null', () => {
@@ -85,15 +93,15 @@ describe.only('Client Store', () => {
               auth: null
             })
         })
-        it('must be at least 3 characters', () => {
-          expectNewClient(CONFIG::set('auth', 'ab'))
-            .to.throw('auth token key must be at least 3 characters long')
-        })
-        it('value otherwise', () => {
+
+        it('strings get cast to tokenKeys', () => {
           expectNewClient(CONFIG::set('auth', 'whatever-jwt'), true)
             .to.have.deep.property('config', {
               ...CONFIG,
-              auth: 'whatever-jwt'
+              auth: {
+                storageKey: 'whatever-jwt',
+                cookie: 'whatever-jwt'
+              }
             })
         })
       })
@@ -115,7 +123,10 @@ describe.only('Client Store', () => {
       expect(restClient.config).to.be.deep.equal({
         hosts: ['http://localhost:3200'],
         provider: 'rest',
-        auth: 'benzed-jwt'
+        auth: {
+          storageKey: 'benzed-jwt',
+          cookie: 'benzed-jwt'
+        }
       })
     })
 
@@ -133,11 +144,11 @@ describe.only('Client Store', () => {
 
     describe('creates feathers client adapter based on config.provider', () => {
 
-      describe('if rest, uses custom setupRest functionality', () => {
+      describe('rest', () => {
 
         let someService
         before(() => {
-          someService = restClient.service('some-service')
+          someService = restClient[FEATHERS].service('some-service')
         })
 
         it('has fetch as rest property', () => {
@@ -159,20 +170,229 @@ describe.only('Client Store', () => {
         })
 
         it('retreived services are not instanced every time', () => {
-          expect(restClient.service('some-service')).to.be.equal(someService)
+          expect(restClient[FEATHERS].service('some-service')).to.be.equal(someService)
         })
 
       })
 
       describe('socketio', () => {
 
-        // it('uses socket io functionality', () => {
-        //   console.log(socketIoClient[FEATHERS])
-        // })
+        describe('io manager is initialized with specific options', () => {
 
+          it('does not auto connect', () => {
+            const feathers = socketIoClient[FEATHERS]
+            expect(feathers.socket.io.autoConnect).to.be.equal(false)
+          })
+
+          it('does not auto reconnect', () => {
+            const feathers = socketIoClient[FEATHERS]
+            expect(feathers.socket.io._reconnection).to.be.equal(false)
+          })
+
+          it('500 ms timeout', () => {
+            const feathers = socketIoClient[FEATHERS]
+            expect(feathers.socket.io._timeout).to.be.equal(500)
+          })
+        })
+
+        describe('uses custom socket io functionality', () => {
+
+          let someService
+          before(() => {
+            someService = socketIoClient[FEATHERS].service('some-service')
+          })
+
+          it('has Socket instance as socket property', () => {
+            const feathers = socketIoClient[FEATHERS]
+
+            expect(feathers).to.have.property('socket')
+            expect(feathers.socket).to.be.instanceof(io.Socket)
+            expect(feathers.socket.io).to.be.instanceof(io.Manager)
+          })
+
+          it('has custom service getter function', () => {
+            expect(socketIoClient[FEATHERS]).to.have.property('defaultService')
+            const defaultService = socketIoClient[FEATHERS].defaultService
+            expect(defaultService).to.have.property('name', 'bound getClientStoreSocketIOService')
+          })
+
+          it('retreived services are not instanced every time', () => {
+            expect(socketIoClient[FEATHERS].service('some-service')).to.be.equal(someService)
+          })
+        })
+      })
+
+      describe('auth', () => {
+        it('adds passport property', () => {
+          expect(restClient[FEATHERS]).to.have.property('passport')
+          expect(restClientNoAuth[FEATHERS]).to.not.have.property('passport')
+        })
+      })
+    })
+  })
+
+  const PORT = 6800
+  const BAD_PORT = 9781
+  const config = CONFIG
+    ::set('hosts', [
+      'http://localhost:' + BAD_PORT,
+      'http://localhost:' + PORT
+    ])
+
+  describe('rest usage', () => {
+
+    let rest, FEATHERS
+    before(() => {
+      rest = new ClientStore(config)
+      FEATHERS = Object
+        .getOwnPropertySymbols(rest)
+        .filter(sym => String(sym).includes('feathers-client-instance'))[0]
+    })
+
+    createProjectAppAndTest({
+      services: {
+        articles: true
+      },
+      port: PORT,
+      rest: true,
+      logging: false
+    }, state => {
+
+      beforeEach(async () => {
+        await state.app.articles.remove(null)
+      })
+
+      it('throws if host has not been resolved', () => {
+        return rest[FEATHERS].service('articles')
+          .find({})
+          ::expectReject('host has not been resolved')
+      })
+
+      describe('connect', () => {
+        it('returns host connected to', async () => {
+          const host = await rest.connect()
+          expect(host).to.be.equal(rest.host)
+          expect(host).to.be.equal(config.hosts[1])
+        })
+
+        it('services use connected host', async () => {
+
+          await rest.connect()
+          const articles = rest[FEATHERS].service('articles')
+
+          await articles.create([
+            { body: 'first article!' },
+            { body: 'second article!' }
+          ])::expectResolve()
+
+          const docs = await articles.find({})
+
+          expect(docs).to.have.length(2)
+        })
       })
 
     })
+  })
 
+  describe('rest with auth usage', () => {
+
+    let rest, FEATHERS
+    before(() => {
+      rest = new ClientStore(config::set('auth', true))
+      FEATHERS = Object
+        .getOwnPropertySymbols(rest)
+        .filter(sym => String(sym).includes('feathers-client-instance'))[0]
+    })
+
+    createProjectAppAndTest({
+      services: {
+        users: true,
+        articles: true
+      },
+      mongodb: {
+        database: 'rest-client-auth-test',
+        hosts: [ 'localhost:' + (PORT + 100) ]
+      },
+      port: PORT,
+      rest: true,
+      logging: false,
+      auth: true
+    }, state => {
+
+      beforeEach(async () => {
+        await state.app.articles.remove(null)
+      })
+
+      describe('login', () => {
+        it('places auth token in local storage')
+        it('populates user id')
+        it('throws if host not resolved')
+      })
+
+      describe('logout', () => {
+        it('removes auth token from local storage')
+        it('depopulates user id')
+        it('throws if not authenticated')
+      })
+
+    })
+  })
+
+  describe('socketio usage', () => {
+
+    let socketio, FEATHERS
+    before(() => {
+      socketio = new ClientStore(config::set('provider', 'socketio'))
+      FEATHERS = Object
+        .getOwnPropertySymbols(socketio)
+        .filter(sym => String(sym).includes('feathers-client-instance'))[0]
+    })
+
+    createProjectAppAndTest({
+      services: {
+        articles: true
+      },
+      port: PORT,
+      socketio: true,
+      logging: false
+    }, state => {
+
+      beforeEach(async () => {
+        await state.app.articles.remove(null)
+      })
+
+      it('throws if host is not connected', () => {
+        return socketio[FEATHERS].service('articles').find({})
+          ::expectReject('not connected to host')
+      })
+
+      describe('connect', () => {
+
+        it('returns host connected to', async function () {
+          this.slow(10000)
+          this.timeout(10000)
+
+          const host = await socketio.connect()
+
+          expect(host).to.be.equal(socketio.host)
+          expect(host).to.be.equal(config.hosts[1])
+        })
+
+        it('services use connected host', async () => {
+
+          await socketio.connect()
+          const articles = socketio[FEATHERS].service('articles')
+
+          await articles.create([
+            { body: 'first article!' },
+            { body: 'second article!' }
+          ])::expectResolve()
+
+          const docs = await articles.find({})
+
+          expect(docs).to.have.length(2)
+        })
+      })
+    })
   })
 })

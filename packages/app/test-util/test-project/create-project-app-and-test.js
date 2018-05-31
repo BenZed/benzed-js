@@ -29,7 +29,7 @@ function createProjectAppAndTest (setup = {}, tests) {
       state.address = `http://localhost:${state.app.get('port')}`
       state.client = testClient(state.app)
 
-      await state.app.onInitialize(state)
+      await state.app.beforeInitialize(state)
       await state.app.initialize()
 
       await state.app.beforeStart(state)
