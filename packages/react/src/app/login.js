@@ -101,11 +101,12 @@ class Login extends React.Component {
 
   render () {
 
-    const { children } = this.props
+    const { children, client, ...props } = this.props
 
     const { setEmail, setPassword, submit } = this
 
     const viewProps = {
+      ...props,
       ...this.state,
       setEmail,
       setPassword,
