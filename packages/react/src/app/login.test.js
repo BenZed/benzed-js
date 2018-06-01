@@ -131,11 +131,10 @@ describe('Login component', () => {
         <Login client={client} />
       )
 
-      const { onAuthenticate } = test.root.instance
+      const { onClientStoreUpdate } = test.root.instance
       const subFuncs = client[SUBSCRIBERS].map(sub => sub.func)
-
-      expect(subFuncs).to.include(onAuthenticate)
-
+      expect(subFuncs).to.include(onClientStoreUpdate)
+      test.unmount()
     })
 
     it('unsubscribes from store on dismount', () => {
@@ -143,43 +142,55 @@ describe('Login component', () => {
         <Login client={client} />
       )
 
-      const { onAuthenticate } = tree.root.instance
+      const { onClientStoreUpdate } = tree.root.instance
 
       tree.unmount()
 
       const subFuncs = client[SUBSCRIBERS].map(sub => sub.func)
-      expect(subFuncs).to.not.include(onAuthenticate)
+      expect(subFuncs).to.not.include(onClientStoreUpdate)
     })
 
-    it('sets state on client store error change', () => {
+    it('sets state.visible adn state.error', () => {
 
       const tree = renderer.create(
         <Login client={client} />
       )
 
-      const error = 'This is an error'
+      client.set('host', false)
+      client.set(['auth', 'userId'], null)
+      expect(tree.root.instance.state.visible).to.be.equal(false)
 
-      client.set(['auth', 'error'], 'This is an error')
+      client.set('host', true)
+      client.set(['auth', 'userId'], 'some-id')
+      expect(tree.root.instance.state.visible).to.be.equal(false)
 
+      client.set('host', true)
+      client.set(['auth', 'userId'], null)
+      expect(tree.root.instance.state.visible).to.be.equal(true)
+
+      const error = 'Authentication did not happen.'
+
+      client.set(['auth', 'error'], error)
       expect(tree.root.instance.state.error).to.be.equal(error)
+
+      tree.unmount()
     })
 
     createProjectAppAndTest(APP, state => {
 
-      describe('usage', () => {
+      describe('in an app', () => {
 
         before(async () => {
           await client.connect()
         })
 
-        it('logs in', () => {
-          const tree = renderer.create(
-            <Login client={client} />
-          )
-          const { setEmail, setPassword, submit } = tree.root.instance
-
-          console.log(setEmail, setPassword, submit)
-
+        it.skip('logs in', () => {
+          // const tree = renderer.create(
+          //   <Login client={client} />
+          // )
+          // const {
+          //   setEmail, setPassword, submit
+          // } = tree.root.instance
         })
       })
     })

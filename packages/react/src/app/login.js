@@ -5,7 +5,8 @@ import { PropTypeSchema, typeOf, required } from '@benzed/schema'
 
 import { StoreConsumer } from '../store/context'
 import ClientStore from './store/client-store'
-import { get } from '@benzed/immutable'
+import { get, equals } from '@benzed/immutable'
+import { isEvent } from '../util'
 
 /******************************************************************************/
 // Validation
@@ -36,49 +37,76 @@ class Login extends React.Component {
   state = {
     email: '',
     password: '',
-    error: ''
+
+    visible: false,
+    error: null
   }
 
-  // events
+  // EVENT HANDLING
 
-  onAuthenticate = (state, path) => {
+  onClientStoreUpdate = state => {
+    const { userId, error } = state.auth
+    const { host } = state
 
-    const error = get.mut(state, path)
+    const visible = !!host && !userId
 
-    this.setState({ error })
+    this.setState({ visible, error })
   }
 
-  setEmail = () => {}
+  // setEmail = e => {
+  //   const email = isEvent(e)
+  //     ? e.target.value
+  //     : e
+  //   this.setState({ email })
+  // }
+  //
+  // setPassword = e => {
+  //   const password = isEvent(e)
+  //     ? e.target.value
+  //     : e
+  //
+  //   this.setState({ password })
+  // }
+  //
+  // submit = e => {
+  //   if (isEvent(e))
+  //     e.preventDefault()
+  //
+  //   const { client } = this.props
+  //   const { email, password } = this.state
+  //
+  //   return client.login(email, password)
+  // }
 
-  setPassword = () => {}
+  // LIFE-CYCLE
 
-  submit = () => {}
-
-  // life-cycle
+  shouldComponentUpdate (nextProps, nextState) {
+    return !equals(nextState, this.state)
+  }
 
   componentDidMount () {
     const { client } = this.props
-    const { onAuthenticate } = this
+    const { onClientStoreUpdate } = this
 
-    client.subscribe(onAuthenticate, ['auth', 'error'])
+    client.subscribe(onClientStoreUpdate, 'auth')
+    client.subscribe(onClientStoreUpdate, 'host')
   }
 
   componentWillUnmount () {
     const { client } = this.props
-    const { onAuthenticate } = this
+    const { onClientStoreUpdate } = this
 
-    client.unsubscribe(onAuthenticate)
+    client.unsubscribe(onClientStoreUpdate)
   }
 
   render () {
 
-    const { client, children } = this.props
+    const { children } = this.props
 
     const { setEmail, setPassword, submit } = this
 
     const viewProps = {
       ...this.state,
-      error: client.auth.error,
       setEmail,
       setPassword,
       submit

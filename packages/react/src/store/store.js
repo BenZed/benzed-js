@@ -140,10 +140,12 @@ class Store {
   }
 
   subscribe (func, path) {
+
     this[SUBSCRIBERS].push({
       func,
       path: path ? wrap(path) : []
     })
+
   }
 
   unsubscribe (func) {
