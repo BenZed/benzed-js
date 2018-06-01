@@ -24,6 +24,6 @@
     "@benzed/dev": "latest"
   },
   "dependencies": {
-    "is-explicit": "^2.0.0"
+    "is-explicit": "^2.1.0"
   }
 }

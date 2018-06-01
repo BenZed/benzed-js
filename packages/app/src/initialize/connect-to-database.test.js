@@ -5,10 +5,25 @@ import App from '../app'
 import { ChildProcess } from 'child_process'
 import { expectReject } from '@benzed/dev'
 
+import path from 'path'
+import fs from 'fs-extra'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.skip('connectToDatabase()', () => {
+/******************************************************************************/
+// DATA
+/******************************************************************************/
+
+const DB_DIR = path.resolve(__dirname, '../../temp/test-connect-to-database-dbpath')
+
+fs.ensureDirSync(DB_DIR)
+
+/******************************************************************************/
+// TESTS
+/******************************************************************************/
+
+describe('connectToDatabase()', () => {
 
   it('is a function', () => {
     expect(connectToDatabase).to.be.instanceof(Function)
@@ -24,7 +39,6 @@ describe.skip('connectToDatabase()', () => {
       socketio: true,
       logging: false
     })
-    app.logging = false
     expect(app::connectToDatabase).to.not.throw(Error)
   })
 
@@ -36,35 +50,43 @@ describe.skip('connectToDatabase()', () => {
 
   describe('creates mongodb process', () => {
 
-    it('if a single local host was defined', async () => {
+    let app
+    before(async () => {
 
-      const app = new App({
+      fs.removeSync(DB_DIR)
+      fs.ensureDirSync(DB_DIR)
+
+      app = new App({
         port: 4600,
         socketio: true,
         logging: false,
         mongodb: {
+          dbpath: DB_DIR,
           database: 'test-app',
           hosts: 'localhost:4650'
         }
       })
 
-      app.logging = false
-
       await app::connectToDatabase()
+    })
 
+    it('if a single local host was defined', () => {
       expect(app.database).to.not.equal(null)
       expect(app.database.process).to.not.equal(null)
       expect(app.database.process).to.be.instanceof(ChildProcess)
+    })
 
-      await app.end()
+    it('uses dbpath if provided', () => {
+      const names = fs.readdirSync(DB_DIR)
+      expect(names.length > 0).to.be.equal(true)
     })
 
     it('throws if mongo process exists')
-
     it('throws if mongo is not installed')
-
     it('process is shut down on app close')
 
+    after(async () => {
+      await app.end()
+    })
   })
-
 })

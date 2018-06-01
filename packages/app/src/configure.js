@@ -65,7 +65,7 @@ function fsExists (...exts) {
     if (!fs.existsSync(value))
       throw new Error(`does not exist: ${value}`)
 
-    if (exts.includes('directory')) {
+    if (exts.length === 0) {
       const stat = fs.statSync(value)
       if (!stat.isDirectory())
         throw new Error(`is not a directory: ${value}`)
@@ -167,6 +167,19 @@ const finishPathsAndLinkToEnv = value => {
 
   return value
 }
+
+/******************************************************************************/
+// Defaults
+/******************************************************************************/
+
+const dataDbDir = () => {
+
+  const cwd = process.cwd()
+  const fsRoot = path.parse(cwd).root
+
+  return path.join(fsRoot, 'data', 'db')
+}
+
 /******************************************************************************/
 // Schemas
 /******************************************************************************/
@@ -181,7 +194,7 @@ const validateConfigObject = Schema(
       requiredIfNo('socketio'),
       {
         public: string(
-          fsExists('directory'),
+          fsExists(),
           fsContains('index.html')
         ),
         favicon: string(
@@ -200,6 +213,10 @@ const validateConfigObject = Schema(
         username: string(),
         password: string(),
         database: string(required),
+        dbpath: string(
+          defaultTo(dataDbDir),
+          fsExists()
+        ),
         hosts: arrayOf(
           string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
           required,
@@ -236,7 +253,7 @@ const validateConfigUrl = Schema(
   string(
     required,
     notEmpty(),
-    fsExists('directory'),
+    fsExists(),
     fsContainsConfigJson
   )
 )

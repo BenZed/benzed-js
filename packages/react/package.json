@@ -32,16 +32,16 @@
     "@benzed/schema": "latest",
     "@feathersjs/authentication-client": "^1.0.2",
     "@feathersjs/rest-client": "^1.4.0",
-    "@feathersjs/transport-commons": "^4.0.0",
+    "@feathersjs/transport-commons": "^4.0.1",
     "add-event-listener": "0.0.1",
     "color": "^3.0.0",
-    "is-explicit": "^2.0.0",
+    "is-explicit": "^2.1.0",
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.6.1",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
     "socket.io-client": "^2.1.1",
-    "styled-components": "^3.2.6"
+    "styled-components": "^3.3.0"
   }
 }

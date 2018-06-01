@@ -2,8 +2,7 @@ import React, { Children, cloneElement } from 'react'
 
 import {
   PropTypeSchema,
-  object,
-  instanceOf, arrayOf, oneOfType, string
+  object, cast
 } from '@benzed/schema'
 
 import Store from './store'
@@ -57,14 +56,12 @@ class Observer extends React.Component {
 
   static propTypes = new PropTypeSchema({
 
-    stores: object({
-      validators: storeKeys
-    }),
+    stores: object(storeKeys),
 
-    listen: object({
-      cast: toObject,
-      validators: listenKeys
-    })
+    listen: object(
+      cast(toObject),
+      listenKeys
+    )
 
   })
 

@@ -2,13 +2,26 @@ import { expect } from 'chai'
 import ClientStore from './client-store'
 import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
 import { set } from '@benzed/immutable'
+
 import io from 'socket.io-client'
+import path from 'path'
+import fs from 'fs-extra'
 
 import { expectReject, expectResolve } from '@benzed/dev'
-import { milliseconds } from '@benzed/async'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const EMAIL = 'test@email.com'
+const PASS = 'test-password'
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
 
 const CONFIG = {
   hosts: [ 'http://localhost:3200' ],
@@ -16,14 +29,27 @@ const CONFIG = {
   auth: true
 }
 
+const DB_PATH = path.resolve(__dirname, '../../../temp/client-store-test-db')
+
+// Empty DB Path
+fs.ensureDirSync(DB_PATH)
+fs.removeSync(DB_PATH)
+fs.ensureDirSync(DB_PATH)
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
 function expectNewClient (config, call = false) {
-
   const createNewClient = () => new ClientStore(config)
-
   return expect(call ? createNewClient() : createNewClient)
 }
 
-describe.only('Client Store', () => {
+/******************************************************************************/
+// Tests
+/******************************************************************************/
+
+describe('Client Store', () => {
 
   it('is a class', () => {
     expect(ClientStore).to.throw('invoked without \'new\'')
@@ -73,7 +99,7 @@ describe.only('Client Store', () => {
 
       describe('config.auth', () => {
         it('is not required', () => {
-          expectNewClient(CONFIG::set('auth', 'null'))
+          expectNewClient(CONFIG::set('auth', null))
             .to.not.throw('auth is Required.')
         })
         it('true gets cast to a default auth options object', () => {
@@ -110,7 +136,6 @@ describe.only('Client Store', () => {
     it('creates an instance of feathers client', () => {
 
       const feathers = restClient[FEATHERS]
-
       expect(feathers)
         .to.be.instanceof(Object)
 
@@ -178,7 +203,6 @@ describe.only('Client Store', () => {
       describe('socketio', () => {
 
         describe('io manager is initialized with specific options', () => {
-
           it('does not auto connect', () => {
             const feathers = socketIoClient[FEATHERS]
             expect(feathers.socket.io.autoConnect).to.be.equal(false)
@@ -196,7 +220,6 @@ describe.only('Client Store', () => {
         })
 
         describe('uses custom socket io functionality', () => {
-
           let someService
           before(() => {
             someService = socketIoClient[FEATHERS].service('some-service')
@@ -220,13 +243,23 @@ describe.only('Client Store', () => {
             expect(socketIoClient[FEATHERS].service('some-service')).to.be.equal(someService)
           })
         })
+
       })
 
       describe('auth', () => {
+
         it('adds passport property', () => {
           expect(restClient[FEATHERS]).to.have.property('passport')
           expect(restClientNoAuth[FEATHERS]).to.not.have.property('passport')
         })
+
+        it('.auth state property is now an object', () => {
+          expect(restClient.auth).to.be.deep.equal({
+            userId: null,
+            error: null
+          })
+        })
+
       })
     })
   })
@@ -290,51 +323,6 @@ describe.only('Client Store', () => {
           expect(docs).to.have.length(2)
         })
       })
-
-    })
-  })
-
-  describe('rest with auth usage', () => {
-
-    let rest, FEATHERS
-    before(() => {
-      rest = new ClientStore(config::set('auth', true))
-      FEATHERS = Object
-        .getOwnPropertySymbols(rest)
-        .filter(sym => String(sym).includes('feathers-client-instance'))[0]
-    })
-
-    createProjectAppAndTest({
-      services: {
-        users: true,
-        articles: true
-      },
-      mongodb: {
-        database: 'rest-client-auth-test',
-        hosts: [ 'localhost:' + (PORT + 100) ]
-      },
-      port: PORT,
-      rest: true,
-      logging: false,
-      auth: true
-    }, state => {
-
-      beforeEach(async () => {
-        await state.app.articles.remove(null)
-      })
-
-      describe('login', () => {
-        it('places auth token in local storage')
-        it('populates user id')
-        it('throws if host not resolved')
-      })
-
-      describe('logout', () => {
-        it('removes auth token from local storage')
-        it('depopulates user id')
-        it('throws if not authenticated')
-      })
-
     })
   })
 
@@ -391,6 +379,146 @@ describe.only('Client Store', () => {
           const docs = await articles.find({})
 
           expect(docs).to.have.length(2)
+        })
+      })
+    })
+  })
+
+  describe('auth usage', () => {
+
+    let rest, FEATHERS
+    before(() => {
+      rest = new ClientStore(
+        config::set('auth', true)
+      )
+
+      FEATHERS = Object
+        .getOwnPropertySymbols(rest)
+        .filter(sym => String(sym).includes('feathers-client-instance'))[0]
+    })
+
+    createProjectAppAndTest({
+      services: {
+        users: true,
+        articles: true
+      },
+      mongodb: {
+        database: 'rest-client-auth-test',
+        dbpath: DB_PATH,
+        hosts: [ 'localhost:' + (PORT + 100) ]
+      },
+      port: PORT,
+      rest: true,
+      logging: false,
+      auth: {
+        secret: 'deterministic'
+      }
+    }, state => {
+
+      beforeEach(async () => {
+
+        await state.app.articles.remove(null)
+        const users = await state.app.users.find({})
+        if (!users.some(user => user.email === EMAIL))
+          await state.app.users.create({
+            email: EMAIL,
+            password: PASS,
+            passwordConfirm: PASS
+          })
+
+        if (!rest.host)
+          await rest.connect()
+
+        if (!rest.auth.userId) {
+          rest.auth.error = 'This should be removed.'
+          await rest.login(EMAIL, PASS)
+        }
+
+      })
+
+      describe('login', () => {
+
+        it('returns logged in userId', async () => {
+          const userId = await rest.login(EMAIL, PASS)
+          expect(userId).to.be.equal(rest.auth.userId)
+        })
+
+        it('populates auth.userId if auth successful', async () => {
+          const users = await state.app.users.find({})
+          const [ user ] = users.filter(u => u.email === EMAIL)
+
+          expect(rest.auth).to.have.property('userId', `${user._id}`)
+        })
+
+        it('clears auth.error if auth successful', () => {
+          expect(rest.auth).to.have.property('error', null)
+        })
+
+        it('places auth token in storage', () => {
+          // This doesn't need to be tested, I'm just being thorough
+          const feathers = rest[FEATHERS]
+          expect(feathers.settings.accessToken).to.not.be.equal(null)
+          expect(feathers.settings.accessToken).to.not.be.equal(undefined)
+          expect(feathers.settings.accessToken).to.be.equal(feathers.settings.storage.store['benzed-jwt'])
+        })
+
+        it('populates auth.error if auth failed', async () => {
+          await rest.login(EMAIL, PASS.repeat(2))
+          expect(rest.auth).to.have.property('error', 'Invalid login')
+        })
+
+        it('throws if host not resolved', () => {
+          rest.host = null
+          expect(::rest.login).to.throw('host has not been resolved')
+        })
+
+        it('throws if auth is not configured', () => {
+          const restClientWithoutAuth = new ClientStore(CONFIG::set('auth', false))
+
+          expect(::restClientWithoutAuth.login).to.throw('Cannot login, auth is not enabled')
+        })
+
+        it('first logs out if user is logged in', async () => {
+          await rest.login(EMAIL, PASS.repeat(2))
+          expect(rest.auth).to.have.property('error', 'Invalid login')
+          expect(rest.auth).to.have.property('userId', null)
+
+          const feathers = rest[FEATHERS]
+
+          // If user isn't logged out before logging in, and the subsequent
+          // login fails, the token will remain remain from last successful login
+          expect(feathers.settings.accessToken).to.be.equal(null)
+        })
+
+      })
+
+      describe('logout', () => {
+        it('depopulates auth.userId and auth.error', async () => {
+
+          expect(rest.auth.userId).to.not.equal(null)
+          rest.auth.error = 'Log me out.'
+
+          await rest.logout()
+
+          expect(rest.auth.userId).to.equal(null)
+          expect(rest.auth.error).to.equal(null)
+        })
+        it('removes auth token from local storage', async () => {
+
+          const feathers = rest[FEATHERS]
+          expect(feathers.settings.accessToken).to.not.equal(null)
+
+          await rest.logout()
+          expect(feathers.settings.accessToken).to.be.equal(null)
+        })
+        it('throws if auth is not configured', () => {
+
+          const restClientWithoutAuth = new ClientStore(CONFIG::set('auth', false))
+          expect(::restClientWithoutAuth.logout).to.throw('Cannot logout, auth is not enabled')
+        })
+        it('throws if host is not resolved', () => {
+          rest.host = null
+          expect(::rest.logout).to.throw('Cannot logout, host has not been resolved')
         })
       })
     })

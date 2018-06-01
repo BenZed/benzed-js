@@ -49,12 +49,28 @@ const { freeze, defineProperty } = Object
 /******************************************************************************/
 
 const boolOrStringToToken = value => value === true
-  ? { storageKey: DEFAULT_JWT_KEY, cookie: DEFAULT_JWT_KEY }
+  ? { }
   : value === false
     ? null
     : is.string(value)
       ? { storageKey: value, cookie: value }
       : value
+
+const authAutoFill = auth => {
+
+  const authEnabled = is.object(auth)
+
+  if (isClient && authEnabled && !auth.storage)
+    auth.storage = window.localStorage
+
+  if (authEnabled && !auth.storageKey)
+    auth.storageKey = DEFAULT_JWT_KEY
+
+  if (authEnabled && !auth.cookie)
+    auth.cookie = DEFAULT_JWT_KEY
+
+  return auth
+}
 
 const validateConfig = new Schema(
   {
@@ -69,7 +85,8 @@ const validateConfig = new Schema(
     ),
 
     auth: object(
-      cast(boolOrStringToToken)
+      cast(boolOrStringToToken),
+      authAutoFill
     )
   },
 
@@ -259,6 +276,34 @@ async function connectSocketIO () {
 
 }
 
+// Why a seperate function? So it can be used for token auth on connect, as well
+async function authenticate (data) {
+
+  const client = this
+  const feathers = client[FEATHERS]
+
+  let userId = null
+  let error = null
+
+  if (client.auth.userId)
+    await client.logout()
+
+  try {
+    const { accessToken } = await feathers.authenticate(data)
+    const payload = await feathers.passport.verifyJWT(accessToken)
+
+    userId = payload.userId
+
+  } catch (err) {
+    error = err.message
+  }
+
+  client.set('auth', { userId, error })
+
+  return userId
+
+}
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
@@ -277,11 +322,12 @@ class ClientStore extends Store {
 
   host = null
 
-  userId = null
+  auth = null
 
   // State Getters
 
   get user () {
+    throw new Error('not yet implemented')
     // match user id to user service record
   }
 
@@ -307,12 +353,36 @@ class ClientStore extends Store {
     return this.host
   }
 
-  async login (email, password) {
-    throw new Error('Not yet implemented')
+  login (email, password) {
+
+    if (!this.config.auth)
+      throw new Error('Cannot login, auth is not enabled')
+
+    if (!this.host)
+      throw new Error(`Cannot login, ` + (this.config.provider === 'rest'
+        ? 'host has not been resolved.'
+        : 'not connected to host.'))
+
+    const data = { strategy: 'local', email, password }
+
+    return this::authenticate(data)
   }
 
-  async logout () {
-    throw new Error('Not yet implemented')
+  logout () {
+
+    if (!this.config.auth)
+      throw new Error('Cannot logout, auth is not enabled')
+
+    if (!this.host)
+      throw new Error(`Cannot logout, ` + (this.config.provider === 'rest'
+        ? 'host has not been resolved.'
+        : 'not connected to host.'))
+
+    this.set('auth', { userId: null, error: null })
+
+    // throw new Error('Not yet implemented.')
+    const feathers = this[FEATHERS]
+    return feathers.logout()
   }
 
   // Util
@@ -333,16 +403,13 @@ class ClientStore extends Store {
     }
 
     if (auth) {
-      const storage = isClient
-        ? window.localStorage
-        : undefined
-
       this[FEATHERS].configure(
-        authentication({
-          ...auth,
-          storage
-        })
+        authentication(auth)
       )
+      this.auth = {
+        userId: null,
+        error: null
+      }
     }
   }
 }

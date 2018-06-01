@@ -14,7 +14,7 @@ function propCheck (props, propName, componentName = 'Anonymous Component') {
   )
 
   return result instanceof Error
-    ? new Error(`${propName} in ${componentName} failed validation: ${result.message}`)
+    ? new Error(`'${propName}' in <${componentName}/>: '${result.message}'`)
     : null
 
 }

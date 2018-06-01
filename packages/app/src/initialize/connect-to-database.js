@@ -3,7 +3,12 @@
 // Helper
 /******************************************************************************/
 
-async function tryConnect (uri, database, createProcessOnFail = true) {
+async function tryConnect ({
+  uri,
+  database,
+  createProcessOnFail = true,
+  dbpath
+}) {
 
   const app = this
 
@@ -19,8 +24,18 @@ async function tryConnect (uri, database, createProcessOnFail = true) {
     const isRefusedError = err.message.includes('ECONNREFUSED')
     if (isRefusedError && createProcessOnFail) {
 
-      await app::createMongoProcess(uri, database)
-      await app::tryConnect(uri, database, false)
+      await app::createMongoProcess({
+        uri,
+        database,
+        dbpath
+      })
+
+      await app::tryConnect({
+        uri,
+        database,
+        createProcessOnFail: false,
+        dbpath
+      })
 
     } else throw Error(`could not connect to database ${uri}`)
   }
@@ -47,7 +62,7 @@ function isLocalHost (hosts) {
   return hosts.length === 1 && /^localhost:/i.test(hosts[0])
 }
 
-function createMongoProcess (uri, database) {
+function createMongoProcess ({ uri, database, dbpath }) {
   const app = this
 
   const { spawn } = require('child_process')
@@ -62,8 +77,8 @@ function createMongoProcess (uri, database) {
 
     app.database.process = spawn('mongod', [
       '--port', port,
-      '--quiet'
-      // '--dbPath', dbPath // TODO add the ability customize data path location to config
+      '--quiet',
+      '--dbpath', dbpath // TODO add the ability customize data path location to config
     ])
 
     app.database.process.on('exit', onError)
@@ -95,7 +110,7 @@ async function connectToDatabase () {
     process: null
   }
 
-  const { username, password, database, hosts } = mongodb
+  const { username, password, database, hosts, dbpath } = mongodb
 
   const auth = username && password
     ? `${username}:${password}@`
@@ -106,7 +121,12 @@ async function connectToDatabase () {
   const uri = `mongodb://${auth}${host}/${database}`
 
   try {
-    await app::tryConnect(uri, database, isLocalHost(hosts))
+    await app::tryConnect({
+      uri,
+      database,
+      dbpath,
+      createProcessOnFail: isLocalHost(hosts)
+    })
   } catch (err) {
 
     throw err

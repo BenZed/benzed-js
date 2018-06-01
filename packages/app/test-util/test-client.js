@@ -1,15 +1,17 @@
 import socketio from 'socket.io-client'
 import feathers from '@feathersjs/client'
+import auth from '@feathersjs/authentication-client'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default function testClient (numberOrApp = 5000) {
+export default function testClient (numberOrApi = 5000) {
 
-  const port = typeof numberOrApp === 'object'
-    ? numberOrApp.get('port')
-    : numberOrApp
+  const api = typeof numberOrApi === 'object' ? numberOrApi : null
+  const port = api
+    ? api.get('port')
+    : numberOrApi
 
   const socket = socketio(`http://localhost:${port}`, {
     autoConnect: false,
@@ -20,6 +22,10 @@ export default function testClient (numberOrApp = 5000) {
 
   const app = feathers()
     .configure(feathers.socketio(socket))
+
+  const autoAuth = api && api.get('auth')
+  if (autoAuth)
+    app.configure(auth())
 
   app.connect = function () {
 

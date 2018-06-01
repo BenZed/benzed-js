@@ -140,24 +140,23 @@ class App {
   async start () {
 
     const port = this.get('port')
-    const listener = this.feathers.listen(port)
 
-    await new Promise(resolve => listener.once('listening', resolve))
+    this.listener = this.feathers.listen(port)
 
-    this.listener = listener
+    await new Promise(resolve => this.listener.once('listening', resolve))
 
     if (is.func(this.onStart))
       await this.onStart()
 
-    return listener
+    return this.listener
   }
 
   async end () {
 
-    if (this.listener)
+    if (this.listener) {
       await this.listener.close()
-
-    this.listener = null
+      this.listener = null
+    }
 
     if (this.database && this.database.process)
       await new Promise(resolve => {

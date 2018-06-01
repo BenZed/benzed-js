@@ -24,7 +24,7 @@
     "@benzed/dev": "^0.7.0",
     "@feathersjs/client": "^3.5.0",
     "isomorphic-fetch": "^2.2.1",
-    "jsdom": "^11.10.0",
+    "jsdom": "^11.11.0",
     "react-router-dom": "^4.2.2",
     "socket.io-client": "^2.1.1"
   },
@@ -47,13 +47,13 @@
     "feathers-memory": "^2.1.1",
     "feathers-mongodb": "^3.1.0",
     "fs-extra": "^6.0.1",
-    "is-explicit": "^2.0.0",
+    "is-explicit": "^2.1.0",
     "mongodb": "^3.1.0-beta4",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
     "react-router": "^4.2.0",
     "save-dev": "^2.0.0",
-    "styled-components": "^3.2.6",
+    "styled-components": "^3.3.0",
     "uws": "^10.148.0"
   }
 }

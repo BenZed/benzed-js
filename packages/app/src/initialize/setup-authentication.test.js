@@ -4,12 +4,34 @@ import setupAuthentication from './setup-authentication'
 // import setupServices from './setup-services'
 // import setupMiddleware from './setup-middleware'
 
+import { createProjectAppAndTest } from '../../test-util/test-project'
+
 import App from 'src/app'
 
 import { set } from '@benzed/immutable'
 
+import path from 'path'
+import fs from 'fs-extra'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
+
+/******************************************************************************/
+// DATA
+/******************************************************************************/
+
+const DB_DIR = path.resolve(__dirname, '../../temp/test-setup-authentication-dbpath')
+
+fs.ensureDirSync(DB_DIR)
+fs.removeSync(DB_DIR)
+fs.ensureDirSync(DB_DIR)
+
+// eslint-disable-next-line no-unused-vars
+/* global describe it before after beforeEach afterEach */
+
+const EMAIL = 'test-user@email.com'
+
+const PASS = 'password'
 
 /******************************************************************************/
 // Test
@@ -21,6 +43,7 @@ const AUTH = {
   rest: true,
   mongodb: {
     database: 'test',
+    dbpath: DB_DIR,
     hosts: 'localhost:3200'
   },
   services: {
@@ -28,7 +51,7 @@ const AUTH = {
   }
 }
 
-describe('setupAuthentication()', () => {
+describe.only('setupAuthentication()', () => {
 
   it('must be bound to app', () => {
     expect(setupAuthentication).to.throw('Cannot destructure property `feathers` of \'undefined\'')
@@ -84,6 +107,58 @@ describe('setupAuthentication()', () => {
     it('does nothing', () => {
       const app = new App({ ...AUTH, auth: null })
       expect(app.feathers.service('authentication')).to.equal(undefined)
+    })
+  })
+
+  describe('once setup in a running socketio app', () => {
+
+    const socketIOAuth = AUTH
+      ::set('socketio', true)
+      ::set('auth', { secret: 'deterministic' })
+
+    createProjectAppAndTest(socketIOAuth, state => {
+
+      beforeEach(async () => {
+        if (state.client.io.connected)
+          await new Promise(resolve => {
+            state.client.io.once('disconnect', resolve)
+            state.client.io.disconnect()
+          })
+
+        const users = await state.app.users.find({})
+        if (!users.some(u => u.email === EMAIL))
+          await state.app.users.create({
+            email: EMAIL,
+            password: PASS,
+            passwordConfirm: PASS
+          })
+      })
+
+      it('allows users to authenticate', async () => {
+        await state.client.connect()
+        const res = await state.client.authenticate({
+          strategy: 'local',
+          email: EMAIL,
+          password: PASS
+        }).catch(err => err)
+
+        expect(res).to.have.property('accessToken')
+        expect(res).to.not.have.property('code')
+        expect(res).to.not.have.property('message', 'Invalid login')
+      })
+
+      it('fails if invalid credentials', async () => {
+        await state.client.connect()
+        const res = await state.client.authenticate({
+          strategy: 'local',
+          email: 'not-a-real-email@email.com',
+          password: 'whatever'
+        }).catch(err => err)
+
+        expect(res).to.not.have.property('accessToken')
+        expect(res).to.have.property('code')
+        expect(res).to.have.property('message', 'Invalid login')
+      })
     })
   })
 

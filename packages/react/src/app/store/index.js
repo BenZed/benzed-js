@@ -1,4 +1,5 @@
 
+import ClientStore from './client-store'
 import RouterStore from './router-store'
 
 import ServiceStore from './service-store'
@@ -16,6 +17,7 @@ import FileStore from './file-store'
 
 export {
 
+  ClientStore,
   RouterStore,
 
   ServiceStore,
