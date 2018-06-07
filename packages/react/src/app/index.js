@@ -1,5 +1,6 @@
 import {
 
+  ClientStore,
   RouterStore,
 
   ServiceStore, ServiceRecord,
@@ -8,16 +9,21 @@ import {
 
 } from './store'
 
+import Login from './Login'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
 
+  ClientStore,
   RouterStore,
 
   ServiceStore, ServiceRecord,
   UserRecord, UserStore,
-  FileRecord, FileStore
+  FileRecord, FileStore,
+
+  Login
 
 }

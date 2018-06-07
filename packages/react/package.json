@@ -22,8 +22,9 @@
   "license": "ISC",
   "description": "React components, classes, helpers",
   "devDependencies": {
+    "@benzed/app": "latest",
     "@benzed/dev": "latest",
-    "@benzed/app": "latest"
+    "styled-components-test-utils": "^0.4.1"
   },
   "dependencies": {
     "@benzed/array": "latest",
@@ -31,6 +32,7 @@
     "@benzed/immutable": "latest",
     "@benzed/schema": "latest",
     "@feathersjs/authentication-client": "^1.0.2",
+    "@feathersjs/feathers": "^3.1.5",
     "@feathersjs/rest-client": "^1.4.0",
     "@feathersjs/transport-commons": "^4.0.1",
     "add-event-listener": "0.0.1",

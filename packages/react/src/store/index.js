@@ -1,5 +1,5 @@
 import Store from './store'
-import StoreProvider, { StoreConsumer } from './context'
+import { StoreProvider, StoreConsumer } from './context'
 import StoreObserver from './observer'
 import observe from './observe'
 

@@ -1,4 +1,5 @@
 import { get, set, copy, equals, reverse } from '@benzed/immutable'
+import is from 'is-explicit'
 import { wrap } from '@benzed/array'
 
 /******************************************************************************/
@@ -15,12 +16,19 @@ const STATE_UNCHANGED = Symbol('state-unchanged')
 // Helpers
 /******************************************************************************/
 
-function buildState (store, path, value) {
+function assertPath (store, path) {
+
+  path = wrap(path)
 
   const [ key ] = path
 
   if (key in store === false || store[key] instanceof Function || key === SUBSCRIBERS)
     throw new Error(`Cannot set ${path.join('.')}, ${key} is not a valid state property.`)
+
+  return path
+}
+
+function buildState (store, path, value) {
 
   const isEqual = equals(
     get.mut(store, path),
@@ -65,7 +73,7 @@ function notifySubscribers (store, path, state) {
       // at final key, send state to subscriber
       if (!finished && atMaxSubPathIndex) {
         finished = true
-        sub.func(state, sub.path)
+        sub.callback(state, sub.path)
       }
 
       // subscriber will not be considered for further state calls
@@ -96,7 +104,7 @@ class Store {
 
   set (path, value) {
 
-    path = wrap(path)
+    path = assertPath(this, path)
 
     const state = buildState(this, path, value)
     if (state === STATE_UNCHANGED)
@@ -139,22 +147,42 @@ class Store {
     return true
   }
 
-  subscribe (func, path) {
+  subscribe (callback, ...paths) {
 
-    this[SUBSCRIBERS].push({
-      func,
-      path: path ? wrap(path) : []
-    })
+    if (!is.func(callback))
+      throw new Error('callback argument must be a function')
+
+    if (paths.length === 0)
+      paths.push([])
+
+    for (let path of paths) {
+
+      if (!is.defined(path))
+        path = []
+
+      path = wrap(path)
+
+      if (path.length > 0 && !is.arrayOf(path, String, Symbol))
+        throw new Error('paths must be arrays of strings or symbols')
+
+      this[SUBSCRIBERS].push({
+        callback,
+        path
+      })
+    }
 
   }
 
-  unsubscribe (func) {
+  unsubscribe (callback) {
+
+    if (!is.func(callback))
+      throw new Error('callback argument must be a function')
+
     const subs = this[SUBSCRIBERS]
 
     for (let i = subs.length - 1; i >= 0; i--)
-      if (equals(subs[i].func, func))
+      if (equals(subs[i].callback, callback))
         subs.splice(i, 1)
-
   }
 
 }

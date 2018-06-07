@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import Login from './login'
-import is from 'is-explicit'
+import { LoginLogic } from './login'
+import { Test } from '@benzed/dev'
 
 import React from 'react'
 import renderer from 'react-test-renderer'
@@ -12,44 +12,6 @@ import fs from 'fs-extra'
 import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
 
 /******************************************************************************/
-// TODO Move me to @benzed/dev
-/******************************************************************************/
-
-function testPropTypes (Component, tests) {
-
-  describe(`testing propTypes for ${Component.name}`, () => {
-    let propTypes
-    before(() => {
-      propTypes = Component && Component.propTypes
-    })
-
-    it(`proptypes is defined for component ${Component.name}`, () => {
-      expect(is.objectOf.func(propTypes)).to.be.equal(true)
-    })
-
-    if (!is.func(tests))
-      return
-
-    const expectError = props => {
-
-      if (!is.object(props))
-        throw new Error('props must be an object')
-
-      for (const propName in propTypes) {
-        const result = propTypes[propName](props, propName, Component.name)
-        if (result instanceof Error)
-          return expect(result.message)
-      }
-
-      return expect(null)
-    }
-
-    tests(expectError)
-  })
-
-}
-
-/******************************************************************************/
 // Helper
 /******************************************************************************/
 
@@ -58,7 +20,9 @@ const DB_PATH = path.resolve(__dirname, '../../temp/login-component-test-db')
 const PORT = 5890
 
 const APP = {
-  auth: true,
+  auth: {
+    secret: 'deterministic'
+  },
   rest: true,
   port: PORT,
   services: {
@@ -91,7 +55,7 @@ fs.ensureDirSync(DB_PATH)
 
 describe('Login component', () => {
 
-  testPropTypes(Login, expectError => {
+  Test.propTypes(LoginLogic, expectError => {
     describe('props.client', () => {
       it('is required', () => {
         expectError({}).to.include('client is Required')
@@ -117,80 +81,146 @@ describe('Login component', () => {
 
   describe('usage', () => {
 
-    let client, SUBSCRIBERS
+    let client, test, SUBSCRIBERS
     before(() => {
       client = createClientStore()
       SUBSCRIBERS = Object
         .getOwnPropertySymbols(client)
         .filter(sym => String(sym).includes('subscribers'))[0]
+
+      test = renderer.create(
+        <LoginLogic client={client}/>
+      )
     })
 
-    it('subscribes to client store on mount', () => {
-
-      const test = renderer.create(
-        <Login client={client} />
-      )
-
-      const { onClientStoreUpdate } = test.root.instance
-      const subFuncs = client[SUBSCRIBERS].map(sub => sub.func)
-      expect(subFuncs).to.include(onClientStoreUpdate)
+    after(() => {
       test.unmount()
     })
 
-    it('unsubscribes from store on dismount', () => {
-      const tree = renderer.create(
-        <Login client={client} />
-      )
+    describe('componentDidMount()', () => {
+      it('subscribes to client store', () => {
 
-      const { onClientStoreUpdate } = tree.root.instance
+        const { onClientStoreUpdate } = test.root.instance
+        const subFuncs = client[SUBSCRIBERS].map(sub => sub.callback)
+        expect(subFuncs).to.include(onClientStoreUpdate)
+      })
+      it('sets user email from local storage')
 
-      tree.unmount()
-
-      const subFuncs = client[SUBSCRIBERS].map(sub => sub.func)
-      expect(subFuncs).to.not.include(onClientStoreUpdate)
     })
 
-    it('sets state.visible adn state.error', () => {
+    describe('componentWillUnmount()', () => {
+      it('unsubscribes from store on dismount', () => {
+        const test2 = renderer.create(
+          <LoginLogic client={client}/>
+        )
 
-      const tree = renderer.create(
-        <Login client={client} />
-      )
+        const { onClientStoreUpdate } = test2.root.instance
 
-      client.set('host', false)
-      client.set(['auth', 'userId'], null)
-      expect(tree.root.instance.state.visible).to.be.equal(false)
+        test2.unmount()
 
-      client.set('host', true)
-      client.set(['auth', 'userId'], 'some-id')
-      expect(tree.root.instance.state.visible).to.be.equal(false)
+        const subFuncs = client[SUBSCRIBERS].map(sub => sub.callback)
+        expect(subFuncs).to.not.include(onClientStoreUpdate)
+      })
+    })
 
-      client.set('host', true)
-      client.set(['auth', 'userId'], null)
-      expect(tree.root.instance.state.visible).to.be.equal(true)
+    describe('onClientStoreUpdate()', () => {
+      it('sets state.visible from clientstore actions', () => {
 
-      const error = 'Authentication did not happen.'
+        client.set('host', false)
+        client.set(['auth', 'userId'], null)
+        expect(test.root.instance.state.visible).to.be.equal(false)
 
-      client.set(['auth', 'error'], error)
-      expect(tree.root.instance.state.error).to.be.equal(error)
+        client.set('host', true)
+        client.set(['auth', 'userId'], 'some-id')
+        expect(test.root.instance.state.visible).to.be.equal(false)
 
-      tree.unmount()
+        client.set('host', true)
+        client.set(['auth', 'userId'], null)
+        expect(test.root.instance.state.visible).to.be.equal(true)
+
+      })
+
+      it('sets state.error from clientstore actions', () => {
+
+        const error = 'Authentication did not happen.'
+
+        client.set(['auth', 'error'], error)
+        expect(test.root.instance.state.error).to.be.equal(error)
+
+      })
+    })
+
+    describe('setEmail()', () => {
+
+      it('sets state.email', () => {
+        const email = 'test@gmail.com'
+        test.root.instance.setEmail(email)
+        expect(test.root.instance.state.email).to.be.equal(email)
+      })
+
+      it('sets email in local storage')
+
+      it('takes event.target.value if sent an event', () => {
+        const event = { target: { value: 'typed@email.com' } }
+        test.root.instance.setEmail(event)
+
+        expect(test.root.instance.state.email).to.be.equal(event.target.value)
+      })
+
+    })
+
+    describe('setPassword()', () => {
+
+      it('sets state.password', () => {
+        const password = 'password'
+        test.root.instance.setPassword(password)
+        expect(test.root.instance.state.password).to.be.equal(password)
+      })
+
+      it('takes event.target.value if sent an event', () => {
+        const event = { target: { value: 'password' } }
+        test.root.instance.setPassword(event)
+
+        expect(test.root.instance.state.password).to.be.equal(event.target.value)
+      })
+
     })
 
     createProjectAppAndTest(APP, state => {
 
-      describe('in an app', () => {
+      describe('submit()', () => {
+
+        const PASS = 'password'
+        const EMAIL = 'user@email.com'
 
         before(async () => {
           await client.connect()
+          const users = await state.app.users.find({})
+          if (!users.some(user => user.email === EMAIL))
+            await state.app.users.create({
+              email: EMAIL,
+              password: PASS,
+              passwordConfirm: PASS
+            })
+
+          const {
+            setEmail, setPassword, submit
+          } = test.root.instance
+
+          client.host = state.address
+
+          setEmail(EMAIL)
+          setPassword(PASS)
+          await submit()
         })
 
-        it.skip('logs in', () => {
-          // const tree = renderer.create(
-          //   <Login client={client} />
-          // )
-          // const {
-          //   setEmail, setPassword, submit
-          // } = tree.root.instance
+        it('logs in', () => {
+          const { state } = test.root.instance
+
+          expect(state.visible).to.be.equal(false)
+          expect(state.error).to.be.equal(null)
+          expect(client.auth.userId).to.not.be.equal(null)
+
         })
       })
     })

@@ -1,32 +1,27 @@
-import React from 'react'
+
 import styled from 'styled-components'
-
-import { Login } from '../../app'
-
-/******************************************************************************/
-// Styles
-/******************************************************************************/
-
-const Page = styled.div`
-  padding: 1em;
-`
-
-const Header = styled.h1`
-  margin: 0;
-`
+import { observe } from './visible'
+import { CssCloner } from '../util/cloner'
 
 /******************************************************************************/
-// Main
+// Helper
 /******************************************************************************/
 
-const Example = ({ arr }) =>
-  <Page>
-    <Header>BenZed React</Header>
-    <Login></Login>
-  </Page>
+const fader = props => props.visibility === 'shown'
+  ? 1
+  : 0
+
+/******************************************************************************/
+// Effect
+/******************************************************************************/
+
+const Fade = styled(CssCloner)`
+  opacity: ${fader};
+  transition: opacity 250ms;
+`::observe()
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Example
+export default Fade

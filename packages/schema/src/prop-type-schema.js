@@ -1,5 +1,6 @@
 import Context from './util/context'
-
+import normalizeValidator from './util/normalize-validator'
+import is from 'is-explicit'
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -25,11 +26,14 @@ function propCheck (props, propName, componentName = 'Anonymous Component') {
 
 function PropTypeSchema (object) {
 
+  if (!is.objectOf.func(object))
+    throw new Error('PropTypeSchema must be defined with an object of validators.')
+
   const output = {}
 
   for (const key in object) {
     const validator = object[key]
-    output[key] = validator::propCheck
+    output[key] = normalizeValidator(validator)::propCheck
   }
 
   return output

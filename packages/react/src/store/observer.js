@@ -73,7 +73,9 @@ class Observer extends React.Component {
   update = state =>
     this.setState({ timestamp: new Date() })
 
-  componentWillMount () {
+  constructor (props) {
+
+    super(props)
 
     const { stores: contextStores } = this.props
     const listen = toObject(this.props.listen)
@@ -89,7 +91,10 @@ class Observer extends React.Component {
       store.subscribe(this.update, listen[key])
     }
 
-    this.setState({ stores: stateStores })
+    this.state = {
+      stores: stateStores,
+      timestamp: null
+    }
   }
 
   componentWillUnmount () {

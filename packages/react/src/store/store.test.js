@@ -193,6 +193,10 @@ describe('Store', () => {
         expect(_state).to.deep.equal(meta.copy())
       })
 
+      it('func argument must be a function', () => {
+        expect(() => meta.subscribe(100)).to.throw('callback argument must be a function')
+      })
+
       it('can also take a path, which squelches state calls unrelated to that path', () => {
 
         meta.set(['data', 'length'], 100)
@@ -223,6 +227,32 @@ describe('Store', () => {
         expect(calls).to.equal(2)
         expect(length).to.equal(80)
       })
+
+      it('can provide multiple paths', () => {
+
+        const paths = []
+        const sub = (state, path) => paths.push(path)
+
+        meta.subscribe(sub, ['data', 'foo'], 'status')
+        meta.set(['data', 'foo'], 100)
+        meta.set(['data', 'length', 10])
+        meta.set(['status'], 'great')
+
+        expect(paths).to.deep.equal([['data', 'foo'], ['status']])
+      })
+
+      it('paths must be strings, symbols or arrays thereof', () => {
+
+        const sub = () => {}
+
+        let badValues = [ 100, false, true, {} ]
+
+        badValues = [ ...badValues, ...badValues.map(bv => [bv]) ]
+
+        for (const badValue of badValues)
+          expect(() => meta.subscribe(sub, badValue))
+            .to.throw('paths must be arrays of strings or symbols')
+      })
     })
 
     describe('unsubscribe', () => {
@@ -243,6 +273,13 @@ describe('Store', () => {
         meta.set('status', 'blue')
         expect(calls).to.equal(2)
       })
+
+      it('func argument must be a function', () => {
+        const meta = new MetaStore()
+
+        expect(() => meta.unsubscribe(100)).to.throw('callback argument must be a function')
+      })
+
     })
   })
 })

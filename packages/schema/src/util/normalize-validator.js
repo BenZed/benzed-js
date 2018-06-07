@@ -27,7 +27,7 @@ function reduceValidator (validator) {
 
 let object, arrayOf
 
-function rcd ([ to ]) {
+function resolveCircularDependency ([ to ]) {
   return require('../types/' + to).default
 }
 
@@ -43,12 +43,12 @@ function normalizeValidator (validator, ...args) {
     throw new Error('validator can not be defined as an empty array')
 
   if (isArray) {
-    arrayOf = arrayOf || rcd`array-of`
+    arrayOf = arrayOf || resolveCircularDependency`array-of`
     validator = arrayOf(...validator.map(normalizeValidator), ...args)
   }
 
   if (is.plainObject(validator)) {
-    object = object || rcd`object`
+    object = object || resolveCircularDependency`object`
     validator = args.length === 0
       ? object({ shape: validator })
       : object(validator, ...args)

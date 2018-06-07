@@ -1,11 +1,15 @@
 import React, { Children, cloneElement, createElement } from 'react'
 import styled from 'styled-components'
 
+import { Modal } from '../layout'
+import { Visible, Fade, Slide } from '../effect'
+
 import { PropTypeSchema, typeOf, required } from '@benzed/schema'
+import { equals } from '@benzed/immutable'
 
 import { StoreConsumer } from '../store/context'
 import ClientStore from './store/client-store'
-import { get, equals } from '@benzed/immutable'
+
 import { isEvent } from '../util'
 
 /******************************************************************************/
@@ -21,24 +25,109 @@ const mustHaveAuth = value =>
 // Layout Components
 /******************************************************************************/
 
-const LoginView = () =>
-  <div>LOGIN</div>
+// TEMP
+const TempLoginPanel = styled.div`
+
+  padding: 0.5em;
+  font-size: 1.5em;
+
+  color: white;
+
+  span {
+    color: rgb(255, 125, 125);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  input, button {
+    color: inherit;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    ::placeholder {
+      color: rgba(255,255,255,0.75);
+    }
+    padding: 0.25em;
+    margin: 0.25em;
+  }
+
+  button {
+    width: 2em;
+    margin-left: auto;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+
+  input {
+    border-bottom: 1px solid white;
+  }
+`
+
+// TODO this needs to be refactored with @benzed inputs, panels, form elements and transition effects
+const LoginModal = ({
+  email, password, setEmail, setPassword, submit, visible, error, ...props
+}) =>
+  <Visible visible={visible}>
+    <Fade>
+      <Modal>
+        <TempLoginPanel>
+
+          <Slide down>
+            <strong>Login</strong><span>{' ' + (error || '')}</span>
+          </Slide>
+
+          <form onSubmit={submit}>
+
+            <Slide >
+              <input value={email} onChange={setEmail} placeholder='Email'/>
+            </Slide>
+
+            <Slide down>
+              <input value={password} onChange={setPassword} placeholder='Password' type='password'/>
+            </Slide>
+
+            <Slide>
+              <button type='submit'>Submit</button>
+            </Slide>
+
+          </form>
+        </TempLoginPanel>
+      </Modal>
+    </Fade>
+  </Visible>
+
+// <Visible visible={visible} effects={Fade}>
+//   <Modal>
+//     <Visible visible={visible} effects={ColorWipe}>
+//       <EmailAndPasswordPanel email={email} password={password} />
+//     </Visible>
+//   </Modal>
+// </Visible>
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-class Login extends React.Component {
+class LoginLogic extends React.Component {
 
   static propTypes = new PropTypeSchema({
     client: typeOf(ClientStore, required, mustHaveAuth)
   })
 
+  static defaultProps = {
+    children: <LoginModal/>
+  }
+
   state = {
     email: '',
     password: '',
 
-    visible: false,
+    visible: true,
     error: null
   }
 
@@ -53,30 +142,30 @@ class Login extends React.Component {
     this.setState({ visible, error })
   }
 
-  // setEmail = e => {
-  //   const email = isEvent(e)
-  //     ? e.target.value
-  //     : e
-  //   this.setState({ email })
-  // }
-  //
-  // setPassword = e => {
-  //   const password = isEvent(e)
-  //     ? e.target.value
-  //     : e
-  //
-  //   this.setState({ password })
-  // }
-  //
-  // submit = e => {
-  //   if (isEvent(e))
-  //     e.preventDefault()
-  //
-  //   const { client } = this.props
-  //   const { email, password } = this.state
-  //
-  //   return client.login(email, password)
-  // }
+  setEmail = e => {
+    const email = isEvent(e)
+      ? e.target.value
+      : e
+    this.setState({ email })
+  }
+
+  setPassword = e => {
+    const password = isEvent(e)
+      ? e.target.value
+      : e
+
+    this.setState({ password })
+  }
+
+  submit = e => {
+    if (isEvent(e))
+      e.preventDefault()
+
+    const { client } = this.props
+    const { email, password } = this.state
+
+    return client.login(email, password)
+  }
 
   // LIFE-CYCLE
 
@@ -88,8 +177,7 @@ class Login extends React.Component {
     const { client } = this.props
     const { onClientStoreUpdate } = this
 
-    client.subscribe(onClientStoreUpdate, 'auth')
-    client.subscribe(onClientStoreUpdate, 'host')
+    client.subscribe(onClientStoreUpdate, 'auth', 'host')
   }
 
   componentWillUnmount () {
@@ -113,15 +201,24 @@ class Login extends React.Component {
       submit
     }
 
-    return children
-      ? cloneElement(Children.only(children), viewProps)
-      : createElement(LoginView, viewProps)
+    return cloneElement(Children.only(children), viewProps)
   }
 
 }
+
+/******************************************************************************/
+// Shortcuts
+/******************************************************************************/
+
+const Login = props =>
+  <StoreConsumer>
+    {stores => <LoginLogic {...props} client={stores.client} />}
+  </StoreConsumer>
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export default Login
+
+export { LoginLogic, Login }
