@@ -76,4 +76,4 @@ const CssCloner = Cloner.whitelist('className', 'style')
 
 export default Cloner
 
-export { CssCloner }
+export { Cloner, CssCloner }

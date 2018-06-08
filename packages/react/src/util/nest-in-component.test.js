@@ -63,7 +63,6 @@ Test.optionallyBindableMethod(nestInComponent, nestInComponent => {
 
   it('throws if no propTypes are defined in parent', () => {
     const BadParent = props => <main {...props}/>
-
     expect(() => nestInComponent('div', BadParent)).to.throw('propTypes must be defined in parent')
   })
 

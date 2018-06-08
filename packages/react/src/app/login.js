@@ -1,4 +1,4 @@
-import React, { Children, cloneElement, createElement } from 'react'
+import React, { Children, cloneElement } from 'react'
 import styled from 'styled-components'
 
 import { Modal } from '../layout'
@@ -77,37 +77,33 @@ const LoginModal = ({
       <Modal>
         <TempLoginPanel>
 
-          <Slide down>
-            <strong>Login</strong><span>{' ' + (error || '')}</span>
+          <Slide from='top'>
+            <div>
+              <strong>Login</strong>
+              <span>{' ' + (error || '')}</span>
+            </div>
           </Slide>
 
           <form onSubmit={submit}>
 
-            <Slide >
+            <Slide from='left' to='right'>
               <input value={email} onChange={setEmail} placeholder='Email'/>
             </Slide>
 
-            <Slide down>
+            <Slide from='right' to='left'>
               <input value={password} onChange={setPassword} placeholder='Password' type='password'/>
             </Slide>
 
-            <Slide>
+            <Slide from='bottom'>
               <button type='submit'>Submit</button>
             </Slide>
 
           </form>
+
         </TempLoginPanel>
       </Modal>
     </Fade>
   </Visible>
-
-// <Visible visible={visible} effects={Fade}>
-//   <Modal>
-//     <Visible visible={visible} effects={ColorWipe}>
-//       <EmailAndPasswordPanel email={email} password={password} />
-//     </Visible>
-//   </Modal>
-// </Visible>
 
 /******************************************************************************/
 // Main Component

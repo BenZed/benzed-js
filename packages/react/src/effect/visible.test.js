@@ -1,4 +1,4 @@
-import Visible from './visible'
+import Visible, { VisibleContext, observe } from './visible'
 import React from 'react'
 
 import renderer from 'react-test-renderer'
@@ -10,7 +10,28 @@ import { milliseconds } from '@benzed/async'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('Visible', () => {
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+class VisiblityChanger extends React.Component {
+
+  state = {
+    visible: true
+  }
+
+  setVisible = visible => this.setState({ visible })
+
+  render () {
+    return React.cloneElement(this.props.children, this.state)
+  }
+}
+
+/******************************************************************************/
+// Test
+/******************************************************************************/
+
+describe('Visible', () => {
 
   Test.propTypes(Visible, expectError => {
 
@@ -55,21 +76,10 @@ describe.only('Visible', () => {
 
   describe('lifecycle', () => {
 
-    class VisiblityChanger extends React.Component {
-
-      state = {
-        visible: true
-      }
-
-      setVisible = visible => this.setState({ visible })
-
-      render () {
-        return React.cloneElement(this.props.children, this.state)
-      }
-    }
-
-    const Receiver = ({ visibility }) =>
-      <div>{visibility}</div>
+    const Receiver = () =>
+      <VisibleContext.Consumer>
+        { visibility => <div>{visibility}</div>}
+      </VisibleContext.Consumer>
 
     describe('initial state', () => {
       it('state.visible === props.visible', () => {
@@ -95,7 +105,7 @@ describe.only('Visible', () => {
       })
     })
 
-    describe('passes visiblity prop on according to target and delay', () => {
+    describe('passes visiblity context on according to target and delay', () => {
 
       let setVisible, visibleState, receiverChildren
       before(() => {
@@ -107,11 +117,8 @@ describe.only('Visible', () => {
           </VisiblityChanger>
         )
 
-        const visible = test.root.findByType(Visible)
-        const receiver = test.root.findByType(Receiver)
-
-        visibleState = () => visible._fiber.stateNode.state.visible
-        receiverChildren = () => receiver._fiber.child.stateNode.props.children
+        visibleState = () => test.toTree().rendered.instance.state.visible
+        receiverChildren = () => test.toTree().rendered.rendered.rendered.props.children
 
         setVisible = test.root.instance.setVisible
       })
@@ -150,5 +157,63 @@ describe.only('Visible', () => {
         expect(receiverChildren()).to.equal('shown')
       })
     })
+  })
+})
+
+Test.optionallyBindableMethod(observe, _observe => {
+  it('is exported and attached to Visibile', () => {
+    expect(observe).to.be.instanceof(Function)
+    expect(observe).to.be.equal(Visible.observe)
+  })
+
+  it('returns a component', () => {
+    const Div = _observe('div')
+    expect(Div).to.be.instanceof(Function)
+    expect(() => renderer.create(<Div/>)).to.not.throw(Error)
+  })
+
+  describe('created component', () => {
+
+    let test, setVisible, getEffect, getEffectRWH
+    before(() => {
+      const Effect = _observe(({ visibility }) => <div>{visibility}</div>)
+      const EffectRWH = _observe(({ visibility }) => <div>{visibility}</div>, true)
+
+      test = renderer.create(
+        <VisiblityChanger>
+          <Visible delay={10}>
+            <Effect/>
+            <EffectRWH/>
+          </Visible>
+        </VisiblityChanger>
+      )
+
+      setVisible = test.root.instance.setVisible
+      getEffect = () => test.toTree().rendered.rendered[0].rendered
+      getEffectRWH = () => test.toTree().rendered.rendered[1].rendered
+    })
+
+    it('observes visibility', async () => {
+      setVisible(true)
+      await milliseconds(15)
+      expect(getEffect().props).to.have.property('visibility', 'shown')
+
+      setVisible(false)
+      await milliseconds(5)
+      expect(getEffect().props).to.have.property('visibility', 'hiding')
+    })
+
+    it('dismounts children on visibility === "hidden" if renderHidden == false', async () => {
+      setVisible(false)
+      await milliseconds(15)
+      expect(getEffect()).to.be.equal(null)
+    })
+
+    it('does not dismount children on visibility === "hidden" if renderHidden == true', async () => {
+      setVisible(false)
+      await milliseconds(15)
+      expect(getEffectRWH().props).to.have.property('visibility', 'hidden')
+    })
+
   })
 })

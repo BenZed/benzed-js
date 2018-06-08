@@ -3,23 +3,56 @@ import styled from 'styled-components'
 import { observe } from './visible'
 import { CssCloner } from '../util/cloner'
 
+import { PropTypeSchema, typeOf } from '@benzed/schema'
+
+/******************************************************************************/
+// RegExp
+/******************************************************************************/
+
+const TOP = /top/i
+const BOT = /bottom/i
+const LEFT = /left/i
+const RIGHT = /right/i
+
+const UNIT = /(em|%|vw|vh|px)$/
+
 /******************************************************************************/
 // Css Func
 /******************************************************************************/
 
 const translateInOut = props => {
 
-  const { visibility: vis, down } = props
+  const { visibility: vis, from, to } = props
 
-  const mult = down ? 1 : -1
+  if (vis === 'shown')
+    return
 
-  const y = vis === 'shown'
-    ? 0
-    : vis.includes('hid')
-      ? 100 * mult
-      : 100 * -mult
+  const dir = vis === 'hiding'
+    ? to || from || 'bottom'
+    : from || to || 'top'
 
-  return `translate(0%, ${y}%)`
+  let [ x, y ] = dir.split(' ')
+
+  if (LEFT.test(dir))
+    x = '-100%'
+  else if (RIGHT.test(dir))
+    x = '100%'
+
+  if (TOP.test(dir))
+    y = '-100%'
+  else if (BOT.test(dir))
+    y = '100%'
+
+  if (!UNIT.test(x))
+    x = '0%'
+
+  if (!UNIT.test(y))
+    y = '0%'
+
+  return {
+    // ...style,
+    transform: `translate(${x}, ${y})`
+  }
 
 }
 
@@ -27,12 +60,16 @@ const translateInOut = props => {
 // Effect
 /******************************************************************************/
 
-const Slide = styled(CssCloner)`
-
-  transform: ${translateInOut};
+const Slide = styled(CssCloner).attrs({
+  style: translateInOut
+})`
   transition: transform 250ms;
+`::observe()
 
-`::observe()// ^^^ TEMP HACK implement the above with $ styler helper TODO
+Slide.propTypes = new PropTypeSchema({
+  from: typeOf(String),
+  to: typeOf(String)
+})
 
 /******************************************************************************/
 // Exports

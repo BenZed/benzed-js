@@ -6,6 +6,8 @@ import nestInComponent from './nest-in-component'
 
 import styler from './styler'
 
+import { Cloner, CssCloner } from './cloner'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
@@ -16,6 +18,9 @@ export {
   isEvent,
 
   nestInComponent,
+
+  Cloner,
+  CssCloner,
 
   styler,
   styler as $

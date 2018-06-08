@@ -1,9 +1,8 @@
-import React, { Children, cloneElement, createContext } from 'react'
+import React, { Children, createContext } from 'react'
 import { PropTypeSchema, typeOf, required } from '@benzed/schema'
-import styled from 'styled-components'
 
 /******************************************************************************/
-//
+// Context
 /******************************************************************************/
 
 const VisibleContext = createContext('shown')
