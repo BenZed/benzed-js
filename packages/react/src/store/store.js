@@ -1,4 +1,4 @@
-import { get, set, copy, equals, reverse } from '@benzed/immutable'
+import { get, set, copy, equals, COPY, EQUALS, reverse } from '@benzed/immutable'
 import is from 'is-explicit'
 import { wrap } from '@benzed/array'
 
@@ -22,13 +22,22 @@ function assertPath (store, path) {
 
   const [ key ] = path
 
-  if (key in store === false || store[key] instanceof Function || key === SUBSCRIBERS)
+  if (key in store === false ||
+    store[key] instanceof Function ||
+    key === SUBSCRIBERS ||
+    key === EQUALS ||
+    key === COPY
+  )
     throw new Error(`Cannot set ${path.join('.')}, ${key} is not a valid state property.`)
 
   return path
 }
 
-function buildState (store, path, value) {
+/******************************************************************************/
+// State Change
+/******************************************************************************/
+
+function createNewState (store, path, value) {
 
   const isEqual = equals(
     get.mut(store, path),
@@ -41,7 +50,7 @@ function buildState (store, path, value) {
 
 }
 
-function notifySubscribers (store, path, state) {
+function notifyStoreSubscribers (store, path, state) {
 
   const subs = reverse(store[SUBSCRIBERS])
 
@@ -87,39 +96,15 @@ function notifySubscribers (store, path, state) {
 
 }
 
-function applyState (store, state) {
-
-  for (const key in state)
-    store[key] = state[key]
-
-}
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
 class Store {
 
-  [SUBSCRIBERS] = []
+  [SUBSCRIBERS] = [];
 
-  set (path, value) {
-
-    path = assertPath(this, path)
-
-    const state = buildState(this, path, value)
-    if (state === STATE_UNCHANGED)
-      return
-
-    applyState(this, state)
-
-    notifySubscribers(this, path, state)
-  }
-
-  get (path) {
-    return get.mut(this, path)
-  }
-
-  copy () {
+  [COPY] () {
     const state = {}
 
     for (const key in this) {
@@ -131,7 +116,7 @@ class Store {
     return state
   }
 
-  equals (input) {
+  [EQUALS] (input) {
 
     if (input === null || typeof input !== 'object')
       return false
@@ -145,6 +130,26 @@ class Store {
     }
 
     return true
+  }
+
+  set (path, value) {
+
+    path = assertPath(this, path)
+
+    const state = createNewState(this, path, value)
+    if (state === STATE_UNCHANGED)
+      return
+
+    for (const key in state)
+      this[key] = state[key]
+
+    notifyStoreSubscribers(this, path, state)
+  }
+
+  get (path) {
+    const store = this
+
+    return get.mut(store, path)
   }
 
   subscribe (callback, ...paths) {
@@ -165,10 +170,7 @@ class Store {
       if (path.length > 0 && !is.arrayOf(path, String, Symbol))
         throw new Error('paths must be arrays of strings or symbols')
 
-      this[SUBSCRIBERS].push({
-        callback,
-        path
-      })
+      this[SUBSCRIBERS].push({ callback, path })
     }
 
   }

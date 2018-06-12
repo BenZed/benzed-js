@@ -106,7 +106,7 @@ function observe (VisibleEffect, renderHidden) {
   const ObservedVisibleEffect = props =>
     <VisibleContext.Consumer>
       { visibility => renderHidden || visibility !== 'hidden'
-        ? <VisibleEffect {...props} visibility={visibility}/>
+        ? <VisibleEffect visibility={visibility} {...props}/>
         : null }
     </VisibleContext.Consumer>
 

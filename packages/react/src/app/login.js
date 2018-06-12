@@ -208,7 +208,7 @@ class LoginLogic extends React.Component {
 
 const Login = props =>
   <StoreConsumer>
-    {stores => <LoginLogic {...props} client={stores.client} />}
+    {stores => <LoginLogic client={stores.client} {...props} />}
   </StoreConsumer>
 
 /******************************************************************************/

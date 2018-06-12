@@ -1,11 +1,11 @@
 import { expect } from 'chai'
 import Store from './store'
-import { get } from '@benzed/immutable'
+import { get, COPY, EQUALS } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('Store', () => {
+describe.only('Store', () => {
 
   it('is a class', () => {
     expect(Store).to.throw('cannot be invoked without \'new')
@@ -51,6 +51,19 @@ describe('Store', () => {
     class MetaStore extends Store {
       data = { foo: 'bar', length: 100 }
       status = 'okay'
+
+      setStatus (status) {
+        this.set('status', status)
+      }
+
+      setFoo (to) {
+        this.set(['data', 'foo'], to)
+      }
+
+      setLength (length) {
+        this.set(['data', 'length'], length)
+      }
+
     }
 
     describe('set', () => {
@@ -140,7 +153,7 @@ describe('Store', () => {
       })
     })
 
-    describe('copy', () => {
+    describe('Immutable.COPY', () => {
 
       let meta
       before(() => {
@@ -148,29 +161,29 @@ describe('Store', () => {
       })
 
       it('returns an object containing all of the data in a stores state keys', () => {
-        expect(meta.copy()).to.deep.equal({
+        expect(meta[COPY]()).to.deep.equal({
           data: { foo: 'bar', length: 100 },
           status: 'okay'
         })
       })
 
       it('returns copied values', () => {
-        expect(meta.copy().data).to.not.equal(meta.data)
+        expect(meta[COPY]().data).to.not.equal(meta.data)
       })
     })
 
-    describe('equals', () => {
+    describe('Immutable.EQUALS', () => {
       it('returns true of store state is value equal to input', () => {
         const meta = new MetaStore()
         const meta2 = new MetaStore()
 
-        const state = meta.copy()
+        const state = meta[COPY]()
 
-        expect(meta.equals(state)).to.be.equal(true)
-        expect(meta.equals(meta2)).to.be.equal(true)
+        expect(meta[EQUALS](state)).to.be.equal(true)
+        expect(meta[EQUALS](meta2)).to.be.equal(true)
 
         meta2.set('status', 'bad')
-        expect(meta.equals(meta2)).to.be.equal(false)
+        expect(meta[EQUALS](meta2)).to.be.equal(false)
       })
     })
 
@@ -190,7 +203,7 @@ describe('Store', () => {
         meta.set('status', 'okay')
 
         expect(_state.status).to.equal('okay')
-        expect(_state).to.deep.equal(meta.copy())
+        expect(_state).to.deep.equal(meta[COPY]())
       })
 
       it('func argument must be a function', () => {
