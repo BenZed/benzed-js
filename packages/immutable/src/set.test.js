@@ -30,6 +30,24 @@ Test.optionallyBindableMethod(set, setter => {
     expect(obj.foo).to.have.property('bar', 100)
   })
 
+  it('doesnt destroy functions if in nested path', () => {
+
+    const obj1 = {
+      foo: 'bar',
+      test () {
+        return this.foo === 'bar'
+      }
+    }
+
+    const obj2 = setter(obj1, ['test', 'range'], 'high')
+
+    expect(obj2.test).to.have.property('range', 'high')
+    expect(obj2.test()).to.be.equal(true)
+    expect(obj2.test).to.be.equal(obj1.test)
+    expect(obj1.test).to.have.property('range')
+
+  })
+
   it('creates nested paths as arrays if key is numeric', () => {
     const obj = setter(obj1, [ 'array', 0 ], 'CAKE')
 

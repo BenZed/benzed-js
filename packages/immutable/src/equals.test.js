@@ -64,6 +64,72 @@ Test.optionallyBindableMethod(equals, equals => {
 
       })
 
+      it('plain with mismatch keys', () => {
+
+        const ob1 = {
+          foo: 'bar'
+        }
+
+        const ob2 = {
+          foo: 'bar',
+          cake: 'town'
+        }
+
+        expect(equals(ob1, ob2)).to.be.equal(false)
+      })
+
+      it('works on functions', () => {
+
+        const foo = () => 'foo'
+        const foo2 = () => 'foo'
+        const bar = () => 'bar'
+        const bar2 = () => 'bar'
+
+        foo[EQUALS] = foo2[EQUALS] = bar[EQUALS] = bar2[EQUALS] = function (other) {
+          return other() === this()
+        }
+
+        expect(equals(foo, bar)).to.be.equal(false)
+        expect(equals(foo, foo2)).to.be.equal(true)
+        expect(equals(bar, bar2)).to.be.equal(true)
+
+      })
+
+      it('works on class instance functions', () => {
+
+        class Foo {
+          funcProp = () => {}
+          funcLoose () {}
+          funcBound () {}
+
+          constructor () {
+            this.funcBound = ::this.funcBound
+          }
+        }
+
+        const foo1 = new Foo()
+        const foo2 = new Foo()
+
+        expect(foo1.funcProp).to.not.equal(foo2.funcProp)
+        expect(foo1.funcLoose).to.equal(foo2.funcLoose)
+        expect(foo1.funcBound).to.not.equal(foo2.funcBound)
+
+        expect(equals(foo1.funcProp, foo2.funcProp)).to.be.equal(false)
+        expect(equals(foo1.funcLoose, foo2.funcLoose)).to.be.equal(true)
+        expect(equals(foo1.funcBound, foo2.funcBound)).to.be.equal(false)
+      })
+
+      it('works on keyed functions with matching keyed objects', () => {
+
+        const foo = () => {}
+        const bar = {
+          length: foo.length,
+          name: foo.name
+        }
+
+        expect(equals(foo, bar)).to.be.equal(false)
+      })
+
       it('implementing symbolic EQUALS', () => {
 
         let calls = 0

@@ -1,16 +1,21 @@
-import { get, set, copy, equals, COPY, EQUALS, reverse } from '@benzed/immutable'
 import is from 'is-explicit'
+
+import { get, set, copy, equals, COPY, EQUALS, reverse } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 
-/******************************************************************************/
-// Data
-/******************************************************************************/
+import { TASK } from './task'
 
-const ANY = Symbol('update-on-any-path')
+/******************************************************************************/
+// Symbol Keys
+/******************************************************************************/
 
 const SUBSCRIBERS = Symbol('subscribers')
 
-const STATE_UNCHANGED = Symbol('state-unchanged')
+/******************************************************************************/
+// Symbol Values
+/******************************************************************************/
+
+const ANY = Symbol('update-on-any-path')
 
 /******************************************************************************/
 // Helpers
@@ -23,11 +28,10 @@ function assertPath (store, path) {
   const [ key ] = path
 
   if (key in store === false ||
-    store[key] instanceof Function ||
+    (is.func(store[key]) && TASK in store[key] === false) ||
     key === SUBSCRIBERS ||
     key === EQUALS ||
-    key === COPY
-  )
+    key === COPY)
     throw new Error(`Cannot set ${path.join('.')}, ${key} is not a valid state property.`)
 
   return path
@@ -37,22 +41,13 @@ function assertPath (store, path) {
 // State Change
 /******************************************************************************/
 
-function createNewState (store, path, value) {
-
-  const isEqual = equals(
-    get.mut(store, path),
-    value
-  )
-
-  return isEqual
-    ? STATE_UNCHANGED
-    : set(store, path, value)
-
-}
-
-function notifyStoreSubscribers (store, path, state) {
+function notifyStoreSubscribers (store, path) {
 
   const subs = reverse(store[SUBSCRIBERS])
+  if (subs.length === 0)
+    return
+
+  let state = null
 
   const { length: pathLength } = path
 
@@ -82,6 +77,7 @@ function notifyStoreSubscribers (store, path, state) {
       // at final key, send state to subscriber
       if (!finished && atMaxSubPathIndex) {
         finished = true
+        state = state || store[COPY]()
         sub.callback(state, sub.path)
       }
 
@@ -109,8 +105,15 @@ class Store {
 
     for (const key in this) {
       const value = this[key]
-      if (typeof value !== 'function')
+      const isFunction = is.func(value)
+
+      if (!isFunction)
         state[key] = copy(value)
+
+      else if (TASK in value) {
+        const { status, progress, error } = value
+        state[key] = { status, progress, error }
+      }
     }
 
     return state
@@ -118,13 +121,13 @@ class Store {
 
   [EQUALS] (input) {
 
-    if (input === null || typeof input !== 'object')
+    if (!is.object(input))
       return false
 
     for (const key in this) {
       const value = this[key]
 
-      if (typeof value !== 'function')
+      if (!is.func(value) || TASK in value)
         if (!equals(value, input[key]))
           return false
     }
@@ -132,18 +135,42 @@ class Store {
     return true
   }
 
+  constructor () {
+
+    for (const property in this) {
+      const method = this[property]
+
+      // check if method has been decorated with TASK symbol
+      if (is.func(method) && TASK in method) {
+
+        // the property will hold the task constructor. Maybe in the future
+        // different decorators could specify different constructors, or be
+        // abstracted to 'Action' or something
+        const Task = method[TASK]
+
+        // if so, create a new task out of it
+        Object.defineProperty(this, property, {
+          writable: false,
+          enumerable: true,
+          configurable: false,
+          value: new Task(this, property, method)
+        })
+      }
+
+    }
+
+  }
+
   set (path, value) {
 
     path = assertPath(this, path)
 
-    const state = createNewState(this, path, value)
-    if (state === STATE_UNCHANGED)
+    const stateUnchanged = equals(this.get(path), value)
+    if (stateUnchanged)
       return
 
-    for (const key in state)
-      this[key] = state[key]
-
-    notifyStoreSubscribers(this, path, state)
+    set.mut(this, path, value)
+    notifyStoreSubscribers(this, path)
   }
 
   get (path) {
@@ -172,7 +199,6 @@ class Store {
 
       this[SUBSCRIBERS].push({ callback, path })
     }
-
   }
 
   unsubscribe (callback) {

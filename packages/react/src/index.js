@@ -1,10 +1,10 @@
 import { isClient, isMobile, styler } from './util'
-import { Store, Observer, Provider, observe } from './store'
+import { Store, Observer, Provider, observe, task } from './store'
 
 export {
 
   isClient, isMobile, styler, styler as $,
 
-  Store, Observer, Provider, observe
+  Store, Observer, Provider, observe, task
 
 }

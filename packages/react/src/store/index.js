@@ -4,10 +4,19 @@ import { StoreProvider, StoreConsumer } from './context'
 import StoreObserver from './observer'
 import observe from './observe'
 
+import task from './task'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export default Store
 
-export { Store, StoreProvider, StoreConsumer, StoreObserver, observe }
+export {
+  Store,
+  StoreProvider,
+  StoreConsumer,
+  StoreObserver,
+  observe,
+  task
+}

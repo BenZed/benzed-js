@@ -36,7 +36,8 @@ function getMutate (object, path) {
 
   for (let i = 0; i < length; i++) {
 
-    if (typeof ref !== 'object' || ref === null)
+    const type = typeof ref
+    if ((type !== 'function' && type !== 'object') || ref === null)
       break
 
     const key = path[i]

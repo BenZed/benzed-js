@@ -8,7 +8,7 @@ import authentication from '@feathersjs/authentication-client'
 import { Schema, arrayOf, string, object, required, oneOf, cast } from '@benzed/schema'
 import { until } from '@benzed/async'
 
-import Store from '../../store'
+import Store, { task } from '../../store'
 import { isClient } from '../../util'
 
 import fetch from 'isomorphic-fetch'
@@ -283,22 +283,16 @@ async function authenticate (data) {
   const feathers = client[FEATHERS]
 
   let userId = null
-  let error = null
 
-  if (client.auth.userId)
+  if (client.userId)
     await client.logout()
 
-  try {
-    const { accessToken } = await feathers.authenticate(data)
-    const payload = await feathers.passport.verifyJWT(accessToken)
+  const { accessToken } = await feathers.authenticate(data)
+  const payload = await feathers.passport.verifyJWT(accessToken)
 
-    userId = payload.userId
+  userId = payload.userId
 
-  } catch (err) {
-    error = err.message
-  }
-
-  client.set('auth', { userId, error })
+  client.set('userId', userId)
 
   return userId
 
@@ -322,66 +316,72 @@ class ClientStore extends Store {
 
   host = null
 
-  auth = null
+  userId = null
 
   // State Getters
 
   get user () {
     throw new Error('not yet implemented')
-    // match user id to user service record
   }
 
-  // Actions
+  // Tasks
 
+  @task
   async connect () {
 
-    const { provider } = this.config
+    const { provider } = this.get('config')
     const isRest = provider === 'rest'
 
-    if (!this.host) {
+    if (!this.get('host')) {
       const connect = isRest
-        ? this::connectRest
-        : this::connectSocketIO
+        ? this.store::connectRest
+        : this.store::connectSocketIO
 
       await until({
         condition: connect,
         interval: CONNECTION_TIMEOUT
       })
-
     }
 
-    return this.host
+    return this.get('host')
   }
 
+  @task
   login (email, password) {
 
-    if (!this.config.auth)
+    const { auth, provider } = this.get('config')
+    if (!auth)
       throw new Error('Cannot login, auth is not enabled')
 
-    if (!this.host)
-      throw new Error(`Cannot login, ` + (this.config.provider === 'rest'
+    const host = this.get('host')
+    if (!host)
+      throw new Error(`Cannot login, ` + (provider === 'rest'
         ? 'host has not been resolved.'
         : 'not connected to host.'))
 
     const data = { strategy: 'local', email, password }
 
-    return this::authenticate(data)
+    return this.store::authenticate(data)
   }
 
+  @task
   logout () {
 
-    if (!this.config.auth)
+    const { auth, provider } = this.get('config')
+    if (!auth)
       throw new Error('Cannot logout, auth is not enabled')
 
-    if (!this.host)
-      throw new Error(`Cannot logout, ` + (this.config.provider === 'rest'
+    const host = this.get('host')
+    if (!host)
+      throw new Error(`Cannot logout, ` + (provider === 'rest'
         ? 'host has not been resolved.'
         : 'not connected to host.'))
 
-    this.set('auth', { userId: null, error: null })
+    this.set('userId', null)
+    this.set(['login', 'error'], null)
 
     // throw new Error('Not yet implemented.')
-    const feathers = this[FEATHERS]
+    const feathers = this.get(FEATHERS)
     return feathers.logout()
   }
 
@@ -402,15 +402,10 @@ class ClientStore extends Store {
       this[FEATHERS].defaultService = this::getClientStoreSocketIOService
     }
 
-    if (auth) {
+    if (auth)
       this[FEATHERS].configure(
         authentication(auth)
       )
-      this.auth = {
-        userId: null,
-        error: null
-      }
-    }
   }
 }
 

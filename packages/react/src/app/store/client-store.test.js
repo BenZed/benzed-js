@@ -429,8 +429,8 @@ describe('Client Store', () => {
         if (!rest.host)
           await rest.connect()
 
-        if (!rest.auth.userId) {
-          rest.auth.error = 'This should be removed.'
+        if (!rest.userId) {
+          rest.login.error = 'This should be removed.'
           await rest.login(EMAIL, PASS)
         }
 
@@ -440,18 +440,18 @@ describe('Client Store', () => {
 
         it('returns logged in userId', async () => {
           const userId = await rest.login(EMAIL, PASS)
-          expect(userId).to.be.equal(rest.auth.userId)
+          expect(userId).to.be.equal(rest.userId)
         })
 
-        it('populates auth.userId if auth successful', async () => {
+        it('populates userId if auth successful', async () => {
           const users = await state.app.users.find({})
           const [ user ] = users.filter(u => u.email === EMAIL)
 
-          expect(rest.auth).to.have.property('userId', `${user._id}`)
+          expect(rest).to.have.property('userId', `${user._id}`)
         })
 
-        it('clears auth.error if auth successful', () => {
-          expect(rest.auth).to.have.property('error', null)
+        it('clears login.error if auth successful', () => {
+          expect(rest.login).to.have.property('error', null)
         })
 
         it('places auth token in storage', () => {
@@ -462,9 +462,9 @@ describe('Client Store', () => {
           expect(feathers.settings.accessToken).to.be.equal(feathers.settings.storage.store['benzed-jwt'])
         })
 
-        it('populates auth.error if auth failed', async () => {
+        it('populates login.error if auth failed', async () => {
           await rest.login(EMAIL, PASS.repeat(2))
-          expect(rest.auth).to.have.property('error', 'Invalid login')
+          expect(rest.login.error).to.have.property('message', 'Invalid login')
         })
 
         it('throws if host not resolved', () => {
@@ -474,17 +474,15 @@ describe('Client Store', () => {
 
         it('throws if auth is not configured', () => {
           const restClientWithoutAuth = new ClientStore(CONFIG::set('auth', false))
-
           expect(::restClientWithoutAuth.login).to.throw('Cannot login, auth is not enabled')
         })
 
         it('first logs out if user is logged in', async () => {
           await rest.login(EMAIL, PASS.repeat(2))
-          expect(rest.auth).to.have.property('error', 'Invalid login')
-          expect(rest.auth).to.have.property('userId', null)
+          expect(rest.login.error).to.have.property('message', 'Invalid login')
+          expect(rest).to.have.property('userId', null)
 
           const feathers = rest[FEATHERS]
-
           // If user isn't logged out before logging in, and the subsequent
           // login fails, the token will remain remain from last successful login
           expect(feathers.settings.accessToken).to.be.equal(null)
@@ -495,13 +493,13 @@ describe('Client Store', () => {
       describe('logout', () => {
         it('depopulates auth.userId and auth.error', async () => {
 
-          expect(rest.auth.userId).to.not.equal(null)
-          rest.auth.error = 'Log me out.'
+          expect(rest.userId).to.not.equal(null)
+          rest.login.error = 'Log me out.'
 
           await rest.logout()
 
-          expect(rest.auth.userId).to.equal(null)
-          expect(rest.auth.error).to.equal(null)
+          expect(rest.userId).to.equal(null)
+          expect(rest.login.error).to.equal(null)
         })
         it('removes auth token from local storage', async () => {
 

@@ -40,8 +40,10 @@ function setMutate (object, path, value) {
   for (let i = 0; i < length; i++) {
     const key = path[i]
 
+    const type = typeof ref[key]
+
     const atFinalKey = i === finalIndex
-    if (!atFinalKey && (typeof ref[key] !== 'object' || ref[key] === null))
+    if (!atFinalKey && ((type !== 'function' && type !== 'object') || ref[key] === null))
       ref[key] = typeof path[i + 1] === 'number' ? [] : {}
 
     if (!atFinalKey) {

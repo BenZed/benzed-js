@@ -5,7 +5,7 @@ import { get, COPY, EQUALS } from '@benzed/immutable'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('Store', () => {
+describe('Store', () => {
 
   it('is a class', () => {
     expect(Store).to.throw('cannot be invoked without \'new')
@@ -121,20 +121,6 @@ describe.only('Store', () => {
         expect(meta.status).to.equal('amazing')
       })
 
-      it('new state is a copy', () => {
-        meta.set(['data', 'length'], 100)
-        meta.set('status', 'okay')
-
-        let data = meta.data
-        meta.set(['data', 'length'], 75)
-
-        expect(meta.data).to.not.equal(data)
-
-        data = meta.data
-        meta.set('status', 'great')
-
-        expect(meta.data).to.not.equal(data)
-      })
     })
 
     describe('get', () => {
@@ -167,7 +153,7 @@ describe.only('Store', () => {
         })
       })
 
-      it('returns copied values', () => {
+      it('no shared references', () => {
         expect(meta[COPY]().data).to.not.equal(meta.data)
       })
     })

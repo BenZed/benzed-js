@@ -17,6 +17,19 @@ Test.optionallyBindableMethod(get, getter => {
       .equal('value')
   })
 
+  it('get path works on functions', () => {
+
+    const obj = {
+      test () {
+        return 'pass'
+      }
+    }
+
+    obj.test.foo = 'bar'
+
+    expect(getter(obj, ['test', 'foo'])).to.be.equal('bar')
+  })
+
   it('returns copies of gotten values', () => {
 
     const obj = {

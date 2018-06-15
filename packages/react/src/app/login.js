@@ -17,7 +17,7 @@ import { isEvent } from '../util'
 /******************************************************************************/
 
 const mustHaveAuth = value =>
-  value && value.auth
+  value && value.config && value.config.auth
     ? value
     : new Error('must have authentication enabled.')
 
@@ -123,19 +123,21 @@ class LoginLogic extends React.Component {
     email: '',
     password: '',
 
-    visible: true,
+    status: 'disconnected',
     error: null
   }
 
   // EVENT HANDLING
 
   onClientStoreUpdate = state => {
-    const { userId, error } = state.auth
-    const { host } = state
+    const { host, userId } = state
+    const { status, error } = state.login
 
-    const visible = !!host && !userId
-
-    this.setState({ visible, error })
+    this.setState({
+      status: status,
+      visible: !!host && !userId,
+      error: error && error.message
+    })
   }
 
   setEmail = e => {
@@ -173,7 +175,7 @@ class LoginLogic extends React.Component {
     const { client } = this.props
     const { onClientStoreUpdate } = this
 
-    client.subscribe(onClientStoreUpdate, 'auth', 'host')
+    client.subscribe(onClientStoreUpdate, 'userId', 'host', 'login')
   }
 
   componentWillUnmount () {

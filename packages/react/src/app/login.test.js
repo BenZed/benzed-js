@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { LoginLogic } from './login'
 import { Test } from '@benzed/dev'
+import { milliseconds } from '@benzed/async'
 
 import React from 'react'
 import renderer from 'react-test-renderer'
@@ -53,7 +54,7 @@ fs.ensureDirSync(DB_PATH)
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('Login component', () => {
+describe.only('Login component', () => {
 
   Test.propTypes(LoginLogic, expectError => {
     describe('props.client', () => {
@@ -124,29 +125,32 @@ describe('Login component', () => {
     })
 
     describe('onClientStoreUpdate()', () => {
-      it('sets state.visible from clientstore actions', () => {
-
+      it('sets state.visible from clientstore actions', async () => {
         client.set('host', false)
-        client.set(['auth', 'userId'], null)
+        client.set('userId', null)
+
+        await milliseconds(5)
         expect(test.root.instance.state.visible).to.be.equal(false)
 
         client.set('host', true)
-        client.set(['auth', 'userId'], 'some-id')
+        client.set('userId', 'some-id')
+
+        await milliseconds(5)
         expect(test.root.instance.state.visible).to.be.equal(false)
 
         client.set('host', true)
-        client.set(['auth', 'userId'], null)
+        client.set('userId', null)
+        await milliseconds(5)
         expect(test.root.instance.state.visible).to.be.equal(true)
-
       })
 
-      it('sets state.error from clientstore actions', () => {
+      it('sets state.error from clientstore actions', async () => {
+        const error = { message: 'Authentication did not happen.' }
 
-        const error = 'Authentication did not happen.'
+        client.set(['login', 'error'], error)
+        await milliseconds(5)
 
-        client.set(['auth', 'error'], error)
-        expect(test.root.instance.state.error).to.be.equal(error)
-
+        expect(test.root.instance.state.error).to.be.equal(error.message)
       })
     })
 
@@ -219,7 +223,7 @@ describe('Login component', () => {
 
           expect(state.visible).to.be.equal(false)
           expect(state.error).to.be.equal(null)
-          expect(client.auth.userId).to.not.be.equal(null)
+          expect(client.userId).to.not.be.equal(null)
 
         })
       })

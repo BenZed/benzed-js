@@ -48,8 +48,14 @@ function equals (a, b) {
   if (a === b)
     return true
 
-  const aIsObject = typeof a === 'object' && a !== null
-  const bIsObject = typeof b === 'object' && b !== null
+  const aType = typeof a
+  const bType = typeof b
+
+  const aIsFunc = aType === 'function'
+  const bIsFunc = bType === 'function'
+
+  const aIsObject = aIsFunc || (aType === 'object' && a !== null)
+  const bIsObject = bIsFunc || (bType === 'object' && b !== null)
 
   if (aIsObject && typeof a[EQUALS] === 'function')
     return a[EQUALS](b)
@@ -66,6 +72,9 @@ function equals (a, b) {
   if (Number.isNaN(a))
     return Number.isNaN(b)
 
+  if ((aIsFunc && bIsFunc) || aIsFunc !== bIsFunc)
+    return false
+
   if (!aIsObject || !bIsObject)
     return false
 
@@ -73,7 +82,7 @@ function equals (a, b) {
     return arraysEqual(a, b)
 
   const akeys = namesAndSymbols(a)
-  const bkeys = namesAndSymbols(a)
+  const bkeys = namesAndSymbols(b)
 
   if (akeys.length !== bkeys.length)
     return false
