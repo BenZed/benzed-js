@@ -253,13 +253,6 @@ describe('Client Store', () => {
           expect(restClientNoAuth[FEATHERS]).to.not.have.property('passport')
         })
 
-        it('.auth state property is now an object', () => {
-          expect(restClient.auth).to.be.deep.equal({
-            userId: null,
-            error: null
-          })
-        })
-
       })
     })
   })
@@ -430,7 +423,7 @@ describe('Client Store', () => {
           await rest.connect()
 
         if (!rest.userId) {
-          rest.login.error = 'This should be removed.'
+          rest.login.status = new Error('This should be removed.')
           await rest.login(EMAIL, PASS)
         }
 
@@ -450,8 +443,13 @@ describe('Client Store', () => {
           expect(rest).to.have.property('userId', `${user._id}`)
         })
 
-        it('clears login.error if auth successful', () => {
-          expect(rest.login).to.have.property('error', null)
+        it('clears login.status if auth successful', async () => {
+          expect(rest.login).to.have.property('status', null)
+          rest.login.status = 'maintenance'
+          rest.login.userId = null
+          await rest.login(EMAIL, PASS)
+          expect(rest.login).to.have.property('status', null)
+
         })
 
         it('places auth token in storage', () => {
@@ -462,9 +460,23 @@ describe('Client Store', () => {
           expect(feathers.settings.accessToken).to.be.equal(feathers.settings.storage.store['benzed-jwt'])
         })
 
-        it('populates login.error if auth failed', async () => {
+        it('populates login.status with "authenticating" until auth complete', async () => {
+
+          const statuses = []
+
+          const fill = state => statuses.push(state.login.status)
+          rest.subscribe(fill, ['login', 'status'])
+
+          await rest.login(EMAIL, PASS)
+
+          expect(statuses).to.include('authenticating')
+          rest.unsubscribe(fill)
+
+        })
+
+        it('populates login.status with error if auth failed', async () => {
           await rest.login(EMAIL, PASS.repeat(2))
-          expect(rest.login.error).to.have.property('message', 'Invalid login')
+          expect(rest.login.status).to.have.property('message', 'Invalid login')
         })
 
         it('throws if host not resolved', () => {
@@ -479,7 +491,7 @@ describe('Client Store', () => {
 
         it('first logs out if user is logged in', async () => {
           await rest.login(EMAIL, PASS.repeat(2))
-          expect(rest.login.error).to.have.property('message', 'Invalid login')
+          expect(rest.login.status).to.have.property('message', 'Invalid login')
           expect(rest).to.have.property('userId', null)
 
           const feathers = rest[FEATHERS]
@@ -491,15 +503,15 @@ describe('Client Store', () => {
       })
 
       describe('logout', () => {
-        it('depopulates auth.userId and auth.error', async () => {
+        it('depopulates Client.userId and login..status', async () => {
 
           expect(rest.userId).to.not.equal(null)
-          rest.login.error = 'Log me out.'
+          rest.login.status = new Error('Log me out.')
 
           await rest.logout()
 
           expect(rest.userId).to.equal(null)
-          expect(rest.login.error).to.equal(null)
+          expect(rest.login.status).to.equal(null)
         })
         it('removes auth token from local storage', async () => {
 

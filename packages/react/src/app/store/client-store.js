@@ -283,16 +283,24 @@ async function authenticate (data) {
   const feathers = client[FEATHERS]
 
   let userId = null
+  let finalStatus = null
+
+  client.set(['login', 'status'], 'authenticating')
 
   if (client.userId)
     await client.logout()
 
-  const { accessToken } = await feathers.authenticate(data)
-  const payload = await feathers.passport.verifyJWT(accessToken)
+  try {
+    const { accessToken } = await feathers.authenticate(data)
+    const payload = await feathers.passport.verifyJWT(accessToken)
+    userId = payload.userId
 
-  userId = payload.userId
+  } catch (e) {
+    finalStatus = e
+  }
 
   client.set('userId', userId)
+  client.set(['login', 'status'], finalStatus)
 
   return userId
 
@@ -378,7 +386,7 @@ class ClientStore extends Store {
         : 'not connected to host.'))
 
     this.set('userId', null)
-    this.set(['login', 'error'], null)
+    this.set(['login', 'status'], null)
 
     // throw new Error('Not yet implemented.')
     const feathers = this.get(FEATHERS)

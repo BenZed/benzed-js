@@ -11,52 +11,15 @@ import Store from './store'
 const TASK = Symbol('task-action')
 
 /******************************************************************************/
-// Data
-/******************************************************************************/
-
-const TaskStatus = {
-  IDLE: 'idle',
-  RUNNING: 'running',
-  COMPLETE: 'complete'
-}
-
-const RESET_DELAY = 25
-
-/******************************************************************************/
 // Helper
 /******************************************************************************/
 
-function executeStatusEquals (other) {
-  const execute = this
+function actionEquals (bAction) {
+  const aAction = this
 
-  return is.func(other) &&
-    TASK in other &&
-    execute.progress === other.progress &&
-    execute.status === other.status &&
-    equals(execute.error, other.error)
+  return is.func(bAction) &&
+    TASK in bAction && equals(aAction.status, bAction.status)
 
-}
-
-async function resolveTask (task, promise) {
-  let result
-  try {
-    result = await promise
-  } catch (err) {
-    result = err
-    task.error(err)
-  }
-
-  task.status(TaskStatus.COMPLETE)
-
-  await milliseconds(RESET_DELAY)
-
-  // so multiple calls don't conflict
-  if (task.execute.status === TaskStatus.COMPLETE) {
-    task.status(TaskStatus.IDLE)
-    task.progress(0)
-  }
-
-  return result
 }
 
 /******************************************************************************/
@@ -78,41 +41,18 @@ class Task {
     this.store = store
     this.name = name
 
-    this.action = action
+    this.action = this::action
 
-    this.execute[TASK] = this
-    this.execute[EQUALS] = executeStatusEquals
-    this.execute.progress = 0
-    this.execute.status = TaskStatus.IDLE
-    this.execute.error = null
+    this.action[TASK] = this
+    this.action[EQUALS] = actionEquals
 
-    return this.execute
+    return this.action
   }
 
-  status (value = TaskStatus.IDLE) {
+  status = value => {
     this.set([this.name, 'status'], value)
   }
 
-  progress (value = 0) {
-    this.set([this.name, 'progress'], value)
-  }
-
-  error (value = null) {
-    this.set([this.name, 'error'], value)
-  }
-
-  execute = (...args) => {
-    // TODO throw error if task is running?
-
-    this.status(TaskStatus.RUNNING)
-    this.error(null)
-
-    // get the promise outside of the resolveTask async function
-    // so that if it throws an error, execute will throw as well
-    const promise = this.action(...args)
-
-    return resolveTask(this, promise)
-  }
 }
 
 /******************************************************************************/

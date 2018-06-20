@@ -11,6 +11,7 @@ import { StoreConsumer } from '../store/context'
 import ClientStore from './store/client-store'
 
 import { isEvent } from '../util'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Validation
@@ -70,7 +71,7 @@ const TempLoginPanel = styled.div`
 
 // TODO this needs to be refactored with @benzed inputs, panels, form elements and transition effects
 const LoginModal = ({
-  email, password, setEmail, setPassword, submit, visible, error, ...props
+  email, password, setEmail, setPassword, submit, visible, status, ...props
 }) =>
   <Visible visible={visible}>
     <Fade>
@@ -80,7 +81,7 @@ const LoginModal = ({
           <Slide from='top'>
             <div>
               <strong>Login</strong>
-              <span>{' ' + (error || '')}</span>
+              <span>{is(status, Error) ? ' ' + status.message : ''}</span>
             </div>
           </Slide>
 
@@ -131,12 +132,11 @@ class LoginLogic extends React.Component {
 
   onClientStoreUpdate = state => {
     const { host, userId } = state
-    const { status, error } = state.login
+    const { status } = state.login
 
     this.setState({
       status: status,
-      visible: !!host && !userId,
-      error: error && error.message
+      visible: !!host && !userId
     })
   }
 

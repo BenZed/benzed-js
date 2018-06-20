@@ -32,18 +32,17 @@ window.addEventListener('load', async () => {
 
     @task
     login (email, password) {
-      console.log(this)
       if (password === 'password')
         this.set('userId', 'some-user-id')
       else {
         this.set('userId', null)
-        this.set(['login', 'error'], { message: 'Bad Password.' })
+        this.status(new Error('Bad Password.'))
       }
 
       if (password === 'password')
         setTimeout(() => {
           this.set('userId', null)
-          this.set(['login', 'error'], { message: 'Kicked off.' })
+          this.status(new Error('Kicked off.'))
         }, 3000)
     }
 

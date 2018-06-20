@@ -54,7 +54,7 @@ fs.ensureDirSync(DB_PATH)
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('Login component', () => {
+describe('Login component', () => {
 
   Test.propTypes(LoginLogic, expectError => {
     describe('props.client', () => {
@@ -144,13 +144,13 @@ describe.only('Login component', () => {
         expect(test.root.instance.state.visible).to.be.equal(true)
       })
 
-      it('sets state.error from clientstore actions', async () => {
+      it('sets state.status from clientstore actions', async () => {
         const error = { message: 'Authentication did not happen.' }
 
-        client.set(['login', 'error'], error)
+        client.set(['login', 'status'], error)
         await milliseconds(5)
 
-        expect(test.root.instance.state.error).to.be.equal(error.message)
+        expect(test.root.instance.state.status).to.be.equal(error)
       })
     })
 
@@ -222,7 +222,7 @@ describe.only('Login component', () => {
           const { state } = test.root.instance
 
           expect(state.visible).to.be.equal(false)
-          expect(state.error).to.be.equal(null)
+          expect(state.status).to.be.equal(null)
           expect(client.userId).to.not.be.equal(null)
 
         })
