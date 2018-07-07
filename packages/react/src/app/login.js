@@ -26,49 +26,6 @@ const mustHaveAuth = value =>
 // Layout Components
 /******************************************************************************/
 
-// TEMP
-const TempLoginPanel = styled.div`
-
-  padding: 0.5em;
-  font-size: 1.5em;
-
-  color: white;
-
-  span {
-    color: rgb(255, 125, 125);
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  input, button {
-    color: inherit;
-    outline: none;
-    border: none;
-    background-color: transparent;
-    ::placeholder {
-      color: rgba(255,255,255,0.75);
-    }
-    padding: 0.25em;
-    margin: 0.25em;
-  }
-
-  button {
-    width: 2em;
-    margin-left: auto;
-    cursor: pointer;
-    &:hover {
-      opacity: 0.5;
-    }
-  }
-
-  input {
-    border-bottom: 1px solid white;
-  }
-`
-
 // TODO this needs to be refactored with @benzed inputs, panels, form elements and transition effects
 const LoginModal = ({
   email, password, setEmail, setPassword, submit, visible, status, ...props
@@ -76,32 +33,30 @@ const LoginModal = ({
   <Visible visible={visible}>
     <Fade>
       <Modal>
-        <TempLoginPanel>
 
-          <Slide from='top'>
-            <div>
-              <strong>Login</strong>
-              <span>{is(status, Error) ? ' ' + status.message : ''}</span>
-            </div>
+        <Slide from='top'>
+          <div>
+            <strong>Login</strong>
+            <span style={{ color: 'red' }}>{is(status, Error) ? ' ' + status.message : ''}</span>
+          </div>
+        </Slide>
+
+        <form onSubmit={submit}>
+
+          <Slide from='left' to='right'>
+            <input value={email} onChange={setEmail} placeholder='Email'/>
           </Slide>
 
-          <form onSubmit={submit}>
+          <Slide from='right' to='left'>
+            <input value={password} onChange={setPassword} placeholder='Password' type='password'/>
+          </Slide>
 
-            <Slide from='left' to='right'>
-              <input value={email} onChange={setEmail} placeholder='Email'/>
-            </Slide>
+          <Slide from='bottom'>
+            <button type='submit'>Submit</button>
+          </Slide>
 
-            <Slide from='right' to='left'>
-              <input value={password} onChange={setPassword} placeholder='Password' type='password'/>
-            </Slide>
+        </form>
 
-            <Slide from='bottom'>
-              <button type='submit'>Submit</button>
-            </Slide>
-
-          </form>
-
-        </TempLoginPanel>
       </Modal>
     </Fade>
   </Visible>

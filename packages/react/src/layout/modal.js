@@ -20,6 +20,8 @@ const Modal = styled.div`
   z-index: ${Z};
 
   display: flex;
+  flex-direction: column;
+
   align-items: center;
   justify-content: center;
 

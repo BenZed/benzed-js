@@ -1,5 +1,4 @@
 import 'normalize.css'
-import './assets/benzed-react.css'
 
 const dependencies = Promise.all([
   import('react'),
