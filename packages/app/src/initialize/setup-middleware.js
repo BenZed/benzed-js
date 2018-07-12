@@ -29,7 +29,7 @@ function setupMiddleware () {
 
   // if app.rest is a function, it's expected to be middleware
   if (app.rest)
-    app.rest(rest.public)
+    app.rest(rest)
 
   if (hasPublic && hasSSR)
     feathers

@@ -119,6 +119,27 @@ describe('createProject()', () => {
 
     })
 
+    describe('creates sites', () => {
+
+      const options = {
+        dir: WORK_DIR,
+        name: 'test-site',
+
+        socketio: false,
+        rest: true,
+
+        ui: true,
+        api: true,
+        routing: true,
+
+        auth: false,
+        files: false
+      }
+
+      testCreateProject(options)
+
+    })
+
     // describe('creates boss-media-www', function () {
     //   this.timeout(50000)
     //
