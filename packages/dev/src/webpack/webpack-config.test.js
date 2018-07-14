@@ -109,7 +109,9 @@ describe('WebpackConfig', () => {
         expect(is.plainObject(wc)).to.be.equal(true)
       })
       it('does not resolve .jsx files', () => {
-        expect(wc.resolve.extensions).to.not.include('.jsx')
+        expect(
+          wc.resolve.extensions || []
+        ).to.not.include('.jsx')
       })
       it('resolves src root', () => {
         const SRC = path.join(process.cwd(), 'src')
