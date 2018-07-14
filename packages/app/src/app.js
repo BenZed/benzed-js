@@ -68,9 +68,6 @@ async function kill () {
 // Main
 /******************************************************************************/
 
-// The App class itself is an abstractish class that should be extended to
-// add services/middleware
-
 class App {
 
   static async run (config) {

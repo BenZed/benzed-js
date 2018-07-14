@@ -1,15 +1,11 @@
-import Color from 'color'
+import Doc from './doc'
+import Label from './label'
 
 /******************************************************************************/
-// Data
+// Exports
 /******************************************************************************/
 
-export default {
-
-  bg: Color('black'),
-  fg: Color('white'),
-
-  fontTitle: 'Arial Black',
-  fontBody: 'Helvetica'
-
+export {
+  Doc,
+  Label
 }

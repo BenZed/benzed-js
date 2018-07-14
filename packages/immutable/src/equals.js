@@ -38,6 +38,28 @@ function namesAndSymbols (value) {
 // Main
 /******************************************************************************/
 
+/**
+ * Compares value equality of two inputs.
+ *
+ * Two operands are considered value equal if they:
+ *
+ * - Are equal primitives.
+ *
+ * - Are both NaN.
+ *
+ * - Implement symbolic EQUALS or string 'equals' method, which returns
+ * true when given the opposing operand as input.
+ *
+ * - Are both objects with value equal string and symbolic keys.
+ *
+ * - Are both arrays with order and value equal items.
+ *
+ * - Are reference equal.
+ *
+ * @param  {*} a Left hand operand.
+ * @param  {*} b Right hand operand.
+ * @return {boolean} True if two elements are value equal, false if not.
+ */
 function equals (a, b) {
 
   if (this !== undefined) {

@@ -79,13 +79,17 @@ function copyConsideringReferences (value, refs) {
 /**
  * Returns a recursive duplicate of the input.
  *
- * If the input has a symbolic COPY or string 'copy' method, it's out put is returned.
- * Otherwise, the copy is made by assigning string and symbol properties to new objects.
- * In the case of arrays, maps and sets, new instances are returned with their iteration
- * results as arguments.
+ * If the input has a symbolic COPY or string copy method, it's output is
+ * returned.
  *
- * @param  {*} value object or value to copy
- * @return {*}       copied value or object
+ * Otherwise, the copy is made by assigning string and symbol properties to new
+ * objects.
+ *
+ * In the case of arrays, maps and sets, new instances are returned with their
+ * iteration results as arguments.
+ *
+ * @param  {*} value Object or value to copy.
+ * @return {*}       Copied value or object.
  */
 function copy (value) {
 

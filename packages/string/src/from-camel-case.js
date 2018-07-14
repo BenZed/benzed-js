@@ -4,11 +4,11 @@
 /******************************************************************************/
 
 /**
- * fromCamelCase converts a string to dash case
+ * Converts a string to "dash-case".
  *
- * @param  {string} str           input
- * @param  {string|RegExp} limiter = /-/ delimiter
- * @return {string}               dash cased string
+ * @param  {string} str           Input.
+ * @param  {string|RegExp} limiter=/-/ Delimiter.
+ * @return {string}               Dash-cased string.
  */
 function fromCamelCase (str, joiner = '-') {
 

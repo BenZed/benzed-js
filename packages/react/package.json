@@ -7,8 +7,8 @@
   "scripts": {
     "test": "mocha --opts .mocha.opts",
     "test:dev": "npx watch 'npm run test' src test",
-    "build": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
-    "build:dev": "npm run build -- --watch",
+    "babel": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
+    "babel:dev": "npm run babel -- --watch",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
@@ -32,18 +32,18 @@
     "@benzed/immutable": "latest",
     "@benzed/schema": "latest",
     "@feathersjs/authentication-client": "^1.0.2",
-    "@feathersjs/feathers": "^3.1.5",
-    "@feathersjs/rest-client": "^1.4.0",
-    "@feathersjs/transport-commons": "^4.0.1",
+    "@feathersjs/feathers": "^3.1.7",
+    "@feathersjs/rest-client": "^1.4.1",
+    "@feathersjs/transport-commons": "^4.1.1",
     "add-event-listener": "0.0.1",
     "color": "^3.0.0",
     "is-explicit": "^2.1.0",
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.0",
-    "prop-types": "^15.6.1",
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
     "socket.io-client": "^2.1.1",
-    "styled-components": "^3.3.0"
+    "styled-components": "^3.3.3"
   }
 }

@@ -1,0 +1,14 @@
+{
+
+  "port": 5100,
+
+  "rest": null,
+
+  "services": { },
+
+  "socketio": true,
+  "auth": false,
+
+  "logging": true,
+  "generator": true
+}

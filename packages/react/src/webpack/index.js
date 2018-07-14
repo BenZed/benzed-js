@@ -1,8 +1,7 @@
 import 'normalize.css'
 
 const dependencies = Promise.all([
-  import('react'),
-  import('react-dom'),
+  import('@benzed/react'),
   import('./example'),
   import('../app'),
   import('../store')

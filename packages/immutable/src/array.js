@@ -29,6 +29,14 @@ function assertArrayLike (arr, name) {
 // Immutable versions of array methods
 /******************************************************************************/
 
+/**
+ * Immutable version of Array.prototype.push.
+ * Input Array is unscathed.
+ *
+ * @param {Array} obj       Array or ArrayLike to copy.
+ * @param {*}     ...items  Items to push.
+ * @return {Array}          Copied Array with pushed items.
+ */
 export function push (...args) {
 
   const arr = this !== undefined

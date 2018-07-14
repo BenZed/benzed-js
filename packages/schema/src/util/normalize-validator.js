@@ -28,7 +28,12 @@ function reduceValidator (validator) {
 let object, arrayOf
 
 function resolveCircularDependency ([ to ]) {
-  return require('../types/' + to).default
+
+  const types = require('../types')
+
+  return to === 'array-of'
+    ? types.arrayOf
+    : types.object
 }
 
 /******************************************************************************/

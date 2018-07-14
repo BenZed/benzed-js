@@ -3,6 +3,12 @@
 // Main
 /******************************************************************************/
 
+/**
+ * Determines if a number is prime.
+ *
+ * @param  {number} value Value to test.
+ * @return {boolean}      True if value is prime, false otherwise.
+ */
 function isPrime (value) {
 
   // handles #::isPrime

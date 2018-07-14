@@ -14,6 +14,12 @@ function pushValueIfUnique (result, value) {
 // Main
 /******************************************************************************/
 
+/**
+ * create an array reduced to unique values
+ *
+ * @param  {Array|ArrayLike|Iterable} input Object to reduced
+ * @return {Array}       array reduced to unique values
+ */
 function unique (input) {
 
   if (this !== undefined)

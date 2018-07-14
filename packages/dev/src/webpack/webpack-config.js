@@ -98,14 +98,9 @@ function validateConfig (config = { }) {
 
 const rules = [
   {
-    test: /\.js$/,
+    test: path => /\.js$/.test(path) && !/\.test\.js$/.test(path),
     exclude: /node_modules/,
     loader: 'babel-loader'
-  },
-  {
-    test: /\.json$/,
-    exclude: /node_modules/,
-    loader: 'json-loader'
   },
   {
     test: /\.css/,

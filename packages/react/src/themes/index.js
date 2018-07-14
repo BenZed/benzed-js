@@ -1,4 +1,4 @@
-import generic from './generic'
+import basic from './basic'
 import GlobalStyle from './global-style'
 
 /******************************************************************************/
@@ -7,5 +7,5 @@ import GlobalStyle from './global-style'
 
 export {
   GlobalStyle,
-  generic
+  basic
 }

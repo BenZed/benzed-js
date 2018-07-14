@@ -3,6 +3,14 @@
 // Main
 /******************************************************************************/
 
+/**
+ * pluck - removes a number of items from an array that pass a test
+ *
+ * @param  {Array} arr                 array to mutate
+ * @param  {Function} test             predicate to run on each item
+ * @param  {number} count = arr.length max number of items
+ * @return {Array}                     items removed via test
+ */
 function pluck (arr, test, count = arr.length) {
 
   if (this !== undefined) {

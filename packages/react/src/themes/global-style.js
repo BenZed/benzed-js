@@ -1,4 +1,5 @@
-import styled, { injectGlobal, withTheme } from 'styled-components'
+import { injectGlobal, ThemeProvider } from 'styled-components'
+import { Cloner } from '../util'
 import React from 'react'
 
 // import { $ } from '../util'
@@ -15,7 +16,11 @@ import React from 'react'
 // Helper
 /******************************************************************************/
 
+let tempInjectedGlobal = false
+
 function tempInjectGlobal (theme) {
+
+  tempInjectedGlobal = true
 
   injectGlobal`
 
@@ -26,8 +31,8 @@ function tempInjectGlobal (theme) {
     }
 
     body {
-      color: ${theme.fg};
-      background-color: ${theme.bg};
+      color: ${`${theme.fg}`};
+      background-color: ${`${theme.bg}`};
       font-family: ${theme.body};
     }
 
@@ -77,7 +82,6 @@ function tempInjectGlobal (theme) {
       border-bottom: 1px solid;
 
     }
-
   `
 }
 
@@ -85,26 +89,14 @@ function tempInjectGlobal (theme) {
 // Main Component
 /******************************************************************************/
 
-class GlobalStyle extends React.Component {
+const GlobalStyle = ({ theme, children }) => {
 
-  static mounted = false
+  if (!tempInjectedGlobal)
+    tempInjectGlobal(theme)
 
-  componentDidMount () {
-    if (GlobalStyle.mounted)
-      throw new Error('Cannot mount the GlobalStyle component twice.')
-
-    GlobalStyle.mounted = true
-
-    tempInjectGlobal(this.props.theme)
-  }
-
-  componentWillUnmount () {
-    throw new Error('Cannot dismount the GlobalStyle component.')
-  }
-
-  render () {
-    return this.props.children
-  }
+  return <ThemeProvider theme={theme}>
+    <Cloner>{ children }</Cloner>
+  </ThemeProvider>
 
 }
 
@@ -112,4 +104,4 @@ class GlobalStyle extends React.Component {
 // Exports
 /******************************************************************************/
 
-export default withTheme(GlobalStyle)
+export default GlobalStyle

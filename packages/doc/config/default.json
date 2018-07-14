@@ -1,0 +1,20 @@
+{
+  "services": { },
+
+  "rest": {
+    "public": "./dist/public",
+    "favicon": null
+  },
+
+  "socketio": false,
+
+  "auth": false,
+
+  "port": 5100,
+
+  "logging": true,
+
+  "generator": {
+
+  }
+}

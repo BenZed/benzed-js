@@ -18,16 +18,16 @@ const { names, packages } = getPackages()
 
 const subs = eachPackage((name, dir) => {
 
-  packageLog(name, 'start build:dev'.bgCyan)
+  packageLog(name, 'start babel:dev'.bgCyan)
 
-  const buildDev = spawn('npm', ['run', 'build:dev'], { cwd: dir })
+  const buildDev = spawn('npm', ['run', 'babel:dev'], { cwd: dir })
 
   buildDev.stdout.on('data', data => {
     packageLog(name, data.toString().trim())
   })
 
   buildDev.on('close', () => {
-    packageLog(name, 'stop build:dev'.white.bgRed)
+    packageLog(name, 'stop babel:dev'.white.bgRed)
   })
 
   return buildDev

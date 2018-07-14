@@ -4,11 +4,11 @@
 /******************************************************************************/
 
 /**
- * converts a string to camel case
+ * Converts a string to camelCase.
  *
- * @param  {string} str           input
- * @param  {string|RegExp} limiter = /-/ delimiter
- * @return {string}               camel cased string
+ * @param  {string} str           Input.
+ * @param  {string|RegExp} limiter=/-/ Delimiter.
+ * @return {string}               camelCased string.
  */
 function toCamelCase (str, limiter = /-/) {
 

@@ -9,6 +9,12 @@ import { copy } from '@benzed/immutable'
 // Main
 /******************************************************************************/
 
+/**
+ * Higher order function for creating validators.
+ *
+ * @param  {*} ...args Schema definition arguments.
+ * @return {Function}  Validation function.
+ */
 function Schema (raw, ...args) {
 
   const normalized = normalizeValidator(raw, ...args)

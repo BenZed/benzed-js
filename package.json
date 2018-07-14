@@ -4,7 +4,7 @@
   "description": "Mono repo for all of BenZeds util and helper classes for scoped npm distribution.",
   "main": "index.js",
   "scripts": {
-    "build:dev": "node scripts/build-dev.js",
+    "babel:dev": "node scripts/babel-dev.js",
     "reinstall": "bash scripts/reinstall.sh",
     "install": "bash scripts/install.sh",
     "update": "bash scripts/update.sh",

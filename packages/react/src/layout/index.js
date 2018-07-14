@@ -1,7 +1,9 @@
 import Modal from './modal'
+import Scroll from './scroll'
+import Flex from './flex'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { Modal }
+export { Modal, Scroll, Flex }

@@ -4,10 +4,10 @@
 /******************************************************************************/
 
 /**
- * capitalizes a string
+ * Capitalizes a string.
  *
- * @param  {string} str description
- * @return {string}     description
+ * @param  {string} str Source string.
+ * @return {string}     Capitalized string.
  */
 function capitalize (str) {
 

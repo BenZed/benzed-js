@@ -3,6 +3,16 @@
 // Main
 /******************************************************************************/
 
+/**
+ * Gets a substring between the two given markers.
+ *
+ * @param  {string} str        Source string.
+ * @param  {string} open       Open marker.
+ * @param  {string} close=open Close marker.
+ *
+ * @return {string}            Substring of the source between the two markers.
+ * @return {null}              If nothing could be found.
+ */
 function between (str, open, close = open) {
 
   if (this !== undefined) {

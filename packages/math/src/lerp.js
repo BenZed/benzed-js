@@ -3,16 +3,24 @@
 // Main
 /******************************************************************************/
 
-function lerp (from, to, delta) {
+/**
+ * Linearly interpolate a number to a target according to a delta.
+ *
+ * @param  {number} from
+ * @param  {number} to
+ * @param  {number} factor Factor by which to interpolate
+ * @return {number} Inerpolated value.
+ */
+function lerp (from, to, factor) {
 
   // handles #::lerp(#,#)
   if (typeof this === 'number') {
-    delta = to
+    factor = to
     to = from
     from = this
   }
 
-  return from + delta * (to - from)
+  return from + factor * (to - from)
 
 }
 
