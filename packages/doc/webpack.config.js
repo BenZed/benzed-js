@@ -35,10 +35,13 @@ webpackConfig.resolve.modules = [
 ]
 webpackConfig.resolve.alias = {}
 
+webpackConfig.output.publicPath = ''
+
 // Alias BenZed Packages
 for (const name of names)
   webpackConfig.resolve.alias[`@benzed/${name}`] = path.join(BENZED_PKG, name)
 
+console.log(webpackConfig)
 /******************************************************************************/
 // Exports
 /******************************************************************************/
