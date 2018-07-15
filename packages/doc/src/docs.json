@@ -1345,27 +1345,27 @@
     "description": "Data sanitization and validation through Schemas",
     "doc": [
       {
-        "comment": "/**\n * PropTypeSchema - Description\n *\n * @param {type} object Description\n *\n * @return {type} Description\n */",
-        "description": "PropTypeSchema - Description",
+        "comment": "/**\n * Constructor for creating propType definitions with @benzed/schema\n *\n * @param {Object} input Object of functions, with keys as props.\n *\n * @return {Object} Output propTypes.\n */",
+        "description": "Constructor for creating propType definitions with @benzed/schema",
         "params": [
           {
             "type": {
               "names": [
-                "type"
+                "Object"
               ]
             },
-            "description": "Description",
-            "name": "object"
+            "description": "Object of functions, with keys as props.",
+            "name": "input"
           }
         ],
         "returns": [
           {
             "type": {
               "names": [
-                "type"
+                "Object"
               ]
             },
-            "description": "Description"
+            "description": "Output propTypes."
           }
         ],
         "name": "PropTypeSchema",

@@ -1,6 +1,7 @@
 import Context from './util/context'
 import normalizeValidator from './util/normalize-validator'
 import is from 'is-explicit'
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -25,26 +26,25 @@ function propCheck (props, propName, componentName = 'Anonymous Component') {
 /******************************************************************************/
 
 /**
- * PropTypeSchema - Description
+ * Constructor for creating propType definitions with @benzed/schema
  *
- * @param {type} object Description
+ * @param {Object} input Object of functions, with keys as props.
  *
- * @return {type} Description
+ * @return {Object} Output propTypes.
  */
-function PropTypeSchema (object) {
+function PropTypeSchema (input) {
 
-  if (!is.objectOf.func(object))
+  if (!is.objectOf.func(input))
     throw new Error('PropTypeSchema must be defined with an object of validators.')
 
   const output = {}
 
-  for (const key in object) {
-    const validator = object[key]
+  for (const key in input) {
+    const validator = input[key]
     output[key] = normalizeValidator(validator)::propCheck
   }
 
   return output
-
 }
 
 /******************************************************************************/

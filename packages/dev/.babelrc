@@ -11,5 +11,6 @@
   "plugins": [
     "transform-decorators-legacy",
     "styled-components"
-  ]
+  ],
+  "comments": false
 }

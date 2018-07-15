@@ -117,39 +117,12 @@ names.sort((a,b) => {
 for (const name of names)
   install(name, DEPS[name])
 
+// Link each package node_modules to bootstrap/node_modules
+eachPackage((name, dir) => {
 
-  // Link node_modules
-  eachPackage((name, dir) => {
+  const inPkgModules = path.join(dir, 'node_modules')
+  const inBootModules = path.join(BOOTSTRAP, 'node_modules')
 
-    const inPkgModules = path.join(dir, 'node_modules')
-    const inBootModules = path.join(BOOTSTRAP, 'node_modules')
-
-    link(inPkgModules, inBootModules)
-    packageLog(name, 'node_modules linked')
-  })
-
-// TODO couldn't make this work, but ideally this would be better
-// SO that packages cant use dependencies that arn't somewhere in their package.json
-
-// Link Dependencies
-// forEachPackageDependency(({ pkg, pkgDir, dep, depVersion }) => {
-//
-//   const inPkgModules = path.join(pkgDir, 'node_modules', dep)
-//   fs.ensureDirSync(path.dirname(inPkgModules))
-//
-//   const inBootModules = path.join(BOOTSTRAP, 'node_modules', dep)
-//
-//   link(inPkgModules, inBootModules)
-//
-//   packageLog(pkg, dep + ' symlinked')
-// })
-
-// // Link .bin
-// eachPackage((name, dir) => {
-//
-//   const inPkgModules = path.join(dir, 'node_modules', '.bin')
-//   const inBootModules = path.join(BOOTSTRAP, 'node_modules', '.bin')
-//
-//   link(inPkgModules, inBootModules)
-//   packageLog(name, '.bin linked')
-// })
+  link(inPkgModules, inBootModules)
+  packageLog(name, 'node_modules linked')
+})

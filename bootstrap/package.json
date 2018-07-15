@@ -3,14 +3,6 @@
   "repository": "non-existant",
   "license": "ISC",
   "dependencies": {
-    "@benzed/app": "latest",
-    "@benzed/array": "latest",
-    "@benzed/async": "latest",
-    "@benzed/dev": "latest",
-    "@benzed/immutable": "latest",
-    "@benzed/react": "latest",
-    "@benzed/schema": "latest",
-    "@benzed/string": "latest",
     "@feathersjs/authentication": "^2.1.7",
     "@feathersjs/authentication-client": "^1.0.2",
     "@feathersjs/authentication-jwt": "^2.0.1",
@@ -79,6 +71,14 @@
     "watchr": "^4.0.1",
     "webpack": "^4.16.0",
     "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.4",
+    "@benzed/array": "latest",
+    "@benzed/immutable": "latest",
+    "@benzed/schema": "latest",
+    "@benzed/string": "latest",
+    "@benzed/dev": "latest",
+    "@benzed/async": "latest",
+    "@benzed/app": "latest",
+    "@benzed/react": "latest"
   }
 }

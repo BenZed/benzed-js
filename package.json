@@ -8,7 +8,7 @@
     "update": "bash scripts/update.sh",
     "build": "bash scripts/build.sh",
     "bootstrap": "node scripts/boot-strap.js",
-    "bootstrap:hard": "bash scripts/boot-strap-hard.sh"
+    "bootstrap:hard": "node scripts/boot-strap-hard.js"
   },
   "author": "BenZed",
   "license": "ISC",
