@@ -21,7 +21,7 @@
   "license": "ISC",
   "description": "Data sanitization and validation through Schemas",
   "devDependencies": {
-    "@benzed/dev": "^0.7.0"
+    "@benzed/dev": "latest"
   },
   "dependencies": {
     "@benzed/array": "latest",
