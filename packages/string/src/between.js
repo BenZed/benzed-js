@@ -15,7 +15,8 @@
  */
 function between (str, open, close = open) {
 
-  if (this !== undefined) {
+  if (this
+    !== undefined) {
     close = open || str
     open = str
     str = this
