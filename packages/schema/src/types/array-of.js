@@ -69,6 +69,13 @@ function validateArrayOf (array, context, config, skipItems = false) {
 // arrayOf
 /******************************************************************************/
 
+/**
+ * arrayOf - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function arrayOf (...args) {
 
   const config = arrayTypeConfig(args, 'arrayOf')

@@ -58,6 +58,15 @@ function checkLayouts (layouts) {
 // Move
 /******************************************************************************/
 
+/**
+ * argsToConfig - Description
+ *
+ * @param {type}    layouts                        Description
+ * @param {string}  [masterErrName=validator]      Description
+ * @param {boolean} [allowSingleObjectConfig=true] Description
+ *
+ * @return {type} Description
+ */
 function argsToConfig (
   layouts,
   masterErrName = 'validator',

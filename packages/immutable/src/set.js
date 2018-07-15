@@ -4,6 +4,15 @@ import copy from './copy'
 // Main
 /******************************************************************************/
 
+/**
+ * set - Description
+ *
+ * @param {type} object Description
+ * @param {type} path   Description
+ * @param {type} value  Description
+ *
+ * @return {type} Description
+ */
 function set (object, path, value) {
 
   if (this !== undefined) {

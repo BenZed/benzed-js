@@ -1,4 +1,7 @@
 import { App } from '@benzed/app'
+
+import React from 'react'
+
 import * as services from './services'
 
 import Website from '../ui/root/website'

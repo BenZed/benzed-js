@@ -22,6 +22,13 @@ const formatConfig = argsToConfig([
 // Main
 /******************************************************************************/
 
+/**
+ * format - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function format (...args) {
 
   const { err, regex } = formatConfig(args)

@@ -16,6 +16,13 @@ const castConfig = argsToConfig({
 // Main
 /******************************************************************************/
 
+/**
+ * cast - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function cast (...args) {
 
   const { casters } = castConfig(args)

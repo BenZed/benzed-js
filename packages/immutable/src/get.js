@@ -4,6 +4,14 @@ import copy from './copy'
 // Main
 /******************************************************************************/
 
+/**
+ * get - Description
+ *
+ * @param {type} object Description
+ * @param {type} path   Description
+ *
+ * @return {type} Description
+ */
 function get (object, path) {
 
   if (this !== undefined) {

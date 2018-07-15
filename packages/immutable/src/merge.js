@@ -22,6 +22,14 @@ function mergeMutate (a, b) {
 // Main
 /******************************************************************************/
 
+/**
+ * merge - Description
+ *
+ * @param {type} a Description
+ * @param {type} b Description
+ *
+ * @return {type} Description
+ */
 function merge (a, b) {
 
   if (this !== undefined) {

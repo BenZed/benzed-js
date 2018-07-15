@@ -27,6 +27,13 @@ const toBoolean = value => {
 // Main
 /******************************************************************************/
 
+/**
+ * bool - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function bool (...args) {
   const config = specificTypeConfig(args)
 

@@ -10,7 +10,7 @@
 
   "auth": false,
 
-  "port": 5100,
+  "port": 5150,
 
   "logging": true,
 

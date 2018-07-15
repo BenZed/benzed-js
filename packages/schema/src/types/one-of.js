@@ -10,6 +10,13 @@ import Context from '../util/context'
 // Main
 /******************************************************************************/
 
+/**
+ * oneOf - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function oneOf (...args) {
 
   const config = enumTypeConfig(args)

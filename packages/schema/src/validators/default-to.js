@@ -21,6 +21,13 @@ const defaultConfig = argsToConfig(
 // Main
 /******************************************************************************/
 
+/**
+ * defaultTo - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function defaultTo (...args) {
 
   const { value, call } = defaultConfig(args)

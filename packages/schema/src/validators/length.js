@@ -14,6 +14,13 @@ function defaultLengthError (diff, ...values) {
 // Main
 /******************************************************************************/
 
+/**
+ * length - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function length (...args) {
 
   const compare = argsToRangeCompare([ ...args, defaultLengthError ])

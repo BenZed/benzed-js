@@ -30,6 +30,13 @@ const toString = value => {
 // Main
 /******************************************************************************/
 
+/**
+ * string - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function string (...args) {
 
   const config = specificTypeConfig(args)

@@ -7,6 +7,13 @@ import validate from '../util/validate'
 // Main
 /******************************************************************************/
 
+/**
+ * any - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function any (...args) {
 
   const config = anyTypeConfig(args)

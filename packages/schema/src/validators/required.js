@@ -21,6 +21,13 @@ const configRequired = argsToConfig({
 // Main
 /******************************************************************************/
 
+/**
+ * required - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function required (...args) {
 
   const { err } = configRequired(args)

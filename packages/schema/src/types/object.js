@@ -104,6 +104,13 @@ function validateObject (value, context, config, skipSelf = false) {
 // Main
 /******************************************************************************/
 
+/**
+ * object - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function object (...args) {
 
   const config = objectConfig(args)

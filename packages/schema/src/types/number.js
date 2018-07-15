@@ -7,6 +7,13 @@ import typeOf from './type-of'
 // Main
 /******************************************************************************/
 
+/**
+ * number - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function number (...args) {
   const config = specificTypeConfig(args)
 

@@ -10,15 +10,14 @@ import theme from '../../theme'
 // Main
 /******************************************************************************/
 
-const Website = ({ children, packages, ...props }) => {
+const Website = ({ children, packages, ...props }) =>
 
-  return <GlobalStyle theme={theme}>
+  <GlobalStyle theme={theme}>
     <Navigation packages={packages} />
     <Scroll y>
       <Routes packages={packages} />
     </Scroll>
   </GlobalStyle>
-}
 
 /******************************************************************************/
 // Exports

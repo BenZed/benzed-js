@@ -12,6 +12,13 @@ import Context from '../util/context'
 // Main
 /******************************************************************************/
 
+/**
+ * typeOf - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function typeOf (...args) {
 
   const config = typeConfig(args)

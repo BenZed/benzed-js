@@ -43,6 +43,7 @@ function generateDocs (config) {
   const pkgdocs = fs.readdirSync(PACKAGES)
     .filter(name => name !== THIS_PACKAGE)
     .map(name => path.join(PACKAGES, name))
+    .filter(file => fs.statSync(file).isDirectory())
     .map(generatePackageDocs)
 
   fs.writeJsonSync(DOC_JSON, pkgdocs, { spaces: 2 })

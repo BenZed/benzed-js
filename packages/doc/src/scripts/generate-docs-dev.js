@@ -51,8 +51,7 @@ function listener (changeType, fullPath) {
 // Execute
 /******************************************************************************/
 
-if (!fs.existsSync(DOC_JSON))
-  require('./generate-docs')
+require('./generate-docs')
 
 PACKAGE_NAMES.map(name =>
   watchr

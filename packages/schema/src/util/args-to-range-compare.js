@@ -152,6 +152,13 @@ function fixImplicitConfig (operator, numbers) {
 // Main
 /******************************************************************************/
 
+/**
+ * argsToRangeCompare - Description
+ *
+ * @param {type} args Description
+ *
+ * @return {type} Description
+ */
 const argsToRangeCompare = args => {
 
   if (!is(args, Array))

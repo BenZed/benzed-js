@@ -7,7 +7,7 @@ import Page from './page'
 
 const Home = ({ children, location, ...props }) =>
   <Page>
-    <h2 {...props}>
+    <h2>
       {location.pathname}
     </h2>
   </Page>

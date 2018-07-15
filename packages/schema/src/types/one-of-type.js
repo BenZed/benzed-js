@@ -86,6 +86,13 @@ function validateOneOfType (value, context, config, index = 0, oneSuccess = fals
 // Main
 /******************************************************************************/
 
+/**
+ * oneOfType - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 function oneOfType (...args) {
 
   const config = multiTypeConfig(args)

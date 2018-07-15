@@ -3,9 +3,23 @@
 // Main
 /******************************************************************************/
 
+/**
+ * seconds - Description
+ *
+ * @param {type} num Description
+ *
+ * @return {type} Description
+ */
 const seconds = num =>
   milliseconds(num * 1000)
 
+/**
+ * milliseconds - Description
+ *
+ * @param {type} num Description
+ *
+ * @return {type} Description
+ */
 const milliseconds = num =>
   new Promise(
     resolve => setTimeout(
@@ -14,6 +28,13 @@ const milliseconds = num =>
     )
   )
 
+/**
+ * until - Description
+ *
+ * @param {object} [config={}] Description
+ *
+ * @return {type} Description
+ */
 async function until (config = {}) {
 
   if (typeof config === 'function')

@@ -24,6 +24,13 @@ function propCheck (props, propName, componentName = 'Anonymous Component') {
 // Main
 /******************************************************************************/
 
+/**
+ * PropTypeSchema - Description
+ *
+ * @param {type} object Description
+ *
+ * @return {type} Description
+ */
 function PropTypeSchema (object) {
 
   if (!is.objectOf.func(object))

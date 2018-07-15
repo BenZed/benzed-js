@@ -16,6 +16,15 @@ export { atan2, hypot, imul, max, min }
 // Overridden functions
 /******************************************************************************/
 
+/**
+ * random - Description
+ *
+ * @param {number} [min=0] Description
+ * @param {type}   max     Description
+ * @param {type}   various Description
+ *
+ * @return {type} Description
+ */
 export function random (min = 0, max, various) {
 
   // handles #::random()
@@ -63,6 +72,13 @@ export function random (min = 0, max, various) {
   return value
 }
 
+/**
+ * round - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 export function round (...args) {
 
   let value, place
@@ -78,6 +94,13 @@ export function round (...args) {
 
 }
 
+/**
+ * floor - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 export function floor (...args) {
 
   let value, place
@@ -97,6 +120,13 @@ export function floor (...args) {
 
 }
 
+/**
+ * ceil - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 export function ceil (...args) {
 
   let value, place

@@ -53,6 +53,13 @@ export function push (...args) {
   return clone
 }
 
+/**
+ * pop - Description
+ *
+ * @param {type} arr Description
+ *
+ * @return {type} Description
+ */
 export function pop (arr) {
 
   if (this !== undefined)
@@ -68,6 +75,13 @@ export function pop (arr) {
   return clone
 }
 
+/**
+ * shift - Description
+ *
+ * @param {type} arr Description
+ *
+ * @return {type} Description
+ */
 export function shift (arr) {
 
   if (this !== undefined)
@@ -83,6 +97,13 @@ export function shift (arr) {
   return clone
 }
 
+/**
+ * unshift - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 export function unshift (...args) {
 
   const arr = this !== undefined
@@ -99,6 +120,13 @@ export function unshift (...args) {
   return clone
 }
 
+/**
+ * splice - Description
+ *
+ * @param {array} args Description
+ *
+ * @return {type} Description
+ */
 export function splice (...args) {
 
   const arr = this !== undefined
@@ -115,6 +143,13 @@ export function splice (...args) {
   return clone
 }
 
+/**
+ * reverse - Description
+ *
+ * @param {type} arr Description
+ *
+ * @return {type} Description
+ */
 export function reverse (arr) {
 
   if (this !== undefined)
@@ -130,6 +165,14 @@ export function reverse (arr) {
   return clone
 }
 
+/**
+ * sort - Description
+ *
+ * @param {type} arr  Description
+ * @param {type} func Description
+ *
+ * @return {type} Description
+ */
 export function sort (arr, func) {
 
   if (this !== undefined) {
@@ -147,6 +190,13 @@ export function sort (arr, func) {
   return clone
 }
 
+/**
+ * shuffle - Description
+ *
+ * @param {type} arr Description
+ *
+ * @return {type} Description
+ */
 export function shuffle (arr) {
 
   if (this !== undefined)
@@ -163,6 +213,13 @@ export function shuffle (arr) {
 // Array lookup methods that use value equality rather than reference equality
 /******************************************************************************/
 
+/**
+ * unique - Description
+ *
+ * @param {type} arr Description
+ *
+ * @return {type} Description
+ */
 export function unique (arr) {
 
   if (this !== undefined)
@@ -203,6 +260,14 @@ export function unique (arr) {
 // Array lookup methods that use value equality rather than reference equality
 /******************************************************************************/
 
+/**
+ * includes - Description
+ *
+ * @param {type} arr   Description
+ * @param {type} value Description
+ *
+ * @return {type} Description
+ */
 export function includes (arr, value) {
 
   if (this !== undefined) {
@@ -213,6 +278,14 @@ export function includes (arr, value) {
   return indexOf(arr, value) > -1
 }
 
+/**
+ * indexOf - Description
+ *
+ * @param {type} arr   Description
+ * @param {type} value Description
+ *
+ * @return {type} Description
+ */
 export function indexOf (arr, value) {
 
   if (this !== undefined) {
@@ -229,6 +302,14 @@ export function indexOf (arr, value) {
   return -1
 }
 
+/**
+ * lastIndexOf - Description
+ *
+ * @param {type} arr   Description
+ * @param {type} value Description
+ *
+ * @return {type} Description
+ */
 export function lastIndexOf (arr, value) {
 
   if (this !== undefined) {

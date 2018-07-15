@@ -3,40 +3,7 @@
     "version": "0.4.0",
     "name": "app",
     "description": "API architecture on top of feathers.",
-    "doc": [
-      {
-        "comment": "/**\n * A function which starts an app, killing the process if initialize or start fails.\n *\n * @this   {App}\n * @param  {Object|Path} config Configuration to send to App.\n * @return {Promise}\n * @async\n */",
-        "description": "A function which starts an app, killing the process if initialize or start fails.",
-        "this": "{App}",
-        "params": [
-          {
-            "type": {
-              "names": [
-                "Object",
-                "Path"
-              ]
-            },
-            "description": "Configuration to send to App.",
-            "name": "config"
-          }
-        ],
-        "returns": [
-          {
-            "type": {
-              "names": [
-                "Promise"
-              ]
-            }
-          }
-        ],
-        "async": true,
-        "name": "run",
-        "longname": "run",
-        "kind": "function",
-        "scope": "global",
-        "path": "app/src/run.js"
-      }
-    ]
+    "doc": []
   },
   {
     "version": "1.2.0",
@@ -357,7 +324,101 @@
     "version": "0.10.0",
     "name": "async",
     "description": "My own async utilities.",
-    "doc": []
+    "doc": [
+      {
+        "comment": "/**\n * milliseconds - Description\n *\n * @param {type} num Description\n *\n * @return {type} Description\n */",
+        "description": "milliseconds - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "num"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "milliseconds",
+        "longname": "milliseconds",
+        "kind": "function",
+        "scope": "global",
+        "path": "async/src/delays.js"
+      },
+      {
+        "comment": "/**\n * seconds - Description\n *\n * @param {type} num Description\n *\n * @return {type} Description\n */",
+        "description": "seconds - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "num"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "seconds",
+        "longname": "seconds",
+        "kind": "function",
+        "scope": "global",
+        "path": "async/src/delays.js"
+      },
+      {
+        "comment": "/**\n * until - Description\n *\n * @param {object} [config={}] Description\n *\n * @return {type} Description\n */",
+        "description": "until - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "object"
+              ]
+            },
+            "optional": true,
+            "defaultvalue": "{}",
+            "description": "Description",
+            "name": "config"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "until",
+        "longname": "until",
+        "kind": "function",
+        "scope": "global",
+        "async": true,
+        "path": "async/src/delays.js"
+      }
+    ]
   },
   {
     "version": "0.7.0",
@@ -440,6 +501,231 @@
         "path": "immutable/src/equals.js"
       },
       {
+        "comment": "/**\n * get - Description\n *\n * @param {type} object Description\n * @param {type} path   Description\n *\n * @return {type} Description\n */",
+        "description": "get - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "object"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "path"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "get",
+        "longname": "get",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/get.js"
+      },
+      {
+        "comment": "/**\n * includes - Description\n *\n * @param {type} arr   Description\n * @param {type} value Description\n *\n * @return {type} Description\n */",
+        "description": "includes - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "value"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "includes",
+        "longname": "includes",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * indexOf - Description\n *\n * @param {type} arr   Description\n * @param {type} value Description\n *\n * @return {type} Description\n */",
+        "description": "indexOf - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "value"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "indexOf",
+        "longname": "indexOf",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * lastIndexOf - Description\n *\n * @param {type} arr   Description\n * @param {type} value Description\n *\n * @return {type} Description\n */",
+        "description": "lastIndexOf - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "value"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "lastIndexOf",
+        "longname": "lastIndexOf",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * merge - Description\n *\n * @param {type} a Description\n * @param {type} b Description\n *\n * @return {type} Description\n */",
+        "description": "merge - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "a"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "b"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "merge",
+        "longname": "merge",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/merge.js"
+      },
+      {
+        "comment": "/**\n * pop - Description\n *\n * @param {type} arr Description\n *\n * @return {type} Description\n */",
+        "description": "pop - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "pop",
+        "longname": "pop",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
         "comment": "/**\n * Immutable version of Array.prototype.push.\n * Input Array is unscathed.\n *\n * @param {Array} obj       Array or ArrayLike to copy.\n * @param {*}     ...items  Items to push.\n * @return {Array}          Copied Array with pushed items.\n */",
         "description": "Immutable version of Array.prototype.push.\nInput Array is unscathed.",
         "params": [
@@ -477,6 +763,273 @@
         "kind": "function",
         "scope": "global",
         "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * reverse - Description\n *\n * @param {type} arr Description\n *\n * @return {type} Description\n */",
+        "description": "reverse - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "reverse",
+        "longname": "reverse",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * set - Description\n *\n * @param {type} object Description\n * @param {type} path   Description\n * @param {type} value  Description\n *\n * @return {type} Description\n */",
+        "description": "set - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "object"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "path"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "value"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "set",
+        "longname": "set",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/set.js"
+      },
+      {
+        "comment": "/**\n * shift - Description\n *\n * @param {type} arr Description\n *\n * @return {type} Description\n */",
+        "description": "shift - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "shift",
+        "longname": "shift",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * shuffle - Description\n *\n * @param {type} arr Description\n *\n * @return {type} Description\n */",
+        "description": "shuffle - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "shuffle",
+        "longname": "shuffle",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * sort - Description\n *\n * @param {type} arr  Description\n * @param {type} func Description\n *\n * @return {type} Description\n */",
+        "description": "sort - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "func"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "sort",
+        "longname": "sort",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * splice - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "splice - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "splice",
+        "longname": "splice",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * unique - Description\n *\n * @param {type} arr Description\n *\n * @return {type} Description\n */",
+        "description": "unique - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "arr"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "unique",
+        "longname": "unique",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
+      },
+      {
+        "comment": "/**\n * unshift - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "unshift - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "unshift",
+        "longname": "unshift",
+        "kind": "function",
+        "scope": "global",
+        "path": "immutable/src/array.js"
       }
     ]
   },
@@ -485,6 +1038,36 @@
     "name": "math",
     "description": "My own personal Math module, extending Math with overridden or custom functionality.",
     "doc": [
+      {
+        "comment": "/**\n * ceil - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "ceil - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "ceil",
+        "longname": "ceil",
+        "kind": "function",
+        "scope": "global",
+        "path": "math/src/overrides.js"
+      },
       {
         "comment": "/**\n * Clamps a value between a min and a max.\n *\n * Can also be bound, in which case 'this' becomes the clamped number, and the\n * min and max params are shifted down.\n *\n * @param  {number} value Value to clamp.\n * @param  {number} min\n * @param  {number} max\n * @return {number}         Clamped number.\n */",
         "description": "Clamps a value between a min and a max.\n\nCan also be bound, in which case 'this' becomes the clamped number, and the\nmin and max params are shifted down.",
@@ -530,6 +1113,36 @@
         "kind": "function",
         "scope": "global",
         "path": "math/src/clamp.js"
+      },
+      {
+        "comment": "/**\n * floor - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "floor - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "floor",
+        "longname": "floor",
+        "kind": "function",
+        "scope": "global",
+        "path": "math/src/overrides.js"
       },
       {
         "comment": "/**\n * Determines if a number is prime.\n *\n * @param  {number} value Value to test.\n * @return {boolean}      True if value is prime, false otherwise.\n */",
@@ -606,6 +1219,86 @@
         "kind": "function",
         "scope": "global",
         "path": "math/src/lerp.js"
+      },
+      {
+        "comment": "/**\n * random - Description\n *\n * @param {number} [min=0] Description\n * @param {type}   max     Description\n * @param {type}   various Description\n *\n * @return {type} Description\n */",
+        "description": "random - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "number"
+              ]
+            },
+            "optional": true,
+            "defaultvalue": 0,
+            "description": "Description",
+            "name": "min"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "max"
+          },
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "various"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "random",
+        "longname": "random",
+        "kind": "function",
+        "scope": "global",
+        "path": "math/src/overrides.js"
+      },
+      {
+        "comment": "/**\n * round - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "round - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "round",
+        "longname": "round",
+        "kind": "function",
+        "scope": "global",
+        "path": "math/src/overrides.js"
       }
     ]
   },
@@ -649,8 +1342,38 @@
   {
     "version": "0.5.1",
     "name": "schema",
-    "description": "Data sanitization and validaiton through Schemas",
+    "description": "Data sanitization and validation through Schemas",
     "doc": [
+      {
+        "comment": "/**\n * PropTypeSchema - Description\n *\n * @param {type} object Description\n *\n * @return {type} Description\n */",
+        "description": "PropTypeSchema - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "object"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "PropTypeSchema",
+        "longname": "PropTypeSchema",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/prop-type-schema.js"
+      },
       {
         "comment": "/**\n * Higher order function for creating validators.\n *\n * @param  {*} ...args Schema definition arguments.\n * @return {Function}  Validation function.\n */",
         "description": "Higher order function for creating validators.",
@@ -680,6 +1403,553 @@
         "kind": "function",
         "scope": "global",
         "path": "schema/src/schema.js"
+      },
+      {
+        "comment": "/**\n * any - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "any - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "any",
+        "longname": "any",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/any.js"
+      },
+      {
+        "comment": "/**\n * argsToConfig - Description\n *\n * @param {type}    layouts                        Description\n * @param {string}  [masterErrName=validator]      Description\n * @param {boolean} [allowSingleObjectConfig=true] Description\n *\n * @return {type} Description\n */",
+        "description": "argsToConfig - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "layouts"
+          },
+          {
+            "type": {
+              "names": [
+                "string"
+              ]
+            },
+            "optional": true,
+            "defaultvalue": "validator",
+            "description": "Description",
+            "name": "masterErrName"
+          },
+          {
+            "type": {
+              "names": [
+                "boolean"
+              ]
+            },
+            "optional": true,
+            "defaultvalue": true,
+            "description": "Description",
+            "name": "allowSingleObjectConfig"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "argsToConfig",
+        "longname": "argsToConfig",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/util/args-to-config.js"
+      },
+      {
+        "comment": "/**\n * argsToRangeCompare - Description\n *\n * @param {type} args Description\n *\n * @return {type} Description\n */",
+        "description": "argsToRangeCompare - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description",
+            "name": "args"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "argsToRangeCompare",
+        "longname": "argsToRangeCompare",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/util/args-to-range-compare.js"
+      },
+      {
+        "comment": "/**\n * arrayOf - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "arrayOf - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "arrayOf",
+        "longname": "arrayOf",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/array-of.js"
+      },
+      {
+        "comment": "/**\n * bool - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "bool - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "bool",
+        "longname": "bool",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/bool.js"
+      },
+      {
+        "comment": "/**\n * cast - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "cast - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "cast",
+        "longname": "cast",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/validators/cast.js"
+      },
+      {
+        "comment": "/**\n * defaultTo - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "defaultTo - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "defaultTo",
+        "longname": "defaultTo",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/validators/default-to.js"
+      },
+      {
+        "comment": "/**\n * format - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "format - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "format",
+        "longname": "format",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/validators/format.js"
+      },
+      {
+        "comment": "/**\n * func - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "func - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "func",
+        "longname": "func",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/func.js"
+      },
+      {
+        "comment": "/**\n * length - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "length - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "length",
+        "longname": "length",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/validators/length.js"
+      },
+      {
+        "comment": "/**\n * number - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "number - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "number",
+        "longname": "number",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/number.js"
+      },
+      {
+        "comment": "/**\n * object - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "object - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "object",
+        "longname": "object",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/object.js"
+      },
+      {
+        "comment": "/**\n * oneOf - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "oneOf - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "oneOf",
+        "longname": "oneOf",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/one-of.js"
+      },
+      {
+        "comment": "/**\n * oneOfType - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "oneOfType - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "oneOfType",
+        "longname": "oneOfType",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/one-of-type.js"
+      },
+      {
+        "comment": "/**\n * required - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "required - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "required",
+        "longname": "required",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/validators/required.js"
+      },
+      {
+        "comment": "/**\n * string - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "string - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "string",
+        "longname": "string",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/string.js"
+      },
+      {
+        "comment": "/**\n * typeOf - Description\n *\n * @param {array} args Description\n *\n * @return {type} Description\n */",
+        "description": "typeOf - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "array"
+              ]
+            },
+            "description": "Description",
+            "name": "args",
+            "variable": true
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "type"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "typeOf",
+        "longname": "typeOf",
+        "kind": "function",
+        "scope": "global",
+        "path": "schema/src/types/type-of.js"
       }
     ]
   },
