@@ -21,11 +21,7 @@
   "author": "BenZed",
   "license": "ISC",
   "description": "React components, classes, helpers",
-  "devDependencies": {
-    "@benzed/app": "latest",
-    "@benzed/dev": "latest",
-    "styled-components-test-utils": "^0.4.1"
-  },
+
   "dependencies": {
     "@benzed/array": "latest",
     "@benzed/async": "latest",
@@ -40,10 +36,16 @@
     "is-explicit": "^2.1.0",
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.0",
-    "prop-types": "^15.6.2",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "socket.io-client": "^2.1.1",
-    "styled-components": "^3.3.3"
+    "socket.io-client": "^2.1.1"
+  },
+  "devDependencies": {
+    "@benzed/app": "latest",
+    "@benzed/dev": "latest",
+    "styled-components-test-utils": "^0.4.1"
+  },
+  "peerDependencies": {
+    "styled-components": "^3.3.3",
+    "react": ">= 16.3.0",
+    "react-dom": ">= 16.3.0"
   }
 }
