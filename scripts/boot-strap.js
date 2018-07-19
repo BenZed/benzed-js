@@ -16,7 +16,7 @@ const PACKAGES = path.resolve(__dirname, '../packages')
 const stdio = [ 0, 1, 2 ]
 
 /******************************************************************************/
-// Helpr
+// Helper
 /******************************************************************************/
 
 function install (dep, versions) {
@@ -70,6 +70,19 @@ function link (from, to) {
   fs.symlinkSync(to, from, 'dir')
   return true
 }
+
+let prefix
+
+// function isGloballySymlinked (name, dir) {
+//   if (!prefix)
+//     prefix = execSync('npm prefix -g').toString().trim()
+//
+//   const globalModules = path.join(prefix, 'lib/node_modules')
+//   const globalLink = path.join(globalModules, `@benzed/${name}`)
+//
+//   return fs.existsSync(globalLink) && fs.realpathSync(globalLink) === dir
+// }
+
 
 function forEachPackageDependency (func) {
 
@@ -126,3 +139,20 @@ eachPackage((name, dir) => {
   link(inPkgModules, inBootModules)
   packageLog(name, 'node_modules linked')
 })
+
+// // Global Symlink @benzed/dev so that the command line tool can be used
+// eachPackage((name, dir) => {
+//
+//   if (name !== 'dev')
+//     return
+//
+//   const isLinked = isGloballySymlinked(name, dir)
+//
+//   const msg = isLinked
+//     ? 'global symlink already created'.bgGreen
+//     : 'creating global symlink'
+//
+//   packageLog(name, msg)
+//   if (!isLinked)
+//     execSync(`npm link`, { cwd: dir, stdio })
+// })

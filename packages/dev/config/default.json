@@ -2,7 +2,7 @@
   "services": { },
 
   "rest": {
-    "public": "./dist/public",
+    "public": "./lib/documentation/public",
     "favicon": null
   },
 

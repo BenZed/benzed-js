@@ -2,7 +2,7 @@ import Test, { expectReject, expectResolve, expectStyleRules } from './test-util
 
 import { inspect, clearConsole } from './misc-util'
 
-import WebpackConfig from './webpack'
+import WebpackConfig from './webpack-config'
 
 /******************************************************************************/
 // Exports

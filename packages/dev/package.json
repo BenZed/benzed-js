@@ -14,10 +14,18 @@
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
     "prepublishOnly": "npm run lint && npm run test && npm run babel",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "generate-docs": "node lib/scripts/generate-docs",
+    "generate-docs:dev": "node lib/scripts/generate-docs-dev",
+    "webpack": "NODE_ENV=production webpack",
+    "webpack:dev": "NODE_ENV=development webpack-dev-server",
+    "serve": "node lib/scripts/serve-docs.js",
+    "serve:dev": "NODE_ENV=development nodemon --watch lib/documentation/api --watch config lib/scripts/serve-docs.js",
+    "build": "npm i && npm run lint && npm run babel && npm run webpack && npm run test",
+    "start": "npm run build && npm run serve"
   },
   "bin": {
-    "benzed-project": "./scripts/create-project.js"
+    "benzed-project": "lib/scripts/create-project.js"
   },
   "keywords": [],
   "author": "BenZed",
@@ -60,7 +68,9 @@
     "webpack": "^4.16.0",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4",
-    "ajv-keywords": "^3.2.0"
+    "ajv-keywords": "^3.2.0",
+    "jsdoc": "^3.5.5",
+    "watchr": "^4.0.1"
   },
   "devDependencies": {
     "@benzed/app": "latest",

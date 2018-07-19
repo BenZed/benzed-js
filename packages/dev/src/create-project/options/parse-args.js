@@ -12,8 +12,10 @@ function parseArgs (input) {
 
     .option('api', 'should this project use an api')
     .option('socketio', 'should this api use a socket.io provider')
+
     .option('rest', 'should this api use a rest provider')
     .option('auth', 'should this api use user authentication')
+
     .option('files', 'should this api have a files service')
     .option('ui', 'should this project have a ui')
     .option('routing', 'should this project have routing')

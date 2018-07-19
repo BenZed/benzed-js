@@ -19,7 +19,7 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "Data sanitization and validation through Schemas",
+  "description": "Data sanitization and validation via composable Schemas",
   "devDependencies": {
     "@benzed/dev": "latest"
   },
