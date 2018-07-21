@@ -2,6 +2,8 @@ import React from 'react'
 import { Route, Switch } from 'react-router'
 import { Home, Package, Missing } from '../pages'
 
+import { PropTypeSchema, arrayOf, object, any } from '@benzed/schema'
+
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
@@ -9,7 +11,6 @@ import { Home, Package, Missing } from '../pages'
 const Routes = ({ children, packages, ...props }) => {
 
   return <Switch>
-
     <Route path='/' exact component={Home}/>
 
     {packages
@@ -23,9 +24,17 @@ const Routes = ({ children, packages, ...props }) => {
       )}
 
     <Route component={Missing}/>
-
   </Switch>
 }
+
+/******************************************************************************/
+// Prop Types
+/******************************************************************************/
+
+Routes.propTypes = new PropTypeSchema({
+  children: any,
+  packages: arrayOf(object)
+})
 
 /******************************************************************************/
 // Exports

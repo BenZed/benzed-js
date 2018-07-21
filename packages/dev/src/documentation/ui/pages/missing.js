@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Page from './page'
+import { PropTypeSchema, object, required } from '@benzed/schema'
 
 /******************************************************************************/
 //
@@ -44,6 +45,14 @@ const Missing = ({ location }) =>
       </h2>
     </Band>
   </MissingPage>
+
+/******************************************************************************/
+// Prop Types
+/******************************************************************************/
+
+Missing.propTypes = new PropTypeSchema({
+  location: object(required)
+})
 
 /******************************************************************************/
 // Exports

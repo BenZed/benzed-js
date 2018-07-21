@@ -1,10 +1,25 @@
 import React from 'react'
-import { GlobalStyle, Scroll } from '@benzed/react'
+import styled from 'styled-components'
+
+import { GlobalStyle } from '@benzed/react'
 
 import Routes from './routes'
 import Navigation from './navigation'
 
 import theme from '../../theme'
+
+import { PropTypeSchema, any, arrayOf, object } from '@benzed/schema'
+
+/******************************************************************************/
+// Main Layout
+/******************************************************************************/
+
+const Main = styled.div`
+  display: inherit;
+  height: inherit;
+
+  flex-direction: row;
+`
 
 /******************************************************************************/
 // Main
@@ -13,11 +28,20 @@ import theme from '../../theme'
 const Website = ({ children, packages, ...props }) =>
 
   <GlobalStyle theme={theme}>
-    <Navigation packages={packages} />
-    <Scroll y>
+    <Main>
+      <Navigation packages={packages} />
       <Routes packages={packages} />
-    </Scroll>
+    </Main>
   </GlobalStyle>
+
+/******************************************************************************/
+// Prop Types
+/******************************************************************************/
+
+Website.propTypes = new PropTypeSchema({
+  children: any,
+  packages: arrayOf(object)
+})
 
 /******************************************************************************/
 // Exports

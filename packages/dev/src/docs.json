@@ -2081,6 +2081,36 @@
         "path": "string/src/from-camel-case.js"
       },
       {
+        "comment": "/**\n * fromQueryString - Description\n *\n * @param {string} str Description\n *\n * @return {Object} Description\n */",
+        "description": "fromQueryString - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "string"
+              ]
+            },
+            "description": "Description",
+            "name": "str"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "Object"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "fromQueryString",
+        "longname": "fromQueryString",
+        "kind": "function",
+        "scope": "global",
+        "path": "string/src/from-query-string.js"
+      },
+      {
         "comment": "/**\n * Converts a string to camelCase.\n *\n * @param  {string} str           Input.\n * @param  {string|RegExp} limiter=/-/ Delimiter.\n * @return {string}               camelCased string.\n */",
         "description": "Converts a string to camelCase.",
         "params": [
@@ -2120,6 +2150,36 @@
         "kind": "function",
         "scope": "global",
         "path": "string/src/to-camel-case.js"
+      },
+      {
+        "comment": "/**\n * toQueryString - Description\n *\n * @param {Object} obj Description\n *\n * @return {string} Description\n */",
+        "description": "toQueryString - Description",
+        "params": [
+          {
+            "type": {
+              "names": [
+                "Object"
+              ]
+            },
+            "description": "Description",
+            "name": "obj"
+          }
+        ],
+        "returns": [
+          {
+            "type": {
+              "names": [
+                "string"
+              ]
+            },
+            "description": "Description"
+          }
+        ],
+        "name": "toQueryString",
+        "longname": "toQueryString",
+        "kind": "function",
+        "scope": "global",
+        "path": "string/src/to-query-string.js"
       }
     ]
   }

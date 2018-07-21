@@ -1,11 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Label from './label'
-import Params from './params'
-
-import { Link } from 'react-router-dom'
-
 /******************************************************************************/
 // Sub Components
 /******************************************************************************/
@@ -37,31 +32,27 @@ const Description = styled.div.attrs({
   }
 `
 
-const LinkLabel = Label.withComponent(Link)
-
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-const Doc = styled(({ doc, match, ...props }) => {
+const Doc = styled(({ doc, ...props }) => {
 
-  const { name, description, params, returns } = doc
+  const {
+    name,
+    description
+    //, params, returns
+  } = doc
 
   return <div {...props}>
     <Title>
-      <LinkLabel to={`${match.url}/${name}`}>{name}</LinkLabel>
+      <h2>{name}</h2>
     </Title>
     <Description description={description} />
-    <Params params={params} />
-    <Params params={returns} label='returns' />
   </div>
 })`
   margin: 1em;
   display: flex;
-
-  ${LinkLabel} {
-    text-decoration: none;
-  }
 `
 
 /******************************************************************************/

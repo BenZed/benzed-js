@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { NavLink } from 'react-router-dom'
+import { PropTypeSchema, arrayOf, object } from '@benzed/schema'
 
 /******************************************************************************/
 // Helper Components
@@ -10,9 +11,10 @@ import { NavLink } from 'react-router-dom'
 const Nav = styled.nav`
   display: flex;
   flex-wrap: wrap;
-  flex-direction: row;
-  padding: 0.5em;
+  flex-direction: column;
+  align-items: flex-start;
 
+  padding: 0.5em;
   text-transform: uppercase;
 
   background-color: ${props => props.theme.primary.toString()};
@@ -21,9 +23,9 @@ const Nav = styled.nav`
   a {
     text-decoration: none;
     font-size: 0.825em;
-    flex: 0 0.5 auto;
+    flex: 0 0 auto;
 
-    margin: auto 1em auto 0em;
+    margin: 0.25em 0em 0.25em 0em;
     padding: 0.1em;
     border-bottom: 2px solid transparent;
     transition: color 250ms, background-color 250ms, border-color 250ms;
@@ -40,34 +42,31 @@ const Nav = styled.nav`
 
 
 `
-//
-// const SearchInput = styled.input`
-//   margin-left: auto;
-//   padding: 0;
-//   border-width: 2px;
-//   ::placeholder {
-//     font-style: italic;
-//   }
-// `
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const Navigation = ({ packages }) => {
+const Navigation = ({ packages }) =>
 
-  return <Nav>
-    {packages
-      .map(pkg =>
-        <NavLink
-          key={pkg.name}
-          to={`/${pkg.name}`}
-          activeClassName='active'>
-          {pkg.name}
-        </NavLink>)}
-    {/* <SearchInput placeholder='Search' /> */}
+  <Nav>
+    {packages.map(pkg =>
+      <NavLink
+        key={pkg.name}
+        to={`/${pkg.name}`}
+        activeClassName='active'>
+        {pkg.name}
+      </NavLink>
+    )}
   </Nav>
-}
+
+/******************************************************************************/
+// Prop Types
+/******************************************************************************/
+
+Navigation.propTypes = new PropTypeSchema({
+  packages: arrayOf(object)
+})
 
 /******************************************************************************/
 // Exports
