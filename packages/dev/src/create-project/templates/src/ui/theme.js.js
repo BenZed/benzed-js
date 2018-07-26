@@ -1,20 +1,17 @@
-
-export default ({ ui, name, routing, pretty }) => ui && routing && pretty`
-import React from 'react'
-import Page from './page'
+export default ({ ui, pretty }) => ui && pretty`
+import { themes } from '@benzed/react'
 
 /******************************************************************************/
-// Main Component
+// Compose
 /******************************************************************************/
 
-const Home = ({ children, ...props }) =>
-  <Page>
-    ${name} home page
-  </Page>
+const theme = {
+  ...themes.basic
+}
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Home
+export default theme
 `

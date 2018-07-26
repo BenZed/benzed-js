@@ -4,8 +4,7 @@ export default ({ api, backend, name, pretty }) => {
 
   const className = `${name}-${backend}`::toCamelCase()::capitalize()
 
-  return api && `import { run } from '@benzed/app'
-import ${className} from '../api'
+  return api && `import ${className} from '../api'
 import path from 'path'
 
 /******************************************************************************/
@@ -18,6 +17,6 @@ const CONFIG_URL = path.resolve(process.cwd(), 'config')
 // Execute
 /******************************************************************************/
 
-${className}::run(CONFIG_URL)
+${className}.run(CONFIG_URL)
 `
 }

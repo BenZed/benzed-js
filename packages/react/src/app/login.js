@@ -1,5 +1,4 @@
-import React, { Children, cloneElement } from 'react'
-import styled from 'styled-components'
+import React, { Children, createElement, cloneElement } from 'react'
 
 import { Modal } from '../layout'
 import { Visible, Fade, Slide } from '../effect'
@@ -35,20 +34,31 @@ const LoginModal = ({
       <Modal>
 
         <Slide from='top'>
+
           <div>
             <strong>Login</strong>
             <span style={{ color: 'red' }}>{is(status, Error) ? ' ' + status.message : ''}</span>
           </div>
+
         </Slide>
 
         <form onSubmit={submit}>
 
           <Slide from='left' to='right'>
-            <input value={email} onChange={setEmail} placeholder='Email'/>
+            <input
+              value={email}
+              onChange={setEmail}
+              placeholder='Email'
+            />
           </Slide>
 
           <Slide from='right' to='left'>
-            <input value={password} onChange={setPassword} placeholder='Password' type='password'/>
+            <input
+              value={password}
+              onChange={setPassword}
+              placeholder='Password'
+              type='password'
+            />
           </Slide>
 
           <Slide from='bottom'>
@@ -72,7 +82,7 @@ class LoginLogic extends React.Component {
   })
 
   static defaultProps = {
-    children: <LoginModal/>
+    children: LoginModal
   }
 
   state = {
@@ -143,7 +153,6 @@ class LoginLogic extends React.Component {
   render () {
 
     const { children, client, ...props } = this.props
-
     const { setEmail, setPassword, submit } = this
 
     const viewProps = {
@@ -154,7 +163,10 @@ class LoginLogic extends React.Component {
       submit
     }
 
-    return cloneElement(Children.only(children), viewProps)
+    return is.func(children)
+      ? createElement(children, viewProps)
+      : cloneElement(Children.only(children), viewProps)
+
   }
 
 }

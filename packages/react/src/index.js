@@ -1,5 +1,3 @@
-// import styled, { injectGlobal, withTheme } from 'styled-components'
-// import React, { Children, createElement, cloneElement } from 'react'
 
 import { Modal, Flex, Scroll } from './layout'
 
@@ -23,10 +21,6 @@ const themes = {
 /******************************************************************************/
 
 export {
-
-  // Rehost
-  // styled, injectGlobal, withTheme,
-  // React, Children, createElement, cloneElement,
 
   // Layout
   Modal, Flex, Scroll,

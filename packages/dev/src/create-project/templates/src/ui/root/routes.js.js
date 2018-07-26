@@ -3,7 +3,7 @@ export default ({ ui, routing, pretty }) => ui && routing && pretty`
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import { Home } from '../pages'
+import { Home, Missing } from '../pages'
 
 /******************************************************************************/
 // Main
@@ -12,6 +12,8 @@ import { Home } from '../pages'
 const Routes = () =>
   <Switch>
     <Route path='/' exact component={Home} />
+    {/* more routes here */}
+    <Route component={Missing} />
   </Switch>
 
 /******************************************************************************/

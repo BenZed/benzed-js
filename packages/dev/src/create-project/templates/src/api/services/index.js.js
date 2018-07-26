@@ -15,7 +15,7 @@ ${iff(files)`import files from './files'`}
 /******************************************************************************/
 
 export {
-  ${exportNames.join(',\n  ')}
+${iff(exportNames.length > 0)`  ${exportNames.join(',\n  ')}`}
 }
 `
 }

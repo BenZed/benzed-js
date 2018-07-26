@@ -1,8 +1,8 @@
-import { injectGlobal, ThemeProvider } from 'styled-components'
-import { Cloner } from '../util'
 import React from 'react'
+import { injectGlobal, ThemeProvider } from 'styled-components'
+import { PropTypeSchema, object, required } from '@benzed/schema'
 
-// import { $ } from '../util'
+import { Cloner } from '../util'
 
 /******************************************************************************/
 // TEMP
@@ -99,6 +99,16 @@ const GlobalStyle = ({ theme, children }) => {
   </ThemeProvider>
 
 }
+
+/******************************************************************************/
+// Prop Types
+/******************************************************************************/
+
+GlobalStyle.propTypes = new PropTypeSchema({
+
+  theme: object(required)
+
+})
 
 /******************************************************************************/
 // Exports

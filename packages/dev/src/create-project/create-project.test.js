@@ -119,7 +119,7 @@ describe('createProject()', () => {
 
     })
 
-    describe.only('creates site', () => {
+    describe('creates site', () => {
 
       const options = {
         dir: WORK_DIR,
@@ -138,30 +138,6 @@ describe('createProject()', () => {
       testCreateProject(options)
 
     })
-
-    // describe('creates boss-media-www', function () {
-    //   this.timeout(50000)
-    //
-    //   const dir = path.resolve(process.cwd(), '../../../')
-    //
-    //   const options = {
-    //     dir: dir,
-    //     name: 'boss-media-www',
-    //
-    //     socketio: false,
-    //     rest: true,
-    //
-    //     ui: true,
-    //     api: true,
-    //
-    //     auth: false,
-    //     files: false,
-    //     routing: true
-    //   }
-    //
-    //   testCreateProject(options)
-    //
-    // })
 
   })
 

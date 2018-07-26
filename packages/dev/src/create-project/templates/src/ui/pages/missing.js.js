@@ -7,14 +7,14 @@ import Page from './page'
 // Main Component
 /******************************************************************************/
 
-const Home = ({ children, ...props }) =>
+const Missing = ({ children, location, ...props }) =>
   <Page>
-    ${name} home page
+    { location.pathname } is not a valid page
   </Page>
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Home
+export default Missing
 `

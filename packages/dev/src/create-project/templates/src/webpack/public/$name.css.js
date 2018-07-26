@@ -4,7 +4,5 @@
 /******************************************************************************/
 
 export default ({ name, ui, pretty }) => ui && `
-  #${name} {
-    font-family: Helvetica;
-  }
+  #${name} {}
 `

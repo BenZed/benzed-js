@@ -13,17 +13,21 @@ export default ({ ui, routing, name, auth, frontend, pretty, iff }) => {
 import React from 'react'
 import styled from 'styled-components'
 
+import { GlobalStyle } from '@benzed/react'
+
 ${routing && `import Navigation from './navigation'`}
 ${routing && `import Routes from './routes'`}
 ${auth && `import Login from './login'`}
+
+import theme from '../theme'
 
 /******************************************************************************/
 // Styles
 /******************************************************************************/
 
-const ${Frontend}Layout = styled.div\`
-  display: flex;
-  flex-direction: column;
+const ${Frontend}Main = styled.div\`
+  display: inherit;
+  height: inherit;
 \`
 
 /******************************************************************************/
@@ -31,12 +35,14 @@ const ${Frontend}Layout = styled.div\`
 /******************************************************************************/
 
 const ${Frontend} = ({ children }) =>
-  <${Frontend}Layout>
-    ${routing ? '<Navigation />' : `${name} ${frontend}`}
-    ${iff(routing)`<Routes />`}
-    ${iff(auth)`<Login />`}
-    {children}
-  </${Frontend}Layout>
+  <GlobalStyle theme={theme}>
+    <${Frontend}Main>
+      ${routing ? '<Navigation />' : `${name} ${frontend}`}
+      ${iff(routing)`<Routes />`}
+      ${iff(auth)`<Login />`}
+      {children}
+    </${Frontend}Main>
+  </GlobalStyle>
 
 /******************************************************************************/
 // Exports
