@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -23,10 +23,10 @@
   "description": "React components, classes, helpers",
 
   "dependencies": {
-    "@benzed/array": "latest",
-    "@benzed/async": "latest",
-    "@benzed/immutable": "latest",
-    "@benzed/schema": "latest",
+    "@benzed/array": "^1.3.0",
+    "@benzed/async": "^0.11.0",
+    "@benzed/immutable": "^1.2.0",
+    "@benzed/schema": "^0.6.0",
     "@feathersjs/authentication-client": "^1.0.2",
     "@feathersjs/feathers": "^3.1.7",
     "@feathersjs/rest-client": "^1.4.1",
@@ -39,8 +39,8 @@
     "socket.io-client": "^2.1.1"
   },
   "devDependencies": {
-    "@benzed/app": "latest",
-    "@benzed/dev": "latest",
+    "@benzed/app": "^0.5.2",
+    "@benzed/dev": "^0.8.0",
     "styled-components-test-utils": "^0.4.1"
   },
   "peerDependencies": {

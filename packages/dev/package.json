@@ -1,6 +1,6 @@
 {
   "name": "@benzed/dev",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -73,11 +73,11 @@
     "watchr": "^4.0.1"
   },
   "devDependencies": {
-    "@benzed/app": "latest",
-    "@benzed/async": "latest",
-    "@benzed/immutable": "latest",
-    "@benzed/schema": "latest",
-    "@benzed/string": "latest",
+    "@benzed/app": "^0.5.2",
+    "@benzed/async": "^0.11.0",
+    "@benzed/immutable": "^1.2.0",
+    "@benzed/schema": "^0.6.0",
+    "@benzed/string": "^0.7.0",
     "jsdom": "^11.11.0",
     "normalize.css": "^8.0.0",
     "react": "^16.4.1",
