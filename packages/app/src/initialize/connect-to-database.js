@@ -17,6 +17,7 @@ async function tryConnect ({
   try {
 
     const client = await MongoClient.connect(uri, { useNewUrlParser: true })
+    app.database.client = client
     app.database.link = client.db(database)
 
   } catch (err) {
@@ -62,7 +63,7 @@ function isLocalHost (hosts) {
   return hosts.length === 1 && /^localhost:/i.test(hosts[0])
 }
 
-function createMongoProcess ({ uri, database, dbpath }) {
+function createMongoProcess ({ uri, dbpath }) {
   const app = this
 
   const { spawn } = require('child_process')
@@ -74,19 +75,22 @@ function createMongoProcess ({ uri, database, dbpath }) {
   return new Promise((resolve, reject) => {
 
     const onError = app::handleDatabaseProcessError(reject)
+    const onWait = msg => {
+      if (msg.includes(`waiting for connections on port ${port}`)) {
+        app.database.process.stdout.removeListener('data', onWait)
+        resolve(app.database.process)
+      }
+    }
 
     app.database.process = spawn('mongod', [
       '--port', port,
       '--quiet',
-      '--dbpath', dbpath // TODO add the ability customize data path location to config
+      '--dbpath', dbpath
     ])
 
     app.database.process.on('exit', onError)
     app.database.process.on('error', onError)
-    app.database.process.stdout.on('data', msg => {
-      if (msg.includes(`waiting for connections on port ${port}`))
-        resolve(app.database.process)
-    })
+    app.database.process.stdout.on('data', onWait)
 
   })
 }

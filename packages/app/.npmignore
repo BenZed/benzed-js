@@ -5,7 +5,8 @@
 .mocha.opts
 
 test
-temp
 test-util
+temp
 src
+*.tgz
 *.test.js

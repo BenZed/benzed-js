@@ -45,10 +45,15 @@ function createProjectAppAndTest (setup = {}, tests) {
   tests(state)
 
   after(async () => {
-    if (state.app && state.app.listener) {
-      await state.app.onEnd()
+    if (state.app && state.app.listener)
       await state.app.end()
-    }
+
+    if (state.client && state.client.io.connected)
+      await new Promise(resolve => {
+        state.client.io.once('disconnect', resolve)
+        state.client.io.disconnect()
+      })
+
   })
 
 }

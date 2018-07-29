@@ -39,7 +39,7 @@
     "socket.io-client": "^2.1.1"
   },
   "devDependencies": {
-    "@benzed/app": "^0.5.2",
+    "@benzed/app": "^0.5.5",
     "@benzed/dev": "^0.8.0",
     "styled-components-test-utils": "^0.4.1"
   },

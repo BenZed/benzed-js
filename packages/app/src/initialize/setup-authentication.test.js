@@ -51,7 +51,7 @@ const AUTH = {
   }
 }
 
-describe.only('setupAuthentication()', () => {
+describe('setupAuthentication()', () => {
 
   it('must be bound to app', () => {
     expect(setupAuthentication).to.throw('Cannot destructure property `feathers` of \'undefined\'')
@@ -65,6 +65,7 @@ describe.only('setupAuthentication()', () => {
       app::setupProviders()
       app::setupAuthentication()
       authService = app.feathers.service('authentication')
+
     } catch (err) {
       console.error(err)
     }
@@ -148,6 +149,7 @@ describe.only('setupAuthentication()', () => {
       })
 
       it('fails if invalid credentials', async () => {
+
         await state.client.connect()
         const res = await state.client.authenticate({
           strategy: 'local',

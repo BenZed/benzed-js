@@ -4,7 +4,7 @@ import isEvent from './is-event'
 
 import nestInComponent from './nest-in-component'
 
-import styler from './styler'
+import styler, { $ } from './styler'
 
 import { Cloner, CssCloner } from './cloner'
 
@@ -23,5 +23,5 @@ export {
   CssCloner,
 
   styler,
-  styler as $
+  $
 }

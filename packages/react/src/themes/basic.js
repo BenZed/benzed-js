@@ -15,7 +15,9 @@ export default {
   bg: Color('black'),
   fg: Color('white'),
 
-  title: fontStack,
-  body: fontStack
+  fonts: {
+    title: fontStack,
+    body: fontStack
+  }
 
 }

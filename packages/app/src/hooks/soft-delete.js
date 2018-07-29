@@ -111,9 +111,11 @@ async function exec (ctx) {
 
       ctx.params.query[field] = NOT_DELETED
 
-      const patchParams = set(ctx.params, disableParam, true)
-
-      ctx.result = await service.patch(ctx.id, ctx.data, patchParams)
+      ctx.result = await service.patch(
+        ctx.id,
+        ctx.data,
+        set(ctx.params, disableParam, true)
+      )
 
       break
 

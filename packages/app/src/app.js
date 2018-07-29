@@ -151,15 +151,28 @@ class App {
   async end () {
 
     if (this.listener) {
-      await this.listener.close()
+      await new Promise(resolve => this.listener.close(resolve))
       this.listener = null
     }
 
-    if (this.database && this.database.process)
+    if (this.database && this.database.client) {
+      await new Promise(resolve =>
+        this.database.client.close(resolve)
+      )
+      this.database.link = null
+      this.database.client = null
+    }
+
+    if (this.database && this.database.process) {
       await new Promise(resolve => {
         this.database.process.once('close', resolve)
         this.database.process.kill()
       })
+      this.database.process = null
+    }
+
+    if (is.func(this.onEnd))
+      await this.onEnd()
 
   }
 
