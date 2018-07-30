@@ -56,8 +56,6 @@ function StylerInterface (Styler) {
     prototype = Object.getPrototypeOf(prototype)
   }
 
-  console.log(names)
-
   for (const name of names)
     Object.defineProperty(this, name, {
       enumerable: true,
@@ -151,7 +149,6 @@ class Styler {
 
 const $ = Styler.createInterface(basicTheme)
 
-console.log($.prop('face'))
 /******************************************************************************/
 // Exports
 /******************************************************************************/

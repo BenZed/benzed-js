@@ -1,3 +1,4 @@
+import ScrollVisible from './scroll-visible'
 import Visible from './visible'
 import Fade from './fade'
 import Slide from './slide'
@@ -6,4 +7,9 @@ import Slide from './slide'
 // Exports
 /******************************************************************************/
 
-export { Visible, Fade, Slide }
+export {
+  ScrollVisible,
+  Visible,
+  Fade,
+  Slide
+}

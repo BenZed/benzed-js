@@ -33,7 +33,7 @@ class Visible extends React.Component {
   // State
 
   state = {
-    visible: true // Visibility.VISIBLE
+    visible: true
   }
 
   constructor (props) {
@@ -89,7 +89,6 @@ class Visible extends React.Component {
     </VisibleContext.Provider>
 
   }
-
 }
 
 /******************************************************************************/
@@ -107,13 +106,15 @@ function observe (VisibleEffect, renderHidden) {
     <VisibleContext.Consumer>
       { visibility => renderHidden || visibility !== 'hidden'
         ? <VisibleEffect visibility={visibility} {...props}/>
-        : null }
+        : null
+      }
     </VisibleContext.Consumer>
 
   return ObservedVisibleEffect
 }
 
 Visible.observe = observe
+Visible.Context = VisibleContext
 
 /******************************************************************************/
 // Exports

@@ -77,15 +77,15 @@ function link (from, to) {
 
 let prefix
 
-function isGloballySymlinked (name, dir) {
-  if (!prefix)
-    prefix = execSync('npm prefix -g').toString().trim()
-
-  const globalModules = path.join(prefix, 'lib/node_modules')
-  const globalLink = path.join(globalModules, `@benzed/${name}`)
-
-  return fs.existsSync(globalLink) && fs.realpathSync(globalLink) === dir
-}
+// function isGloballySymlinked (name, dir) {
+//   if (!prefix)
+//     prefix = execSync('npm prefix -g').toString().trim()
+//
+//   const globalModules = path.join(prefix, 'lib/node_modules')
+//   const globalLink = path.join(globalModules, `@benzed/${name}`)
+//
+//   return fs.existsSync(globalLink) && fs.realpathSync(globalLink) === dir
+// }
 
 function forEachPackageDependency (func) {
 
@@ -118,8 +118,8 @@ function ensureBootStrap () {
   }
 
   fs.writeJsonSync(bootstrapsJson, json, { spaces: 2 })
-
 }
+
 /******************************************************************************/
 // Execute
 /******************************************************************************/
@@ -140,9 +140,11 @@ forEachPackageDependency(({ pkg, dep, version, type }) => {
 })
 
 // Install Dependencies
-const names = Object.keys(DEPS)
-for (const name of names)
-  install(name, DEPS[name])
+const deps = Object.keys(DEPS)
+for (const dep of deps)
+  if (!dep.includes('@benzed'))
+    install(dep, DEPS[dep])
+
 
 // Link each package node_modules to bootstrap/node_modules
 eachPackage((name, dir) => {
@@ -159,16 +161,21 @@ const benzedInBootstrap = path.join(BOOTSTRAP, '@benzed')
 if (fs.existsSync(benzedInBootstrap))
   fs.removeSync(benzedInBootstrap)
 
+// Place @benzed dependencies in node_modules
+eachPackage(name => install(`@benzed/${name}`, 'latest'))
+
+
+// TODO 'npm link' breaks my clever bootstrapping
 // Global Symlink @benzed/dev so that the command line tool can be used
-eachPackage((name, dir) => {
-
-  const isLinked = isGloballySymlinked(name, dir)
-
-  const msg = isLinked
-    ? 'global symlink already created'.bgGreen
-    : 'creating global symlink'
-
-  packageLog(name, msg)
-  if (!isLinked)
-    execSync('npm link', { cwd: dir, stdio })
-})
+// eachPackage((name, dir) => {
+//
+//   const isLinked = isGloballySymlinked(name, dir)
+//
+//   const msg = isLinked
+//     ? 'global symlink already created'.bgGreen
+//     : 'creating global symlink'
+//
+//   packageLog(name, msg)
+//   if (!isLinked)
+//     execSync('npm link', { cwd: dir, stdio })
+// })

@@ -4,6 +4,10 @@ import setupMiddleware from './setup-middleware'
 import setupServices from './setup-services'
 import connectToDatabase from './connect-to-database'
 
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
 export {
   setupProviders,
   setupAuthentication,
