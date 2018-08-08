@@ -1,4 +1,4 @@
-import { get, set, push } from '@benzed/immutable'
+import { get } from '@benzed/immutable'
 
 import basicTheme from '../themes/basic'
 import is from 'is-explicit'
@@ -12,14 +12,14 @@ const STACK = Symbol('stack-of-style-methods-and-params')
 const STYLE = Symbol('create-style-value-from-stack-methods')
 
 /******************************************************************************/
-// Style Functions
+// Stack Functions
 /******************************************************************************/
 
-function propAtPath (path, value, props) {
+function getPropAtPath (path, value, props) {
   return get.mut(props, path)
 }
 
-function mutateValue (mutator, value, props) {
+function applyMutator (mutator, value, props) {
   return mutator(value, props)
 }
 
@@ -42,16 +42,16 @@ function extendStylerWithTheme (Styler, theme) {
 
 function StylerInterface (Styler) {
 
-  if (this === undefined)
+  if (this instanceof StylerInterface === false)
     return new StylerInterface(Styler)
 
-  const names = []
+  const names = new Set()
 
   let { prototype } = Styler
   while (prototype !== Object.prototype) {
     for (const name of Object.getOwnPropertyNames(prototype))
-      if (name in this === false && !names.includes(name))
-        names.push(name)
+      if (name in this === false)
+        names.add(name)
 
     prototype = Object.getPrototypeOf(prototype)
   }
@@ -96,13 +96,17 @@ class Styler {
     if (!path.every(is.string))
       throw new Error('Path arguments must all be strings.')
 
-    this[STACK].push(propAtPath, path)
+    this[STACK].push(getPropAtPath, path)
 
     return this
   }
 
   mut (mutator) {
-    this[STACK].push(mutateValue, mutator)
+
+    if (!is.func(mutator))
+      throw new Error('Mutator must be a function.')
+
+    this[STACK].push(applyMutator, mutator)
 
     return this
   }
