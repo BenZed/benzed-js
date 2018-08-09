@@ -2,7 +2,7 @@ import { capitalize } from '@benzed/string'
 
 export default ({ name, frontend, type, ui, api, iff, routing, pretty }) => ui && pretty`
 import 'normalize.css'
-import './public/${name}.css'
+import './${name}.css'
 
 /******************************************************************************/
 // Dynamic Dependencies

@@ -29,7 +29,7 @@ fs.ensureFileSync(SRC_HTML)
 // Tests
 /******************************************************************************/
 
-describe('WebpackConfig', () => {
+describe.only('WebpackConfig', () => {
 
   it('is a class', () => {
     expect(WebpackConfig).to.throw('cannot be invoked without \'new\'')
@@ -167,7 +167,5 @@ describe('WebpackConfig', () => {
         expect(plugins.filter(p => p.constructor.name === 'DefinePlugin')).to.have.length(1)
       })
     })
-
   })
-
 })

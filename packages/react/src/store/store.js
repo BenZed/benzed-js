@@ -53,14 +53,12 @@ function notifyStoreSubscribers (store, path) {
 
   for (let i = 0; i < pathLength; i++) {
     const stateKey = path[i]
-
     const atMaxPathIndex = i === pathLength - 1
 
     for (let j = subs.length - 1; j >= 0; j--) {
       const sub = subs[j]
 
       const subPathLength = sub.path.length
-
       const atMaxSubPathIndex = i === subPathLength - 1 || atMaxPathIndex
       // if the subscription path ands at an object, it will receive a state
       // update on alteration of any property in that nested path
@@ -156,9 +154,7 @@ class Store {
           value: new Task(this, property, method)
         })
       }
-
     }
-
   }
 
   set (path, value) {

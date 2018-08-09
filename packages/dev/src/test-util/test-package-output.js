@@ -28,9 +28,9 @@ function deepReadDir (dir) {
 // Main
 /******************************************************************************/
 
-function testPackageOutput (__dirname) {
+function testPackageOutput (rootDir = process.cwd()) {
 
-  const packageJson = path.join(__dirname, 'package.json')
+  const packageJson = path.join(rootDir, 'package.json')
   const packageData = require(packageJson)
 
   const describer = getDescriber(this)
@@ -43,7 +43,7 @@ function testPackageOutput (__dirname) {
       const output = execSync('npm pack -q')
 
       const packedName = output.toString().trim()
-      const packedUrl = path.join(__dirname, packedName)
+      const packedUrl = path.join(rootDir, packedName)
 
       const unpackedUrl = packedName.replace(/\.tgz$/, '')
       const packageUrl = path.join(unpackedUrl, 'package')

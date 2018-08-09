@@ -8,10 +8,19 @@ const COPY = Symbol('=')
 const EQUALS = Symbol('==')
 
 /******************************************************************************/
+// Symbols for internal use
+/******************************************************************************/
+
+const CIRCULAR = Symbol('circular-reference')
+const EXCLUDED = Symbol('value-should-not-be-included-in-copy')
+
+/******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
   COPY,
-  EQUALS
+  EQUALS,
+  EXCLUDED,
+  CIRCULAR
 }

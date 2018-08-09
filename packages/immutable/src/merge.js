@@ -1,5 +1,7 @@
 import copy from './copy'
 
+import { CIRCULAR } from './symbols'
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -8,6 +10,11 @@ function mergeMutate (a, b) {
 
   const isAObject = typeof a === 'object' && a !== null
   const isBObject = typeof b === 'object' && b !== null
+
+  // TODO untested
+  const bIsCircular = b === CIRCULAR
+  if (bIsCircular)
+    return a
 
   if (!isAObject || !isBObject)
     return b

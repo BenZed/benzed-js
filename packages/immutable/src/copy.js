@@ -1,4 +1,4 @@
-import { COPY } from './symbols'
+import { COPY, CIRCULAR } from './symbols'
 
 /******************************************************************************/
 // Shortcuts
@@ -10,8 +10,6 @@ const {
   getOwnPropertyDescriptor,
   defineProperty
 } = Object
-
-const CIRCULAR = Symbol('circular-reference')
 
 /******************************************************************************/
 // Helper
@@ -29,18 +27,31 @@ function copyPlainObject (object, refs) {
   for (const key of keys) {
     const descriptor = getOwnPropertyDescriptor(object, key)
 
-    if ('value' in descriptor)
-      descriptor.value = copyConsideringReferences(descriptor.value, refs)
+    const hasValue = 'value' in descriptor // as opposed to a getter or setter
+    if (hasValue)
+      descriptor.value = copyConsideringRefs(descriptor.value, refs)
 
-    if (descriptor.value !== CIRCULAR)
+    if (!hasValue || descriptor.value !== CIRCULAR)
       defineProperty(clone, key, descriptor)
-
   }
 
   return clone
 }
 
-function copyConsideringReferences (value, refs) {
+function getArgsFromIterable (value, refs) {
+
+  const args = []
+
+  for (const arg of value) {
+    const result = copyConsideringRefs(arg, refs)
+    if (result !== CIRCULAR)
+      args.push(result)
+  }
+
+  return args
+}
+
+function copyConsideringRefs (value, refs) {
 
   if (value === null || typeof value !== 'object')
     return value
@@ -62,11 +73,11 @@ function copyConsideringReferences (value, refs) {
   const isArray = value instanceof Array
   if (isArray || value instanceof Set || value instanceof Map) {
     const Type = value.constructor
-    const args = [...value]
-      .map(v => copyConsideringReferences(v, refs))
-      .filter(v => v !== CIRCULAR)
+    const args = getArgsFromIterable(value, refs)
 
-    return isArray ? new Type(...args) : new Type(args)
+    return isArray
+      ? new Type(...args)
+      : new Type(args)
   }
 
   return copyPlainObject(value, refs)
@@ -96,7 +107,7 @@ function copy (value) {
   if (this !== undefined)
     value = this
 
-  return copyConsideringReferences(value)
+  return copyConsideringRefs(value)
 }
 
 /******************************************************************************/

@@ -1,15 +1,7 @@
-import Service from './service'
-import UserService from './user-service'
-import FileService from './file-service'
+import validateConfig from './validate-config'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export {
-
-  Service,
-  UserService,
-  FileService
-
-}
+export default validateConfig

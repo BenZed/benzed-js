@@ -196,9 +196,6 @@ const validateConfigObject = Schema(
         public: string(
           fsExists(),
           fsContains('index.html')
-        ),
-        favicon: string(
-          fsExists('.png', '.jpeg', '.jpg', '.svg', '.ico')
         )
       }
     ),

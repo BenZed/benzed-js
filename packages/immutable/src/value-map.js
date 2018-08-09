@@ -85,12 +85,8 @@ class ValueMap {
   }
 
   forEach (func) {
-    for (let i = 0; i < this.size; i++) {
-      const key = this[KEYS][i]
-      const value = this[VALUES][i]
-
+    for (const [key, value] of this)
       func(value, key, this)
-    }
   }
 
   get size () {

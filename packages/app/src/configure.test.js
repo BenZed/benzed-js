@@ -221,28 +221,7 @@ describe('config app instance', () => {
           expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'public' ], badValue)).to.throw('must contain files \'index.html\'')
       })
     })
-    describe('config.rest.favicon', () => {
-      it('must be a string', () => {
-        const badValues = [ Symbol('-'), {} ]
-        for (const badValue of badValues)
-          expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'favicon' ], badValue)).to.throw('Must be of type: String')
-      })
-      it('must point to an existing url', () => {
-        const badValues = [
-          '../files/non-existant-icon.ico'
-        ]
-        for (const badValue of badValues)
-          expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'favicon' ], badValue)).to.throw('does not exist')
-      })
-      it('must point to an image: png, jpeg, jpg, svg or ico', () => {
-        const badValues = [
-          path.join(CONFIG_URL, 'default.json'),
-          path.join(CONFIG_URL, 'example.json')
-        ]
-        for (const badValue of badValues)
-          expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'favicon' ], badValue)).to.throw('be a file with extension .png,.jpeg,.jpg,.svg,.ico')
-      })
-    })
+
     it('socket.io or rest must be defined', () => {
       const noProvider = CONFIG_OBJ::set('socketio', false)
       expectNewTestApp(noProvider).to.throw('rest required if socketio is disabled')

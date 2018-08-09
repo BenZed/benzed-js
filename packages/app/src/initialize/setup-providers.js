@@ -32,12 +32,6 @@ function setupProviders () {
     feathers.settings = merge(feathers.settings, settings)
   }
 
-  if (configRest && configRest.favicon) {
-    const favicon = require('serve-favicon')
-    feathers
-      .use(favicon(configRest.favicon))
-  }
-
   const configIo = app.get('socketio')
   if (configIo) {
     const socketio = require('@feathersjs/socketio')
