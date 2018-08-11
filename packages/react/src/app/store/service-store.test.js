@@ -20,7 +20,12 @@ const APP = {
   socketio: true,
   port: 3456,
   services: {
-    messages: true
+    messages: {
+      paginate: {
+        default: 100,
+        max: 1000
+      }
+    }
   }
 }
 
@@ -84,8 +89,8 @@ describe.only('ServiceRecordCollection', () => {
       beforeEach(async () => {
         const messagesService = state.app.feathers.service('messages')
         docs = await messagesService.find({})
-        while (docs.length < 10) {
-          await messagesService.create({ body: `Message number ${docs.length + 1}!` })
+        while (docs.data.length < 10) {
+          await messagesService.create({ body: `Message number ${docs.data.length + 1}!` })
           docs = await messagesService.find({})
         }
       })
@@ -108,8 +113,10 @@ describe.only('ServiceRecordCollection', () => {
           await messages.find({ _id: { $lt: 5 } })
           expect(messages.records).to.have.property('size', 5)
 
-          await messages.find({ _id: { $gte: 5 } })
-          expect(messages.records).to.have.property('size', docs.length)
+          await messages.find({ _id: { $gte: 5 }, $limit: 2 })
+          await messages.find({ _id: { $gte: 5 }, $limit: 3, $skip: 2 })
+
+          expect(messages.records).to.have.property('size', docs.data.length)
         })
 
       })

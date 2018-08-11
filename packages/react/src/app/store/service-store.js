@@ -9,6 +9,7 @@ import {
 } from '@benzed/schema'
 import { copy, equals, EQUALS, indexOf } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
+
 /******************************************************************************/
 // Symbols
 /******************************************************************************/
@@ -55,11 +56,20 @@ async function executeQueryWithData () {
 
   let results = await store.service[method](arg)
 
-  results = wrap(results)
-  // TEMP
-  results = results.map(r => (r.scoped = true) && r)
+  if (is.array(results))
+    results = {
+      total: results.length,
+      limit: (arg.query && arg.query.$limit) || results.length,
+      skip: (arg.query && arg.query.$skip) || 0,
+      data: results
+    }
 
-  return store::ensureRecords(results)
+  // TEMP
+  results.data = results.data.map(r => (r.scoped = true) && r)
+
+  results.data = store::ensureRecords(results.data)
+
+  return results
 }
 
 /******************************************************************************/
@@ -133,7 +143,8 @@ function ensureRecords (records) {
 
   const store = this
   // TEMP should be creating service record instances
-  const newRecords = copy(store.records)
+  const newArr = []
+  const newMap = copy(store.records)
 
   for (const idOrData of records) {
     const isData = is.plainObject(idOrData)
@@ -143,14 +154,17 @@ function ensureRecords (records) {
 
     const record = isData
       ? idOrData
-      : newRecords.get(id) || { _id: id, scoped: false, body: null }
+      : newMap.get(id) || { _id: id, scoped: false, body: null }
 
-    newRecords.set(id, record)
+    newArr.push(record)
   }
 
-  store.set('records', newRecords)
+  for (const record of newArr)
+    newMap.set(record._id, record)
 
-  return [ ...newRecords.values() ]
+  store.set('records', newMap)
+
+  return newArr
 }
 
 /******************************************************************************/
@@ -167,7 +181,7 @@ class ServiceStore extends Store {
 
   // State
 
-  records = new Map();
+  records = new Map()
 
   // ShortCuts
 
