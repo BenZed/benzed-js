@@ -244,6 +244,28 @@ Test.optionallyBindableMethod(equals, equals => {
 
   })
 
+  it('works on native Map objects', () => {
+    const mapa = new Map()
+    const mapb = new Map()
+
+    expect(equals(mapa, mapb)).to.be.equal(true)
+
+    mapa.set(0, 'zero')
+    expect(equals(mapa, mapb)).to.be.equal(false)
+
+  })
+
+  it('works on native Set objects', () => {
+    const seta = new Set()
+    const setb = new Set()
+
+    expect(equals(seta, setb)).to.be.equal(true)
+
+    setb.add(0)
+    expect(equals(seta, setb)).to.be.equal(false)
+
+  })
+
   describe('allows primitives to be compared in overridden equality methods', () => {
 
     function accountEquals (b) {

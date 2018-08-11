@@ -102,10 +102,10 @@ function copyConsideringRefs (value, refs) {
  * @param  {*} value Object or value to copy.
  * @return {*}       Copied value or object.
  */
-function copy (value) {
+function copy () {
 
-  if (this !== undefined)
-    value = this
+  const args = arguments
+  const value = args.length > 0 ? args[0] : this
 
   return copyConsideringRefs(value)
 }

@@ -224,8 +224,9 @@ describe('Login component', () => {
           expect(state.visible).to.be.equal(false)
           expect(state.status).to.be.equal(null)
           expect(client.userId).to.not.be.equal(null)
-
+          console.warn('login component tests arn\'t complete')
         })
+
       })
     })
   })

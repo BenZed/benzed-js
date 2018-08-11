@@ -100,8 +100,12 @@ function equals (a, b) {
   if (!aIsObject || !bIsObject)
     return false
 
-  if (a instanceof Array && b instanceof Array)
+  if (Array.isArray(a) && Array.isArray(b))
     return arraysEqual(a, b)
+
+  if (typeof a[Symbol.iterator] === 'function' &&
+      typeof b[Symbol.iterator] === 'function')
+    return arraysEqual([ ...a ], [ ...b ])
 
   const akeys = namesAndSymbols(a)
   const bkeys = namesAndSymbols(b)

@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import Store from './store'
-import { get, COPY, EQUALS } from '@benzed/immutable'
+import { Store } from './store'
+import { get, EQUALS } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -139,7 +139,16 @@ describe('Store', () => {
       })
     })
 
-    describe('Immutable.COPY', () => {
+    describe('Symbol.toStringTag', () => {
+      it('returns [object Store]', () => {
+        const meta = new MetaStore()
+
+        expect(meta::Object.prototype.toString())
+          .to.be.equal('[object Store]')
+      })
+    })
+
+    describe('toJSON', () => {
 
       let meta
       before(() => {
@@ -147,23 +156,23 @@ describe('Store', () => {
       })
 
       it('returns an object containing all of the data in a stores state keys', () => {
-        expect(meta[COPY]()).to.deep.equal({
+        expect(meta.toJSON()).to.deep.equal({
           data: { foo: 'bar', length: 100 },
           status: 'okay'
         })
       })
 
       it('no shared references', () => {
-        expect(meta[COPY]().data).to.not.equal(meta.data)
+        expect(meta.toJSON().data).to.not.equal(meta.data)
       })
     })
 
-    describe('Immutable.EQUALS', () => {
+    describe('EQUALS', () => {
       it('returns true of store state is value equal to input', () => {
         const meta = new MetaStore()
         const meta2 = new MetaStore()
 
-        const state = meta[COPY]()
+        const state = meta.toJSON()
 
         expect(meta[EQUALS](state)).to.be.equal(true)
         expect(meta[EQUALS](meta2)).to.be.equal(true)
@@ -189,7 +198,7 @@ describe('Store', () => {
         meta.set('status', 'okay')
 
         expect(_state.status).to.equal('okay')
-        expect(_state).to.deep.equal(meta[COPY]())
+        expect(_state).to.deep.equal(meta.toJSON())
       })
 
       it('func argument must be a function', () => {
@@ -276,7 +285,8 @@ describe('Store', () => {
       it('func argument must be a function', () => {
         const meta = new MetaStore()
 
-        expect(() => meta.unsubscribe(100)).to.throw('callback argument must be a function')
+        expect(() => meta.unsubscribe(100))
+          .to.throw('callback argument must be a function')
       })
 
     })

@@ -37,7 +37,10 @@ const LoginModal = ({
 
           <div>
             <strong>Login</strong>
-            <span style={{ color: 'red' }}>{is(status, Error) ? ' ' + status.message : ''}</span>
+
+            <span style={{ color: 'red' }}>
+              {is(status, Error) ? ' ' + status.message : ''}
+            </span>
           </div>
 
         </Slide>

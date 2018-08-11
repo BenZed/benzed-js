@@ -159,7 +159,7 @@ class PromiseQueue {
 
     const items = [ ...this[CURRENT], ...this[QUEUE] ]
 
-    return items.map(item => item.complete)
+    return items
 
   }
 

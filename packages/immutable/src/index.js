@@ -1,5 +1,6 @@
 import copy from './copy'
 import copyJson from './copy-json'
+
 import equals from './equals'
 
 import get from './get'
@@ -17,7 +18,7 @@ import ValueMap from './value-map'
 import { EQUALS, COPY } from './symbols'
 
 /******************************************************************************/
-// Extend
+// Exports
 /******************************************************************************/
 
 copy.json = copyJson

@@ -1,5 +1,4 @@
 import is from 'is-explicit'
-import { milliseconds } from '@benzed/async'
 import { equals, EQUALS } from '@benzed/immutable'
 
 import Store from './store'

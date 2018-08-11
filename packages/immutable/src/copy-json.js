@@ -59,10 +59,13 @@ function copyConsideringRefs (value, refs) {
 // Main
 /******************************************************************************/
 
-function copyJson (value) {
+function copyJson () {
 
-  if (this !== undefined)
-    value = this
+  const args = arguments
+
+  const value = args.length > 0
+    ? args[0]
+    : this
 
   const result = copyConsideringRefs(value)
   return result !== EXCLUDED

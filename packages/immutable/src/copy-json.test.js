@@ -197,9 +197,11 @@ Test.optionallyBindableMethod.only(copyJson, copyJson => {
         }
       }
 
-      expect(copyJson(iterable)).to.be.deep.equal([
-        1, 2, 3, 'value'
-      ])
+      expect(copyJson(iterable))
+        .to.be.deep
+        .equal([
+          1, 2, 3, 'value'
+        ])
     })
   })
 

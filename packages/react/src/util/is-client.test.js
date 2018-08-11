@@ -6,12 +6,12 @@ import isClient from './is-client'
 
 describe('isClient', () => {
 
-  it('is a boolean', () => {
-    expect(typeof isClient).to.be.equal('boolean')
+  it('is a function', () => {
+    expect(typeof isClient).to.be.equal('function')
   })
 
   it('is true if global.window is typeof object', () => {
-    expect(isClient).to.be.equal(typeof window === 'object')
+    expect(isClient()).to.be.equal(typeof window === 'object')
   })
 
 })

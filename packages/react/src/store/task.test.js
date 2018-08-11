@@ -4,8 +4,7 @@ import { expect } from 'chai'
 import task, { TASK, Task } from './task'
 import Store from './store'
 
-import { milliseconds } from '@benzed/async'
-import { equals, COPY } from '@benzed/immutable'
+import { equals } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -25,6 +24,8 @@ describe('@task decorator', () => {
       @task
       next () {
 
+        this.status('turning')
+
         let light = this.get('light')
         light = light === 'green'
           ? 'yellow'
@@ -38,12 +39,11 @@ describe('@task decorator', () => {
           throw new Error('The light has been damaged.')
 
         this.set('light', light)
+        this.status('idle')
       }
 
       reset () {
         this.next.status = 'idle'
-        this.next.progress = 0
-        this.next.error = null
         this.light = 'green'
       }
     }
@@ -211,12 +211,11 @@ describe('@task decorator', () => {
 
     it('store copies tasks as plain objects', () => {
       const traffic = new TrafficStore()
-      const state = traffic[COPY]()
+      traffic.next()
+      const state = traffic.toJSON()
 
       expect(is.plainObject(state.next)).to.be.equal(true)
       expect(state.next.status).to.be.equal(traffic.next.status)
-      expect(state.next.progress).to.be.equal(traffic.next.progress)
-      expect(state.next.error).to.be.equal(traffic.next.error)
     })
   })
 

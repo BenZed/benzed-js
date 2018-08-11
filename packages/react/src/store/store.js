@@ -1,6 +1,6 @@
 import is from 'is-explicit'
 
-import { get, set, copy, equals, COPY, EQUALS, reverse } from '@benzed/immutable'
+import { get, set, copy, equals, EQUALS, reverse } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 
 import { TASK } from './task'
@@ -27,12 +27,12 @@ function assertPath (store, path) {
 
   const [ key ] = path
 
-  if (key in store === false ||
+  if ((key in store === false) ||
     (is.func(store[key]) && TASK in store[key] === false) ||
     key === SUBSCRIBERS ||
     key === EQUALS ||
-    key === COPY)
-    throw new Error(`Cannot set ${path.join('.')}, ${key} is not a valid state property.`)
+    key === 'toJSON')
+    throw new Error(`Cannot set ${path.map(String).join('.')}, ${key} is not a valid state property.`)
 
   return path
 }
@@ -75,7 +75,7 @@ function notifyStoreSubscribers (store, path) {
       // at final key, send state to subscriber
       if (!finished && atMaxSubPathIndex) {
         finished = true
-        state = state || store[COPY]()
+        state = state || store.toJSON()
         sub.callback(state, sub.path)
       }
 
@@ -98,7 +98,7 @@ class Store {
 
   [SUBSCRIBERS] = [];
 
-  [COPY] () {
+  toJSON () {
     const state = {}
 
     for (const key in this) {
@@ -106,11 +106,11 @@ class Store {
       const isFunction = is.func(value)
 
       if (!isFunction)
-        state[key] = copy(value)
+        state[key] = copy.json(value)
 
       else if (TASK in value) {
-        const { status, progress, error } = value
-        state[key] = { status, progress, error }
+        const { status } = value
+        state[key] = { status }
       }
     }
 
@@ -131,6 +131,10 @@ class Store {
     }
 
     return true
+  }
+
+  get [Symbol.toStringTag] () {
+    return 'Store'
   }
 
   constructor () {
@@ -161,12 +165,14 @@ class Store {
 
     path = assertPath(this, path)
 
-    const stateUnchanged = equals(this.get(path), value)
+    const stateUnchanged = equals(get.mut(this, path), value)
     if (stateUnchanged)
-      return
+      return false
 
     set.mut(this, path, value)
     notifyStoreSubscribers(this, path)
+
+    return true
   }
 
   get (path) {
@@ -176,7 +182,6 @@ class Store {
   }
 
   subscribe (callback, ...paths) {
-
     if (!is.func(callback))
       throw new Error('callback argument must be a function')
 
@@ -198,7 +203,6 @@ class Store {
   }
 
   unsubscribe (callback) {
-
     if (!is.func(callback))
       throw new Error('callback argument must be a function')
 
@@ -216,3 +220,5 @@ class Store {
 /******************************************************************************/
 
 export default Store
+
+export { Store, SUBSCRIBERS }

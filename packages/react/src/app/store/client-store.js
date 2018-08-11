@@ -60,7 +60,7 @@ const authAutoFill = auth => {
 
   const authEnabled = is.object(auth)
 
-  if (isClient && authEnabled && !auth.storage)
+  if (isClient() && authEnabled && !auth.storage)
     auth.storage = window.localStorage
 
   if (authEnabled && !auth.storageKey)
@@ -394,6 +394,10 @@ class ClientStore extends Store {
   }
 
   // Util
+
+  service (name) {
+    return this[FEATHERS].service(name)
+  }
 
   constructor (config) {
     super()

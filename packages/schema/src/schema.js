@@ -3,8 +3,6 @@ import Context from './util/context'
 import validate from './util/validate'
 import { TYPE } from './util/symbols'
 
-import { copy } from '@benzed/immutable'
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -26,7 +24,7 @@ function Schema (raw, ...args) {
 
     const context = new Context(data, args)
 
-    return validate(normalized, copy(data), context)
+    return validate(normalized, data, context)
   }
 
 }
