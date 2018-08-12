@@ -1,4 +1,3 @@
-import path from 'path'
 import { expect } from 'chai'
 
 import ServiceStore from './service-store'
@@ -38,9 +37,9 @@ class Message extends ServiceRecord {
 
 }
 
-class Messages extends ServiceStore {
-
-}
+// class Messages extends ServiceStore {
+//
+// }
 
 /******************************************************************************/
 // Tests

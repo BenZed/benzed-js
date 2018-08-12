@@ -38,6 +38,6 @@ export {
   Store, Observer, Provider, observe, task,
 
   // Util
-  isClient, isMobile, styler, $, Cloner, Color
+  isClient, isMobile, Cloner, Color, styler, $
 
 }

@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "My own personal Math module, extending Math with overridden or custom functionality.",
   "devDependencies": {
-    "@benzed/dev": "^0.8.0"
+    "@benzed/dev": "^0.9.2"
   }
 }

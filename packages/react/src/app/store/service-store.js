@@ -16,7 +16,6 @@ import { wrap } from '@benzed/array'
 
 const CONFIG = Symbol('service-store-config')
 const QUERY = Symbol('query-queue')
-const RECORDS = Symbol('records-map')
 
 /******************************************************************************/
 // Query Queue

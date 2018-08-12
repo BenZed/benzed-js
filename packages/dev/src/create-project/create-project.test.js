@@ -139,6 +139,27 @@ describe('createProject()', () => {
 
     })
 
+    // const TEMP_NEW_PROJECT_NAME = 'evolution-toy'
+    // describe.only(`creates ${TEMP_NEW_PROJECT_NAME}`, () => {
+    //
+    //   const options = {
+    //     dir: path.resolve(process.cwd(), '../../../'),
+    //     name: TEMP_NEW_PROJECT_NAME,
+    //
+    //     socketio: false,
+    //     rest: false,
+    //
+    //     ui: true,
+    //     api: false,
+    //
+    //     auth: false,
+    //     files: false
+    //   }
+    //
+    //   testCreateProject(options)
+    //
+    // })
+
   })
 
 })

@@ -33,7 +33,7 @@ function tempInjectGlobal (theme) {
     body {
       color: ${`${theme.fg}`};
       background-color: ${`${theme.bg}`};
-      font-family: ${theme.body};
+      font-family: ${theme.fonts.body};
     }
 
     main {
@@ -44,7 +44,7 @@ function tempInjectGlobal (theme) {
 
     h1, h2, h3, h4, h5, h6 {
       margin: 0;
-      font-family: ${theme.title};
+      font-family: ${theme.fonts.title};
     }
 
     a:link {
