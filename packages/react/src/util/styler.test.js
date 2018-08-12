@@ -31,7 +31,7 @@ const props = {
 // Tests
 /******************************************************************************/
 
-describe('styler', () => {
+describe.only('styler', () => {
 
   it('is a class', () => {
     expect(Styler).to.throw('invoked without \'new\'')
@@ -185,6 +185,11 @@ describe('styler', () => {
 
         it('theme property gets extended styler and calls its theme getter', () => {
           expect($.theme).to.have.property('bg')
+        })
+
+        it('calls prop() with path to theme property', () => {
+          expect($.theme.bg.valueOf()(props))
+            .to.be.equal(props.theme.bg)
         })
       })
     })

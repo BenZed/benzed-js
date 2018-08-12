@@ -156,11 +156,11 @@ describe('StoreCollection', () => {
         expect(() => comments.set(0, {})).to.throw('must be an instance of Store')
       })
 
-      it('throws if key is not a symbol, string or number', () => {
+      it('throws if key is not a string or number', () => {
         const comments = new Comments()
         const comment = new Comment('test me')
         for (const badKey of [ {}, true, [], NaN, null, undefined ])
-          expect(() => comments.set(badKey, comment)).to.throw('key must be a string, symbol or number')
+          expect(() => comments.set(badKey, comment)).to.throw('key must be a string or number')
 
       })
 
@@ -168,7 +168,7 @@ describe('StoreCollection', () => {
         const comments = new Comments()
         const comment = new Comment('test me')
 
-        for (const invalid of Object.getOwnPropertySymbols(comments))
+        for (const invalid of ['constructor', 'count', 'set'])
           expect(() => comments.set(invalid, comment)).to.throw('is an invalid key.')
 
       })
@@ -190,12 +190,10 @@ describe('StoreCollection', () => {
 
       it('throws if key is invalid', () => {
         const comments = new Comments()
-        expect(() => comments.get([])).to.throw('key must be a string, symbol or number')
+        expect(() => comments.get([])).to.throw('key must be a string or number')
 
-        const Symbols = Object.getOwnPropertySymbols(comments)
-
-        for (const symbol of Symbols)
-          expect(() => comments.get(symbol)).to.throw('invalid key')
+        for (const invalid of ['constructor', 'count', 'get', 'set'])
+          expect(() => comments.get(invalid)).to.throw('invalid key')
       })
 
       it('returns undefined if key is missing', () => {
@@ -219,12 +217,10 @@ describe('StoreCollection', () => {
 
       it('throws if key is invalid', () => {
         const comments = new Comments()
-        expect(() => comments.get([])).to.throw('key must be a string, symbol or number')
+        expect(() => comments.get([])).to.throw('key must be a string or number')
 
-        const Symbols = Object.getOwnPropertySymbols(comments)
-
-        for (const symbol of Symbols)
-          expect(() => comments.get(symbol)).to.throw('invalid key')
+        for (const invalid of ['constructor', 'count', 'get', 'set'])
+          expect(() => comments.get(invalid)).to.throw('invalid key')
       })
 
     })
@@ -304,14 +300,6 @@ describe('StoreCollection', () => {
         const comments = commentsSeeded()
         const keys = [ ...comments.keys() ]
         expect(keys).to.deep.equal(['0', '1'])
-      })
-      it('returns symbol keys as well', () => {
-        const comments = commentsSeeded()
-        const KEY = Symbol('key')
-        comments.set(KEY, new Comment())
-        const keys = [ ...comments.keys() ]
-        expect(keys).to.have.length(3)
-        expect(keys[2]).to.be.equal(KEY)
       })
     })
 

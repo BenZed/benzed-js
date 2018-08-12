@@ -1,4 +1,4 @@
-import { get } from '@benzed/immutable'
+import { get, push } from '@benzed/immutable'
 
 import basicTheme from '../themes/basic'
 import is from 'is-explicit'
@@ -27,17 +27,51 @@ function applyMutator (mutator, value, props) {
 // Helper
 /******************************************************************************/
 
-function extendStylerWithTheme (Styler, theme) {
+function buildTheme (styler, theme, path = [ 'theme' ]) {
 
-  return class ThemedStyler extends Styler {
+  const _interface = {}
 
-    // add style getter logic here
+  for (const key in theme) {
+    const value = theme[key]
 
-    get theme () {
-      return null
+    const description = {
+      enumerable: true,
+      configurable: false
     }
 
+    const nextPath = path::push(key)
+
+    if (is.plainObject(value))
+      description.value = buildTheme(styler, value, nextPath)
+    else
+      description.get = () => styler.prop(...nextPath)
+
+    Object.defineProperty(
+      _interface,
+      key,
+      description
+    )
   }
+
+  return _interface
+
+}
+
+function extendStylerWithTheme (Styler, theme) {
+
+  class ThemedStyler extends Styler {
+
+    theme () {}
+
+    constructor (...args) {
+      super(...args)
+
+      this.theme = buildTheme(this, theme)
+
+    }
+  }
+
+  return ThemedStyler
 }
 
 function StylerInterface (Styler) {
@@ -79,11 +113,11 @@ class Styler {
 
   static createInterface (theme) {
 
-    const Styler = theme
+    const styler = theme
       ? extendStylerWithTheme(this, theme)
       : this
 
-    return new StylerInterface(Styler, theme)
+    return new StylerInterface(styler, theme)
   }
 
   // Style Manipulators

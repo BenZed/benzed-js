@@ -99,7 +99,10 @@ const PROXY_CONFIGURATION = {
 
   set (array, index, value) {
 
-    const i = parseInt(index)
+    const type = typeof index
+    const i = type === 'number' || type === 'string'
+      ? parseInt(index)
+      : NaN
 
     const { unsorted, length } = array
 

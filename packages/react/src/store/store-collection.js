@@ -27,8 +27,8 @@ function isValidKey (store, key) {
 }
 
 function assertKey (store, key) {
-  if (!is.string(key))
-    throw new Error('key must be a string, symbol or number')
+  if (!is.string(key) && !is.number(key))
+    throw new Error('key must be a string or number')
 
   if (!isValidKey(store, key))
     throw new Error(`${String(key)} is an invalid key.`)

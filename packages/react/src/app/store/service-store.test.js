@@ -46,7 +46,7 @@ class Messages extends ServiceStore {
 // Tests
 /******************************************************************************/
 
-describe.only('ServiceRecordCollection', () => {
+describe('ServiceStore', () => {
 
   let client
   before(() => {
@@ -123,7 +123,7 @@ describe.only('ServiceRecordCollection', () => {
 
       describe('get()', () => {
 
-        it('syncronously returns an unscoped record that gets filled when query is complete', async () => {
+        it('syncronously returns a record', async () => {
           messages.records.clear()
 
           expect(messages.get(0))
@@ -135,7 +135,6 @@ describe.only('ServiceRecordCollection', () => {
           expect(messages.get(0))
             .to.be
             .deep.equal({ _id: 0, scoped: true, body: 'Message number 1!' })
-
         })
       })
     })

@@ -190,7 +190,7 @@ describe('Login component', () => {
 
     })
 
-    createProjectAppAndTest(APP, state => {
+    createProjectAppAndTest(APP, main => {
 
       describe('submit()', () => {
 
@@ -199,9 +199,9 @@ describe('Login component', () => {
 
         before(async () => {
           await client.connect()
-          const users = await state.app.users.find({})
+          const users = await main.app.users.find({})
           if (!users.some(user => user.email === EMAIL))
-            await state.app.users.create({
+            await main.app.users.create({
               email: EMAIL,
               password: PASS,
               passwordConfirm: PASS
@@ -211,7 +211,7 @@ describe('Login component', () => {
             setEmail, setPassword, submit
           } = test.root.instance
 
-          client.host = state.address
+          client.host = main.address
 
           setEmail(EMAIL)
           setPassword(PASS)
@@ -224,9 +224,7 @@ describe('Login component', () => {
           expect(state.visible).to.be.equal(false)
           expect(state.status).to.be.equal(null)
           expect(client.userId).to.not.be.equal(null)
-          console.warn('login component tests arn\'t complete')
         })
-
       })
     })
   })

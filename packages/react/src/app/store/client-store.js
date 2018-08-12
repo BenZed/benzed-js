@@ -7,6 +7,7 @@ import authentication from '@feathersjs/authentication-client'
 
 import { Schema, arrayOf, string, object, required, oneOf, cast } from '@benzed/schema'
 import { until } from '@benzed/async'
+import { copy } from '@benzed/immutable'
 
 import Store, { task } from '../../store'
 import { isClient } from '../../util'
@@ -403,7 +404,7 @@ class ClientStore extends Store {
     super()
 
     this[FEATHERS] = feathers()
-    this[CONFIG] = freeze(validateConfig(config))
+    this[CONFIG] = freeze(validateConfig(copy(config)))
 
     const { provider, auth } = this[CONFIG]
     if (provider === 'rest') {

@@ -20,7 +20,7 @@ function dechancify (doFunc, testFunc) {
     try {
       testFunc(result)
       passes++
-    } catch (err) { }
+    } catch (err) { } // eslint-disable-line
   }
 
   expect(passes).to.be.at.least(THRESHOLD)
