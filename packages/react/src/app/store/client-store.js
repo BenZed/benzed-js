@@ -26,7 +26,7 @@ const CONFIG = Symbol('configuration')
 const CONNECTION_TIMEOUT = 500
 
 // The initial host doesn't matter, because we change it. However, you seem
-// to NEED to supply a valid host string or it throws errors.
+// to NEED to supply a valid host string or it throws cryptic errors.
 // TODO there's no way socket.io has overlooked this. I must be doing something wrong.
 const DUMMY_IO_HOST = 'http://localhost:80'
 
@@ -73,11 +73,17 @@ const authAutoFill = auth => {
   return auth
 }
 
+const mustIncludeProtocol = host =>
+  /^https?:\/\//.test(host)
+    ? host
+    : new Error('Host must include http(s) protocol.')
+
 const validateConfig = new Schema(
   {
     hosts: arrayOf(
       string,
-      required
+      required,
+      mustIncludeProtocol
     ),
 
     provider: oneOf(

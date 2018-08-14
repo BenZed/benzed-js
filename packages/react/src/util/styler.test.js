@@ -31,7 +31,7 @@ const props = {
 // Tests
 /******************************************************************************/
 
-describe.only('styler', () => {
+describe('styler', () => {
 
   it('is a class', () => {
     expect(Styler).to.throw('invoked without \'new\'')

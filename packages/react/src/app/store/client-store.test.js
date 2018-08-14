@@ -2,6 +2,7 @@ import { expect } from 'chai'
 import ClientStore from './client-store'
 import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
 import { set } from '@benzed/immutable'
+import { milliseconds } from '@benzed/async'
 
 import io from 'socket.io-client'
 import path from 'path'
@@ -49,7 +50,7 @@ function expectNewClient (config, call = false) {
 // Tests
 /******************************************************************************/
 
-describe('Client Store', () => {
+describe.only('Client Store', () => {
 
   it('is a class', () => {
     expect(ClientStore).to.throw('invoked without \'new\'')
@@ -82,6 +83,11 @@ describe('Client Store', () => {
         it('must be string or an array of strings', () => {
           expectNewClient(CONFIG::set('hosts', {}))
             .to.throw('hosts Must be an Array of String')
+        })
+
+        it('must include http or https protocol', () => {
+          expectNewClient(CONFIG::set('hosts', 'localhost:3200'))
+            .to.throw('Host must include http(s) protocol.')
         })
       })
 
@@ -345,6 +351,52 @@ describe('Client Store', () => {
       it('throws if host is not connected', () => {
         return socketio[FEATHERS].service('articles').find({})
           ::expectReject('not connected to host')
+      })
+
+      it.only('@feathersjs/client receives events', async () => {
+
+        const feathers = require('@feathersjs/client')
+        const io = require('socket.io-client')
+
+        const socket = io(`http://localhost:${state.app.get('port')}`)
+        const client = feathers()
+          .configure(feathers.socketio(socket))
+
+        const articles = client.service('articles')
+
+        let article = null
+        articles.on('created', a => { article = a })
+
+        await state.app.articles.create({
+          body: 'thing'
+        })
+
+        await milliseconds(50)
+
+        console.log(article)
+
+        expect(article).to.not.be.equal(null)
+
+      })
+
+      it.only('receives server events', async () => {
+
+        await socketio.connect()
+
+        let created = false
+
+        socketio
+          .service('articles')
+          .on('created', () => {
+            console.log('created')
+            created = true
+          })
+
+        await state.app.articles.create({ body: 'New Article.' })
+
+        await milliseconds(25)
+
+        expect(created).to.be.equal(true)
       })
 
       describe('connect', () => {

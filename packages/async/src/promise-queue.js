@@ -157,10 +157,12 @@ class PromiseQueue {
 
   get items () {
 
-    const items = [ ...this[CURRENT], ...this[QUEUE] ]
+    const items = [
+      ...this[CURRENT],
+      ...this[QUEUE]
+    ]
 
     return items
-
   }
 
   // Hooks
