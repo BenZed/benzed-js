@@ -42,7 +42,7 @@ function setupProviders () {
       : null
 
     const options = {
-      wsEngine: 'uws',
+      // wsEngine: 'uws',
       ...configIo
     }
 
