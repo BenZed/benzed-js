@@ -104,7 +104,7 @@ class Service {
 
     const adapter = this::getDatabaseAdapter(app, name, paginate)
     const service = this::registerToFeathers(app, path, adapter, config)
-    const hooks = this::compileHooks(app, config)
+    const hooks = this::compileHooks(app, config, adapter)
 
     service.hooks(hooks)
 

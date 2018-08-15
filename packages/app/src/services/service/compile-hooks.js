@@ -2,10 +2,13 @@ import {
   PRIORITY,
   jwtAuth,
   softDelete,
-  writeDateFields
+  writeDateFields,
+  castQueryIds
 } from '../../hooks'
 
 import { Schema, object, arrayOf, func, defaultTo } from '@benzed/schema'
+
+import { Service as MemoryService } from 'feathers-memory'
 
 /******************************************************************************/
 // Symbol
@@ -60,9 +63,13 @@ const validateHookMethodStructure = new Schema(methodObj)
 
 // TODO if auth, soft-delete or write-date-fields are already in,
 // the shortcuts should not be added
-function addQuickHooks (app, config) {
+function addQuickHooks (app, config, adapter) {
 
   const service = this
+
+  // Cast Query Ids
+  if (adapter instanceof MemoryService)
+    service.before({ all: castQueryIds(Number) })
 
   // Auth
   const authRequired = config.auth
@@ -152,12 +159,12 @@ function sortAndPruneHooks () {
 // Main
 /******************************************************************************/
 
-function compileHooks (app, config) {
+function compileHooks (app, config, adapter) {
 
   const service = this
 
   service::addServiceHooks(app, config)
-  service::addQuickHooks(app, config)
+  service::addQuickHooks(app, config, adapter)
   service::sortAndPruneHooks()
 
   return service[HOOKS]

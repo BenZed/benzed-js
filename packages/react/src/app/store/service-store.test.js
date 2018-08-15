@@ -53,7 +53,7 @@ class Message extends ServiceRecord {
 // Tests
 /******************************************************************************/
 
-describe('ServiceStore', () => {
+describe.only('ServiceStore', () => {
 
   let client
   before(() => {
@@ -130,9 +130,11 @@ describe('ServiceStore', () => {
           await messages.find({ })
 
           expect(messages.records).to.have.property('size', docs.data.length)
+
+          await messages.untilFetchingComplete()
         })
 
-        it('only queues fetch if query is unique', () => {
+        it('only queues fetch if query is unique', async () => {
           messages.records.clear()
 
           messages.find({ _id: { $lt: 5 } })
@@ -143,6 +145,8 @@ describe('ServiceStore', () => {
 
           messages.find({ _id: { $lt: 5 } })
           expect(queue.items).to.have.length(2)
+
+          await messages.untilFetchingComplete()
         })
 
       })
@@ -155,7 +159,8 @@ describe('ServiceStore', () => {
           const record = messages.get(0)
           expect(record.id).to.be.equal(0)
           expect(record.status).to.be.equal('unfetched')
-          await until(() => record.status === 'fetched')
+
+          await messages.untilFetchingComplete()
 
           expect(record.status).to.be.equal('fetched')
           expect(record.getData('body')).to.be.equal(`Message number 1!`)
@@ -197,7 +202,7 @@ describe('ServiceStore', () => {
       })
     })
 
-    describe(`events in ${APP_TYPE} app`, () => {
+    if (APP_TYPE !== 'rest') describe(`events in ${APP_TYPE} app`, () => {
 
       before(() => client.connect())
 

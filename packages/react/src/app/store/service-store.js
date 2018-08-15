@@ -3,7 +3,7 @@ import Store from '../../store/store'
 import ClientStore from './client-store'
 import is from 'is-explicit'
 
-import { copy, equals, merge, EQUALS, indexOf } from '@benzed/immutable'
+import { equals, merge, EQUALS, indexOf } from '@benzed/immutable'
 import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
 import {
@@ -196,14 +196,13 @@ function handleEvents () {
 
   const { service } = store
 
-  const onCreate = data => {
+  const onCreate = doc => {
 
-    console.log('created')
-
-    const { _id } = data
+    const { _id, ...data } = doc
     const [ record ] = store::ensureRecords([ _id ])
 
     record::applyChanges(data, 'db')
+
   }
 
   // const onEdit = data => {
@@ -265,7 +264,7 @@ function ensureRecords (ids) {
     let record = (recordMap || store.records).get(id)
     if (!record) {
       record = new Record(id, store)
-      recordMap = recordMap || store.records::copy()
+      recordMap = recordMap || new Map([ ...store.records ])
       recordMap.set(id, record)
     }
 
@@ -332,7 +331,7 @@ class ServiceStore extends Store {
 
     const { client } = this[CONFIG]
 
-    // if (client.config.provider === 'socketio')
+    if (client.config.provider === 'socketio')
       this::handleEvents()
   }
 

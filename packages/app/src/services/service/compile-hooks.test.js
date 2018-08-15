@@ -131,6 +131,8 @@ describe('compileHooks()', () => {
       expect(hooks.before.all[1]).to.have.property('name', 'soft-delete')
     })
 
+    it('adds cast-query-ids hook if adapter is a memory service')
+
   })
 
   describe('adds service hooks', () => {

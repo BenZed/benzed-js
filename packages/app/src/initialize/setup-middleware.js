@@ -17,7 +17,7 @@ function setupMiddleware () {
   const express = require('@feathersjs/express')
 
   const hasPublic = !!rest.public
-  const hasSSR = (app.getClientComponent || app.onSerializeClient) && hasPublic
+  const hasSSR = hasPublic && (app.getClientComponent || app.onSerializeClient)
 
   if (hasPublic) {
     // If there is a react component to serve ssr with, we don't want to statically

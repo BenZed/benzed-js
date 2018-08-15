@@ -6,6 +6,8 @@ import FileService from './file-service'
 // Exports
 /******************************************************************************/
 
+export default Service
+
 export {
 
   Service,

@@ -48,7 +48,7 @@ function setupServices () {
   for (const serviceName in serviceConfig) {
 
     const setupConfig = serviceConfig[serviceName]
-    if (!setupConfig || ('enabled' in serviceConfig && !serviceConfig.enabled))
+    if (!setupConfig || serviceConfig.enabled === false)
       continue
 
     let service = app.services && app.services[serviceName]

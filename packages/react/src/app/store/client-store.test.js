@@ -50,7 +50,7 @@ function expectNewClient (config, call = false) {
 // Tests
 /******************************************************************************/
 
-describe.only('Client Store', () => {
+describe('Client Store', () => {
 
   it('is a class', () => {
     expect(ClientStore).to.throw('invoked without \'new\'')
@@ -351,52 +351,6 @@ describe.only('Client Store', () => {
       it('throws if host is not connected', () => {
         return socketio[FEATHERS].service('articles').find({})
           ::expectReject('not connected to host')
-      })
-
-      it.only('@feathersjs/client receives events', async () => {
-
-        const feathers = require('@feathersjs/client')
-        const io = require('socket.io-client')
-
-        const socket = io(`http://localhost:${state.app.get('port')}`)
-        const client = feathers()
-          .configure(feathers.socketio(socket))
-
-        const articles = client.service('articles')
-
-        let article = null
-        articles.on('created', a => { article = a })
-
-        await state.app.articles.create({
-          body: 'thing'
-        })
-
-        await milliseconds(50)
-
-        console.log(article)
-
-        expect(article).to.not.be.equal(null)
-
-      })
-
-      it.only('receives server events', async () => {
-
-        await socketio.connect()
-
-        let created = false
-
-        socketio
-          .service('articles')
-          .on('created', () => {
-            console.log('created')
-            created = true
-          })
-
-        await state.app.articles.create({ body: 'New Article.' })
-
-        await milliseconds(25)
-
-        expect(created).to.be.equal(true)
       })
 
       describe('connect', () => {

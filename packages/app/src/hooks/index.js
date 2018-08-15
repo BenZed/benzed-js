@@ -6,6 +6,7 @@ import removePassword from './remove-password'
 import validatePassword from './validate-password'
 import writeDateFields from './write-date-fields'
 import softDelete from './soft-delete'
+import castQueryIds from './cast-query-ids'
 
 /******************************************************************************/
 // Exports
@@ -19,6 +20,7 @@ export {
   validatePassword,
   writeDateFields,
   softDelete,
+  castQueryIds,
 
   Hook,
   prepareGeneric,

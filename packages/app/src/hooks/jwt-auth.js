@@ -4,7 +4,7 @@ import { prepareGeneric } from './hook'
 // Data
 /******************************************************************************/
 
-// this is kept as a dangling reference, sot hat if jwtAuth is never used,
+// this is kept as a dangling reference, so that if jwtAuth is never used,
 // I never have to import the authentication dependencies
 let _jwtAuthHookInstance
 
@@ -24,6 +24,7 @@ function jwtAuth () {
 
   return _jwtAuthHookInstance
 }
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/

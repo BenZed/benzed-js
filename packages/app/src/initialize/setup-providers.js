@@ -1,6 +1,8 @@
 import is from 'is-explicit'
 import { merge } from '@benzed/immutable'
 
+import { isEnabled } from '../configure'
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -11,7 +13,7 @@ function setupProviders () {
   let { feathers } = app
 
   const configRest = app.get('rest')
-  if (configRest) {
+  if (isEnabled(configRest)) {
     const express = require('@feathersjs/express')
     const compress = require('compression')
     const cors = require('cors')
@@ -33,7 +35,7 @@ function setupProviders () {
   }
 
   const configIo = app.get('socketio')
-  if (configIo) {
+  if (isEnabled(configIo)) {
     const socketio = require('@feathersjs/socketio')
     const middleware = is(app.socketio, Function)
       ? ::app.socketio

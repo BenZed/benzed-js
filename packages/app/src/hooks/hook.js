@@ -45,19 +45,54 @@ const validateConfig = new Schema(object(
 // Helper
 /******************************************************************************/
 
-function setupHook (...args) {
-  const [ base, hook, setup ] = this
+function getAllMethods (object) {
 
-  base.options = setup(...args)
+  const methods = {}
 
-  return hook
+  while (object !== Object.prototype) {
+    const names = Object.getOwnPropertyNames(object)
+    for (const name of names)
+      if (name !== 'constructor' && is.func(object[name]))
+        methods[name] = object[name]
+
+    object = Object.getPrototypeOf(object)
+  }
+
+  return methods
+
+}
+
+function createInstancer ({ priority, setup, exec, ...rest }) {
+
+  const methods = getAllMethods(this)
+
+  const instancer = (...args) => {
+
+    const instance = {
+      ...rest,
+      ...methods
+    }
+
+    if (setup)
+      instance.options = setup(...args)
+
+    const hook = instance::exec
+
+    return hook
+      ::define(PRIORITY, priority)
+      ::define('name', rest.name)
+
+  }
+
+  return instancer
+    ::define('name', `setup-${rest.name}`)
 
 }
 
 function define (key, value) {
   const obj = this
 
-  Object.defineProperty(obj, key, { value, enumerable: is.symbol(key) })
+  Object.defineProperty(obj, key, { value, enumerable: !is.symbol(key) })
 
   return obj
 }
@@ -68,27 +103,15 @@ function define (key, value) {
 
 class Hook {
 
-  constructor (config) {
+  constructor (input) {
 
-    const { name, priority, methods, types, exec, setup } = validateConfig(config)
+    const config = validateConfig(input)
 
-    this.methods = methods
-    this.types = types
-    this.name = name
-    this.options = {}
+    const instancer = this::createInstancer(config)
 
-    const hook = this::exec
-
-    hook
-      ::define('name', name)
-      ::define(PRIORITY, priority)
-
-    return setup
-      ? [this, hook, setup]
-        ::setupHook
-        ::define('name', `setup-${name}`)
-
-      : hook
+    return config.setup
+      ? instancer
+      : instancer()
   }
 
   checkContext (ctx) {

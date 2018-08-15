@@ -7,7 +7,7 @@ const path = require('path')
 
 function getPackages () {
   const packages = path.resolve(__dirname, '../../packages')
-  const names = fs.readdirSync(packages)
+  const names = fs.readdirSync(packages).filter(name => name !== '.DS_Store')
 
   return {
     packages, names

@@ -2,21 +2,30 @@ require('colors')
 
 const fs = require('fs-extra')
 const path = require('path')
-const { spawn, execSync } = require('child_process')
 
-const { eachPackage, getPackages, packageLog } = require('./helper')
+const { spawn } = require('child_process')
 
-/******************************************************************************/
-// DATA
-/******************************************************************************/
+const { eachPackage, packageLog } = require('./helper')
 
-const { names, packages } = getPackages()
+// TODO
+// this could very easily be changed to run any script
 
 /******************************************************************************/
-// BUILD:DEV EACH PACKAGE
+// run babel:dev in each package
 /******************************************************************************/
 
 const subs = eachPackage((name, dir) => {
+
+  // ensure that the package actually has the babel:dev script
+  let json = null
+  try {
+    json = fs.readJsonSync(path.join(dir, 'package.json'))
+  } catch (e) { } //eslint-disable-line
+
+  if (!json || !json.scripts || !json.scripts['babel:dev']) {
+    packageLog(name, 'no babel:dev'.bgYellow)
+    return null
+  }
 
   packageLog(name, 'start babel:dev'.bgCyan)
 
@@ -31,7 +40,8 @@ const subs = eachPackage((name, dir) => {
   })
 
   return buildDev
-})
+
+}).filter(child => child !== null)
 
 /******************************************************************************/
 // Handle Exit

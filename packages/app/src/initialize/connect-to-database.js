@@ -22,7 +22,7 @@ async function tryConnect ({
 
   } catch (err) {
 
-    const isRefusedError = err.message.includes('ECONNREFUSED')
+    const isRefusedError = err.message && err.message.includes('ECONNREFUSED')
     if (isRefusedError && createProcessOnFail) {
 
       await app::createMongoProcess({

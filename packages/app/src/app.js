@@ -1,7 +1,6 @@
 import feathers from '@feathersjs/feathers'
 import { get, set } from '@benzed/immutable'
 import { milliseconds } from '@benzed/async'
-import is from 'is-explicit'
 
 import {
   validateMode,
@@ -14,6 +13,7 @@ import {
   setupAuthentication,
   setupServices,
   setupMiddleware,
+  setupChannels,
   connectToDatabase
 } from './initialize'
 
@@ -128,10 +128,7 @@ class App {
     await this::connectToDatabase()
     this::setupServices()
     this::setupMiddleware()
-
-    if (is.func(this.onInitialize))
-      await this.onInitialize()
-
+    this::setupChannels()
   }
 
   async start () {
@@ -142,13 +139,13 @@ class App {
 
     await new Promise(resolve => this.listener.once('listening', resolve))
 
-    if (is.func(this.onStart))
-      await this.onStart()
-
     return this.listener
   }
 
   async end () {
+
+    if (this.feathers.io)
+      await new Promise(resolve => this.feathers.io.close(resolve))
 
     if (this.listener) {
       await new Promise(resolve => this.listener.close(resolve))
@@ -171,9 +168,6 @@ class App {
       this.database.process = null
     }
 
-    if (is.func(this.onEnd))
-      await this.onEnd()
-
   }
 
   // Implementable Client Methods
@@ -182,8 +176,6 @@ class App {
   // onSerializeClient (req, res) {}
 
   // LifeCycle Methods
-  // onInitialize () {}
-  // onStart () {}
 
   // Utility Methods
 

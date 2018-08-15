@@ -1,4 +1,5 @@
 import App from '../../src/app'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Main
@@ -16,7 +17,21 @@ class TestApp extends App {
       }
     }, 10000)
 
-    return promise
+    return is.func(this.onStart)
+      ? Promise.resolve(this.onStart())
+        .then(() => promise)
+      : promise
+
+  }
+
+  initialize () {
+    const promise = super.initialize()
+
+    return is.func(this.onInitialize)
+      ? Promise
+        .resolve(this.onInitialize())
+        .then(() => promise)
+      : promise
   }
 
   beforeInitialize () {}

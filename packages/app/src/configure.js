@@ -9,11 +9,21 @@ import { Schema, cast,
 import { get, set } from '@benzed/immutable'
 import { randomBytes } from 'crypto'
 
-// TODO Temporary, this will be moved to @benzed/schema
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+function isEnabled (value) {
+
+  return value === true || (is.plainObject(value) && value.enabled !== false)
+
+}
 
 /******************************************************************************/
 // Config Validators
 /******************************************************************************/
+
+// TODO Temporary, this will be moved to @benzed/schema
 
 function trim (value) {
   return value && value.trim()
@@ -289,4 +299,4 @@ const validateClass = app => {
 // Exports
 /******************************************************************************/
 
-export { validateConfig, validateMode, validateClass }
+export { validateConfig, validateMode, validateClass, isEnabled }
