@@ -8,6 +8,8 @@ import { Styler, $ } from './styler'
 
 import { Cloner, CssCloner } from './cloner'
 
+import storage from './storage'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
@@ -17,6 +19,7 @@ export {
   isClient,
   isMobile,
   isEvent,
+  storage,
 
   nestInComponent,
 

@@ -1,12 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { GlobalStyle } from '@benzed/react'
+import { Flex, GlobalStyle } from '@benzed/react'
 
 import Routes from './routes'
 import Navigation from './navigation'
+import TopBar from './topbar'
 
-import theme from '../../theme'
+import docDefaultTheme from '../../theme'
 
 import { PropTypeSchema, any, arrayOf, object } from '@benzed/schema'
 
@@ -14,31 +15,41 @@ import { PropTypeSchema, any, arrayOf, object } from '@benzed/schema'
 // Main Layout
 /******************************************************************************/
 
-const Main = styled.div`
+const Content = styled.div`
   display: inherit;
-  height: inherit;
 
   flex-direction: row;
+  flex-grow: 1;
 `
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const Website = ({ children, packages, ...props }) =>
+const DocumentationWebsite = ({ theme, children, docs }) =>
 
-  <GlobalStyle theme={theme}>
-    <Main>
-      <Navigation packages={packages} />
-      <Routes packages={packages} />
-    </Main>
+  <GlobalStyle theme={theme || docDefaultTheme}>
+
+    <TopBar />
+
+    <Content>
+
+      <Navigation docs={docs} />
+
+      <Flex.Column>
+        { children }
+        <Routes docs={docs} />
+      </Flex.Column>
+
+    </Content>
+
   </GlobalStyle>
 
 /******************************************************************************/
 // Prop Types
 /******************************************************************************/
 
-Website.propTypes = new PropTypeSchema({
+DocumentationWebsite.propTypes = new PropTypeSchema({
   children: any,
   packages: arrayOf(object)
 })
@@ -47,4 +58,4 @@ Website.propTypes = new PropTypeSchema({
 // Exports
 /******************************************************************************/
 
-export default Website
+export default DocumentationWebsite

@@ -3,3 +3,4 @@
 lib/webpack
 lib/public
 *.test.js
+*.doc.js

@@ -1,7 +1,5 @@
 import 'normalize.css'
 
-import PACKAGES from '../docs'
-
 /******************************************************************************/
 // Dynamic Dependencies
 /******************************************************************************/
@@ -10,7 +8,8 @@ const dependencies = Promise.all([
   import('react'),
   import('react-dom'),
   import('react-router-dom'),
-  import('../ui/root')
+  import('../ui/root'),
+  import('./docs')
 ])
 
 /******************************************************************************/
@@ -48,23 +47,21 @@ function getMainTag () {
 // Execute
 /******************************************************************************/
 
-dependencies.then((
-  [
-    { default: React },
-    { hydrate },
-    { BrowserRouter },
-    { default: Website }
-  ]
-) => {
+dependencies.then(([
+
+  { default: React },
+  { hydrate },
+  { BrowserRouter },
+  { default: Website },
+  docs
+
+]) => {
 
   const props = getServerProps()
   const main = getMainTag()
 
-  const packagesWithDocs = PACKAGES.filter(pkg => pkg.doc.length > 0)
-
   const element = <BrowserRouter>
-    <Website {...props}
-      packages={packagesWithDocs} />
+    <Website {...props} docs={docs} />
   </BrowserRouter>
 
   hydrate(element, main)

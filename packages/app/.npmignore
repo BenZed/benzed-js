@@ -10,3 +10,4 @@ temp
 src
 *.tgz
 *.test.js
+*.doc.js

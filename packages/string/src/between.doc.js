@@ -1,14 +1,18 @@
-import { App } from '@benzed/app'
-import path from 'path'
+import React from 'react' // eslint-disable-line
 
 /******************************************************************************/
-// Setup
+// Doc
 /******************************************************************************/
 
-const CONFIG_URL = path.resolve(process.cwd(), 'config')
+const Between = () =>
+  <div>
+    <h1>Between</h1>
+
+    Some documentation about the between function would go here.
+  </div>
 
 /******************************************************************************/
-// Execute
+// Exports
 /******************************************************************************/
 
-App.run(CONFIG_URL)
+export { Between }

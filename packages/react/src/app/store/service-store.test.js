@@ -6,7 +6,7 @@ import ClientStore from './client-store'
 
 import ServiceRecord from './service-record'
 import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
-import { until, milliseconds } from '@benzed/async'
+import { milliseconds } from '@benzed/async'
 import { set, copy } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
@@ -45,15 +45,11 @@ class Message extends ServiceRecord {
 
 }
 
-// class Messages extends ServiceStore {
-//
-// }
-
 /******************************************************************************/
 // Tests
 /******************************************************************************/
 
-describe.only('ServiceStore', () => {
+describe('ServiceStore', () => {
 
   let client
   before(() => {
@@ -204,27 +200,67 @@ describe.only('ServiceStore', () => {
 
     if (APP_TYPE !== 'rest') describe(`events in ${APP_TYPE} app`, () => {
 
-      before(() => client.connect())
+      const docs = []
+      before(async () => {
+        await client.connect()
+        const { messages } = state.app
+        docs.push(
+          await messages.create({ body: 'New Message!' }),
+          await messages.create({ body: 'New Message! with error >:(' }),
+          await messages.create({ body: 'New Message! with error >:(' }),
+          await messages.create({ body: 'Redundant Message.' }),
+          await messages.create({ body: 'Empty.' })
+        )
+
+        await messages.patch(docs[1]._id, { body: 'Patched Message.' })
+        await messages.update(docs[2]._id, { body: 'Updated Message.' })
+        await messages.remove(docs[3]._id)
+
+        await milliseconds(10)
+      })
 
       it('listens to create events', async () => {
+        const [ doc ] = docs
 
-        const newDoc = await state
-          .app
-          .messages
-          .create({ body: 'New Message!' })
-
-        await milliseconds(50)
-
-        const message = messages.records.get(newDoc._id)
+        const message = messages.records.get(doc._id)
         expect(message)
           .to.be.instanceof(Message)
 
         expect(message)
-          .to.have.property('id', newDoc._id)
+          .to.have.property('id', doc._id)
 
-        await state.app.messages.remove(newDoc._id)
+        await state.app.messages.remove(doc._id)
       })
 
+      it('listens to patch events', () => {
+        const doc = docs[1]
+        const message = messages.records.get(doc._id)
+        expect(message.getData('body')).to.be.equal('Patched Message.')
+      })
+
+      it('listens to update events', () => {
+        const doc = docs[2]
+        const message = messages.records.get(doc._id)
+        expect(message.getData('body')).to.be.equal('Updated Message.')
+      })
+
+      it('only patches or updates records if they\'re scoped', async () => {
+        messages.records.clear()
+
+        await state.app.messages.patch(docs[4]._id, { body: 'updated' })
+        await milliseconds(10)
+        expect(messages.records.get(docs[4]._id)).to.be.equal(undefined)
+
+        await state.app.messages.update(docs[4]._id, { body: 'updated' })
+        await milliseconds(10)
+        expect(messages.records.get(docs[4]._id)).to.be.equal(undefined)
+
+        return messages.find({})
+      })
+
+      it('listens to remove events', () => {
+        expect(messages.records.has(docs[3]._id)).to.be.equal(false)
+      })
     })
   })
 })

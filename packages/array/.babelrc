@@ -5,7 +5,12 @@
         "node": "current"
       }
     }],
+    "react",
     "stage-0"
+  ],
+  "plugins": [
+    "transform-decorators-legacy",
+    "styled-components"
   ],
   "comments": false
 }

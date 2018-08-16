@@ -1,14 +1,19 @@
-import { App } from '@benzed/app'
-import path from 'path'
+import React from 'react' // eslint-disable-line
+import flatten from './flatten'
 
 /******************************************************************************/
-// Setup
+// Doc
 /******************************************************************************/
 
-const CONFIG_URL = path.resolve(process.cwd(), 'config')
+const Flatten = () =>
+  <div>
+    <h1>Flatten</h1>
+
+    Some documentation about the flatten function would go here.
+  </div>
 
 /******************************************************************************/
-// Execute
+// Exports
 /******************************************************************************/
 
-App.run(CONFIG_URL)
+export { Flatten }

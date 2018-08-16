@@ -5,21 +5,15 @@ import Page from './page'
 import { PropTypeSchema, object, required } from '@benzed/schema'
 
 /******************************************************************************/
-//
+// Styled
 /******************************************************************************/
 
-const MissingPage = Page.extend`
-  justify-content: center;
-`
-
-/******************************************************************************/
-// Helper
-/******************************************************************************/
+const MissingPage = Page.extend``
 
 const Band = styled.div`
 
   display: flex;
-  flex: 0 1 8em;
+  flex: 0 1 5em;
   justify-content: center;
 
   background-color: ${props => props.theme.primary.toString()};
@@ -27,10 +21,10 @@ const Band = styled.div`
 
   h2 {
     font-size: 2.5em;
-    margin-left: 1em;
+    margin-left: 0.5em;
   }
 
-  margin: -1em;
+  margin: 0.5em;
 `
 
 /******************************************************************************/

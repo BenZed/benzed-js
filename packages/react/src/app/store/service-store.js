@@ -173,7 +173,6 @@ function requiresFetch (id) {
 
   return !record ||
     record.status === 'unfetched'
-
 }
 
 const getIdsFromQuery = query => {
@@ -202,32 +201,32 @@ function handleEvents () {
     const [ record ] = store::ensureRecords([ _id ])
 
     record::applyChanges(data, 'db')
-
   }
 
-  // const onEdit = data => {
-  //   const { _id } = data
-  //   const record = store.records.get(_id)
-  //   if (record)
-  //     record::applyChanges(data, 'db')
-  // }
-  //
-  // const onDelete = data => {
-  //   const { _id } = data
-  //
-  //   const records = new Map()
-  //   for (const record of store.records.values())
-  //     if (!equals(record._id, _id))
-  //       records.set(_id, record)
-  //
-  //   store.set('records', records)
-  // }
+  const onEdit = data => {
+    const { _id } = data
+
+    const record = store.records.get(_id)
+    if (record)
+      record::applyChanges(data, 'db')
+  }
+
+  const onDelete = data => {
+    const { _id } = data
+
+    const records = new Map()
+    for (const record of store.records.values())
+      if (!equals(record._id, _id))
+        records.set(record._id, record)
+
+    store.set('records', records)
+  }
 
   service
     .on('created', onCreate)
-  //   .on('patched', onEdit)
-  //   .on('updated', onEdit)
-  //   .on('removed', onDelete)
+    .on('patched', onEdit)
+    .on('updated', onEdit)
+    .on('removed', onDelete)
 
 }
 
@@ -342,7 +341,6 @@ class ServiceStore extends Store {
   }
 
   get (id) {
-
     const ids = wrap(id)
     if (!ids.every(is.defined))
       throw new Error('ids cannot be null or undefined')
@@ -351,7 +349,6 @@ class ServiceStore extends Store {
       .filter(this::requiresFetch)
 
     if (fetchIds.length > 0) {
-
       const _id = fetchIds.length > 1
         ? { $in: fetchIds }
         : unwrap(fetchIds)
@@ -360,21 +357,18 @@ class ServiceStore extends Store {
     }
 
     const records = this::ensureRecords(ids)
-
     return is.array(id)
       ? records
       : unwrap(records)
   }
 
   untilFetchingComplete () {
-
     const completes = this[QUERY]
       .items
       .map(item => item.complete)
 
     return Promise.all(completes)
   }
-
 }
 
 /******************************************************************************/
