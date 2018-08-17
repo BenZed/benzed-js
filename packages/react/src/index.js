@@ -7,7 +7,7 @@ import { GlobalStyle, basic } from './themes'
 
 import { Store, Observer, Provider, observe, task } from './store'
 
-import { isClient, isMobile, isEvent, storage, Cloner, Styler, $ } from './util'
+import { isClient, isMobile, isEvent, storage, Cloner, CssCloner, Portal, Styler, $ } from './util'
 
 import Color from 'color'
 
@@ -38,6 +38,6 @@ export {
   Store, Observer, Provider, observe, task,
 
   // Util
-  isClient, isEvent, isMobile, storage, Cloner, Color, Styler, $
+  isClient, isEvent, isMobile, storage, Cloner, CssCloner, Portal, Color, Styler, $
 
 }

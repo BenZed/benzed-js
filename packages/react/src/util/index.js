@@ -8,6 +8,8 @@ import { Styler, $ } from './styler'
 
 import { Cloner, CssCloner } from './cloner'
 
+import Portal from './portal'
+
 import storage from './storage'
 
 /******************************************************************************/
@@ -25,6 +27,7 @@ export {
 
   Cloner,
   CssCloner,
+  Portal,
 
   Styler,
   $
