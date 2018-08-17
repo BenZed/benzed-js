@@ -10,7 +10,7 @@ function toComponents (imported) {
     .map(component => {
       return {
         type: 'component',
-        name: component.name,
+        name: component.name.toLowerCase(),
         component
       }
     })
@@ -29,8 +29,8 @@ module.exports = [
         'name': 'array',
         'type': 'package',
         'children': [
-          ...toComponents(require('../../../../array/src/adjacent.doc')),
-          ...toComponents(require('../../../../array/src/flatten.doc'))
+          ...toComponents(require('../../array/src/adjacent.doc')),
+          ...toComponents(require('../../array/src/flatten.doc'))
         ]
       },
       {
@@ -45,7 +45,7 @@ module.exports = [
                 'name': 'store',
                 'type': 'module',
                 'children': [
-                  ...toComponents(require('../../../../react/src/app/store/client-store.doc'))
+                  ...toComponents(require('../../react/src/app/store/client-store.doc'))
                 ]
               }
             ]
@@ -56,7 +56,7 @@ module.exports = [
         'name': 'string',
         'type': 'package',
         'children': [
-          ...toComponents(require('../../../../string/src/between.doc'))
+          ...toComponents(require('../../string/src/between.doc'))
         ]
       }
     ]

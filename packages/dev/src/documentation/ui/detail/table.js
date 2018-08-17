@@ -1,53 +1,48 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Page from './page'
-import { PropTypeSchema, object, required } from '@benzed/schema'
-
 /******************************************************************************/
-// Styled
+// Sub Components
 /******************************************************************************/
 
-const MissingPage = Page.extend`
-  margin: 1em;
+const TableLayout = styled.ul`
+  display: flex;
+  margin: 0;
+  padding: 0;
 `
 
-const Band = styled.h1`
+const TableRow = styled.li`
+  display: flex;
+  flex-direction: row;
 
-  background-color: ${props => props.theme.primary.toString()};
-  color: ${props => props.theme.primary.darken(0.5).toString()};
+  margin: 0;
+  padding: 0;
 
-  h2 {
-    font-size: 2.5em;
-    margin-left: 0.5em;
-  }
+  list-style-type: none;
+`
 
-  padding: 0.25em;
+const TableCell = styled.span`
+  flex: 1 1 auto;
 `
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-const Missing = ({ location }) =>
-  <MissingPage>
-    <Band>
-      PAGE NOT FOUND
-    </Band>
-    <br/>
-    <h2>{location.pathname} is not a valid page.</h2>
-  </MissingPage>
+const Table = ({ children, ...props }) =>
+  <TableLayout {...props}>
+    { children }
+  </TableLayout>
 
 /******************************************************************************/
-// Prop Types
+// Extends
 /******************************************************************************/
 
-Missing.propTypes = new PropTypeSchema({
-  location: object(required)
-})
+Table.Row = TableRow
+Table.Cell = TableCell
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Missing
+export default Table

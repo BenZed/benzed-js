@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom'
 
 import { PropTypeSchema, string, arrayOf, object } from '@benzed/schema'
 import { Flex, isEvent, storage } from '@benzed/react'
+import { fromCamelCase } from '@benzed/string'
 
 /******************************************************************************/
 // Helper Components
@@ -17,38 +18,29 @@ const Nav = styled.nav`
 
   flex-wrap: wrap;
   flex-direction: column;
-  flex-basis: 10em;
+  flex-basis: 15em;
 
   padding: 0em 0.5em 0em 0.5em;
   margin: 0.5em 0em 0.5em 0em;
 
   color: ${props => props.theme.primary.darken(0.5).toString()};
 
+  > ul {
+    margin-left: 0em;
+  }
+
   border-right: solid 1px ${props => props.theme.bg.darken(0.25).toString()};
 `
-
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-function getPackageSublinks (pkg) {
-
-  const sublinks = pkg.reduce((names, exp) =>
-    names.concat(Object
-      .keys(exp)
-      .map(e => e.toLowerCase()))
-    , [])
-
-  return sublinks
-}
 
 /******************************************************************************/
 // ToggleLink
 /******************************************************************************/
 
-const MenuLink = styled(NavLink).attrs({
-  exact: true
-})`
+const LinkRow = Flex.Row.extend`
+  margin: 0.25em 0em 0.25em 0em;
+`
+
+const Link = styled(NavLink)`
   text-decoration: none;
   flex: 0 0 auto;
   font-weight: normal;
@@ -64,22 +56,7 @@ const MenuLink = styled(NavLink).attrs({
   }
 `
 
-const LinkList = styled(({ to, sublinks, ...props }) =>
-  <ul {...props}>
-    {sublinks.map(sublink => <li key={sublink}>
-      <ToggleableMenuLink to={`${to}/${sublink}`} >
-        {sublink}
-      </ToggleableMenuLink>
-    </li>)}
-  </ul>
-)`
-  margin: 0em 0em 0em 0em;
-  padding: 0em 0em 0em 0em;
-  list-style-type: none;
-  margin-left: 1em;
-`
-
-const Toggler = styled.button.attrs({
+const Toggle = styled.button.attrs({
   // eslint-disable-next-line
   children: props => <span>{props.open ? '-' : '+'}</span>
 })`
@@ -106,10 +83,10 @@ const Toggler = styled.button.attrs({
   }
 `
 
-class ToggleableMenuLink extends React.Component {
+class ToggleLink extends React.Component {
 
   static propTypes = new PropTypeSchema({
-    to: string
+    prefix: string
   })
 
   state = {
@@ -125,18 +102,19 @@ class ToggleableMenuLink extends React.Component {
     storage.local.setItem(this.storageKey, open)
   }
 
-  get hasSublinks () {
-    const { sublinks } = this.props
-    return sublinks && sublinks.length > 0
+  get hasChildren () {
+    const { doc } = this.props
+    return doc && doc.children && doc.children.length > 0
   }
 
   get storageKey () {
-    const { to } = this.props
-    return `toggle-link-open@${to}`
+    // TODO fix me
+    const { doc, prefix = '' } = this.props
+    return `toggle-link-open@${prefix}/${doc.name::fromCamelCase()}`
   }
 
   componentDidMount () {
-    if (!this.hasSublinks)
+    if (!this.hasChildren)
       return
 
     const stored = storage.local.getItem(this.storageKey)
@@ -148,30 +126,45 @@ class ToggleableMenuLink extends React.Component {
 
   render () {
 
-    const { children, to, sublinks } = this.props
+    const { doc, prefix = '' } = this.props
     const { open } = this.state
 
+    const to = `${prefix}/${doc.name::fromCamelCase()}`
+
     return [
-      <Flex.Row key='link'>
-        <Toggler
+      <LinkRow key='link'>
+        <Toggle
           key='toggler'
           open={open}
-          disabled={!this.hasSublinks}
+          disabled={!this.hasChildren}
           onClick={this.setOpen}
         />
-        <MenuLink to={to}>{children}</MenuLink>
-      </Flex.Row>,
+        <Link to={to}>{ doc.name::fromCamelCase() }</Link>
+      </LinkRow>,
 
-      this.hasSublinks && open
+      this.hasChildren && open
         ? <LinkList
-          key='sublinks'
-          to={to}
-          sublinks={sublinks}
+          key='children'
+          prefix={to}
+          docs={doc.children}
         />
         : null
     ]
   }
 }
+
+const LinkList = styled(({ prefix, docs, ...props }) =>
+  <ul {...props}>
+    {docs.map((doc, i) => <li key={i}>
+      <ToggleLink prefix={prefix} doc={doc} />
+    </li>)}
+  </ul>
+)`
+  margin: 0em 0em 0em 0em;
+  padding: 0em 0em 0em 0em;
+  list-style-type: none;
+  margin-left: 1em;
+`
 
 /******************************************************************************/
 // Main
@@ -179,14 +172,12 @@ class ToggleableMenuLink extends React.Component {
 
 const Navigation = ({ docs }) => {
 
+  const repos = docs.length > 1
+    ? docs
+    : docs[0].children
+
   return <Nav>
-    {Object.keys(docs).map(name =>
-      <ToggleableMenuLink key={name}
-        to={`/${name}`}
-        sublinks={getPackageSublinks(docs[name])}>
-        {name}
-      </ToggleableMenuLink>
-    )}
+    <LinkList prefix='' docs={repos} />
   </Nav>
 }
 

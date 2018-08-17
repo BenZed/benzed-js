@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import path from 'path'
+import is from 'is-explicit'
 
 import WebpackConfig from '../webpack-config'
 
@@ -7,74 +8,126 @@ import WebpackConfig from '../webpack-config'
 // Data
 /******************************************************************************/
 
-const IGNORE_DIRS = [ 'lib', 'dist', 'node_modules' ]
+const DOC_PREFIX = `
+/******************************************************************************/
+// Helpers
+/******************************************************************************/
+
+function toComponents (imported) {
+
+  return Object
+    .values(imported)
+    .map(component => {
+      return {
+        type: 'component',
+        name: component.name,
+        component
+      }
+    })
+}
+
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
+module.exports = `
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-function generatePackages (dir = path.resolve('../')) {
+function generateRepos (input, webpackDir) {
 
-  const packages = {}
+  if (!is.plainObject(input))
+    input = { 'benzed': input }
 
-  const names = fs.readdirSync(dir)
-  for (const name of names) {
+  if (!is.objectOf(input, String))
+    throw new Error('must be an object of strings')
 
-    const url = path.join(dir, name)
-    const stat = fs.statSync(url)
-    if (stat.isDirectory()) {
-      const list = generateDocJsList(url)
-      if (list.length > 0)
-        packages[name] = list
+  const repos = []
+
+  for (const repoName in input) {
+    const dir = input[repoName]
+    const repo = {
+      name: repoName,
+      type: 'repo',
+      children: generateDocs(dir, 'package', webpackDir)
     }
 
+    if (repo.children.length > 0)
+      repos.push(repo)
   }
 
-  return packages
+  return repos
 }
 
-function generateDocJsList (dir = path.resolve('../')) {
+function generateDocs (dir, type = 'module', webpackDir) {
+
+  const docs = []
 
   const names = fs.readdirSync(dir)
-  const list = []
-
   for (const name of names) {
-    const file = path.join(dir, name)
-    const stat = fs.statSync(file)
+    let file = path.join(dir, name)
+    if (type === 'package')
+      file = path.join(file, 'src')
 
-    if (stat.isDirectory() && !IGNORE_DIRS.includes(name))
-      list.push(...generateDocJsList(file, list))
+    let stat
+    try {
+      stat = fs.statSync(file)
+    } catch (e) {
+      continue
+    }
 
-    else if (/\.doc\.js$/.test(file) && file !== __filename.replace('lib', 'src'))
-      list.push(file)
+    if (stat.isDirectory()) {
+
+      const doc = {
+        name,
+        type,
+        children: []
+      }
+
+      doc.children.push(...generateDocs(file, 'module', webpackDir))
+
+      if (doc.children.length > 0)
+        docs.push(doc)
+
+    } else if (/\.doc\.js$/.test(name))
+      docs.push(toComponentString(file, webpackDir))
+
   }
 
-  return list
-
+  return docs
 }
 
-function putJsBesideEntry (packages, entry) {
+function toComponentString (file, webpackDir) {
 
-  const [ index ] = Object.values(entry)
+  const relative = path.relative(webpackDir, file)
+  const withoutExt = relative.replace(/\.js$/, '')
 
-  const dir = path.dirname(index)
+  return `<!--${withoutExt}-->`
+}
 
-  const js = Object.entries(packages).map(entry => {
-    const [ name, list ] = entry
-    return `const ${name} = [` +
-      list.map(url => path
-        .relative(dir, url)
-        .replace('.js', ''))
-        .map(url => `\n  require('${url}')`)
-        .join(',') +
-    `\n]`
-  }).join('\n\n') +
-  `\n\nexport {\n  ${Object.keys(packages).join(',\n  ')}\n}\n`
+function getWebpackDir (config) {
+  const [ index ] = Object.values(config.entry)
+  return path.dirname(index)
+}
 
-  fs.writeFileSync(
-    path.join(dir, 'docs.js'),
-    js
-  )
+function convertToJsString (repos) {
+
+  const json = JSON.stringify(repos, null, 2)
+
+  const js = DOC_PREFIX +
+    json
+      // single quote
+      .replace(/"/g, '\'')
+      // swap component headers
+      .replace(/'<!--/g, '...toComponents(require(\'')
+      // swap component footers
+      .replace(/-->'/g, '\'))') +
+      // final line end
+      '\n'
+
+  return js
 
 }
 
@@ -82,14 +135,20 @@ function putJsBesideEntry (packages, entry) {
 // Main
 /******************************************************************************/
 
-function DocWebpackConfig ({ docroot, ...input }) {
+function DocWebpackConfig ({ docroot = path.resolve('../'), ...input }) {
 
   const config = new WebpackConfig(input)
 
-  const packages = generatePackages(docroot)
+  const webpackDir = getWebpackDir(config)
 
-  // add all the aliases and doc.js finding stuff here
-  putJsBesideEntry(packages, config.entry)
+  const repos = generateRepos(docroot, webpackDir)
+
+  const js = convertToJsString(repos)
+
+  fs.writeFileSync(
+    path.join(webpackDir, 'docs.js'),
+    js
+  )
 
   return config
 

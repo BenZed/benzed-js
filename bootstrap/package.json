@@ -3,6 +3,15 @@
   "repository": "non-existant",
   "license": "ISC",
   "dependencies": {
+    "@benzed/app": "latest",
+    "@benzed/array": "latest",
+    "@benzed/async": "latest",
+    "@benzed/dev": "latest",
+    "@benzed/immutable": "latest",
+    "@benzed/math": "latest",
+    "@benzed/react": "latest",
+    "@benzed/schema": "latest",
+    "@benzed/string": "latest",
     "@feathersjs/authentication": "^2.1.7",
     "@feathersjs/authentication-client": "^1.0.2",
     "@feathersjs/authentication-jwt": "^2.0.1",
@@ -58,6 +67,7 @@
     "normalize.css": "^8.0.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
+    "react-highlight": "^0.12.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-test-renderer": "^16.4.2",
@@ -72,15 +82,6 @@
     "webapp-webpack-plugin": "^2.3.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5",
-    "@benzed/app": "latest",
-    "@benzed/array": "latest",
-    "@benzed/async": "latest",
-    "@benzed/dev": "latest",
-    "@benzed/immutable": "latest",
-    "@benzed/math": "latest",
-    "@benzed/react": "latest",
-    "@benzed/schema": "latest",
-    "@benzed/string": "latest"
+    "webpack-dev-server": "^3.1.5"
   }
 }

@@ -4,7 +4,7 @@ import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod(fromCamelCase, fromCamelCase => {
+Test.optionallyBindableMethod.only(fromCamelCase, fromCamelCase => {
 
   describe('dashCases a string', () => {
     const tests = [
@@ -19,6 +19,10 @@ Test.optionallyBindableMethod(fromCamelCase, fromCamelCase => {
       it(`${test.in} => ${test.out}`, () => {
         expect(fromCamelCase(test.in)).to.equal(test.out)
       })
+
+    it('doesnt predash an uppercased letter if its the first char', () => {
+      expect(fromCamelCase('FooBar')).to.equal('foo-bar')
+    })
   })
 
   describe('joiner argument', () => {

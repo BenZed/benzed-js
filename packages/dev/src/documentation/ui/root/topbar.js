@@ -29,18 +29,18 @@ const Search = styled.input.attrs({
   font-size: 0.75em;
 `
 
-const Title = () => [
-  <span key='name'>BenZed |</span>,
-  <span key='doc'>DOCUMENTATION</span>
+const Title = ({ title = 'BenZed', subtitle = 'DOCUMENTATION' }) => [
+  <span key='name'>{title} |</span>,
+  <span key='doc'>{subtitle}</span>
 ]
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-const TopBar = ({ ...props }) =>
+const TopBar = ({ title, subtitle, ...props }) =>
   <Container {...props}>
-    <Title/>
+    <Title title={title} subtitle={subtitle}/>
     <Search/>
   </Container>
 

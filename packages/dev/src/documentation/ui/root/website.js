@@ -22,24 +22,26 @@ const Content = styled.div`
   flex-grow: 1;
 `
 
+const Body = styled.div`
+  flex-grow: 1;
+`
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const DocumentationWebsite = ({ theme, children, docs }) =>
+const DocumentationWebsite = ({ theme, title, subtitle, children, docs }) =>
 
   <GlobalStyle theme={theme || docDefaultTheme}>
 
-    <TopBar />
-
+    <TopBar title={title} subtitle={subtitle} />
     <Content>
 
       <Navigation docs={docs} />
-
-      <Flex.Column>
+      <Body>
         { children }
         <Routes docs={docs} />
-      </Flex.Column>
+      </Body>
 
     </Content>
 

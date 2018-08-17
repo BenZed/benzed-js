@@ -53,12 +53,14 @@ dependencies.then(([
   { hydrate },
   { BrowserRouter },
   { default: Website },
-  docs
+  { default: docs }
 
 ]) => {
 
   const props = getServerProps()
   const main = getMainTag()
+
+  console.log(docs)
 
   const element = <BrowserRouter>
     <Website {...props} docs={docs} />

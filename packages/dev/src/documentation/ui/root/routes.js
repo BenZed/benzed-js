@@ -1,67 +1,91 @@
 import React from 'react'
-import { Route, Switch } from 'react-router'
-import { Home, Missing } from '../pages'
-import is from 'is-explicit'
+import { withRouter } from 'react-router'
+import { Missing } from '../pages'
 
 import { PropTypeSchema, arrayOf, object, any } from '@benzed/schema'
+import { push } from '@benzed/immutable'
+import { fromCamelCase } from '@benzed/string'
+
+import is from 'is-explicit'
+
+import * as Types from '../types'
+import * as Detail from '../detail'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-function createRoutesFromDocs (docs) {
+function matchPath (nextPath, finalPath) {
 
-  const routes = []
-  for (const key in docs) {
+  for (let i = 0; i < finalPath.length; i++) {
+    const total = finalPath[i]
+    if (nextPath.length <= i)
+      break
 
-    const pages = docs[key]
+    const next = nextPath[i]
+    if (next !== total)
+      return false
 
-    const components = pages.reduce((components, page) =>
-      components
-        .concat(Object
-          .values(page)
-          .filter(is.func)
-        )
-      , [])
-
-    routes.push(
-      <Route
-        key={key}
-        path={`/${key}/:componentName?`}
-        render={components::Page}
-      />
-    )
   }
 
-  return routes
+  return true
 }
 
-function Page ({ match }) {
+function getElementsFromDoc (docs, finalPath, currentPath = []) {
 
-  const components = this
+  const elements = []
 
-  const { componentName } = match.params
+  for (const doc of docs) {
 
-  return components
-    .filter(Component => !componentName ||
-      componentName === Component.name.toLowerCase()
-    )
-    .map(Component => <Component key={Component.name} />)
+    const nextPath = currentPath::push(doc.name::fromCamelCase())
+    if (!matchPath(nextPath, finalPath))
+      continue
+
+    const Component = doc.component
+    if (Component)
+      elements.push(<Component
+        Types={Types}
+        Detail={Detail}
+        path={nextPath}
+        key={`${finalPath.join('-') + Component.name}`}
+      />)
+
+    if (doc.children)
+      elements.push(...getElementsFromDoc(doc.children, finalPath, nextPath))
+
+  }
+
+  return elements
 }
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const isNotEmpty = s => is.string(s) && s.length > 0
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-const Routes = ({ children, docs, ...props }) => {
+const Routes = ({ children, docs, location, ...props }) => {
 
-  const routes = createRoutesFromDocs(docs)
+  docs = docs.length > 1
+    ? docs
+    : docs[0].children
 
-  return <Switch>
-    <Route path='/' exact component={Home}/>
-    {routes}
-    <Route component={Missing}/>
-  </Switch>
+  const path = location
+    .pathname
+    .split('/')
+    .filter(isNotEmpty)
+    .map(fromCamelCase)
+
+  const elements = getElementsFromDoc(docs, path)
+
+  return elements.length === 0
+    ? <Missing location={location} />
+    : elements
+
 }
 
 /******************************************************************************/
@@ -77,4 +101,4 @@ Routes.propTypes = new PropTypeSchema({
 // Exports
 /******************************************************************************/
 
-export default Routes
+export default withRouter(Routes)

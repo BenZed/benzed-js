@@ -5,12 +5,21 @@ import flatten from './flatten'
 // Doc
 /******************************************************************************/
 
-const Flatten = () =>
-  <div>
-    <h1>Flatten</h1>
+const Flatten = ({ Types, Detail }) =>
+  <Types.Function
+    func={flatten}
+  >
+    The flatten function takes an Array and decomposes any nested arrays.
 
-    Some documentation about the flatten function would go here.
-  </div>
+    <Detail.Script>{`
+      import { flatten } from '@benzed/string'
+
+      const flattened = [1, [2], [3, [4]]]::flatten()
+
+      console.log(flattened) // [1, 2, 3, 4]
+    `}</Detail.Script>
+
+  </Types.Function>
 
 /******************************************************************************/
 // Exports

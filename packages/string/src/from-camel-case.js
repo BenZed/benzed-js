@@ -24,7 +24,8 @@ function fromCamelCase (str, joiner = '-') {
     let char = str.charAt(i)
 
     if (/[A-Z]/.test(char)) {
-      output += joiner
+      if (output.length > 0)
+        output += joiner
       char = char.toLowerCase()
     }
 

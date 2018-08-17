@@ -36,6 +36,10 @@ function tempInjectGlobal (theme) {
       font-family: ${theme.fonts.body};
     }
 
+    pre {
+      margin: 0em;
+    }
+
     main {
       display: flex;
       width: 100vw;
