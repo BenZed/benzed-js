@@ -3,6 +3,8 @@ import { get, push } from '@benzed/immutable'
 import basicTheme from '../themes/basic'
 import is from 'is-explicit'
 
+import Color from '../themes/color'
+
 /******************************************************************************/
 // DATA
 /******************************************************************************/
@@ -21,6 +23,19 @@ function getPropAtPath (path, value, props) {
 
 function applyMutator (mutator, value, props) {
   return mutator(value, props)
+}
+
+function getBrandedValue (param, value, props) {
+
+  const { brand, theme } = props
+
+  return brand && theme.brand && theme.brand[brand]
+}
+
+function alterColor ([name, ...args], value, props) {
+  return is(value, Color)
+    ? value[name](...args)
+    : value
 }
 
 /******************************************************************************/
@@ -145,6 +160,13 @@ class Styler {
     return this
   }
 
+  get branded () {
+
+    this[STACK].push(getBrandedValue)
+
+    return this
+  }
+
   // Style Compilation
 
   toString () {
@@ -168,7 +190,9 @@ class Styler {
       value = func(param, value, props)
     }
 
-    return value
+    return is.primitive(value)
+      ? value
+      : `${value}`
   }
 
   [STACK] = {

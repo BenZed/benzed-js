@@ -1,5 +1,10 @@
 import basic from './basic'
+import branded from './branded'
+
 import GlobalStyle from './global-style'
+
+import Color from './color'
+import CssUnit from './css-unit'
 
 /******************************************************************************/
 // Exports
@@ -7,5 +12,9 @@ import GlobalStyle from './global-style'
 
 export {
   GlobalStyle,
-  basic
+  Color,
+  CssUnit,
+
+  basic,
+  branded
 }

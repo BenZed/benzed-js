@@ -49,6 +49,13 @@ module.exports = [
                 ]
               }
             ]
+          },
+          {
+            'name': 'util',
+            'type': 'module',
+            'children': [
+              ...toComponents(require('../../../../react/src/util/styler.doc'))
+            ]
           }
         ]
       },

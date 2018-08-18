@@ -1,15 +1,23 @@
-import React from 'react' // eslint-disable-line
+import React from 'react' // eslint-disable-line no-unused-vars
+
+/******************************************************************************/
+// Info
+/******************************************************************************/
+
+const INFO = {
+  name: 'ClientStore'
+}
 
 /******************************************************************************/
 // Doc
 /******************************************************************************/
 
-const ClientStore = () =>
-  <div>
-    <h1>ClientStore</h1>
+const ClientStore = ({ Types, Detail }) =>
+  <Types.Class info={INFO}>
 
-    Some documentation about the ClientStore class would go here.
-  </div>
+    The ClientStore is a class.
+
+  </Types.Class>
 
 /******************************************************************************/
 // Exports

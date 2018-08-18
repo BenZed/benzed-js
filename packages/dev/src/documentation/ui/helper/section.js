@@ -4,12 +4,19 @@ import styled from 'styled-components'
 // Main Components
 /******************************************************************************/
 
-const Description = styled.div`
-  margin: 0em 0.5em 4em 0.5em;
+const Section = styled.section`
+  margin: 0em 1em 4em 1em;
+
+  p {
+    margin: 0em 0em 1em 0em;
+  }
+
+
+  display: block;
 `
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Description
+export default Section

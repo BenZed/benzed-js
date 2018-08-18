@@ -40,6 +40,8 @@ Test.optionallyBindableMethod(_merge, merge => {
     expect(b.b).to.not.equal(a2.b)
   })
 
+  it('only merges plain objects')
+
   it('does not use needless recursive copies', () => {
 
     let count = 0

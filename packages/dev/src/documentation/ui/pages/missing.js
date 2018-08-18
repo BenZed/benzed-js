@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import Page from './page'
 import { PropTypeSchema, object, required } from '@benzed/schema'
 
+import $ from '../../theme'
+
 /******************************************************************************/
 // Styled
 /******************************************************************************/
@@ -14,8 +16,9 @@ const MissingPage = Page.extend`
 
 const Band = styled.h1`
 
-  background-color: ${props => props.theme.primary.toString()};
-  color: ${props => props.theme.primary.darken(0.5).toString()};
+  background-color: ${$.theme.primary};
+  color: ${$.theme.primary//.darken(0.5)
+  };
 
   h2 {
     font-size: 2.5em;

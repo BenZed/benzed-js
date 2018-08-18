@@ -6,6 +6,9 @@ import renderer from 'react-test-renderer'
 import { expect } from 'chai'
 import Styler from './styler'
 
+import { set } from '@benzed/immutable'
+import Color from '../themes/color'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -22,8 +25,12 @@ const props = {
     suffix: 'C'
   },
   theme: {
-    fg: 'red',
-    bg: 'white'
+    fg: new Color('white'),
+    bg: new Color('black'),
+    brand: {
+      primary: new Color('blue'),
+      secondary: new Color('cyan')
+    }
   }
 }
 
@@ -31,7 +38,7 @@ const props = {
 // Tests
 /******************************************************************************/
 
-describe('styler', () => {
+describe.only('styler', () => {
 
   it('is a class', () => {
     expect(Styler).to.throw('invoked without \'new\'')
@@ -108,6 +115,18 @@ describe('styler', () => {
 
     })
 
+    describe('fade()', () => {
+      it('fades the current value if it\'s a color')
+    })
+
+    describe('darken()', () => {
+      it('darkens the current value if it\'s a color')
+    })
+
+    describe('lighten()', () => {
+      it('lightens the current value if it\'s a color')
+    })
+
     describe('mut()', () => {
       it('stacks a method that mutates a value', () => {
         const $ = new Styler()
@@ -142,6 +161,34 @@ describe('styler', () => {
     })
   })
 
+  describe('instance properties', () => {
+
+    describe('branded', () => {
+
+      it('stacks a method that returns props.theme.brand[props.brand]', () => {
+        const $ = new Styler()
+
+        const getBranded = $.branded.valueOf()
+        expect(getBranded)
+          .to
+          .be
+          .instanceof(Function)
+
+        const bprops = props::set('brand', 'primary')
+
+        expect(getBranded(bprops))
+          .to
+          .be
+          .equal(props.theme.brand.primary.toString())
+      })
+    })
+
+    // describe('if', () => {
+    //
+    // })
+
+  })
+
   describe('class methods', () => {
 
     describe('createInterface', () => {
@@ -151,23 +198,37 @@ describe('styler', () => {
 
         let $
 
-        const argsForInterfaceProps = {
+        const argsForInterfaceFuncs = {
           mut: [v => v],
           prop: ['path']
         }
+
+        const interfaceProps = [
+          'branded'
+        ]
 
         before(() => {
           $ = Styler.createInterface()
         })
 
-        for (const name in argsForInterfaceProps) {
+        for (const name in argsForInterfaceFuncs) {
 
           it(`has ${name} property`, () => {
             expect($).to.have.property(name)
           })
 
           it(`returns a styler instance from ${name} property`, () => {
-            expect($[name](...argsForInterfaceProps[name]))
+            expect($[name](...argsForInterfaceFuncs[name]))
+              .to.be.instanceof(Styler)
+          })
+        }
+
+        for (const name of interfaceProps) {
+          it(`has ${name} property`, () => {
+            expect($).to.have.property(name)
+          })
+          it(`returns a styler instance from ${name} property`, () => {
+            expect($[name])
               .to.be.instanceof(Styler)
           })
         }
@@ -189,7 +250,7 @@ describe('styler', () => {
 
         it('calls prop() with path to theme property', () => {
           expect($.theme.bg.valueOf()(props))
-            .to.be.equal(props.theme.bg)
+            .to.be.equal(`${props.theme.bg}`)
         })
       })
     })

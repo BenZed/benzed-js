@@ -1,9 +1,10 @@
 import Title from './title'
-import Description from './description'
+import Section from './section'
 import Label from './label'
+import Table from './table'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { Title, Description, Label }
+export { Title, Section, Label, Table }

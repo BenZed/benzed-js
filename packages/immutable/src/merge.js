@@ -1,4 +1,5 @@
 import copy from './copy'
+import is from 'is-explicit'
 
 import { CIRCULAR } from './symbols'
 
@@ -8,7 +9,7 @@ import { CIRCULAR } from './symbols'
 
 function mergeMutate (a, b) {
 
-  const isAObject = typeof a === 'object' && a !== null
+  const isAObject = is.plainObject(a)
   const isBObject = typeof b === 'object' && b !== null
 
   // TODO untested

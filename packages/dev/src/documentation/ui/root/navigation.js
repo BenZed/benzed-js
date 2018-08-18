@@ -8,6 +8,8 @@ import { PropTypeSchema, string, arrayOf, object } from '@benzed/schema'
 import { Flex, isEvent, storage } from '@benzed/react'
 import { fromCamelCase } from '@benzed/string'
 
+import $ from '../../theme'
+
 /******************************************************************************/
 // Helper Components
 /******************************************************************************/
@@ -23,13 +25,15 @@ const Nav = styled.nav`
   padding: 0em 0.5em 0em 0.5em;
   margin: 0.5em 0em 0.5em 0em;
 
-  color: ${props => props.theme.primary.darken(0.5).toString()};
+  color: ${$.theme.brand.primary//.darken(0.5)
+  };
 
   > ul {
     margin-left: 0em;
   }
 
-  border-right: solid 1px ${props => props.theme.bg.darken(0.25).toString()};
+  border-right: solid 1px ${$.theme.brand.bg//.darken(0.5)
+  };
 `
 
 /******************************************************************************/
@@ -48,7 +52,8 @@ const Link = styled(NavLink)`
   transition: color 250ms, background-color 250ms, border-color 250ms;
 
   &:hover:not(.active) {
-    color: ${props => props.theme.primary.darken(0.25).toString()};
+    color: ${$.theme.brand.primary//.darken(0.25)
+    };
   }
 
   &.active {
@@ -60,7 +65,7 @@ const Toggle = styled.button.attrs({
   // eslint-disable-next-line
   children: props => <span>{props.open ? '-' : '+'}</span>
 })`
-  background-color: ${props => props.theme.primary.toString()};
+  background-color: ${$.theme.brand.primary};
   width: 1em;
   height: 1em;
   padding: 0;

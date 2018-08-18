@@ -1,13 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
+import $ from '../../theme'
 
 /******************************************************************************/
 // Styled
 /******************************************************************************/
 
 const Container = styled.div`
-  background-color: ${props => props.theme.fg.toString()};
-  color: ${props => props.theme.bg.toString()};
+  background-color: ${$.theme.fg};
+  color: ${$.theme.bg};
   padding: 0.685em;
   font-size: 1.5em;
 

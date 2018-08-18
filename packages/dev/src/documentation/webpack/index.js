@@ -60,8 +60,6 @@ dependencies.then(([
   const props = getServerProps()
   const main = getMainTag()
 
-  console.log(docs)
-
   const element = <BrowserRouter>
     <Website {...props} docs={docs} />
   </BrowserRouter>
