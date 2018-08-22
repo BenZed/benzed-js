@@ -20,6 +20,8 @@ const props = {
   foo: {
     bar: 'cake'
   },
+  hidden: false,
+  visibility: 'visible',
   temp: {
     value: 32,
     suffix: 'C'
@@ -112,20 +114,33 @@ describe.only('styler', () => {
         const $ = new Styler()
         expect($.prop('any')).to.be.equal($)
       })
-
     })
 
-    describe('fade()', () => {
-      it('fades the current value if it\'s a color')
-    })
+    for (const alterColor of ['fade', 'lighten', 'darken'])
+      describe(`${alterColor}()`, () => {
+        it(`${alterColor}s the current value if it's a color`, () => {
+          const $ = new Styler()
+          const fadePrimary = $
+            .prop('theme', 'brand', 'primary')[alterColor](0.5)
+            .valueOf()
 
-    describe('darken()', () => {
-      it('darkens the current value if it\'s a color')
-    })
+          expect(fadePrimary(props))
+            .to.be.equal(props.theme.brand.primary[alterColor](0.5).toString())
+        })
+        it('does not alter current value if it is not a color', () => {
+          const $ = new Styler()
+          const doNothingToCake = $
+            .prop('foo', 'bar')[alterColor](0.5)
+            .valueOf()
 
-    describe('lighten()', () => {
-      it('lightens the current value if it\'s a color')
-    })
+          expect(doNothingToCake(props))
+            .to.be.equal('cake')
+        })
+        it('returns styler instance', () => {
+          const $ = new Styler()
+          expect($[alterColor](0.5)).to.be.equal($)
+        })
+      })
 
     describe('mut()', () => {
       it('stacks a method that mutates a value', () => {
@@ -159,6 +174,50 @@ describe.only('styler', () => {
         expect($.mut(v => v)).to.be.equal($)
       })
     })
+
+    describe('set()', () => {
+
+      it('adds a method onto the stack that sets a value', () => {
+
+        const $ = new Styler()
+        const setValue = $.set('value').valueOf()
+
+        expect(setValue(props)).to.be.equal('value')
+      })
+
+      it('returns styler instance', () => {
+
+        const $ = new Styler()
+        expect($.set('value')).to.be.equal($)
+      })
+
+    })
+
+    describe('if() / else()', () => {
+
+      it('enables rudimentary flow control in styled functions', () => {
+        const $ = new Styler()
+
+        const isHidden = $
+          .if('hidden').set(0)
+          .else.set(1).valueOf()
+
+        expect(isHidden(props)).to.be.equal(1)
+      })
+
+      it('can take a function as a predicate instead of a path', () => {
+        const $ = new Styler()
+
+        const isHidden = $
+          .if('hidden').set(0)
+          .else.set(1).valueOf()
+      })
+
+      it('enables stack functions if the passed function returns true')
+
+      it('if can also take an array of strings, pointing toward a property value')
+
+    })
   })
 
   describe('instance properties', () => {
@@ -182,11 +241,6 @@ describe.only('styler', () => {
           .equal(props.theme.brand.primary.toString())
       })
     })
-
-    // describe('if', () => {
-    //
-    // })
-
   })
 
   describe('class methods', () => {

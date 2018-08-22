@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { SubTitle } from './title'
 
+import $ from '../../theme'
+
 /******************************************************************************/
 // Sub Components
 /******************************************************************************/
@@ -33,12 +35,11 @@ const TableColumn = styled.div`
 
   > ${TableCell}:first-child {
     font-weight: bold;
-    color: ${props => props
+    color: ${$
     .theme
     .brand
     .primary
-    .darken(0.25)
-    .toString()};
+    .darken(0.25)};
   }
 `
 

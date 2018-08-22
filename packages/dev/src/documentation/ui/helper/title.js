@@ -2,17 +2,17 @@ import styled from 'styled-components'
 
 import Label from './label'
 
+import $ from '../../theme'
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
 const SubTitle = styled.h2`
-  color: ${props => props
-    .theme
+  color: ${$.theme
     .brand
     .primary
-    .darken(0.5)
-    .toString()};
+    .darken(0.5)};
 
   display: flex;
   flex-direction: row;
@@ -30,13 +30,12 @@ const Title = SubTitle.withComponent('h1').extend`
 
   padding: 0.25em 0.25em 0.25em 0em;
 
-  border-bottom: 1px solid ${props => props
+  border-bottom: 1px solid ${$
     .theme
     .brand
     .primary
     .darken(0.25)
-    .fade(0.5)
-    .toString()};
+    .fade(0.5)};
 
 `
 

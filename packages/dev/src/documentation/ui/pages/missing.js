@@ -16,9 +16,8 @@ const MissingPage = Page.extend`
 
 const Band = styled.h1`
 
-  background-color: ${$.theme.primary};
-  color: ${$.theme.primary//.darken(0.5)
-  };
+  background-color: ${$.theme.brand.primary};
+  color: ${$.theme.brand.primary.darken(0.5)};
 
   h2 {
     font-size: 2.5em;

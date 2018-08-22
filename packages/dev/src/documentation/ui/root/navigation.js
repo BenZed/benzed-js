@@ -25,15 +25,13 @@ const Nav = styled.nav`
   padding: 0em 0.5em 0em 0.5em;
   margin: 0.5em 0em 0.5em 0em;
 
-  color: ${$.theme.brand.primary//.darken(0.5)
-  };
+  color: ${$.theme.brand.primary.darken(0.5)};
 
   > ul {
     margin-left: 0em;
   }
 
-  border-right: solid 1px ${$.theme.brand.bg//.darken(0.5)
-  };
+  border-right: solid 1px ${$.theme.bg.darken(0.5)};
 `
 
 /******************************************************************************/
@@ -52,8 +50,7 @@ const Link = styled(NavLink)`
   transition: color 250ms, background-color 250ms, border-color 250ms;
 
   &:hover:not(.active) {
-    color: ${$.theme.brand.primary//.darken(0.25)
-    };
+    color: ${$.theme.brand.primary.darken(0.25)};
   }
 
   &.active {
