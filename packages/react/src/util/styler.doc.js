@@ -21,9 +21,8 @@ const Styler = ({ Types, Detail }) =>
 
     <p>
       You wouldn't instance a Styler directly. Instead, you'd create an interface
-      with one:
+      for one:
     </p>
-
     <Detail.Script>{`
       import { Styler } from '@benzed/react'
       import styled from 'styled-components'
@@ -40,17 +39,39 @@ const Styler = ({ Types, Detail }) =>
       The interface contains the same methods and properties that the class does,
       and using those properties creates new instances of stylers:
     </p>
-
     <Detail.Script>{`
-      const
+      $.prop('hidden')
+      // equivalent to
+      new Styler().prop('hidden')
+    `}</Detail.Script>
+
+    <p>
+      Interfaces can be created with a theme, which will add theme getters to
+      the resulting Styler.
+    </p>
+    <Detail.Script>{`
+      const theme = {
+        bg: 'black',
+        fg: 'white'
+      }
+
+      const $ = Styler.createInterface(theme)
+
+      const Section = styled.section\`
+        background-color: \${$.theme.bg};
+        color: \${$.theme.fg};
+      \`
+      // <Section /> will have be theme colored
     `}</Detail.Script>
 
   </Types.Class>
 
-const $ = () => null
+// const $ = () => null
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { Styler, $ }
+export { Styler
+  // , $
+}

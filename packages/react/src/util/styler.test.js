@@ -24,7 +24,7 @@ const props = {
   visibility: 'visible',
   temp: {
     value: 32,
-    suffix: 'C'
+    suffix: 'F'
   },
   theme: {
     fg: new Color('white'),
@@ -193,30 +193,90 @@ describe.only('styler', () => {
 
     })
 
-    describe('if() / else()', () => {
+    describe('if() & else', () => {
 
       it('enables rudimentary flow control in styled functions', () => {
         const $ = new Styler()
 
-        const isHidden = $
-          .if('hidden').set(0)
-          .else.set(1).valueOf()
+        /* eslint-disable indent */
+        const tempType = $
+          .if((v, p) => p.temp.suffix !== 'C')
+            .set('farenheight')
+          .else
+            .set('celsius')
+          .valueOf()
+        /* eslint-enable */
 
-        expect(isHidden(props)).to.be.equal(1)
+        expect(tempType(props)).to.be.equal('farenheight')
       })
 
-      it('can take a function as a predicate instead of a path', () => {
+      it('throws if not provided a function', () => {
         const $ = new Styler()
 
-        const isHidden = $
-          .if('hidden').set(0)
-          .else.set(1).valueOf()
+        expect(() => $.if(100)).to.throw('must be a predicate function')
       })
 
-      it('enables stack functions if the passed function returns true')
+      it('if blocks can be chained', () => {
 
-      it('if can also take an array of strings, pointing toward a property value')
+        const $ = new Styler()
 
+        const chained = $.if((v, p) => p.hidden)
+          .set('is-hidden')
+          .else.if((v, p) => p.foo.bar === 'cake')
+          .set('is-cake')
+          .else.set('is-neither-hidden-or-cake')
+          .valueOf()
+
+        expect(chained(props)).to.be.equal('is-cake')
+
+        const hProps = props::set('hidden', true)
+        expect(chained(hProps))
+          .to.be.equal('is-hidden')
+
+        const nProps = props::set(['foo', 'bar'], false)
+        expect(chained(nProps))
+          .to.be.equal('is-neither-hidden-or-cake')
+
+      })
+
+      it('if blocks can be nested', () => {
+
+        const $ = new Styler()
+
+        /* eslint-disable indent */
+        const nested = $
+          .if((v, p) => p.hidden)
+            .if((v, p) => p.foo.bar)
+              .set('is-hidden-cake')
+            .else
+              .set('is-hidden-no-cake')
+          .else
+            .set('is-not-hidden')
+          .valueOf()
+
+        expect(nested(props))
+          .to.be.equal('is-not-hidden')
+
+        const ncProps = props
+          ::set(['foo', 'bar'], false)
+          ::set('hidden', true)
+
+        expect(nested(ncProps))
+          .to.be.equal('is-hidden-no-cake')
+
+        const hcprops = props::set('hidden', true)
+        expect(nested(hcprops))
+          .to.be.equal('is-hidden-cake')
+      })
+
+    })
+
+    describe('ifProp', () => {
+      it('shortcut to if, with predicate set to value of prop at path')
+    })
+
+    describe('ifBranded', () => {
+      it('shortcut to if, with predicate set to true if prop.brand has a value that matches a key in prop.theme.brand')
     })
   })
 

@@ -135,6 +135,8 @@ const Script = styled(props => {
   margin: 0.5em 0em 0.5em 0em;
   padding: 1em;
   border-radius: 1em;
+  max-width: 40em;
+  white-space: pre-wrap;
 
   display: block;
 

@@ -25,8 +25,7 @@ const INFO = {
 const Flatten = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
-    The flatten function takes an Array and decomposes any nested arrays.
-
+    <p>The flatten function takes an Array and decomposes any nested arrays.</p>
     <Detail.Script>{`
       import { flatten } from '@benzed/string'
 
@@ -34,7 +33,7 @@ const Flatten = ({ Types, Detail }) =>
       console.log(flattened) // [1, 2, 3, 4]
     `}</Detail.Script>
 
-    Optionally bindable
+    <p>Optionally bindable</p>
     <Detail.Script>{`
       const flattened = [1, [2]]::flatten()
       console.log(flattened) // [1, 2]

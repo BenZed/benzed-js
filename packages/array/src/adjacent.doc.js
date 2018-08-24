@@ -30,7 +30,8 @@ const INFO = {
 const Adjacent = ({ Types, Detail: { Script } }) =>
 
   <Types.Function info={INFO} >
-    The adjacent function gets the neighbour of the supplied value in an array:
+
+    <p>The adjacent function gets the neighbour of the supplied value in an array:</p>
     <Script>{`
       import { adjacent } from '@benzed/string'
 
@@ -38,14 +39,14 @@ const Adjacent = ({ Types, Detail: { Script } }) =>
       console.log(next) // 'two'
     `}</Script>
 
-    If the supplied value is at the end of the array, the returned value will
-    be wrapped around:
+    <p>If the supplied value is at the end of the array, the returned value will
+    be wrapped around:</p>
     <Script>{`
       const first = adjacent([ 1, 2, 3, 4 ], 4)
       console.log(first) // 1
     `}</Script>
 
-    Optionally takes a delta argument:
+    <p>Optionally takes a delta argument:</p>
     <Script>{`
       const array = [ 'min', 1, 2, 3, 'max' ]
       const two = adjacent(array, 'min', 2)
@@ -55,7 +56,7 @@ const Adjacent = ({ Types, Detail: { Script } }) =>
       console.log(min) // 'min'
     `}</Script>
 
-    Optionally bindable
+    <p>Optionally bindable:</p>
     <Script>{`
       const three = [1,2,3]::adjacent(1, 2)
       console.log(three) // 3

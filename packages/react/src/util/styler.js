@@ -174,21 +174,38 @@ class Styler {
 
   // Flow control
 
-  if (...args) {
+  if (predicate) {
 
-    const isFunc = args.length === 1 && is.func(args[0])
-    const isPath = !isFunc && is.arrayOf.string(args)
-    // if (!isFunc && !isPath)
-    //   throw new Error('must be a predicate function or a path to a prop')
-
-    const predicate = isPath
-      ? getPropAtPath.bind(null, args)
-      : null
+    if (!is.func(predicate))
+      throw new Error('must be a predicate function')
 
     this[STACK].push(IF, predicate)
 
     return this
   }
+
+  ifProp (...args) {
+
+    const isPath = is.arrayOf(args, [String, Number])
+    if (!isPath(args))
+      throw new Error('must be a path to a prop')
+
+    const predicate = getPropAtPath.bind(null, args)
+
+    return this.if(predicate)
+  }
+
+  get ifBranded () {
+
+    const predicate = getBrandedValue
+    this[STACK].push(IF, predicate)
+
+    return this.if(predicate)
+  }
+
+  // get ifVisible () {
+  //
+  // }
 
   get else () {
 
@@ -241,28 +258,34 @@ class Styler {
 
     const { funcs, params } = this[STACK]
 
-    let waitUntilElse = false
+    let waitForElse = 0
+
     for (let i = 0; i < funcs.length; i++) {
       const func = funcs[i]
       const param = params[i]
 
       const isElse = func === ELSE
+      const isIf = func === IF
 
-      if (waitUntilElse && !isElse)
+      if (!isElse && waitForElse > 0) {
+        waitForElse += isIf ? 1 : 0
         continue
+      }
 
-      else if (isElse && !waitUntilElse)
+      if (isElse && --waitForElse < 0)
         break
 
-      else if (isElse && waitUntilElse)
-        waitUntilElse = false
-
-      else if (func === IF) {
+      if (isIf) {
         const predicate = param
-        waitUntilElse = !predicate(value, props)
+        const result = predicate(value, props)
+        waitForElse += result
+          ? 0
+          : 1
+      }
 
-      } else
+      if (!isIf && !isElse)
         value = func(param, value, props)
+
     }
 
     return is.primitive(value)
