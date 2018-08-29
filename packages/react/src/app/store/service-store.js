@@ -321,7 +321,7 @@ class ServiceStore extends Store {
     return client.service(serviceName)
   }
 
-  // Util
+  // Construct
 
   constructor (config = {}) {
     super()
@@ -362,12 +362,20 @@ class ServiceStore extends Store {
       : unwrap(records)
   }
 
+  // util
+
   untilFetchingComplete () {
     const completes = this[QUERY]
       .items
       .map(item => item.complete)
 
     return Promise.all(completes)
+  }
+
+  // Helper
+
+  get all () {
+    return [ ...this.records.values() ]
   }
 }
 

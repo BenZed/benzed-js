@@ -27,13 +27,15 @@ class ServiceRecord extends Store {
     Object.defineProperties(this, {
       id: { value: id, enumerable: true },
       _id: { value: id },
-      store: { value: store, enumerable: true }
+      store: { value: store, enumerable: false }
     })
 
     if (!is.object(store))
       throw new Error(`${this.constructor.name} must be instantiated with a store`)
 
   }
+
+  // actions
 
   getError (path) {
     path = wrap(path)
