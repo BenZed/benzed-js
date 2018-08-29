@@ -51,7 +51,7 @@ Test.optionallyBindableMethod(_shuffle, function (shuffle) {
     }
 
     dechancify(
-      () => shuffle({...arrayLike}),
+      () => shuffle({ ...arrayLike }),
       result => expect(result).to.not.deep.equal(arrayLike)
     )
 

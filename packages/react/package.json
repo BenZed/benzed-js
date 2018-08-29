@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publishConfig": {
     "access": "public"
   },
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@benzed/app": "^0.6.0",
-    "@benzed/dev": "^0.9.2",
+    "@benzed/dev": "^0.10.0",
     "styled-components-test-utils": "^0.4.1"
   },
   "peerDependencies": {

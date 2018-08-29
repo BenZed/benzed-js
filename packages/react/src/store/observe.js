@@ -1,12 +1,17 @@
-import StoreObserver from './observer'
 import React from 'react'
+
+import StoreObserver from './observer'
+import Store from './store'
+
+import is from 'is-explicit'
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
 function observe (Component, listen) {
 
-  if (this !== undefined) {
+  if (this !== undefined && !is.subclassOf(this, Store)) {
     listen = Component
     Component = this
   }

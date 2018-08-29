@@ -40,15 +40,13 @@ function pluck (arr, test, count = arr.length) {
     if (!test(value, i, arr))
       continue
 
-    if (reverse)
+    if (reverse) {
       results.unshift(value)
-    else
-      results.push(value)
-
-    if (reverse)
       indexes.push(i)
-    else
+    } else {
+      results.push(value)
       indexes.unshift(i)
+    }
   }
 
   for (const index of indexes)

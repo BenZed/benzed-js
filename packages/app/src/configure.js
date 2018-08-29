@@ -1,23 +1,15 @@
 import fs from 'fs-extra'
 import path from 'path'
 import is from 'is-explicit'
+import { randomBytes } from 'crypto'
 
 import { Schema, cast,
   object, arrayOf, string, bool, number,
   required, length, format, defaultTo
 } from '@benzed/schema'
 import { get, set } from '@benzed/immutable'
-import { randomBytes } from 'crypto'
 
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-function isEnabled (value) {
-
-  return value === true || (is.plainObject(value) && value.enabled !== false)
-
-}
+import { boolToObject, isEnabled } from './util'
 
 /******************************************************************************/
 // Config Validators
@@ -100,13 +92,6 @@ function requiredIf (other) {
     ? new Error(`required if ${other} is enabled.`)
     : value
 }
-
-const boolToObject = value =>
-  value === true
-    ? { }
-    : value === false
-      ? null
-      : value
 
 const eachKeyMustBeObject = value => {
 

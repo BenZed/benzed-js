@@ -5,7 +5,13 @@ import React from 'react' // eslint-disable-line no-unused-vars
 /******************************************************************************/
 
 const INFO = {
-  name: 'Styler'
+  name: 'Styler',
+  methods: [
+
+  ],
+  classMethods: [
+
+  ]
 }
 
 /******************************************************************************/
@@ -61,8 +67,11 @@ const Styler = ({ Types, Detail }) =>
         background-color: \${$.theme.bg};
         color: \${$.theme.fg};
       \`
+
       // <Section /> will have be theme colored
     `}</Detail.Script>
+
+    <p></p>
 
   </Types.Class>
 

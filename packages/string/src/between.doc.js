@@ -1,4 +1,6 @@
-import React from 'react' // eslint-disable-line no-unused-vars
+import React from 'react'
+
+/* eslint-disable react/prop-types */
 
 /******************************************************************************/
 // Info
@@ -8,16 +10,16 @@ const INFO = {
   name: 'between',
   args: {
     str: {
-      type: 'string',
+      type: String,
       description: 'Source string'
     },
     open: {
-      type: 'string',
+      type: String,
       description: 'Open marker'
     },
     close: {
-      type: 'string',
-      description: 'Close Maker',
+      type: String,
+      description: 'Close marker',
       default: 'open'
     }
   },
@@ -34,10 +36,24 @@ const INFO = {
 const Between = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
-    Describe the between function.
+    <p>The between function returns a subset of a string, that which exists between
+    two delimeters.</p>
 
     <Detail.Script>{`
       import { between } from '@benzed/string'
+
+      const text = between('<b>bold</b>', '<b>', '</b>')
+
+      console.log(text) // bold
+    `}</Detail.Script>
+
+    <p>Returns null if markers cannot be found:</p>
+    <Detail.Script>{`
+      import { between } from '@benzed/string'
+
+      const text = between('Hello world!', '{', '}')
+
+      console.log(text) // null
     `}</Detail.Script>
 
   </Types.Function>

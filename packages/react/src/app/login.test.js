@@ -16,7 +16,10 @@ import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
 // Helper
 /******************************************************************************/
 
-const DB_PATH = path.resolve(__dirname, '../../temp/login-component-test-db')
+const DB_PATH = path.resolve(
+  __dirname,
+  '../../temp/login-component-test-db'
+)
 
 const PORT = 5890
 
@@ -190,6 +193,8 @@ describe('Login component', () => {
 
     })
 
+    // TODO after converting to Babel 7.0, i cant import things from app anymore
+    // dunno why
     createProjectAppAndTest(APP, main => {
 
       describe('submit()', () => {

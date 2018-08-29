@@ -10,7 +10,7 @@ import { CIRCULAR } from './symbols'
 function mergeMutate (a, b) {
 
   const isAObject = is.plainObject(a)
-  const isBObject = typeof b === 'object' && b !== null
+  const isBObject = is.plainObject(b)
 
   // TODO untested
   const bIsCircular = b === CIRCULAR

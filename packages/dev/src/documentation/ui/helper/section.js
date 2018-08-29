@@ -8,7 +8,7 @@ const Section = styled.section`
   margin: 0em 1em 4em 1em;
 
   p {
-    margin: 1.5em 0em 1em 0em;
+    margin: 1em 0em 1em 0em;
     max-width: 30em;
   }
 

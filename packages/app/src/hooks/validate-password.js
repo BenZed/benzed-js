@@ -9,6 +9,8 @@ import Hook from './hook'
 
 import { AUTH_PRIORITY } from './jwt-auth'
 
+// TODO this should be moved to src/services/user-services/hooks
+
 /******************************************************************************/
 // Data
 /******************************************************************************/

@@ -139,21 +139,21 @@ describe('createProject()', () => {
 
     })
 
-    // const TEMP_NEW_PROJECT_NAME = 'evolution-toy'
+    // const TEMP_NEW_PROJECT_NAME = 'casino-ben'
     // describe.only(`creates ${TEMP_NEW_PROJECT_NAME}`, () => {
     //
     //   const options = {
     //     dir: path.resolve(process.cwd(), '../../../'),
     //     name: TEMP_NEW_PROJECT_NAME,
     //
-    //     socketio: false,
-    //     rest: false,
+    //     socketio: true,
+    //     rest: true,
     //
     //     ui: true,
-    //     api: false,
+    //     api: true,
     //
-    //     auth: false,
-    //     files: false
+    //     auth: true,
+    //     files: true
     //   }
     //
     //   testCreateProject(options)

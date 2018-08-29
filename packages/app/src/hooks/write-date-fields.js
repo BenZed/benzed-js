@@ -2,17 +2,7 @@ import { Schema, defaultTo, string, object, required } from '@benzed/schema'
 import { wrap, unwrap } from '@benzed/array'
 
 import Hook from './hook'
-
-/******************************************************************************/
-// Helper
-/******************************************************************************/
-
-// TODO I use this function often enough it should probably be a @benzed/schema export
-const boolToObject = value => value === true
-  ? {}
-  : value === false
-    ? null
-    : value
+import { boolToObject } from '../util'
 
 /******************************************************************************/
 // Main

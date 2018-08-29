@@ -4,7 +4,7 @@ import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(fromCamelCase, fromCamelCase => {
+Test.optionallyBindableMethod(fromCamelCase, fromCamelCase => {
 
   describe('dashCases a string', () => {
     const tests = [

@@ -1,8 +1,7 @@
 import { expect } from 'chai'
 import ClientStore from './client-store'
-import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
+// import { createProjectAppAndTest } from '@benzed/app/test-util/test-project'
 import { set } from '@benzed/immutable'
-import { milliseconds } from '@benzed/async'
 
 import io from 'socket.io-client'
 import path from 'path'

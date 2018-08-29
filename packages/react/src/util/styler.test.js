@@ -269,6 +269,44 @@ describe.only('styler', () => {
           .to.be.equal('is-hidden-cake')
       })
 
+      it('else cannot be called without a preceding if', () => {
+        expect(() => new Styler().else).to.throw('Can\'t stack else, must come after if.')
+      })
+
+    })
+
+    describe('or', () => {
+
+      it('terminates stack unless value is null or undefined', () => {
+        const $ = new Styler()
+        const hiddenOr = $.set(null)
+          .or.prop('hidden')
+          .or.prop('temp', 'suffix')
+          .valueOf()
+
+        expect(hiddenOr(props)).to.be.equal(false)
+      })
+
+      it('mixes well with if and else', () => {
+        const $ = new Styler()
+        const opacity = $
+          .ifProp('hidden')
+            .prop('faded').or.set(0)
+          .else.set(1)
+          .valueOf()
+
+        expect(opacity(props))
+          .to.be.equal(1)
+
+        expect(opacity(props::set('hidden', true)))
+          .to.be.equal(0)
+      })
+
+      it('returns styler', () => {
+        const $ = new Styler()
+        expect($.prop('hidden').or).to.be.equal($)
+      })
+
     })
 
     describe('ifProp', () => {
@@ -281,7 +319,6 @@ describe.only('styler', () => {
   })
 
   describe('instance properties', () => {
-
     describe('branded', () => {
 
       it('stacks a method that returns props.theme.brand[props.brand]', () => {
@@ -294,7 +331,6 @@ describe.only('styler', () => {
           .instanceof(Function)
 
         const bprops = props::set('brand', 'primary')
-
         expect(getBranded(bprops))
           .to
           .be

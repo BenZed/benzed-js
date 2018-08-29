@@ -1,6 +1,8 @@
 import { discard, iff, isProvider } from 'feathers-hooks-common'
 import { prepareGeneric } from './hook'
 
+// TODO this should be moved to src/services/user-services/hooks
+
 /******************************************************************************/
 // Data
 /******************************************************************************/

@@ -23,6 +23,8 @@ import 'colors'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
+/* eslint-disable react/prop-types, react/display-name */
+
 /******************************************************************************/
 // Tests
 /******************************************************************************/

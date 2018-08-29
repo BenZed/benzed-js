@@ -2,21 +2,43 @@ import React from 'react'
 import is from 'is-explicit'
 
 import { Title, Table, Section, Label } from '../helper'
+import { PropTypeSchema, arrayOf, object } from '@benzed/schema'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
+const BUILTINS = [
+  Set, Array, Map, RegExp, Date, global.Function
+]
+
 function toTypeComponent (type) {
 
-  return is.array(type)
-    ? type.map(toTypeComponent)
-    : is.func(type)
-      ? <Label key={type.name}>{type.name}</Label>
-      : type === '*'
-        ? <Label key='any'>any</Label>
-        : <Label key={`${type}`}>{`${type}`}</Label>
+  if (is.array(type))
+    return type.map(toTypeComponent)
 
+  const isFunc = is.func(type)
+
+  let brand
+
+  const isAny = type === '*' || type === 'any'
+  if (isAny)
+    type = 'any'
+  const name = isFunc ? type.name : `${type}`
+
+  if (type === Boolean || isAny || type == null)
+    brand = 'literal'
+
+  else if (type === Number)
+    brand = 'type'
+
+  else if (type === String)
+    brand = 'string'
+
+  else if (BUILTINS.includes(type))
+    brand = 'builtin'
+
+  return <Label key={name} brand={brand}>{name}</Label>
 }
 
 // Ensure at least one cell in the column has a value
@@ -32,7 +54,7 @@ function columnValid (column) {
 }
 
 /******************************************************************************/
-// Helpers
+// Args
 /******************************************************************************/
 
 const Args = ({ args }) => {
@@ -65,6 +87,14 @@ const Args = ({ args }) => {
   return <Table key='table' title='Arguments' data={data} />
 }
 
+Args.propTypes = new PropTypeSchema({
+  args: arrayOf(object)
+})
+
+/******************************************************************************/
+// Returns
+/******************************************************************************/
+
 const Returns = ({ returns }) => {
 
   const types = [
@@ -84,6 +114,10 @@ const Returns = ({ returns }) => {
   return <Table key='table' title='Returns' data={data} />
 }
 
+Returns.propTypes = new PropTypeSchema({
+  returns: arrayOf(object)
+})
+
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
@@ -95,7 +129,7 @@ const Function = ({ children, info, ...props }) => [
     { info && info.name
       ? <Title key='title'>
         {info.name}
-        <Label>function</Label>
+        <Label brand='keyword'>function</Label>
       </Title>
       : null
     }

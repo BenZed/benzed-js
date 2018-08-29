@@ -26,11 +26,28 @@ module.exports = [
     'type': 'repo',
     'children': [
       {
+        'name': 'app',
+        'type': 'package',
+        'children': [
+          ...toComponents(require('../../../../app/src/app.doc')),
+          {
+            'name': 'services',
+            'type': 'module',
+            'children': [
+              ...toComponents(require('../../../../app/src/services/file-service.doc')),
+              ...toComponents(require('../../../../app/src/services/service.doc')),
+              ...toComponents(require('../../../../app/src/services/user-service.doc'))
+            ]
+          }
+        ]
+      },
+      {
         'name': 'array',
         'type': 'package',
         'children': [
           ...toComponents(require('../../../../array/src/adjacent.doc')),
-          ...toComponents(require('../../../../array/src/flatten.doc'))
+          ...toComponents(require('../../../../array/src/flatten.doc')),
+          ...toComponents(require('../../../../array/src/pluck.doc'))
         ]
       },
       {

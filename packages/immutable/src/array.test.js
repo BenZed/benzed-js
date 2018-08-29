@@ -9,7 +9,7 @@ import Test from '@benzed/dev'
 
 const NON_ARRAY_LIKES = [
   { foo: 'bar' },
-  new Map([{foo: 'bar'}, {one: 1}]),
+  new Map([{ foo: 'bar' }, { one: 1 }]),
   new Set(['one', 'two']),
   Symbol('symbol'),
   new Date(),

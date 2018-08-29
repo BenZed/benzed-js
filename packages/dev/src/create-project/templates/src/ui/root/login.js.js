@@ -8,10 +8,11 @@ export default ({ ui, name, auth, pretty }) => {
 
   const Name = name::toCamelCase()::capitalize()
 
-  return ui && auth && pretty`import { Login } from '@benzed/react'
+  return ui && auth && pretty`import React from 'react'
+import { Login } from '@benzed/react'
 
 /******************************************************************************/
-// View
+// Logic
 /******************************************************************************/
 
 const ${Name}LoginView = props => {
@@ -23,12 +24,12 @@ const ${Name}LoginView = props => {
   return null
 }
 /******************************************************************************/
-// Logic
+// View
 /******************************************************************************/
 
 const ${Name}Login = props =>
   <Login {...props} >
-    {/* LoginView */}
+    <${Name}LoginView/>
   </Login>
 
 /******************************************************************************/

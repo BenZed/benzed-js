@@ -3,7 +3,7 @@ import Test, { expectReject, expectResolve, expectStyleRules } from './test-util
 import { inspect, clearConsole } from './misc-util'
 
 import WebpackConfig from './webpack-config'
-import * as Documentation from './documentation'
+import BabelConfig from './babel-config'
 
 /******************************************************************************/
 // Exports
@@ -20,8 +20,7 @@ export {
   expectStyleRules,
 
   WebpackConfig,
-
-  Documentation,
+  BabelConfig,
 
   inspect,
   clearConsole

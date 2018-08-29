@@ -2,7 +2,7 @@ import is from 'is-explicit'
 
 import App from '../../app'
 
-import { Schema, object, string, bool, required, defaultTo } from '@benzed/schema'
+import { Schema, string, bool, required, defaultTo, cast } from '@benzed/schema'
 import getDatabaseAdapter from './get-database-adapter'
 import registerToFeathers from './register-to-feathers'
 import compileHooks, {
@@ -12,25 +12,18 @@ import compileHooks, {
   HOOKS
 } from './compile-hooks'
 
+import { boolToObject } from '../../util'
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
 
-const boolToObject = value =>
-  value === true
-    ? {}
-    : value === false
-      ? null
-      : value
+const ALLOW_ARBITRARY_KEYS = false
 
-const configObject = object({
-  cast: boolToObject
-})
-
-const defaultToName = (value, { args }) =>
+const defaultToName = (value, { args: [ name ] }) =>
   is.string(value)
     ? value
-    : args[0]
+    : name
 
 const removeFirstSlash = value => {
   if (!is.string(value))
@@ -42,19 +35,22 @@ const removeFirstSlash = value => {
 }
 
 const validateConfig = new Schema({
-  path: string(defaultToName, removeFirstSlash),
-  auth: bool(defaultTo(true)),
-  'soft-delete': configObject,
-  versions: configObject,
-  'live-edit': configObject
-}, false)
+
+  'path': string(defaultToName, removeFirstSlash),
+  'auth': bool(defaultTo(true)),
+  'soft-delete': cast(boolToObject),
+  'versions': cast(boolToObject),
+  'live-edit': cast(boolToObject)
+
+}, ALLOW_ARBITRARY_KEYS)
 
 const validateName = new Schema(
   string(required('Name is required.'))
 )
 
 const validateApp = value => {
-  if (!value || (value instanceof App === false))
+
+  if (!is(value, App))
     throw new Error('Must be an App instance.')
 
   return value
@@ -107,6 +103,8 @@ class Service {
     const hooks = this::compileHooks(app, config, adapter)
 
     service.hooks(hooks)
+
+    service.Service = this.constructor
 
     // if (versions)
     //   service::setupVersions(versions)

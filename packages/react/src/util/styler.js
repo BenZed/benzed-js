@@ -10,11 +10,10 @@ import Color from '../themes/color'
 /******************************************************************************/
 
 const STACK = Symbol('stack-of-style-methods-and-params')
-
 const STYLE = Symbol('create-style-value-from-stack-methods')
 
 const IF = Symbol('stack-flow-control-if')
-
+const OR = Symbol('stack-flow-control-or')
 const ELSE = Symbol('stack-flow-control-else')
 
 /******************************************************************************/
@@ -88,7 +87,6 @@ function extendStylerWithTheme (Styler, theme) {
       super(...args)
 
       this.theme = buildTheme(this, theme)
-
     }
   }
 
@@ -123,7 +121,6 @@ function StylerInterface (Styler) {
           : value
       }
     })
-
 }
 
 /******************************************************************************/
@@ -167,8 +164,8 @@ class Styler {
   }
 
   set (value) {
-    this[STACK].push(setValue, value)
 
+    this[STACK].push(setValue, value)
     return this
   }
 
@@ -180,37 +177,48 @@ class Styler {
       throw new Error('must be a predicate function')
 
     this[STACK].push(IF, predicate)
-
     return this
   }
 
   ifProp (...args) {
 
     const isPath = is.arrayOf(args, [String, Number])
-    if (!isPath(args))
+    if (!isPath)
       throw new Error('must be a path to a prop')
 
     const predicate = getPropAtPath.bind(null, args)
-
     return this.if(predicate)
   }
 
   get ifBranded () {
 
     const predicate = getBrandedValue
-    this[STACK].push(IF, predicate)
-
     return this.if(predicate)
   }
 
-  // get ifVisible () {
-  //
-  // }
+  get or () {
+    this[STACK].push(OR)
+
+    return this
+  }
 
   get else () {
 
-    this[STACK].push(ELSE)
+    const { funcs } = this[STACK]
 
+    let count = 0
+    for (let i = 0; i < funcs.length; i++) {
+      const func = funcs[i]
+      if (func === IF)
+        count++
+      else if (func === ELSE)
+        count--
+    }
+
+    if (count <= 0)
+      throw new Error('Can\'t stack else, must come after if.')
+
+    this[STACK].push(ELSE)
     return this
   }
 
@@ -219,19 +227,18 @@ class Styler {
   fade (amount) {
 
     this[STACK].push(alterColor, ['fade', amount])
-
     return this
   }
 
   darken (amount) {
-    this[STACK].push(alterColor, ['darken', amount])
 
+    this[STACK].push(alterColor, ['darken', amount])
     return this
   }
 
   lighten (amount) {
-    this[STACK].push(alterColor, ['lighten', amount])
 
+    this[STACK].push(alterColor, ['lighten', amount])
     return this
   }
 
@@ -255,10 +262,9 @@ class Styler {
   [STYLE] = props => {
 
     let value
+    let waitForElse = 0
 
     const { funcs, params } = this[STACK]
-
-    let waitForElse = 0
 
     for (let i = 0; i < funcs.length; i++) {
       const func = funcs[i]
@@ -266,11 +272,17 @@ class Styler {
 
       const isElse = func === ELSE
       const isIf = func === IF
+      const isOr = func === OR
 
       if (!isElse && waitForElse > 0) {
-        waitForElse += isIf ? 1 : 0
+        waitForElse += isIf
+          ? 1
+          : 0
         continue
       }
+
+      if (isOr && is.defined(value))
+        break
 
       if (isElse && --waitForElse < 0)
         break
@@ -283,9 +295,8 @@ class Styler {
           : 1
       }
 
-      if (!isIf && !isElse)
+      if (is.func(func))
         value = func(param, value, props)
-
     }
 
     return is.primitive(value)

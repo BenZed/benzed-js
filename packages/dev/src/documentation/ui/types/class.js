@@ -12,7 +12,7 @@ const Class = ({ children, info, ...props }) => [
     { info && info.name
       ? <Title>
         {info.name}
-        <Label>class</Label>
+        <Label brand='keyword'>class</Label>
       </Title>
       : null
     }

@@ -21,11 +21,11 @@ const HOOKS = Symbol('hooks')
 /******************************************************************************/
 
 const emptyObject = () => Object({})
+const emptyArray = () => []
 
-const methodArr = arrayOf(func, defaultTo(() => []))
+const methodArr = arrayOf(func, defaultTo(emptyArray))
 
 const methodObj = object(
-  true,
 
   defaultTo(emptyObject),
   {
