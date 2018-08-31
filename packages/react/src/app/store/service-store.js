@@ -329,7 +329,7 @@ class ServiceStore extends Store {
     return client.service(serviceName)
   }
 
-  // Util
+  // Construct
 
   constructor (config = {}) {
     super()
@@ -380,12 +380,11 @@ class ServiceStore extends Store {
     return Promise.all(completes)
   }
 
-  /* Helper */
+  // Helper
 
   get all () {
     return [ ...this.records.values() ]
   }
-
 }
 
 /******************************************************************************/

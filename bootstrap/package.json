@@ -21,15 +21,6 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
-    "@benzed/app": "latest",
-    "@benzed/array": "latest",
-    "@benzed/async": "latest",
-    "@benzed/dev": "latest",
-    "@benzed/immutable": "latest",
-    "@benzed/math": "latest",
-    "@benzed/react": "latest",
-    "@benzed/schema": "latest",
-    "@benzed/string": "latest",
     "@feathersjs/authentication": "^2.1.7",
     "@feathersjs/authentication-client": "^1.0.2",
     "@feathersjs/authentication-jwt": "^2.0.1",
@@ -93,6 +84,15 @@
     "webapp-webpack-plugin": "^2.3.0",
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.6"
+    "webpack-dev-server": "^3.1.6",
+    "@benzed/app": "latest",
+    "@benzed/array": "latest",
+    "@benzed/async": "latest",
+    "@benzed/dev": "latest",
+    "@benzed/immutable": "latest",
+    "@benzed/math": "latest",
+    "@benzed/react": "latest",
+    "@benzed/schema": "latest",
+    "@benzed/string": "latest"
   }
 }

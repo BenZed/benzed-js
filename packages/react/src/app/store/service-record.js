@@ -34,6 +34,8 @@ class ServiceRecord extends Store {
       throw new Error(`${this.constructor.name} must be instantiated with a store`)
   }
 
+  // actions
+
   getError (path) {
     path = wrap(path)
 
