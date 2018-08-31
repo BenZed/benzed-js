@@ -33,9 +33,6 @@ function getMutate (object, path) {
 
   path = path instanceof Array ? path : [ path ]
 
-  // if (obj != null && typeof obj.get === 'function')
-  //   return obj.get(...keys)
-
   let value
   let ref = object
 

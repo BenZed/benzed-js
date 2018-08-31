@@ -5,9 +5,21 @@ import Service from './service'
 import FileService from './file-service'
 
 import { set } from '@benzed/immutable'
+import { expectReject } from '@benzed/dev'
+
 import { createProjectAppAndTest } from '../../test-util/test-project'
 
 import is from 'is-explicit'
+import path from 'path'
+import fs from 'fs-extra'
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const storage = path.resolve('./temp/file-service-test-storage')
+fs.removeSync(storage)
+fs.ensureDir(storage)
 
 const APP = {
 
@@ -16,7 +28,12 @@ const APP = {
   port: 6218,
 
   services: {
-    files: true
+    files: {
+      storage: {
+        type: 'local',
+        location: ''
+      }
+    }
   }
 
 }
@@ -30,7 +47,7 @@ describe.only('File Service', () => {
     expect(is.subclassOf(FileService, Service)).to.be.equal(true)
   })
 
-  describe('configuration', () => {
+  describe('app settings', () => {
 
     it('services.files = true uses FileService by default', async () => {
 
@@ -41,18 +58,32 @@ describe.only('File Service', () => {
 
     })
 
-    it.skip('rest must be enabled to serve files', () => {
-      expect(() => new App(APP::set('rest', false)))
-        .to
-        .throw('rest must be enabled to serve files')
+    it('rest must be enabled to serve files', () => {
+
+      const app = new App(APP::set('rest', false))
+
+      return app
+        .initialize()
+        ::expectReject('File Service requires rest to be enabled.')
     })
 
   })
 
-  createProjectAppAndTest(APP, state => {
+  describe('configuration', () => {
 
-    describe('file storage', () => {})
+    it('requires .storage object', () => {
+      return new App(
+        APP::set(['services', 'files', 'storage'], null)
+      ).initialize()
+      ::expectReject('storage object is required.')
+    })
 
   })
+
+  // createProjectAppAndTest(APP, state => {
+  //
+  //   describe('file storage', () => {})
+  //
+  // })
 
 })

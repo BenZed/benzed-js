@@ -1,22 +1,20 @@
-import React from 'react'
-
-/* eslint-disable react/prop-types */
+import React from 'react' // eslint-disable-line no-unused-vars
 
 /******************************************************************************/
 // Info
 /******************************************************************************/
 
 const INFO = {
-  name: 'flatten',
+  name: 'capitalize',
   args: {
-    array: {
-      type: Array,
-      description: 'Array to flatten.'
+    argName: {
+      type: '*',
+      description: 'arg description'
     }
   },
   returns: {
-    type: Array,
-    description: 'Flattened array.'
+    type: undefined,
+    description: 'Does not return anything.'
   }
 }
 
@@ -24,21 +22,13 @@ const INFO = {
 // Doc
 /******************************************************************************/
 
-const Flatten = ({ Types, Detail }) =>
+const Capitalize = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
-    <p>The flatten function takes an Array and decomposes any nested arrays.</p>
-    <Detail.Script>{`
-      import { flatten } from '@benzed/array'
+    Describe the capitalize function.
 
-      const flattened = flatten([1, [2], [3, [4]]])
-      console.log(flattened) // [1, 2, 3, 4]
-    `}</Detail.Script>
-
-    <p>Optionally bindable</p>
     <Detail.Script>{`
-      const flattened = [1, [2]]::flatten()
-      console.log(flattened) // [1, 2]
+      import { capitalize } from '@benzed/string'
     `}</Detail.Script>
 
   </Types.Function>
@@ -47,4 +37,4 @@ const Flatten = ({ Types, Detail }) =>
 // Exports
 /******************************************************************************/
 
-export { Flatten }
+export { Capitalize }

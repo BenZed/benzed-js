@@ -10,7 +10,7 @@ import $ from '../../theme'
 // Styled
 /******************************************************************************/
 
-const MissingPage = Page.extend`
+const MissingPage = styled(Page)`
   margin: 1em;
 `
 

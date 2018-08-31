@@ -1,138 +1,85 @@
-import React, { Children, cloneElement } from 'react'
-
-import {
-  PropTypeSchema,
-  object, cast
-} from '@benzed/schema'
-
+import React from 'react'
+import { PropTypeSchema, typeOf, arrayOf, required } from '@benzed/schema'
 import Store from './store'
-import { StoreConsumer } from './context'
-import is from 'is-explicit'
+
+import { get, copy } from '@benzed/immutable'
+import { wrap } from '@benzed/array'
+
 /******************************************************************************/
-//
+// Helper
 /******************************************************************************/
 
-function toObject (value) {
+const getValue = (store, path, state) => {
 
-  if (is(value, String))
-    value = [ value ]
+  path = wrap(path)
 
-  if (is(value, Array))
-    value = value.reduce((obj, str) => {
-      obj[str] = []
-      return obj
-    }, { })
+  const value = path.length === 0
+    ? store
+    : get.mut(state ?? copy.json(store), path)
 
   return value
-}
-
-function listenKeys (listeners) {
-
-  for (const key in listeners) {
-    const listen = listeners[key]
-    if (!is(listen, Array) || (listen.length > 0 && !is.arrayOf(listen, String)))
-      return new Error('Must be an array of Strings.')
-  }
-
-  return listeners
-}
-
-function storeKeys (stores) {
-
-  for (const key in stores) {
-    const store = stores[key]
-    if (!is(store, Store))
-      return new Error('Must be a Store instance.')
-  }
-
-  return stores
 }
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-class Observer extends React.Component {
-
-  static propTypes = new PropTypeSchema({
-
-    stores: object(storeKeys),
-
-    listen: object(
-      cast(toObject),
-      listenKeys
-    )
-
-  })
+class StoreObserver extends React.Component {
 
   state = {
-    stores: null,
-    timestamp: null
+    value: getValue(this.props.store, this.props.path)
   }
 
-  update = state =>
-    this.setState({ timestamp: new Date() })
+  static propTypes = {
+    path: arrayOf(typeOf(String)),
+    store: typeOf(Store, required),
+    children: typeOf(Function, required)
+  }
 
-  constructor (props) {
+  static defaultProps = {
+    path: []
+  }
 
-    super(props)
+  // Handlers
 
-    const { stores: contextStores } = this.props
-    const listen = toObject(this.props.listen)
+  update = state => {
 
-    const stateStores = {}
+    const { store, path } = this.props
+    const value = getValue(store, path, state)
 
-    for (const key in listen) {
-      const store = contextStores[key]
-      if (!store)
-        throw new Error(`no store available named ${key}!`)
+    this.setState({ value })
+  }
 
-      stateStores[key] = store
-      store.subscribe(this.update, listen[key])
-    }
+  // LifeCycle
 
-    this.state = {
-      stores: stateStores,
-      timestamp: null
-    }
+  componentDidMount () {
+    const { store } = this.props
+
+    store.subscribe(this.update)
   }
 
   componentWillUnmount () {
-    const { stores } = this.state
+    const { store } = this.props
 
-    for (const key in stores) {
-      const store = stores[key]
-
-      store.unsubscribe(this.update)
-    }
+    store.unsubscribe(this.update)
   }
 
   render () {
 
     const { children } = this.props
-    const { stores } = this.state
+    const { value } = this.state
 
-    return Children.map(
-      children,
-      child => cloneElement(child, stores)
-    )
+    return children(value)
   }
 
 }
 
-/******************************************************************************/
-// Context
-/******************************************************************************/
+// Gotta do it like this so the linter will stfu
 
-const StoreObserver = props =>
-  <StoreConsumer>
-    { stores => <Observer {...props} stores={stores} /> }
-  </StoreConsumer>
+StoreObserver.propTypes = StoreObserver.propTypes::PropTypeSchema()
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export default StoreObserver
-
-export { Observer, StoreObserver }

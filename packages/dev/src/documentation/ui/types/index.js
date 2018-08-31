@@ -1,10 +1,11 @@
-import Function from './Function'
-import Class from './Class'
+import Function from './function'
+import Class from './class'
+import Component from './component'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
-  Class, Function
+  Class, Function, Component
 }

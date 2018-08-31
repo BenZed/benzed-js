@@ -157,13 +157,15 @@ class App {
   // Utility Methods
 
   get (path) {
-    const { settings } = this.feathers
-    return get.mut(settings, path)
+    return get.mut(this.config, path)
   }
 
   set (path, value) {
-    const { settings } = this.feathers
-    return set.mut(settings, path, value)
+    return set.mut(this.config, path, value)
+  }
+
+  get config () {
+    return this.feathers.settings
   }
 
   log = (strings, ...params) => {

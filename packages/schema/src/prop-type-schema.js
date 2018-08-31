@@ -34,6 +34,9 @@ function propCheck (props, propName, componentName = 'Anonymous Component') {
  */
 function PropTypeSchema (input) {
 
+  if (this !== undefined && input === undefined)
+    input = this
+
   if (!is.objectOf.func(input))
     throw new Error('PropTypeSchema must be defined with an object of validators.')
 

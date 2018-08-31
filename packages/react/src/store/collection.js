@@ -114,7 +114,7 @@ class StoreCollection {
 
     return true
   }
-  //
+
   // batchDelete (keys) {
   //
   // }

@@ -8,11 +8,11 @@ const Flex = styled.div`
   display: flex;
 `
 
-Flex.Column = Flex.extend`
+Flex.Column = styled(Flex)`
   flex-direction: column;
 `
 
-Flex.Row = Flex.extend`
+Flex.Row = styled(Flex)`
   flex-direction: row;
 `
 

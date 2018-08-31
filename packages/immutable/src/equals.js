@@ -94,6 +94,9 @@ function equals (a, b) {
   if (Number.isNaN(a))
     return Number.isNaN(b)
 
+  if (a instanceof Date && b instanceof Date)
+    return a.getTime() === b.getTime()
+
   if ((aIsFunc && bIsFunc) || aIsFunc !== bIsFunc)
     return false
 

@@ -12,7 +12,7 @@ import { Visible, Slide, Fade, ScrollVisible } from './effect'
 
 import { GlobalStyle, Color, CssUnit, basic, branded } from './themes'
 
-import { Store, StoreObserver, StoreProvider, observeStore, task } from './store'
+import { Store, StoreObserver, StoreProvider, StoreConsumer, task } from './store'
 
 import {
   isClient, isMobile, isEvent,
@@ -49,7 +49,7 @@ export {
   GlobalStyle, Color, CssUnit, themes,
 
   // Store
-  Store, StoreObserver, StoreProvider, observeStore, task,
+  Store, StoreObserver, StoreProvider, StoreConsumer, task,
 
   // Util
   isClient, isEvent, isMobile, storage, Cloner, CssCloner, Portal, Styler, $

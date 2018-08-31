@@ -47,7 +47,10 @@ module.exports = [
         'children': [
           ...toComponents(require('../../../../array/src/adjacent.doc')),
           ...toComponents(require('../../../../array/src/flatten.doc')),
-          ...toComponents(require('../../../../array/src/pluck.doc'))
+          ...toComponents(require('../../../../array/src/pluck.doc')),
+          ...toComponents(require('../../../../array/src/shuffle.doc')),
+          ...toComponents(require('../../../../array/src/unique.doc')),
+          ...toComponents(require('../../../../array/src/wrap.doc'))
         ]
       },
       {
@@ -68,6 +71,13 @@ module.exports = [
             ]
           },
           {
+            'name': 'store',
+            'type': 'module',
+            'children': [
+              ...toComponents(require('../../../../react/src/store/observer.doc'))
+            ]
+          },
+          {
             'name': 'util',
             'type': 'module',
             'children': [
@@ -80,7 +90,10 @@ module.exports = [
         'name': 'string',
         'type': 'package',
         'children': [
-          ...toComponents(require('../../../../string/src/between.doc'))
+          ...toComponents(require('../../../../string/src/between.doc')),
+          ...toComponents(require('../../../../string/src/capitalize.doc')),
+          ...toComponents(require('../../../../string/src/from-camel-case.doc')),
+          ...toComponents(require('../../../../string/src/to-camel-case.doc'))
         ]
       }
     ]

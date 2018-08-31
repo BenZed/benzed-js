@@ -413,13 +413,14 @@ describe('ValueMap', () => {
     })
   })
 
-  describe('immutable symbols', () => {
+  describe.skip('immutable symbols', () => {
 
     let map1, map2
 
     before(() => {
       map1 = new ValueMap('one', 1)
       map2 = copy(map1)
+
     })
 
     it('implements COPY', () => {

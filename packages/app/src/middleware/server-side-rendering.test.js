@@ -287,7 +287,6 @@ describe('serverSideRender()', () => {
         const clientErrorTag = browser.document.getElementById('server-error')
         expect(clientErrorTag).to.have.property('innerHTML', '<h3>you cannot go to /bad/route</h3>')
       })
-
     })
   })
 

@@ -44,7 +44,9 @@ function createProjectAppAndTest (setup = {}, tests) {
 
   tests(state)
 
-  after(async () => {
+  after(async function () {
+    this.timeout(5000)
+
     if (state.app && state.app.listener)
       await state.app.end()
 

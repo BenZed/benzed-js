@@ -38,7 +38,7 @@ const Nav = styled.nav`
 // ToggleLink
 /******************************************************************************/
 
-const LinkRow = Flex.Row.extend`
+const LinkRow = styled(Flex.Row)`
   margin: 0.25em 0em 0.25em 0em;
 `
 

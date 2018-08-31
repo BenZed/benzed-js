@@ -8,7 +8,7 @@ import { CIRCULAR } from './symbols'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(copyJson, copyJson => {
+Test.optionallyBindableMethod(copyJson, copyJson => {
 
   describe('copies data in a json compatible format', () => {
 

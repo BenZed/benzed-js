@@ -35,7 +35,7 @@ const Pluck = ({ Types, Detail: { Script } }) =>
 
     <p>The pluck function removes a number of items from an array that pass a test:</p>
     <Script>{`
-      import { pluck } from '@benzed/string'
+      import { pluck } from '@benzed/array'
 
       const arr = [ 1, 2, 3, 4, 5, 6 ]
       const even = pluck(arr, n => n % 2 === 0)

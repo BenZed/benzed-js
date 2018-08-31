@@ -26,7 +26,7 @@ const SubTitle = styled.h2`
   }
 `
 
-const Title = SubTitle.withComponent('h1').extend`
+const Title = styled(SubTitle.withComponent('h1'))`
 
   padding: 0.25em 0.25em 0.25em 0em;
 

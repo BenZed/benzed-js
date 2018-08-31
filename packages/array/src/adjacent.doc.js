@@ -35,7 +35,7 @@ const Adjacent = ({ Types, Detail: { Script } }) =>
 
     <p>The adjacent function gets the neighbour of the supplied value in an array:</p>
     <Script>{`
-      import { adjacent } from '@benzed/string'
+      import { adjacent } from '@benzed/array'
 
       const next = adjacent([ 'one', 'two', 'three' ], 'one')
       console.log(next) // 'two'

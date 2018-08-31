@@ -5,9 +5,7 @@ import is from 'is-explicit'
 /******************************************************************************/
 
 function isEnabled (value) {
-
   return value === true || (is.plainObject(value) && value.enabled !== false)
-
 }
 
 /******************************************************************************/

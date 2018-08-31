@@ -7,16 +7,16 @@ import React from 'react'
 /******************************************************************************/
 
 const INFO = {
-  name: 'flatten',
+  name: 'observer',
   args: {
-    array: {
-      type: Array,
-      description: 'Array to flatten.'
+    argName: {
+      type: '*',
+      description: 'arg description'
     }
   },
   returns: {
-    type: Array,
-    description: 'Flattened array.'
+    type: undefined,
+    description: 'Does not return anything.'
   }
 }
 
@@ -24,27 +24,20 @@ const INFO = {
 // Doc
 /******************************************************************************/
 
-const Flatten = ({ Types, Detail }) =>
-  <Types.Function info={INFO}>
+const StoreObserver = ({ Types, Detail }) =>
+  <Types.Component info={INFO}>
 
-    <p>The flatten function takes an Array and decomposes any nested arrays.</p>
+    The StoreObserver component is used to listen to Store state changes and
+    disseminate them to child components.
+
     <Detail.Script>{`
-      import { flatten } from '@benzed/array'
-
-      const flattened = flatten([1, [2], [3, [4]]])
-      console.log(flattened) // [1, 2, 3, 4]
+      import { StoreObserver } from '@benzed/react'
     `}</Detail.Script>
 
-    <p>Optionally bindable</p>
-    <Detail.Script>{`
-      const flattened = [1, [2]]::flatten()
-      console.log(flattened) // [1, 2]
-    `}</Detail.Script>
-
-  </Types.Function>
+  </Types.Component>
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { Flatten }
+export { StoreObserver }

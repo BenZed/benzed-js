@@ -8,6 +8,8 @@ import renderer from 'react-test-renderer'
 
 import { push } from '@benzed/immutable'
 
+/* eslint-disable react/prop-types */
+
 /******************************************************************************/
 // Example Store
 /******************************************************************************/

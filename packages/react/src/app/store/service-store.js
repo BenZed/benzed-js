@@ -144,6 +144,8 @@ async function executeQueryWithData () {
   if (fetchedIds)
     store::setRecordsStatus(fetchedIds, 'fetched')
 
+  store.set('timestamp', new Date())
+
   return results
 }
 
@@ -201,14 +203,17 @@ function handleEvents () {
     const [ record ] = store::ensureRecords([ _id ])
 
     record::applyChanges(data, 'db')
+    store.set('timestamp', new Date())
   }
 
   const onEdit = data => {
     const { _id } = data
 
     const record = store.records.get(_id)
-    if (record)
+    if (record) {
       record::applyChanges(data, 'db')
+      store.set('timestamp', new Date())
+    }
   }
 
   const onDelete = data => {
@@ -220,6 +225,7 @@ function handleEvents () {
         records.set(record._id, record)
 
     store.set('records', records)
+    store.set('timestamp', new Date())
   }
 
   service
@@ -305,6 +311,8 @@ class ServiceStore extends Store {
 
   records = new Map()
 
+  timestamp = new Date()
+
   // Short Cuts
 
   get client () {
@@ -362,6 +370,8 @@ class ServiceStore extends Store {
       : unwrap(records)
   }
 
+  // Util
+
   untilFetchingComplete () {
     const completes = this[QUERY]
       .items
@@ -369,6 +379,13 @@ class ServiceStore extends Store {
 
     return Promise.all(completes)
   }
+
+  /* Helper */
+
+  get all () {
+    return [ ...this.records.values() ]
+  }
+
 }
 
 /******************************************************************************/

@@ -78,6 +78,17 @@ Test.optionallyBindableMethod(equals, equals => {
         expect(equals(ob1, ob2)).to.be.equal(false)
       })
 
+      it('works on dates', () => {
+        const a = new Date()
+        const b = new Date()
+
+        expect(equals(a, b)).to.be.equal(true)
+
+        const c = new Date(1000)
+
+        expect(equals(a, c)).to.be.equal(false)
+      })
+
       it('works on functions', () => {
 
         const foo = () => 'foo'

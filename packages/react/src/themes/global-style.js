@@ -30,10 +30,15 @@ function tempInjectGlobal (theme) {
       flex-direction: column;
     }
 
+    footer, header, hgroup, menu, nav, section {
+      display: block;
+    }
+
     body {
       color: ${`${theme.fg}`};
       background-color: ${`${theme.bg}`};
       font-family: ${theme.fonts.body};
+      line-height: 1;
     }
 
     pre {
@@ -85,6 +90,14 @@ function tempInjectGlobal (theme) {
 
       border-bottom: 1px solid;
 
+    }
+
+    ol, ul {
+      list-style: none;
+    }
+
+    blockquote, q {
+      quotes: none;
     }
   `
 }
