@@ -41,6 +41,19 @@ const APP = {
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
+const newApp = (path, value, err) => {
+
+  const config = path
+    ? APP::set(path, value)
+    : APP
+
+  const app = new App(config)
+
+  return err
+    ? app.initialize()::expectReject(err)
+    : app.initialize().then(() => app)
+}
+
 describe.only('File Service', () => {
 
   it('subclass of Service', () => {
@@ -50,40 +63,47 @@ describe.only('File Service', () => {
   describe('app settings', () => {
 
     it('services.files = true uses FileService by default', async () => {
-
-      const app = new App(APP)
-
-      await app.initialize()
+      const app = await newApp()
       expect(app.files.Service).to.be.equal(FileService)
-
     })
 
-    it('rest must be enabled to serve files', () => {
-
-      const app = new App(APP::set('rest', false))
-
-      return app
-        .initialize()
-        ::expectReject('File Service requires rest to be enabled.')
-    })
+    it('rest must be enabled to serve files', () =>
+      newApp('rest', false, 'File Service requires rest to be enabled.')
+    )
 
   })
 
   describe('configuration', () => {
 
-    it('requires .storage object', () => {
-      return new App(
-        APP::set(['services', 'files', 'storage'], null)
-      ).initialize()
-      ::expectReject('storage object is required.')
+    describe('.storage', () => {
+
+      it('required object', () => newApp(
+        ['services', 'files', 'storage'], null,
+        'storage object is required.'
+      ))
+
+      describe('.storage.type', () => {
+
+        it('required', () => newApp(
+          ['services', 'files', 'storage', 'type'], null,
+          'storage.type is Required.'
+        ))
+
+        it('one of: "local" or "s3"', () => newApp(
+          ['services', 'files', 'storage', 'type'], 'boga',
+          'Must be one of: local, s3'
+        ))
+
+        it('"s3" currently unsupported', () => newApp(
+          ['services', 'files', 'storage', 'type'], 's3',
+          'storage.type \'s3\' not yet supported.'
+        ))
+      })
+
+      describe('.storage.location', () => {
+        it('if local, must be a path pointing toward a folder on the file system')
+      })
+
     })
-
   })
-
-  // createProjectAppAndTest(APP, state => {
-  //
-  //   describe('file storage', () => {})
-  //
-  // })
-
 })

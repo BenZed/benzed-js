@@ -1,8 +1,7 @@
 import Service from './service'
-import { Schema, oneOf, object, required } from '@benzed/schema'
-import { copy } from '@benzed/immutable'
+import { Schema, oneOf, object, string, required } from '@benzed/schema'
 
-import { mustBeEnabled } from '../util/validation'
+import { mustBeEnabled, folderExists } from '../util/validation'
 
 /******************************************************************************/
 // Validation
@@ -10,7 +9,7 @@ import { mustBeEnabled } from '../util/validation'
 
 const s3NotYetSupported = value =>
   value === 's3'
-    ? new Error('s3 storage type not yet supported.')
+    ? new Error('\'s3\' not yet supported.')
     : value
 
 const validateSettings = new Schema({
@@ -24,6 +23,9 @@ const validateConfig = new Schema(
         ['local', 's3'],
         s3NotYetSupported,
         required
+      ),
+      location: string(
+        folderExists
       )
     },
     required('object is required.'))
@@ -40,7 +42,6 @@ class FileService extends Service {
   constructor (config, name, app) {
 
     validateSettings(app.config)
-
     config = validateConfig(config)
 
     super(config, name, app)
