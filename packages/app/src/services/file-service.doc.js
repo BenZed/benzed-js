@@ -18,9 +18,7 @@ const INFO = {
 const FileService = ({ Types, Detail }) =>
   <Types.Class info={INFO}>
 
-    <p>
-    File Service, complete with storage logic, upload middleware and download middleware.
-    </p>
+    <p>File Service, complete with storage logic, upload middleware and download middleware.</p>
 
   </Types.Class>
 

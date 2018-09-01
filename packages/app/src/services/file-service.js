@@ -40,12 +40,10 @@ const validateConfig = new Schema(
 class FileService extends Service {
 
   constructor (config, name, app) {
-
     validateSettings(app.config)
     config = validateConfig(config)
 
     super(config, name, app)
-
   }
 
 }

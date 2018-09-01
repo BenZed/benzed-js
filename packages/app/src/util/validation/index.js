@@ -9,5 +9,7 @@ import fileExists from './file-exists'
 
 export {
   boolToObject,
-  mustBeEnabled
+  mustBeEnabled,
+  folderExists,
+  fileExists
 }

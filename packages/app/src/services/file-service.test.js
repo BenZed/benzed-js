@@ -31,7 +31,7 @@ const APP = {
     files: {
       storage: {
         type: 'local',
-        location: ''
+        location: storage
       }
     }
   }
@@ -98,10 +98,16 @@ describe.only('File Service', () => {
           ['services', 'files', 'storage', 'type'], 's3',
           'storage.type \'s3\' not yet supported.'
         ))
+
       })
 
       describe('.storage.location', () => {
-        it('if local, must be a path pointing toward a folder on the file system')
+        it('if local, must be a path pointing toward a folder on the file system', () =>
+          newApp(
+            ['services', 'files', 'storage', 'location'],
+            path.join(__dirname, 'non-folder'),
+            'storage.location must be an existing folder'
+          ))
       })
 
     })

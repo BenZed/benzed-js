@@ -62,7 +62,6 @@ class App {
     try {
       await app.initialize()
     } catch (err) {
-
       app.log`app could not be initialized: \n${err}`
       return app::kill()
     }
@@ -70,12 +69,10 @@ class App {
     try {
       await app.start()
       app.log`app listening on ${app.get('port')}`
-
     } catch (err) {
       app.log`app could not start: \n${err}`
       return app::kill()
     }
-
   }
 
   listener = null
