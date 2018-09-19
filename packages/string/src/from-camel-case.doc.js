@@ -22,7 +22,7 @@ const INFO = {
 // Doc
 /******************************************************************************/
 
-const FromCamelCase = ({ Types, Detail }) =>
+const fromCamelCase = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
     Describe the fromCamelCase function.
@@ -37,4 +37,4 @@ const FromCamelCase = ({ Types, Detail }) =>
 // Exports
 /******************************************************************************/
 
-export { FromCamelCase }
+export { fromCamelCase }

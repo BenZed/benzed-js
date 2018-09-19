@@ -29,7 +29,7 @@ const INFO = {
   }
 }
 
-const Adjacent = ({ Types, Detail: { Script } }) =>
+const adjacent = ({ Types, Detail: { Script } }) =>
 
   <Types.Function info={INFO} >
 
@@ -70,4 +70,4 @@ const Adjacent = ({ Types, Detail: { Script } }) =>
 // Exports
 /******************************************************************************/
 
-export { Adjacent }
+export { adjacent }

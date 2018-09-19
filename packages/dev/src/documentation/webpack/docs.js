@@ -31,12 +31,31 @@ module.exports = [
         'children': [
           ...toComponents(require('../../../../app/src/app.doc')),
           {
+            'name': 'hooks',
+            'type': 'module',
+            'children': [
+              ...toComponents(require('../../../../app/src/hooks/hook.doc'))
+            ]
+          },
+          {
             'name': 'services',
             'type': 'module',
             'children': [
-              ...toComponents(require('../../../../app/src/services/file-service.doc')),
+              {
+                'name': 'file-service',
+                'type': 'module',
+                'children': [
+                  ...toComponents(require('../../../../app/src/services/file-service/file-service.doc'))
+                ]
+              },
               ...toComponents(require('../../../../app/src/services/service.doc')),
-              ...toComponents(require('../../../../app/src/services/user-service.doc'))
+              {
+                'name': 'user-service',
+                'type': 'module',
+                'children': [
+                  ...toComponents(require('../../../../app/src/services/user-service/user-service.doc'))
+                ]
+              }
             ]
           }
         ]

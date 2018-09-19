@@ -4,12 +4,12 @@ import { Missing } from '../pages'
 
 import { PropTypeSchema, arrayOf, object, any } from '@benzed/schema'
 import { push } from '@benzed/immutable'
-import { fromCamelCase } from '@benzed/string'
 
 import is from 'is-explicit'
 
 import * as Types from '../types'
 import * as Detail from '../detail'
+import { Label } from '../helper'
 
 /******************************************************************************/
 // Helper
@@ -37,7 +37,7 @@ function getElementsFromDoc (docs, finalPath, currentPath = []) {
 
   for (const doc of docs) {
 
-    const nextPath = currentPath::push(doc.name::fromCamelCase())
+    const nextPath = currentPath::push(doc.name)
     if (!matchPath(nextPath, finalPath))
       continue
 
@@ -46,6 +46,7 @@ function getElementsFromDoc (docs, finalPath, currentPath = []) {
       elements.push(<Component
         Types={Types}
         Detail={Detail}
+        Label={Label}
         path={nextPath}
         key={`${finalPath.join('-') + Component.name}`}
       />)
@@ -78,7 +79,6 @@ const Routes = ({ children, docs, location, ...props }) => {
     .pathname
     .split('/')
     .filter(isNotEmpty)
-    .map(fromCamelCase)
 
   const elements = getElementsFromDoc(docs, path)
 

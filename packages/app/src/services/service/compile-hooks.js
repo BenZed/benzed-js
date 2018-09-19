@@ -25,34 +25,29 @@ const emptyArray = () => []
 
 const methodArr = arrayOf(func, defaultTo(emptyArray))
 
-const methodObj = object(
-
-  defaultTo(emptyObject),
-  {
-    all: methodArr,
-    get: methodArr,
-    find: methodArr,
-    create: methodArr,
-    patch: methodArr,
-    update: methodArr,
-    remove: methodArr
-  },
-
-  'Must be an object with hook methods as keys.'
+const methodObj = object({
+  all: methodArr,
+  get: methodArr,
+  find: methodArr,
+  create: methodArr,
+  patch: methodArr,
+  update: methodArr,
+  remove: methodArr
+},
+defaultTo(emptyObject),
+true,
+'Must be an object with hook methods as keys.'
 )
 
 const validateHookTypeStructure = new Schema(
-  object(
-    true,
-    'Must be an object with hook types as keys',
-
-    defaultTo(emptyObject),
-    {
-      before: methodObj,
-      after: methodObj,
-      error: methodObj
-    }
-  )
+  object({
+    before: methodObj,
+    after: methodObj,
+    error: methodObj
+  },
+  'Must be an object with hook types as keys',
+  true,
+  defaultTo(emptyObject))
 )
 
 const validateHookMethodStructure = new Schema(methodObj)
@@ -129,7 +124,6 @@ function mergeHooks (target, source) {
         ...sourceMethods[method]
       ]
   }
-
 }
 
 function sortAndPruneHooks () {
@@ -152,7 +146,6 @@ function sortAndPruneHooks () {
     if (Object.keys(methods).length === 0)
       delete hooks[type]
   }
-
 }
 
 /******************************************************************************/

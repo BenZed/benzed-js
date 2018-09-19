@@ -8,8 +8,31 @@ import { expect } from 'chai'
 import setupChannels from './setup-channels'
 import { set } from '@benzed/immutable'
 
+import TestApp from '../../test-util/test-project/test-app'
 import { createProjectAppAndTest } from '../../test-util/test-project'
 import { milliseconds } from '@benzed/async'
+
+/******************************************************************************/
+// Types
+/******************************************************************************/
+
+class CustomChannelApp extends TestApp {
+
+  stats = {
+    setupChannelRan: 0,
+    publishChannelRan: 0
+  }
+
+  setupChannels () {
+    this.stats.setupChannelRan++
+  }
+
+  publishChannels () {
+    this.stats.publishChannelRan++
+    return this.feathers.channel(['anonymous'])
+  }
+
+}
 
 /******************************************************************************/
 // Data
@@ -113,6 +136,23 @@ describe('setupChannels', () => {
 
       it('sends remove events', () => {
         expect(counter.removed).to.be.equal(1)
+      })
+
+    })
+  })
+
+  // You're creating tests for custom setupChannel and publishChannel functionality
+  createProjectAppAndTest(BASIC::set('App', () => CustomChannelApp)::set('port', 6192), state => {
+    describe('in an app with services with custom publish functionality', () => {
+      before(async () => {
+        await state.client.connect()
+        await state.app.apples.create({})
+      })
+      it('uses custom setupChannels function on app', () => {
+        expect(state.app.stats.setupChannelRan).to.be.equal(1)
+      })
+      it('uses custom publishChannels function on app', () => {
+        expect(state.app.stats.publishChannelRan).to.be.equal(1)
       })
 
     })

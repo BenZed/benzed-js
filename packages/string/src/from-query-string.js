@@ -11,7 +11,7 @@
  * @return {Object} Description
  */
 function fromQueryString (str) {
-
+  console.warn('use the core querystring module')
   if (this !== undefined)
     str = this
 

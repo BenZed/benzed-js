@@ -37,7 +37,7 @@ describe('Service', () => {
 
     function noop () {}
 
-    let app, articles, middlewareRegistered
+    let app, middlewareRegistered, initializeCalled
     before(async () => {
 
       class HackService extends Service {
@@ -45,6 +45,10 @@ describe('Service', () => {
         addMiddleware () {
           middlewareRegistered = true
           return []
+        }
+
+        initialize () {
+          initializeCalled = true
         }
 
         hooks () {
@@ -57,21 +61,30 @@ describe('Service', () => {
       }
 
       try {
-        app = new App({
-          port: 4313,
+
+        class HackApp extends App {
+          services = {
+            articles: HackService
+          }
+        }
+
+        app = new HackApp({
+          port: 4516,
           socketio: true,
           logging: false,
+          services: {
+            articles: true
+          },
           mongodb: {
             database: 'test-db',
-            hosts: 'localhost:4314'
+            hosts: 'localhost:4616'
           }
         })
 
         await app.initialize()
 
-        articles = new HackService({ }, 'articles', app)
       } catch (err) {
-        console.log(err.message, err.path)
+        console.error(err)
       }
     })
 
@@ -80,7 +93,7 @@ describe('Service', () => {
     })
 
     it('adds a service shortcut to App instance', () => {
-      expect(app.articles).to.be.equal(articles)
+      expect(app.articles).to.not.equal(undefined)
     })
 
     it('runs getDatabaseAdapter', () => {
@@ -92,8 +105,7 @@ describe('Service', () => {
     })
 
     it('runs compileHooks', () => {
-      // console.log(app.feathers._hooks)
-      expect(app.feathers._hooks)
+      expect(app.feathers._hooks).to.not.be.equal(null)
     })
 
     it('returns a feathers service object')
@@ -102,12 +114,22 @@ describe('Service', () => {
 
     it('runs setupLiveEdit if configured')
 
+    it('runs initialize() if defined', () => {
+      expect(initializeCalled).to.be.equal(true)
+    })
+
+    it('runs setupSocketMiddleware() if defined')
+
+    it('runs start() if defined')
+
   })
 
   describe('methods', () => {
 
     describe('before, after, error hook shortcuts', () => {
-
+      it('before')
+      it('after')
+      it('error')
     })
 
   })

@@ -1,5 +1,7 @@
 import TestApp from './test-app'
 import testClient from '../test-client'
+import is from 'is-explicit'
+
 /* global before after */
 
 /******************************************************************************/

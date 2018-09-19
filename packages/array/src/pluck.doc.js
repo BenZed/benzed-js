@@ -7,7 +7,7 @@ import React from 'react'
 /******************************************************************************/
 
 const INFO = {
-  name: 'adjacent',
+  name: 'pluck',
   args: {
     arr: {
       type: Array,
@@ -29,7 +29,7 @@ const INFO = {
   }
 }
 
-const Pluck = ({ Types, Detail: { Script } }) =>
+const pluck = ({ Types, Detail: { Script } }) =>
 
   <Types.Function info={INFO} >
 
@@ -70,4 +70,4 @@ const Pluck = ({ Types, Detail: { Script } }) =>
 // Exports
 /******************************************************************************/
 
-export { Pluck }
+export { pluck }

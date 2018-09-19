@@ -26,6 +26,8 @@ describe('setupServices()', () => {
     expect(setupServices).to.throw('Cannot destructure property `feathers` of \'undefined\'')
   })
 
+  it('all services get named')
+
   describe('app.services', () => {
 
     it('are used instead of standard Service constructor', () => {

@@ -4,13 +4,36 @@ import { merge } from '@benzed/immutable'
 import { isEnabled } from '../configure'
 
 /******************************************************************************/
+// Helper
+/******************************************************************************/
+
+function setupSocketMiddleware (io) {
+
+  const app = this
+
+  if (is.func(app.setupSocketMiddleware))
+    app.setupSocketMiddleware(io)
+
+  for (const name in app.feathers.services) {
+
+    const service = app.feathers.services[name]
+
+    if (service && is.func(service.setupSocketMiddleware))
+      service.setupSocketMiddleware(
+        io,
+        app
+      )
+  }
+
+}
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
 function setupProviders () {
 
   const app = this
-  let { feathers } = app
 
   const configRest = app.get('rest')
   if (isEnabled(configRest)) {
@@ -18,10 +41,10 @@ function setupProviders () {
     const compress = require('compression')
     const cors = require('cors')
 
-    const { settings } = feathers
+    const settings = { ...app.feathers.settings }
 
-    feathers = app.feathers = express(feathers)
-    feathers
+    app.feathers = express(app.feathers)
+    app.feathers
       .configure(express.rest())
       .options('*', cors())
       .use(cors())
@@ -31,22 +54,19 @@ function setupProviders () {
       .use(express.urlencoded({ extended: true }))
 
     // Move settings to deferred feathers object
-    feathers.settings = merge(feathers.settings, settings)
+    app.feathers.settings = merge(app.feathers.settings, settings)
   }
 
   const configIo = app.get('socketio')
   if (isEnabled(configIo)) {
     const socketio = require('@feathersjs/socketio')
-    const middleware = is(app.socketio, Function)
-      ? ::app.socketio
-      : null
+    const middleware = app::setupSocketMiddleware
 
     const options = {
       // wsEngine: 'uws',
       ...configIo
     }
-
-    feathers.configure(socketio(options, middleware))
+    app.feathers.configure(socketio(options, middleware))
   }
 
 }

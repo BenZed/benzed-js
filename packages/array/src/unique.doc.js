@@ -20,7 +20,7 @@ const INFO = {
   }
 }
 
-const Shuffle = ({ Types, Detail: { Script } }) =>
+const unique = ({ Types, Detail: { Script } }) =>
 
   <Types.Function info={INFO} >
 
@@ -53,4 +53,4 @@ const Shuffle = ({ Types, Detail: { Script } }) =>
 // Exports
 /******************************************************************************/
 
-export { Shuffle }
+export { unique }

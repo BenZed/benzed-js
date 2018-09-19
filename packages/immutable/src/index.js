@@ -6,6 +6,8 @@ import equals from './equals'
 import get from './get'
 import set from './set'
 
+import change from './change'
+
 import merge from './merge'
 
 import {
@@ -32,6 +34,8 @@ export {
   copy, equals,
 
   get, set,
+
+  change,
 
   merge,
 

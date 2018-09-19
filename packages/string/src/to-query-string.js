@@ -11,7 +11,7 @@
  * @return {string} Description
  */
 function toQueryString (obj) {
-
+  console.warn('use the core querystring module')
   if (this !== undefined)
     obj = this
 

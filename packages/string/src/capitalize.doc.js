@@ -22,7 +22,7 @@ const INFO = {
 // Doc
 /******************************************************************************/
 
-const Capitalize = ({ Types, Detail }) =>
+const capitalize = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
     Describe the capitalize function.
@@ -37,4 +37,4 @@ const Capitalize = ({ Types, Detail }) =>
 // Exports
 /******************************************************************************/
 
-export { Capitalize }
+export { capitalize }

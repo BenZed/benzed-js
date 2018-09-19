@@ -24,8 +24,8 @@ function registerToFeathers (app, path, adapter, config) {
     ? wrap(middleware)
     : []
 
-  if (!isArrayEmptyOrOfFunctions(middleware))
-    throw new Error('addMiddleware should return an array of functions')
+  // if (!isArrayEmptyOrOfFunctions(middleware))
+  //   throw new Error('addMiddleware should return an array of functions')
 
   // if the service instance is in the middleware array, its to deliniate
   // where the other middleware functions are intended to be registered in

@@ -24,7 +24,7 @@ const INFO = {
 // Doc
 /******************************************************************************/
 
-const Flatten = ({ Types, Detail }) =>
+const flatten = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
     <p>The flatten function takes an Array and decomposes any nested arrays.</p>
@@ -47,4 +47,4 @@ const Flatten = ({ Types, Detail }) =>
 // Exports
 /******************************************************************************/
 
-export { Flatten }
+export { flatten }

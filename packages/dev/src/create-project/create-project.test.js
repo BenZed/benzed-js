@@ -139,21 +139,22 @@ describe('createProject()', () => {
 
     })
 
-    // const TEMP_NEW_PROJECT_NAME = 'casino-ben'
+    // const TEMP_NEW_PROJECT_NAME = 'gears-api'
     // describe.only(`creates ${TEMP_NEW_PROJECT_NAME}`, () => {
     //
     //   const options = {
-    //     dir: path.resolve(process.cwd(), '../../../'),
+    //     dir: path.resolve(process.cwd(), '../../../global-mechanic/modules'),
     //     name: TEMP_NEW_PROJECT_NAME,
     //
     //     socketio: true,
     //     rest: true,
     //
-    //     ui: true,
+    //     ui: false,
     //     api: true,
     //
     //     auth: true,
-    //     files: true
+    //     files: true,
+    //     routing: false
     //   }
     //
     //   testCreateProject(options)

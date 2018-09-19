@@ -112,7 +112,7 @@ class ToggleLink extends React.Component {
   get storageKey () {
     // TODO fix me
     const { doc, prefix = '' } = this.props
-    return `toggle-link-open@${prefix}/${doc.name::fromCamelCase()}`
+    return `toggle-link-open@${prefix}/${doc.name}`
   }
 
   componentDidMount () {
@@ -131,7 +131,7 @@ class ToggleLink extends React.Component {
     const { doc, prefix = '' } = this.props
     const { open } = this.state
 
-    const to = `${prefix}/${doc.name::fromCamelCase()}`
+    const to = `${prefix}/${doc.name}`
 
     return [
       <LinkRow key='link'>
@@ -141,7 +141,7 @@ class ToggleLink extends React.Component {
           disabled={!this.hasChildren}
           onClick={this.setOpen}
         />
-        <Link to={to}>{ doc.name::fromCamelCase() }</Link>
+        <Link to={to}>{ doc.name }</Link>
       </LinkRow>,
 
       this.hasChildren && open

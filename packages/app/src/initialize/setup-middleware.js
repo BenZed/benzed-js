@@ -1,4 +1,5 @@
 import { serverSideRendering } from '../middleware'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Main
@@ -10,13 +11,13 @@ function setupMiddleware () {
 
   const { feathers } = app
 
-  const rest = app.get('rest')
-  if (!rest)
+  const restConfig = app.get('rest')
+  if (!restConfig)
     return
 
   const express = require('@feathersjs/express')
 
-  const hasPublic = !!rest.public
+  const hasPublic = !!restConfig.public
   const hasSSR = hasPublic && (app.getClientComponent || app.onSerializeClient)
 
   if (hasPublic) {
@@ -24,17 +25,16 @@ function setupMiddleware () {
     // serve the index.html, because ssr will serve one embedded with react generated
     // markup.
     const options = { index: hasSSR ? false : 'index.html' }
-    feathers.use('/', express.static(rest.public, options))
+    feathers.use('/', express.static(restConfig.public, options))
   }
 
-  // if app.rest is a function, it's expected to be middleware
-  if (app.rest)
-    app.rest(rest)
+  if (is.func(app.setupRestMiddleware))
+    app.setupRestMiddleware(restConfig)
 
   if (hasPublic && hasSSR)
     feathers
       .use(serverSideRendering({
-        publicDir: rest.public,
+        publicDir: restConfig.public,
         getComponent: app.getClientComponent && ::app.getClientComponent,
         serializer: app.onSerializeClient && ::app.onSerializeClient
       }))

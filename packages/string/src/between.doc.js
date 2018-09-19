@@ -33,7 +33,7 @@ const INFO = {
 // Doc
 /******************************************************************************/
 
-const Between = ({ Types, Detail }) =>
+const between = ({ Types, Detail }) =>
   <Types.Function info={INFO}>
 
     <p>The between function returns a subset of a string, that which exists between
@@ -62,4 +62,4 @@ const Between = ({ Types, Detail }) =>
 // Exports
 /******************************************************************************/
 
-export { Between }
+export { between }

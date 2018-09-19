@@ -1,6 +1,7 @@
 import feathers from '@feathersjs/feathers'
 import { get, set } from '@benzed/immutable'
 import { milliseconds } from '@benzed/async'
+import is from 'is-explicit'
 
 import {
   validateMode,
@@ -100,9 +101,9 @@ class App {
     this::setupProviders()
     this::setupAuthentication()
     await this::connectToDatabase()
-    this::setupServices()
-    this::setupMiddleware()
+    await this::setupServices()
     this::setupChannels()
+    this::setupMiddleware()
   }
 
   async start () {
@@ -112,6 +113,15 @@ class App {
     this.listener = this.feathers.listen(port)
 
     await new Promise(resolve => this.listener.once('listening', resolve))
+
+    // run service start
+    const startPromises = []
+    for (const name in this.feathers.services) {
+      const service = this.feathers.services[name]
+      if (is.func(service.start))
+        startPromises.push(service.start(this))
+    }
+    await Promise.all(startPromises)
 
     return this.listener
   }
@@ -149,7 +159,11 @@ class App {
   // getClientComponent (req, res) {}
   // onSerializeClient (req, res) {}
 
-  // LifeCycle Methods
+  // setupRestMiddleware () {}
+  // setupSocketMiddleware () {}
+
+  // setupChannels () {}
+  // publishChannels () {}
 
   // Utility Methods
 

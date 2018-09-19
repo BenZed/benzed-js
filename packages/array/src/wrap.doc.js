@@ -6,7 +6,7 @@ import React from 'react'
 // Wrap
 /******************************************************************************/
 
-const WRAP_INFO =  {
+const WRAP_INFO = {
   name: 'wrap',
   args: {
     arr: {
@@ -20,7 +20,7 @@ const WRAP_INFO =  {
   }
 }
 
-const Wrap = ({ Types, Detail: { Script } }) =>
+const wrap = ({ Types, Detail: { Script } }) =>
 
   <Types.Function info={WRAP_INFO} >
 
@@ -60,7 +60,7 @@ const UNWRAP_INFO = {
   }
 }
 
-const Unwrap = ({ Types, Detail: { Script } }) =>
+const unwrap = ({ Types, Detail: { Script } }) =>
 
   <Types.Function info={UNWRAP_INFO} >
 
@@ -86,4 +86,4 @@ const Unwrap = ({ Types, Detail: { Script } }) =>
 // Exports
 /******************************************************************************/
 
-export { Wrap, Unwrap }
+export { wrap, unwrap }

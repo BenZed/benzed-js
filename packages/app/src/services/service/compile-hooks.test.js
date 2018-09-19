@@ -37,6 +37,13 @@ describe('compileHooks()', () => {
       .instanceof(Function)
   })
 
+  describe('validateHookTypeStructure()', () => {
+    it('sanitizes a plain object to a hook structure', () => {
+      const output = validateHookTypeStructure({})
+      expect(output).to.have.property('before')
+    })
+  })
+
   let app
 
   before(() => {
@@ -150,7 +157,11 @@ describe('compileHooks()', () => {
           })
         })
 
-        const hooks = dummyService::compileHooks(app, { auth: false, 'soft-delete': false })
+        const hooks = dummyService::compileHooks(app, {
+          auth: false,
+          'soft-delete': false
+        })
+
         expect(hooks).to.have.property('before')
         expect(hooks.before).to.have.property('create')
         expect(hooks.before.create).to.have.length(1)

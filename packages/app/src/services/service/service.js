@@ -57,29 +57,6 @@ const validateApp = value => {
 }
 
 /******************************************************************************/
-// Helper
-/******************************************************************************/
-
-// TODO move this to setup-services so it works with generic services as well
-function addServiceShortCut (name) {
-
-  const app = this
-
-  if (name in app)
-    return
-
-  const getter = {
-    get () {
-      return this.feathers.service(name)
-    },
-    configurable: false,
-    enumerable: true
-  }
-
-  Object.defineProperty(app, name, getter)
-}
-
-/******************************************************************************/
 // Main
 /******************************************************************************/
 
@@ -96,7 +73,8 @@ class Service {
     name = validateName(name)
     app = validateApp(app)
 
-    app::addServiceShortCut(path)
+    // overwrite old config
+    app.set(['services', name], config)
 
     const adapter = this::getDatabaseAdapter(app, name, paginate)
     const service = this::registerToFeathers(app, path, adapter, config)
@@ -111,6 +89,15 @@ class Service {
 
     // if (liveEdit)
     //   service::setupLiveEdit(liveEdit)
+
+    if (is.func(this.initialize))
+      service.initialize = this.initialize
+
+    if (is.func(this.start))
+      service.start = this.start
+
+    if (is.func(this.setupSocketMiddleware))
+      service.setupSocketMiddleware = this.setupSocketMiddleware
 
     return service
 

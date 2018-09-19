@@ -29,6 +29,24 @@ function isGenericFeatherService (instance) {
     SERVICE_METHODS.some(name => is.func(instance[name]))
 }
 
+function addServiceShortCut (name) {
+
+  const app = this
+
+  if (name in app)
+    return
+
+  const getter = {
+    get () {
+      return this.feathers.service(name)
+    },
+    configurable: false,
+    enumerable: true
+  }
+
+  Object.defineProperty(app, name, getter)
+}
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -71,8 +89,33 @@ function setupServices () {
         feathers.use(serviceName, instance)
 
     } else
+      // TODO ensure that a service named serviceName is setup
       service(setupConfig, serviceName, app)
   }
+
+  // give services name property and create app shortcut
+  for (const name in feathers.services) {
+    feathers.services[name].name = name
+    app::addServiceShortCut(name)
+  }
+
+  // run service initializers
+  const initPromises = []
+  for (const name in feathers.services) {
+    const service = feathers.services[name]
+    const hasInitFunc = is.func(service.initialize)
+    const result = hasInitFunc &&
+      service.initialize(
+        app.get(['services', name]),
+        app
+      )
+
+    if (is(result, Promise))
+      initPromises.push(result)
+  }
+
+  return Promise.all(initPromises)
+
 }
 
 /******************************************************************************/
