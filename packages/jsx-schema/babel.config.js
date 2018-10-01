@@ -1,7 +1,7 @@
-import serveFile from './serve-file'
+const BabelConfig = require('../dev/src/babel-config')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { serveFile }
+module.exports = new BabelConfig()

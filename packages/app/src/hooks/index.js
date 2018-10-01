@@ -5,6 +5,7 @@ import jwtAuth from './jwt-auth'
 import writeDateFields from './write-date-fields'
 import softDelete from './soft-delete'
 import castQueryIds from './cast-query-ids'
+import validateSchema from './validate-schema'
 
 /******************************************************************************/
 // Exports
@@ -16,6 +17,7 @@ export {
   writeDateFields,
   softDelete,
   castQueryIds,
+  validateSchema,
 
   Hook,
   prepareGeneric,

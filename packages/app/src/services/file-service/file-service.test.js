@@ -5,7 +5,7 @@ import Service from '../service'
 import FileService from './file-service'
 
 import { set } from '@benzed/immutable'
-import { expectReject } from '@benzed/dev'
+import { expectReject, expectResolve } from '@benzed/dev'
 
 import { createProjectAppAndTest } from '../../../test-util/test-project'
 
@@ -34,7 +34,7 @@ fs.ensureDir(dbpath)
 const testFiles = path.resolve('./test/files')
 
 /******************************************************************************/
-//
+// Data
 /******************************************************************************/
 
 const APP = {
@@ -133,7 +133,10 @@ function upload (url, dontStream) {
     streamer(client.io)
       .emit('files::upload',
         send,
-        { name: path.basename(url) },
+        {
+          name: path.basename(url),
+          size: fs.statSync(url).size
+        },
         (e, _id) => {
           if (e)
             reject(e)
@@ -209,24 +212,79 @@ describe.only('File Service', () => {
 
     })
 
-    describe('.serve', () => {
+  })
 
-      describe('.serve.endpoint', () => {
-        it('string must be at least one character long', () => newApp(
-          ['services', 'files', 'serve', 'endpoint'], '',
-          'serve.endpoint must not be empty.'
-        ))
-      })
+  const metadata = state => describe('uploaded files get metadata', () => {
+
+    let doc, size
+    before(async () => {
+      const [ id, url ] = await Promise.all(state::upload(URLS.bruce))
+      const stat = fs.statSync(url)
+      size = stat.size
+      doc = await state.app.files.get(id)
     })
+
+    it('name', () => {
+      expect(doc).to.have.property('name', 'bruce')
+    })
+    it('type', () => {
+      expect(doc).to.have.property('type', 'image/png')
+    })
+    it('ext', () => {
+      expect(doc).to.have.property('ext', '.png')
+    })
+    it('size', () => {
+      expect(doc).to.have.property('size', size)
+    })
+
+  })
+
+  const limitations = state => describe('file uploading limitations', () => {
+    it('uploads must be provided with a size property')
+    it('size cannot larger than the configured max')
+    it('if upload exceeds size, it is terminated')
+    it('connections cannot upload more than configured number of concurrent files')
+  })
+
+  const serving = state => describe('serving', () => {
+
+    it('files are served via rest', async () => {
+      const promises = state::upload(URLS.data)
+
+      const [ id ] = await Promise.all(promises)
+      const res = await fetch(`${state.address}/files/${id}?serve=true`)
+      const url = path.join(download, path.basename(URLS.data))
+
+      if (fs.existsSync(url))
+        fs.unlinkSync(url)
+
+      const dest = fs.createWriteStream(url)
+      res.body.pipe(dest)
+
+      await new Promise((resolve, reject) => {
+        dest.on('finish', resolve)
+        dest.on('error', reject)
+      })::expectResolve()
+
+      expect(fs.existsSync(url)).to.be.equal(true)
+    })
+
+    it('files can be downloaded without authenticating')
+    it('files are only downloaded for get requests')
+    it('files are only downloaded if $serve param is enabled')
+    it('handles partial file requests')
   })
 
   createProjectAppAndTest(APP, state => {
 
+    before(async () => {
+      await state.client.connect()
+    })
+
     describe('uploading to non-auth', () => {
 
-      before(async () => {
-        await state.client.connect()
-      })
+      metadata(state)
+      limitations(state)
 
       it('any connection can upload files', async () => {
         const [ id, file ] = await Promise.all(state::upload(URLS.data))
@@ -234,18 +292,9 @@ describe.only('File Service', () => {
         expect(id).to.not.be.equal(null)
         expect(fs.existsSync(file)).to.be.equal(true)
       })
-      it.skip('connection cannot upload more than the configured number of concurrent files', async () => {
-
-        state.app.set(['services', 'files', 'upload', 'numConcurrent'], 2)
-
-        state::upload(URLS.data)
-        state::upload(URLS.bruce)
-        const [ tinaId ] = state::upload(URLS.tina)
-
-        await tinaId::expectReject('You can only queue 2 uploads at a time')
-      })
-      it('connection cannot upload files larger than the configured max')
     })
+
+    serving(state)
 
   })
 
@@ -258,50 +307,41 @@ describe.only('File Service', () => {
 
     describe('uploading to auth', () => {
 
-      it('user needs to be signed in to upload', () => {
+      let id
+      let file
+      before(async () => {
+        await state.client.authenticate({ strategy: 'local', ...USERS[0] })
 
-        const [ id ] = state::upload(URLS.data, DONT_STREAM)
+        const promises = state::upload(URLS.data);
 
-        return id::expectReject('Must be authenticated')
+        ([ id, file ] = await Promise.all(promises))
       })
 
-      it('signed in users can upload', async () => {
+      it('user needs to be signed in to upload', async () => {
+        await state.client.logout()
+        const [ id ] = state::upload(URLS.data, DONT_STREAM)
 
-        const bob = USERS[0]
-        await state.client.authenticate({ strategy: 'local', ...bob })
+        await id::expectReject('Must be authenticated')
+        await state.client.authenticate({ strategy: 'local', ...USERS[0] })
+      })
 
-        const promises = state::upload(URLS.data)
-
-        const [ id, file ] = await Promise.all(promises)
-
+      it('signed in users can upload', () => {
         expect(id).to.not.equal(null)
         expect(fs.existsSync(file)).to.be.equal(true)
       })
 
-      it('users cannot upload more than configured number of concurrent files')
-      it('users cannot upload files larger than the configured max')
-
-    })
-
-  })
-
-  createProjectAppAndTest(APP::set('port', 6219), state => {
-
-    describe('serving', () => {
-      before(() =>
-        state.client.connect()
-      )
-
-      it.only('files are served via rest', async () => {
-        const promises = state::upload(URLS.data)
-        const [ id, file ] = await Promise.all(promises)
-        const body = await fetch(`${state.address}/files/${id}?$meta=0`)
-        const json = await body.json()
-        console.log(json)
+      it('file has user id in uploader prop', async () => {
+        const doc = await state.app.files.get(id)
+        const [ bob ] = await state.app.users.find({ query: { email: USERS[0].email } })
+        expect(`${doc.uploader}`).to.be.equal(`${bob._id}`)
       })
-      it('handles partial file requests')
+
+      metadata(state)
+      limitations(state)
+
     })
 
-  })
+    serving(state)
 
+  })
 })

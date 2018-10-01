@@ -126,14 +126,14 @@ class Hook {
 
     const isFind = method === 'find'
     const isGet = method === 'get'
-    const isView = isFind || isGet
 
     const isUpdate = method === 'update'
     const isPatch = method === 'patch'
-    const isEdit = isUpdate || isPatch
 
     const isRemove = method === 'remove'
     const isCreate = method === 'create'
+
+    const isView = isFind || isGet
 
     const isBulkCreate = !isView && isCreate && is(data, Array)
     const isBulkEditOrDelete = !isView && !isCreate && !is.defined(id)
@@ -144,10 +144,10 @@ class Hook {
 
     return {
 
-      isView,
+      isUpdate,
+      isPatch,
       isFind,
       isGet,
-      isEdit,
 
       isRemove,
       isCreate,
