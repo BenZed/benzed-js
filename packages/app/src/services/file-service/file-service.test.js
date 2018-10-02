@@ -209,9 +209,7 @@ describe.only('File Service', () => {
             'storage.local must be an existing folder'
           ))
       })
-
     })
-
   })
 
   const metadata = state => describe('uploaded files get metadata', () => {
@@ -242,17 +240,25 @@ describe.only('File Service', () => {
   const limitations = state => describe('file uploading limitations', () => {
     it('uploads must be provided with a size property')
     it('size cannot larger than the configured max')
-    it('if upload exceeds size, it is terminated')
+    it('if upload exceeds given size, it is terminated')
+    it('if upload is below given size, it is deleted')
     it('connections cannot upload more than configured number of concurrent files')
+    it('errors are written to file record')
   })
 
   const serving = state => describe('serving', () => {
 
-    it('files are served via rest', async () => {
+    let fileId
+    before(async () => {
       const promises = state::upload(URLS.data)
-
       const [ id ] = await Promise.all(promises)
-      const res = await fetch(`${state.address}/files/${id}?serve=true`)
+
+      fileId = `${id}`
+    })
+
+    it('files are served via rest', async () => {
+
+      const res = await fetch(`${state.address}/files/${fileId}?serve=true`)
       const url = path.join(download, path.basename(URLS.data))
 
       if (fs.existsSync(url))
@@ -269,9 +275,25 @@ describe.only('File Service', () => {
       expect(fs.existsSync(url)).to.be.equal(true)
     })
 
-    it('files can be downloaded without authenticating')
-    it('files are only downloaded for get requests')
-    it('files are only downloaded if $serve param is enabled')
+    it('files are only downloaded for get requests', async () => {
+      const res = await fetch(`${state.address}/files/${fileId}?serve=true`, {
+        method: 'post'
+      })
+
+      const json = await res.json()
+      expect(json).to.have.property('code', 404)
+    })
+
+    it('files are only downloaded if $serve param is enabled', async () => {
+      const res = await fetch(`${state.address}/files/${fileId}`)
+      const json = await res.json()
+
+      if (state.app.config.auth)
+        expect(json).to.have.property('code', 401)
+      else
+        expect(json).to.have.property('_id', fileId)
+    })
+
     it('handles partial file requests')
   })
 

@@ -1,23 +1,17 @@
-import Schema from './schema'
 
 /******************************************************************************/
-// Example
+// Main
 /******************************************************************************/
 
-// @jsx Schema.create
+class Type {
 
-const example = <json>
-
-  <string key='name' required unique />
-
-  <array key='scores' length={['>', 0]} required>
-    <number range={[0, 5]} required/>
-  </array>
-
-</json>
+  constructor (rootType) {
+    this.root = rootType
+  }
+}
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default example
+export default Type

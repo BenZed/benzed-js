@@ -195,24 +195,26 @@ class WebsocketUploader {
 
   })
     // .then(() => this.streamSuccess(file))
-    .catch(this.streamFail)
+    .catch(err => this.streamFail(err, file))
     .then(() => read.destroy())
 
   // streamProgress = () => {
   //
   // }
 
-  async streamSuccess (file) {
+  // async streamSuccess (file) {
+  //
+  // }
 
-  }
+  async streamFail (error, file) {
 
-  streamFail = err => {
-    const { name, code, message } = err
-    console.log('STREAM ERROR', {
-      name,
-      code,
-      message
-    })
+    const errorJson = {
+      name: error.name,
+      code: error.code,
+      message: error.message
+    }
+
+    await this.service.patch(file._id, { error: errorJson })
   }
 
 }

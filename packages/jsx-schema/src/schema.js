@@ -1,49 +1,99 @@
-import validate from './validate'
+import is from 'is-explicit'
+import { COPY, EQUALS, equals } from '@benzed/immutable'
+import { flatten } from '@benzed/array'
+
+import Type from './type'
+
+/******************************************************************************/
+// Base
+/******************************************************************************/
+
+const string = new Type(String)
+const object = new Type(Object)
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-class BaseSchema {
+class Schema {
 
-  static types = {}
+  static defaultTypes = new Map([
+    [ 'string', string ],
+    [ String, string ],
+    [ 'object', object ],
+    [ String, object ]
+  ])
 
-  static validators = new Map()
+  static resolveType (input) {
 
-  static create (type, props, children) {
+    let type
+
+    type = is(input, Type)
+      ? input
+      : Schema.defaultTypes.get(input)
+
+    if (!is(type, Type) && is.func(type))
+      type = new Type(type)
+
+    if (!is(type, Type))
+      throw new Error(`${String(input)} is not a recognized type.`)
+
+    return type
+  }
+
+  static create (type, props, ...children) {
     return new this(type, props, children)
   }
 
-  static validate = validate
+  type = null
+  props = null
+  children = null
 
-  constructor (type, props, children) {
+  constructor (type, props, children = []) {
 
-    if (is.string(type))
-      type = this.constructor.types?.[type]
+    const Schema = this.constructor
 
-    if (!is.func(type))
-      throw new Error()
+    if (!is.defined(props))
+      props = {}
+
+    if (!is.plainObject(props))
+      throw new Error('props must be a plain object')
+
+    if (is(type, Schema)) {
+      const schema = type
+
+      props = { ...schema.props, ...props }
+      type = schema.type
+
+    }
+
+    this.type = Schema.resolveType(type)
+    this.props = props
+    this.children = flatten(children)
 
   }
-}
 
-class Schema extends BaseSchema {
+  validate (data) {
 
-  static types = {
+    data = this.type(data)
 
-    object: Object,
-    string: String,
+    return data
+  }
 
-    bool: Boolean,
-    boolean: Boolean,
+  [COPY] () {
 
-    func: Function,
-    function: Function,
+    const Schema = this
 
-    array: Array,
-    number: Number,
+    return new Schema(
+      this.type,
+      this.props,
+      this.children
+    )
+  }
 
-    any: null
+  [EQUALS] (other) {
+    return this.type === other.type &&
+      equals(this.props, other.props)
   }
 
 }

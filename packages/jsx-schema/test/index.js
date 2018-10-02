@@ -1,14 +1,15 @@
+import { clearConsole } from '@benzed/dev'
+import { addPath } from 'module-alias'
+import path from 'path'
+import 'styled-components-test-utils/lib/chai'
 
 /******************************************************************************/
-// Main
+// EXecute
 /******************************************************************************/
 
-function validate (schema, data) {
-
-}
+clearConsole()
+addPath(path.resolve(__dirname, '../'))
 
 /******************************************************************************/
-// Exports
+// Export
 /******************************************************************************/
-
-export default validate

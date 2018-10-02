@@ -1,4 +1,4 @@
-const BabelConfig = require('../dev/src/babel-config')
+const { BabelConfig } = require('@benzed/dev')
 
 /******************************************************************************/
 // Exports
