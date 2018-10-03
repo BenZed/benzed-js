@@ -54,18 +54,6 @@ describe('Schema', () => {
           length={['>', 0]}
         />
 
-        const Person = <object>
-          <BasicString key='name' />
-          <Email key='personal-email' required={false} />
-        </object>
-
-        const Employee = <Person>
-          {Person.children}
-          <Email key='work-email' />
-        </Person>
-
-        console.log(Employee)
-
       })
 
       it('validates data', () => {
@@ -77,7 +65,6 @@ describe('Schema', () => {
         expect(() => Email.validate(100))
           .to.throw('must be a String.')
       })
-
     })
   })
 })

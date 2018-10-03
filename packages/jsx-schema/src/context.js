@@ -3,7 +3,7 @@
 // Main
 /******************************************************************************/
 
-function validate (schema, data) {
+class Context {
 
 }
 
@@ -11,4 +11,4 @@ function validate (schema, data) {
 // Exports
 /******************************************************************************/
 
-export default validate
+export default Context

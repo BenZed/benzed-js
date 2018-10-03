@@ -1,7 +1,12 @@
-const BabelConfig = require('../dev/src/babel-config')
+
+const VALIDATORS = Symbol('schema-validator-funcs')
+const TYPE = Symbol('type-hof-that-creates-validator-funcs')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-module.exports = new BabelConfig()
+export {
+  VALIDATORS,
+  TYPE
+}

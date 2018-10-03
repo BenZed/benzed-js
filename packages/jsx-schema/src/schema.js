@@ -1,15 +1,21 @@
 import is from 'is-explicit'
-import { COPY, EQUALS, equals } from '@benzed/immutable'
+
+import { COPY, EQUALS, equals, merge } from '@benzed/immutable'
 import { flatten } from '@benzed/array'
 
-import Type from './type'
+import { VALIDATORS, TYPE } from './symbols'
+import * as types from './types'
+import runValidators from './run-validators'
+
+import Context from './context'
 
 /******************************************************************************/
-// Base
+// Helper
 /******************************************************************************/
 
-const string = new Type(String)
-const object = new Type(Object)
+const isTypeFunc = func =>
+
+  is.func(func) && TYPE in func
 
 /******************************************************************************/
 // Main
@@ -17,34 +23,37 @@ const object = new Type(Object)
 
 class Schema {
 
-  static defaultTypes = new Map([
-    [ 'string', string ],
-    [ String, string ],
-    [ 'object', object ],
-    [ String, object ]
-  ])
-
   static resolveType (input) {
 
-    let type
+    let type = input
 
-    type = is(input, Type)
-      ? input
-      : Schema.defaultTypes.get(input)
+    if (type === null)
+      type = types.any
 
-    if (!is(type, Type) && is.func(type))
-      type = new Type(type)
+    else if (type === Object)
+      type = types.object
 
-    if (!is(type, Type))
-      throw new Error(`${String(input)} is not a recognized type.`)
+    else if (is.string(type) && type in types && type !== 'default')
+      type = types[type]
+
+    if (!is.func(type))
+      throw new Error(`'${input}' is not a recognized type.`)
+
+    const isType = isTypeFunc(type)
+    if (!isType)
+      type = types.typeOf(input)
 
     return type
   }
 
   static create (type, props, ...children) {
-    return new this(type, props, children)
+
+    const Schema = this
+
+    return new Schema(type, props, children)
   }
 
+  [VALIDATORS] = []
   type = null
   props = null
   children = null
@@ -59,25 +68,25 @@ class Schema {
     if (!is.plainObject(props))
       throw new Error('props must be a plain object')
 
-    if (is(type, Schema)) {
-      const schema = type
-
-      props = { ...schema.props, ...props }
-      type = schema.type
-
-    }
+    if (is(type, Schema))
+      throw new Error('nesting schemas not yet supported')
+      // const schema = type
+      //
+      // props = merge(schema.props, props)
+      // type = schema.type
 
     this.type = Schema.resolveType(type)
-    this.props = props
-    this.children = flatten(children)
+    if (!isTypeFunc(this.type))
+      throw new Error('Schema.resolveType did not return a type function')
 
+    this.props = props
+    this.children = flatten(children).filter(is.defined)
+
+    this[VALIDATORS] = this.type(this.props, this.children)
   }
 
   validate (data) {
-
-    data = this.type(data)
-
-    return data
+    return runValidators(this[VALIDATORS], data)
   }
 
   [COPY] () {
@@ -93,7 +102,8 @@ class Schema {
 
   [EQUALS] (other) {
     return this.type === other.type &&
-      equals(this.props, other.props)
+      equals(this.props, other.props) &&
+      equals(this.children, other.children)
   }
 
 }
