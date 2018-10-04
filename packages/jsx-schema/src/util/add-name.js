@@ -3,12 +3,20 @@
 // Main
 /******************************************************************************/
 
-class Context {
+function addName (obj, name) {
 
+  if (this !== undefined) {
+    name = obj
+    obj = this
+  }
+
+  Object.defineProperty(obj, 'name', { value: name })
+
+  return obj
 }
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Context
+export default addName

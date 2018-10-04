@@ -27,44 +27,55 @@ describe('Schema', () => {
       })
     })
 
-    describe('Schema.resolveTypeValidator', () => {
-      it('returns a type constructor used by a type')
-    })
-
-    describe('Schema.resolveValidator', () => {
-      it('returns a valiadtor function')
-    })
-
   })
 
   describe('instance methods', () => {
 
     describe('validate', () => {
 
-      let BasicString
-      let Email
+      describe('simple examples', () => {
 
-      before(() => {
+        it('<string/> validates strings', () => {
+          expect(<string/>.validate('hello'))
+            .to.be.equal('hello')
+        })
 
-        BasicString = <string />
+        it('<string/> allows null or undefined', () => {
 
-        Email = <string
-          format={/(\w|\d)+@\w+\..+/}
-          required
-          length={['>', 0]}
-        />
+          for (const nil of [null, undefined])
+            expect(<string/>.validate(nil))
+              .to.be.equal(nil)
+        })
+
+        it('<string required /> does not allow null or undefined', () => {
+
+          for (const nil of [null, undefined])
+            expect(() => <string required />.validate(nil))
+              .to.throw('is required.')
+        })
+
+        it('<string /> does not allow non string data', () => {
+          expect(() => <string/>.validate(100))
+            .to.throw('must be of type: String')
+        })
+
+        it('<bool/> or <boolean/> validates bools', () => {
+          expect(() => <bool/>.validate(50))
+            .to.throw('must be of type: Boolean')
+
+          expect(<boolean/>.validate(false))
+            .to.be.equal(false)
+        })
+
+        it('<number/> ')
 
       })
 
-      it('validates data', () => {
-        expect(BasicString.validate('hello'))
-          .to.be.equal('hello')
-      })
-
-      it('throws error if data is invalid', () => {
-        expect(() => Email.validate(100))
-          .to.throw('must be a String.')
-      })
+      // it('throws error if data is invalid', () => {
+      //   expect(() => Email.validate(100))
+      //     .to.throw('must be a String.')
+      // })
     })
   })
+
 })

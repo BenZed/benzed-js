@@ -1,14 +1,24 @@
+import SpecificType from './specific-type'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function shape () {
+class NumberType extends SpecificType {
+
+  constructor () {
+    super(String)
+  }
+
+  cast (config) {
+    return config === true
+      ? super.cast(value => String(value))
+      : super.cast(config)
+  }
 
 }
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default shape
+export default NumberType

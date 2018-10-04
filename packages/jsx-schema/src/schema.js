@@ -1,21 +1,89 @@
 import is from 'is-explicit'
 
-import { COPY, EQUALS, equals, merge } from '@benzed/immutable'
-import { flatten } from '@benzed/array'
+import runValidators from './util/run-validators'
+import { wrap as wrapInArray } from '@benzed/array'
 
-import { VALIDATORS, TYPE } from './symbols'
-import * as types from './types'
-import runValidators from './run-validators'
-
-import Context from './context'
+import {
+  ArrayType,
+  EnumType,
+  MultiType,
+  ObjectType,
+  SpecificType,
+  // StringType,
+  Type as GenericType
+} from './types'
 
 /******************************************************************************/
-// Helper
+// Data
 /******************************************************************************/
 
-const isTypeFunc = func =>
+const VALIDATORS = GenericType.Validators
 
-  is.func(func) && TYPE in func
+/******************************************************************************/
+// Resolve Type
+/******************************************************************************/
+
+const resolveType = {
+  string: String,
+  number: Number,
+  bool: Boolean,
+  boolean: Boolean,
+  array: Array,
+  arrayOf: Array,
+  object: Object,
+  objectOf: Object,
+  symbol: Symbol,
+  func: Function,
+  function: Function,
+  oneOf: EnumType,
+  oneOfType: MultiType,
+  map: Map,
+  set: Set,
+  any: GenericType
+}::function (input) {
+
+  let type = input
+  const PRIMITIVE_TYPE_HASH = this
+
+  // handles string types
+  if (is.string(type) && type in this)
+    type = PRIMITIVE_TYPE_HASH[type]
+  else if (is.string(type))
+    throw new Error(`${input} is not a recognized type`)
+
+  // handles stock extended types
+  if (type === Object)
+    type = new ObjectType(type)
+
+  else if (type === Array || is.subclassOf(type, Array))
+    type = new ArrayType(type)
+
+  else if (type == null)
+    type = new GenericType()
+
+  // else if (type === String)
+  //   type = new StringType()
+
+  // else if (type === Number)
+  //   type = new NumberType()
+
+  // else if (type === Boolean)
+  //   type = new BooleanType()
+
+  // handles custom extended types
+  else if (is.subclassOf(type, GenericType)) {
+    const CustomType = type
+    type = new CustomType()
+
+  // handles generic custom types
+  } else if (is.func(type))
+    type = new SpecificType(type)
+
+  if (!is(type, GenericType))
+    throw new Error(`${input} could not be resolved to a Schema.Type`)
+
+  return type
+}
 
 /******************************************************************************/
 // Main
@@ -23,87 +91,35 @@ const isTypeFunc = func =>
 
 class Schema {
 
-  static resolveType (input) {
-
-    let type = input
-
-    if (type === null)
-      type = types.any
-
-    else if (type === Object)
-      type = types.object
-
-    else if (is.string(type) && type in types && type !== 'default')
-      type = types[type]
-
-    if (!is.func(type))
-      throw new Error(`'${input}' is not a recognized type.`)
-
-    const isType = isTypeFunc(type)
-    if (!isType)
-      type = types.typeOf(input)
-
-    return type
-  }
+  static Type = GenericType
 
   static create (type, props, ...children) {
-
-    const Schema = this
-
     return new Schema(type, props, children)
   }
 
-  [VALIDATORS] = []
+  [VALIDATORS] = null
   type = null
-  props = null
-  children = null
 
   constructor (type, props, children = []) {
 
-    const Schema = this.constructor
+    children = wrapInArray(children)
+      .filter(is.defined)
 
-    if (!is.defined(props))
-      props = {}
+    type = resolveType(type)
+    let validators = type[VALIDATORS](props, children)
 
-    if (!is.plainObject(props))
-      throw new Error('props must be a plain object')
+    if (is.array(validators))
+      validators = validators.filter(is.defined)
 
-    if (is(type, Schema))
-      throw new Error('nesting schemas not yet supported')
-      // const schema = type
-      //
-      // props = merge(schema.props, props)
-      // type = schema.type
+    if (!is.arrayOf.func(validators))
+      throw new Error(`${type.constructor.name} did not create an array of validators`)
 
-    this.type = Schema.resolveType(type)
-    if (!isTypeFunc(this.type))
-      throw new Error('Schema.resolveType did not return a type function')
-
-    this.props = props
-    this.children = flatten(children).filter(is.defined)
-
-    this[VALIDATORS] = this.type(this.props, this.children)
+    this[VALIDATORS] = validators
+    this.type = type
   }
 
   validate (data) {
     return runValidators(this[VALIDATORS], data)
-  }
-
-  [COPY] () {
-
-    const Schema = this
-
-    return new Schema(
-      this.type,
-      this.props,
-      this.children
-    )
-  }
-
-  [EQUALS] (other) {
-    return this.type === other.type &&
-      equals(this.props, other.props) &&
-      equals(this.children, other.children)
   }
 
 }
