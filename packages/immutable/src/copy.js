@@ -56,6 +56,9 @@ function copyConsideringRefs (value, refs) {
   if (value === null || typeof value !== 'object')
     return value
 
+  if (value instanceof RegExp)
+    return value
+
   if (typeof value[COPY] === 'function')
     return value[COPY]()
 

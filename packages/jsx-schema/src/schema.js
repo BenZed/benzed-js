@@ -1,29 +1,38 @@
 import is from 'is-explicit'
 
 import runValidators from './util/run-validators'
-import { wrap as wrapInArray } from '@benzed/array'
+
+import { wrap as wrapInArray, flatten } from '@benzed/array'
+import { copy } from '@benzed/immutable'
 
 import {
-  ArrayType,
-  EnumType,
-  MultiType,
-  ObjectType,
+
+  GenericType,
   SpecificType,
-  // StringType,
-  Type as GenericType
+
+  BooleanType,
+  StringType,
+  NumberType,
+
+  ObjectType,
+  ArrayType,
+
+  EnumType,
+  MultiType
+
 } from './types'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
-const VALIDATORS = GenericType.Validators
+const { VALIDATORS, ROOT } = GenericType // it's a symbol
 
 /******************************************************************************/
-// Resolve Type
+// Helpers
 /******************************************************************************/
 
-const resolveType = {
+const resolveSchemaType = {
   string: String,
   number: Number,
   bool: Boolean,
@@ -45,11 +54,16 @@ const resolveType = {
   let type = input
   const PRIMITIVE_TYPE_HASH = this
 
+  const isString = is.string(type)
+
   // handles string types
-  if (is.string(type) && type in this)
+  if (isString && type in this)
     type = PRIMITIVE_TYPE_HASH[type]
-  else if (is.string(type))
+  else if (isString)
     throw new Error(`${input} is not a recognized type`)
+
+  if (is.defined(type) && !is.func(type))
+    throw new Error(`type argument must be null, a string or a function. Was given: ${String(input)}`)
 
   // handles stock extended types
   if (type === Object)
@@ -58,17 +72,17 @@ const resolveType = {
   else if (type === Array || is.subclassOf(type, Array))
     type = new ArrayType(type)
 
+  else if (type === Boolean)
+    type = new BooleanType()
+
+  else if (type === Number)
+    type = new NumberType()
+
+  else if (type === String)
+    type = new StringType()
+
   else if (type == null)
     type = new GenericType()
-
-  // else if (type === String)
-  //   type = new StringType()
-
-  // else if (type === Number)
-  //   type = new NumberType()
-
-  // else if (type === Boolean)
-  //   type = new BooleanType()
 
   // handles custom extended types
   else if (is.subclassOf(type, GenericType)) {
@@ -80,9 +94,24 @@ const resolveType = {
     type = new SpecificType(type)
 
   if (!is(type, GenericType))
-    throw new Error(`${input} could not be resolved to a Schema.Type`)
+    throw new Error(`${String(input)} could not be resolved to a Schema.Type`)
 
   return type
+}
+
+function getValidators (schemaType, props, children) {
+
+  let validators = schemaType[VALIDATORS](copy(props), children)
+
+  if (!is.array(validators))
+    throw new Error(`${schemaType.constructor.name} did not create an array.`)
+
+  validators = validators::flatten().filter(is.defined)
+
+  if (!validators.every(is.func))
+    throw new Error(`${schemaType.constructor.name} did not create an array of validators`)
+
+  return validators
 }
 
 /******************************************************************************/
@@ -94,32 +123,46 @@ class Schema {
   static Type = GenericType
 
   static create (type, props, ...children) {
+
+    const Schema = this
+
     return new Schema(type, props, children)
   }
 
   [VALIDATORS] = null
-  type = null
+  schemaType = null
 
-  constructor (type, props, children = []) {
+  get type () {
+    return this.schemaType?.[ROOT]
+  }
+
+  get props () {
+    return this.schemaType?.props
+  }
+
+  constructor (type, props = {}, children = []) {
+
+    if (!is.defined(props))
+      props = {}
+
+    if (!is.plainObject(props))
+      throw new Error('props must be a plain object')
 
     children = wrapInArray(children)
       .filter(is.defined)
 
-    type = resolveType(type)
-    let validators = type[VALIDATORS](props, children)
-
-    if (is.array(validators))
-      validators = validators.filter(is.defined)
-
-    if (!is.arrayOf.func(validators))
-      throw new Error(`${type.constructor.name} did not create an array of validators`)
+    const schemaType = resolveSchemaType(type)
+    const validators = getValidators(schemaType, props, children)
 
     this[VALIDATORS] = validators
-    this.type = type
+    this.schemaType = schemaType
   }
 
   validate (data) {
-    return runValidators(this[VALIDATORS], data)
+
+    const validators = this[VALIDATORS]
+
+    return runValidators(validators, data)
   }
 
 }
@@ -129,3 +172,7 @@ class Schema {
 /******************************************************************************/
 
 export default Schema
+
+export {
+  Schema
+}

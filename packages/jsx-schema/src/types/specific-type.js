@@ -1,13 +1,16 @@
 import is from 'is-explicit'
 
 import addName from '../util/add-name'
+import propIsEnabled from '../util/prop-is-enabled'
+
 import Type from './type'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
-const VALIDATORS = Type.Validators
+// Symbols
+const { VALIDATORS, ROOT } = Type
 
 /******************************************************************************/
 // Main
@@ -15,23 +18,33 @@ const VALIDATORS = Type.Validators
 
 class SpecificType extends Type {
 
-  cast (castFunction) {
+  constructor (type) {
+    super(type)
 
-    if (!castFunction)
+    if (!is.instanceable(this[ROOT]))
+      throw new Error(`${this.constructor.name} requires an instanceable type.`)
+  }
+
+  cast (prop) {
+
+    if (!propIsEnabled(prop))
       return null
 
-    if (castFunction === true)
-      throw new Error(`${this.constructor.name} cast validator does not have a default casting function.`)
+    if (prop === true)
+      throw new Error(`${this.constructor.name} does not have a default casting function.`)
 
-    else if (!is.func(castFunction))
+    else if (!is.func(prop))
       throw new Error('cast validator requires a function')
 
+    const castFunction = this.props.cast = prop
+    const rootType = this[ROOT]
+
     const validator = value =>
-      is.defined(value) && !is.type(this.type)
+      value != null && !is(value, rootType)
         ? castFunction(value)
         : value
 
-    return validator::addName(`cast-to-${this.type && this.type.name}`)
+    return validator::addName(`castTo${rootType && rootType.name}`)
   }
 
   [VALIDATORS] (props, children) {
@@ -39,39 +52,33 @@ class SpecificType extends Type {
     if (children && children.length > 0)
       throw new Error(`${this.constructor.name} cannot have nested children.`)
 
-    props = { ...props }
-
-    const specificValidators = []
+    let castValidator
+    let typeValidator
 
     // cast validator
-    if ('cast' in props) {
-      specificValidators.push(
-        this.cast(props.cast)
-      )
-      delete props.cast
-    }
+    if ('cast' in props)
+      castValidator = this.cast(props.cast)
+
+    const rootType = this[ROOT]
 
     // type validator
-    if (is.defined(this.type)) {
+    if (is.defined(rootType)) {
 
-      const typeValidator = (value =>
-        !is.defined(value) || is(value, this.type)
+      typeValidator = value =>
+        value == null || is(value, rootType)
           ? value
-          : throw new Error(`must be of type: ${this.type.name}`)
+          : throw new Error(`must be of type: ${rootType.name}`)
 
-      )::addName(`type-of-${this.type.name}`)
-
-      specificValidators.push(
-        typeValidator
-      )
+      typeValidator::addName(`is${rootType.name}`)
     }
 
     // root validators
-    const genericValidators = super[Type.Validators](props, children)
+    const genericValidators = super[VALIDATORS](props, children)
 
     return [
-      ...specificValidators,
-      ...genericValidators
+      castValidator,
+      genericValidators,
+      typeValidator
     ]
   }
 }

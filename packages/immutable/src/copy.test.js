@@ -29,6 +29,11 @@ Test.optionallyBindableMethod(copy, copier => {
       expect(Number.isNaN(copier(NaN))).to.equal(true)
     })
 
+    it('ignores RegExp', () => {
+      const regexp = /\d/
+      expect(copier(regexp)).to.be.equal(regexp)
+    })
+
   })
 
   describe('copies objects', () => {

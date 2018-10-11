@@ -1,14 +1,83 @@
 import is from 'is-explicit'
-import addName from '../util/add-name'
 
-import { wrap, flatten } from '@benzed/array'
+import { wrap, hasNumericLength } from '@benzed/array'
+import { copy, change } from '@benzed/immutable'
+import { round } from '@benzed/math'
+
+import addName from '../util/add-name'
+import propIsEnabled from '../util/prop-is-enabled'
+import propToConfig from '../util/prop-to-config'
+import propToRangeAssert, { RANGE_LAYOUT } from '../util/prop-to-range-assert'
 
 /******************************************************************************/
 // Symbols
 /******************************************************************************/
 
 const VALIDATORS = Symbol('validators-create-method-or-created-array')
-const TYPE = Symbol('root-type-constructor')
+const ROOT = Symbol('root-type-constructor')
+
+/******************************************************************************/
+// Config
+/******************************************************************************/
+
+const requireConfig = propToConfig({
+  name: 'err',
+  test: is.string,
+  default: 'is required.'
+})
+
+const LENGTH_LAYOUT = RANGE_LAYOUT::change(layout => {
+
+  const ERR = 1
+  const MIN = 2
+  const MAX = 3
+  const VALUE = 4
+
+  layout[ERR].default = (diff, values) =>
+    `length must be ${diff} ${values.join(' and ')}`
+
+  layout[MIN].validate = layout[MAX].validate = layout[VALUE].validate =
+    value => is.number(value) && value < 0
+      ? throw new Error('must be above 0')
+      : value
+
+})
+
+const propToLengthAssert = propToConfig(LENGTH_LAYOUT)::propToRangeAssert
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const findUnusedKeys = (source, match) => {
+
+  const unused = []
+  for (const key of Object.keys(match))
+    if (key in source === false)
+      unused.push(key)
+
+  return unused
+}
+
+const getNumericValue = value => {
+
+  const number = is.number(value)
+    ? value
+    : value.valueOf()
+
+  if (!is.number(number))
+    throw new Error('cannot compare range with non-numeric value')
+
+  return number
+}
+
+const getNumericLength = value => {
+
+  if (!hasNumericLength(value))
+    throw new Error('value does not have a numeric length')
+
+  return value.length
+}
 
 /******************************************************************************/
 // Main
@@ -16,72 +85,146 @@ const TYPE = Symbol('root-type-constructor')
 
 class Type {
 
-  static Validators = VALIDATORS;
+  static VALIDATORS = VALIDATORS;
+  static ROOT = ROOT;
 
-  get type () {
-    return this[TYPE]
+  get [Symbol.toStringTag] () {
+    return 'SchemaType'
   }
 
-  constructor (type) {
-    this[TYPE] = type
+  [ROOT] = null;
+
+  props = {}
+
+  constructor (rootType) {
+    this[ROOT] = rootType
   }
 
   [VALIDATORS] (props, children) {
 
     const validators = []
 
-    props = { ...props }
+    for (const validatorName in props) {
 
-    for (const key in props) {
-
-      const isValidatorName = key in this && is.func(this[key])
+      const isValidatorName = validatorName in this && is.func(this[validatorName])
       if (!isValidatorName)
         continue
 
-      const prop = props[key]
+      const validatorAlreadyCreated = validatorName in this.props
+      if (validatorAlreadyCreated)
+        continue
 
-      validators.push(this[key](prop))
-      delete props[key]
+      const prop = props[validatorName]
+
+      validators.push(this[validatorName](prop))
+
+      const validatorInitializedPropValue = validatorName in this.props
+      if (!validatorInitializedPropValue)
+        this.props[validatorName] = prop
     }
 
-    const remainingKeys = Object.keys(props)
-    if (remainingKeys.length > 0)
+    const unusedKeys = findUnusedKeys(this.props, props)
+    if (unusedKeys.length > 0)
       throw new Error(`${this.constructor.name} given props for validators it` +
-        ` does not handle: ${remainingKeys}`)
+        ` does not handle: ${unusedKeys}`)
 
-    return flatten(validators)
+    return validators
   }
 
   // Universal Validators
 
-  required (config) {
-    if (!config)
+  required (prop) {
+    if (!propIsEnabled(prop))
       return null
+
+    const { err } = this.props.required = requireConfig(prop)
 
     const validator = value =>
       is.defined(value)
         ? value
-        : throw new Error('is required.')
+        : throw new Error(err)
 
     return validator::addName('required')
   }
 
-  default () {
+  range (prop) {
 
-  }
-
-  validate (config) {
-    if (!is.defined(config))
+    if (!propIsEnabled(prop))
       return null
 
-    config = wrap(config)
-    if (!is.arrayOf.func(config))
-      throw new Error('validate takes a validator function or an array thereof')
+    const assertInRange = propToRangeAssert(prop)
 
-    return config
+    const { operator, min, max, value } = this.props.range = assertInRange.config
+
+    const validator = value => {
+
+      if (is.defined(value))
+        assertInRange(getNumericValue(value))
+
+      return value
+    }
+
+    const name = operator === '<=>'
+      ? `range${round(min)}${operator}${round(max)}`
+      : `range${operator}${round(value)}`
+
+    return validator::addName(name)
+
   }
 
-  validates = this.validate
+  length (prop) {
+    if (!propIsEnabled(prop))
+      return null
+
+    const assertLength = propToLengthAssert(prop)
+    const { operator, min, max, value } = this.props.length = assertLength.config
+
+    const validator = value => {
+
+      if (is.defined(value)) {
+        const length = getNumericLength(value)
+        assertLength(length)
+      }
+
+      return value
+    }
+
+    const name = operator === '<=>'
+      ? `length${min}${operator}${max}`
+      : `length${operator}${value}`
+
+    return validator::addName(name)
+  }
+
+  default (prop) {
+
+    // cant use propIsEnabled because false could be a default value
+    if (!is.defined(prop))
+      return null
+
+    const setDefault = is.func(prop)
+      ? prop
+      : () => copy(prop)
+
+    const validator = (value, context) =>
+      is.defined(value)
+        ? value
+        : setDefault(context)
+
+    return validator::addName('setDefault')
+  }
+
+  validate (prop) {
+    if (!propIsEnabled(prop))
+      return null
+
+    const validators = wrap(prop)
+    if (!is.arrayOf.func(validators))
+      throw new Error('validate takes a validator function or an array thereof')
+
+    return validators
+  }
+
 }
 
 /******************************************************************************/
