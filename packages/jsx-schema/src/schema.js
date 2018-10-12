@@ -17,7 +17,7 @@ import {
   ObjectType,
   ArrayType,
 
-  EnumType,
+  ValueType,
   MultiType
 
 } from './types'
@@ -44,8 +44,11 @@ const resolveSchemaType = {
   symbol: Symbol,
   func: Function,
   function: Function,
-  oneOf: EnumType,
+  oneOf: ValueType,
+  value: ValueType,
   oneOfType: MultiType,
+  multi: MultiType,
+  multiple: MultiType,
   map: Map,
   set: Set,
   any: GenericType
@@ -106,7 +109,7 @@ function getValidators (schemaType, props, children) {
   if (!is.array(validators))
     throw new Error(`${schemaType.constructor.name} did not create an array.`)
 
-  validators = validators::flatten().filter(is.defined)
+  validators = flatten(validators).filter(is.defined)
 
   if (!validators.every(is.func))
     throw new Error(`${schemaType.constructor.name} did not create an array of validators`)
@@ -131,6 +134,7 @@ class Schema {
 
   [VALIDATORS] = null
   schemaType = null
+  key = null
 
   get type () {
     return this.schemaType?.[ROOT]
@@ -140,7 +144,11 @@ class Schema {
     return this.schemaType?.props
   }
 
-  constructor (type, props = {}, children = []) {
+  get children () {
+    return this.schemaType?.children
+  }
+
+  constructor (type, props = {}, children) {
 
     if (!is.defined(props))
       props = {}
@@ -148,10 +156,32 @@ class Schema {
     if (!is.plainObject(props))
       throw new Error('props must be a plain object')
 
-    children = wrapInArray(children)
+    // extract key
+    props = { ...props }
+    const key = props.key
+    delete props.key
+    if (is.defined(key) && !is(key, [ Number, String ]))
+      throw new Error('props.key must be a string or number')
+
+    if (is.defined(key))
+      this.key = key
+
+    // composability
+    let schemaType
+    if (is(type, Schema)) {
+      const schema = type
+
+      console.log(schema.props, props)
+      props = { ...schema.props, ...props }
+      schemaType = copy(schema.schemaType)
+      children = children || schemaType.children
+    } else
+      schemaType = resolveSchemaType(type)
+
+    // prep children
+    children = children && wrapInArray(children)
       .filter(is.defined)
 
-    const schemaType = resolveSchemaType(type)
     const validators = getValidators(schemaType, props, children)
 
     this[VALIDATORS] = validators
@@ -159,9 +189,7 @@ class Schema {
   }
 
   validate (data) {
-
     const validators = this[VALIDATORS]
-
     return runValidators(validators, data)
   }
 

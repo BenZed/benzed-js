@@ -3,7 +3,7 @@ import Schema from './schema'
 
 import {
   StringType, BooleanType, NumberType, ArrayType, ObjectType, SpecificType,
-  GenericType, EnumType, MultiType
+  GenericType, ValueType, MultiType
 } from './types'
 
 // eslint-disable-next-line no-unused-vars
@@ -48,14 +48,22 @@ describe('Schema', () => {
           [ 'object', ObjectType ],
           [ 'symbol', SpecificType ],
           [ 'any', GenericType ],
-          [ 'oneOf', EnumType ],
-          [ 'oneOfType', MultiType ],
           [ 'map', SpecificType ],
           [ 'set', SpecificType ]
         ])
         for (const [key, value] of match)
           it(`${key} becomes ${value.name}`, () => {
             const schema = new Schema(key, {}, null)
+            expect(schema.schemaType.constructor).to.be.equal(value)
+          })
+
+        const matchesThatRequireChildren = new Map([
+          [ 'oneOf', ValueType ],
+          [ 'oneOfType', MultiType ]
+        ])
+        for (const [key, value] of matchesThatRequireChildren)
+          it(`${key} becomes ${value.name}`, () => {
+            const schema = new Schema(key, {}, <string/>)
             expect(schema.schemaType.constructor).to.be.equal(value)
           })
       })
@@ -149,6 +157,7 @@ describe('Schema', () => {
 
     describe('prop argument', () => {
       it('props are resolved')
+      it('key prop is applied to schema, not sent to types')
     })
   })
 
@@ -190,5 +199,51 @@ describe('Schema', () => {
           .to.be.equal(50)
       })
     })
+  })
+
+  describe.only('composability', () => {
+
+    it('schemas can be extended', () => {
+
+      const Password = <string
+        length={['>=', 8]}
+        required
+      />
+
+      const Form = <object strict plain>
+        <Password key='password' />
+        <Password key='confirm' />
+      </object>
+
+      expect(Form.validate({
+        password: 'cakeday!',
+        confirm: 'cakeday!',
+        nogood: 'no good'
+      })).to.be.deep.equal({
+        password: 'cakeday!',
+        confirm: 'cakeday!'
+      })
+
+    })
+
+    it('props are overridable on composed schemas', () => {
+
+      const Axis = <number range={[-1000, 1000]} required />
+
+      const Coordinate = <object plain strict required>
+        <Axis key='x'/>
+        <Axis key='y'/>
+      </object>
+
+      const Transform = <object plain >
+        <Coordinate key='location' />
+        <Coordinate key='scale' />
+        <Coordinate key='target' required={false}/>
+      </object>
+
+      console.log(Transform)
+
+    })
+
   })
 })

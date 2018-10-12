@@ -68,8 +68,19 @@ class NumberType extends SpecificType {
         : value
 
     return validate::addName(`clamp${min}-${max}`)
-
   }
+
+  /* other handy number validators
+
+  round () { }
+
+  floor () { }
+
+  ceil () { }
+
+  abs () { }
+
+  */
 
 }
 

@@ -56,14 +56,14 @@ function copyConsideringRefs (value, refs) {
   if (value === null || typeof value !== 'object')
     return value
 
-  if (value instanceof RegExp)
-    return value
-
   if (typeof value[COPY] === 'function')
     return value[COPY]()
 
   if (typeof value.copy === 'function')
     return value.copy()
+
+  if (value instanceof RegExp)
+    return value
 
   if (!refs)
     refs = []
@@ -105,10 +105,11 @@ function copyConsideringRefs (value, refs) {
  * @param  {*} value Object or value to copy.
  * @return {*}       Copied value or object.
  */
-function copy () {
+function copy (...args) {
 
-  const args = arguments
-  const value = args.length > 0 ? args[0] : this
+  const value = args.length > 0
+    ? args[0]
+    : this
 
   return copyConsideringRefs(value)
 }

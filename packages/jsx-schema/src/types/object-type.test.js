@@ -12,7 +12,7 @@ import ObjectType from './object-type'
 
 describe('ObjectType', () => {
 
-  it('extends SpecificType', () => {
+  it('extends Type', () => {
     expect(is.subclassOf(ObjectType, Type))
       .to
       .be
@@ -26,12 +26,10 @@ describe('ObjectType', () => {
       .equal(Object)
   })
 
-  describe.only('type validation', () => {
+  describe('type validation', () => {
 
     it('validates objects', () => {
-
       const obj = <object />
-
       const input = {}
 
       expect(obj.validate(input))
@@ -43,7 +41,6 @@ describe('ObjectType', () => {
 
     it('arrays don\'t count', () => {
       const obj = <object />
-
       const arr = []
 
       expect(() => obj.validate(arr))
@@ -62,6 +59,81 @@ describe('ObjectType', () => {
 
       expect(() => plain.validate(new Foo()))
         .to.throw('must be a plain object')
+    })
+  })
+
+  describe('children', () => {
+
+    it('children define schemas for child properties', () => {
+
+      const person = <object plain>
+        <string key='name'
+          length={['>', 0]}
+          required
+        />
+        <number key='age'
+          cast
+          default={0}
+          range={['>=', 0]}
+        />
+      </object>
+
+      expect(person.validate({
+        name: 'baby-jesus'
+      })).to.be.deep.equal({
+        name: 'baby-jesus',
+        age: 0
+      })
+
+    })
+
+    it('children must be schemas', () => {
+      expect(() => <object>
+        {[ 'Hey', 'hey' ]}
+      </object>).to.throw('ObjectType children must be schemas')
+    })
+
+    it('children must have keys', () => {
+      expect(() => <object>
+        <string />
+      </object>).to.throw('ObjectType children must have unique key')
+    })
+
+    it('object keys must be unique', () => {
+      expect(() =>
+        <object>
+          <string key={0} />
+          <string key='0' />
+        </object>
+      ).to.throw('ObjectType children must have unique key')
+    })
+
+  })
+
+  describe('validators', () => {
+
+    describe('strict', () => {
+      it('restricts object keys to those defined by children', () => {
+
+        const vector2 = <object strict plain>
+          <number key='x' required />
+          <number key='y' required />
+        </object>
+
+        expect(vector2.validate({
+          x: 0,
+          y: 0,
+          z: 1
+        })).to.be.deep.equal({
+          x: 0,
+          y: 0
+        })
+
+      })
+      it('throws if no children are defined', () => {
+        expect(() => <object strict/>)
+          .to.throw('ObjectType strict can only be enabled on schemas with children')
+      })
     })
 
   })

@@ -1,7 +1,7 @@
 import is from 'is-explicit'
 
 import { wrap, hasNumericLength } from '@benzed/array'
-import { copy, change } from '@benzed/immutable'
+import { copy, change, COPY } from '@benzed/immutable'
 import { round } from '@benzed/math'
 
 import addName from '../util/add-name'
@@ -92,8 +92,8 @@ class Type {
     return 'SchemaType'
   }
 
-  [ROOT] = null;
-
+  [ROOT] = null
+  children = null
   props = {}
 
   constructor (rootType) {
@@ -127,6 +127,8 @@ class Type {
     if (unusedKeys.length > 0)
       throw new Error(`${this.constructor.name} given props for validators it` +
         ` does not handle: ${unusedKeys}`)
+
+    this.children = children
 
     return validators
   }
@@ -223,6 +225,14 @@ class Type {
       throw new Error('validate takes a validator function or an array thereof')
 
     return validators
+  }
+
+  [COPY] () {
+    const Type = this.constructor
+
+    const type = new Type(this[ROOT])
+
+    return type
   }
 
 }

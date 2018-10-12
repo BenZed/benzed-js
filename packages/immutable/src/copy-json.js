@@ -59,9 +59,7 @@ function copyConsideringRefs (value, refs) {
 // Main
 /******************************************************************************/
 
-function copyJson () {
-
-  const args = arguments
+function copyJson (...args) {
 
   const value = args.length > 0
     ? args[0]

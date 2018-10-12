@@ -9,7 +9,7 @@ import BooleanType from './boolean-type'
 import ArrayType from './array-type'
 import ObjectType from './object-type'
 
-import EnumType from './enum-type'
+import ValueType from './value-type'
 import MultiType from './multi-type'
 
 /******************************************************************************/
@@ -29,7 +29,7 @@ export {
   ArrayType,
   ObjectType,
 
-  EnumType,
+  ValueType,
   MultiType
 
 }
