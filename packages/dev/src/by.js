@@ -1,47 +1,35 @@
-import SpecificType from './specific-type'
-import is from 'is-explicit'
 
 /******************************************************************************/
-// Default Cast
+// State
 /******************************************************************************/
 
-const toBoolean = value =>
-
-  is.string(value)
-    ? /^true$/i.test(value)
-
-      ? true
-      : /^false$/i.test(value)
-
-        ? false
-        : value
-
-    : is.object(value)
-      ? value
-      : !!value
+const sorters = {}
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-class BooleanType extends SpecificType {
+function sortByKey (a, b) {
 
-  constructor () {
-    super(Boolean)
-  }
+  const key = this
 
-  cast (config) {
-
-    if (config === true)
-      config = toBoolean
-
-    return super.cast(config)
-  }
-
+  return a[key] > b[key]
+    ? 1
+    : a[key] < b[key]
+      ? -1
+      : 0
 }
+
+/******************************************************************************/
+// Factory
+/******************************************************************************/
+
+const createPropertySorter = key =>
+
+  sorters[key] || (sorters[key] = key::sortByKey)
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default BooleanType
+export default createPropertySorter

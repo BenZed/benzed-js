@@ -7,12 +7,21 @@ import is from 'is-explicit'
 
 const throwAny = err => throw err
 
-const runValidators = (
-  validators,
-  data,
-  context = null, // new Context(),
-  index = 0
-) => {
+/******************************************************************************/
+// Main
+/******************************************************************************/
+
+function runValidators (validators, data, context, index) {
+
+  if (this) {
+    index = context
+    context = data
+    data = validators
+    validators = this
+  }
+
+  if (!is.number(index))
+    index = 0
 
   let output = data
 
