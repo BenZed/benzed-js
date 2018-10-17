@@ -1,5 +1,9 @@
 import is from 'is-explicit'
-import { GenericType, SpecificType, StringType } from '../types'
+import {
+  GenericType, SpecificType,
+  StringType, NumberType, BooleanType,
+  ArrayType, ObjectType, ValueType, MultiType
+} from './types'
 
 /******************************************************************************/
 // Default Type Map
@@ -11,27 +15,27 @@ const TYPE_MAP = new Map([
   [ 'string', StringType ],
   [ String, StringType ],
 
-  // [ 'bool', BooleanType ],
-  // [ 'boolean', BooleanType ],
-  // [ Boolean, BooleanType ],
-  //
-  // [ 'number', NumberType ],
-  // [ Number, NumberType ],
-  //
-  // [ 'array', ArrayType ],
-  // [ 'arrayOf', ArrayType ],
-  // [ Array, ArrayType ],
-  //
-  // [ 'object', ObjectType ],
-  // [ 'objectOf', ObjectType ],
-  // [ Object, ObjectType ],
-  //
-  // [ 'oneOf', ValueType ],
-  // [ 'value', ValueType ],
-  //
-  // [ 'oneOfType', MultiType ],
-  // [ 'multi', MultiType ],
-  // [ 'multiple', MultiType ],
+  [ 'bool', BooleanType ],
+  [ 'boolean', BooleanType ],
+  [ Boolean, BooleanType ],
+
+  [ 'number', NumberType ],
+  [ Number, NumberType ],
+
+  [ 'array', ArrayType ],
+  [ 'arrayOf', ArrayType ],
+  [ Array, ArrayType ],
+
+  [ 'object', ObjectType ],
+  [ 'objectOf', ObjectType ],
+  [ Object, ObjectType ],
+
+  [ 'oneOf', ValueType ],
+  [ 'value', ValueType ],
+
+  [ 'oneOfType', MultiType ],
+  [ 'multi', MultiType ],
+  [ 'multiple', MultiType ],
 
   // stock specific types
   [ 'symbol', Symbol ],

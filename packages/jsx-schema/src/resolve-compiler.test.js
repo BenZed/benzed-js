@@ -1,7 +1,10 @@
 import { expect } from 'chai'
 
 import resolveCompiler from './resolve-compiler'
-import { StringType, SpecificType, Type } from '../types'
+import {
+  StringType, SpecificType, NumberType, BooleanType, Type, ArrayType,
+  ObjectType, ValueType, MultiType
+} from './types'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -12,12 +15,12 @@ describe('resolveCompiler', () => {
 
     const match = new Map([
       [ 'string', StringType ],
-      // [ 'boolean', BooleanType ],
-      // [ 'bool', BooleanType ],
-      // [ 'number', NumberType ],
-      // [ 'array', ArrayType ],
-      // [ 'arrayOf', ArrayType ],
-      // [ 'object', ObjectType ],
+      [ 'boolean', BooleanType ],
+      [ 'bool', BooleanType ],
+      [ 'number', NumberType ],
+      [ 'array', ArrayType ],
+      [ 'arrayOf', ArrayType ],
+      [ 'object', ObjectType ],
 
       [ 'symbol', SpecificType ],
       [ 'map', SpecificType ],
@@ -33,16 +36,16 @@ describe('resolveCompiler', () => {
         expect(type?.constructor).to.be.equal(value)
       })
 
-    // const matchesThatRequireChildren = new Map([
-    //   [ 'oneOf', ValueType ],
-    //   [ 'oneOfType', MultiType ]
-    // ])
+    const matchesThatRequireChildren = new Map([
+      [ 'oneOf', ValueType ],
+      [ 'oneOfType', MultiType ]
+    ])
 
-    // for (const [key, value] of matchesThatRequireChildren)
-    //   it(`${key} becomes ${value.name}`, () => {
-    //     const schema = createValidator(key, {}, <string/>)
-    //     expect(schema.schemaType.constructor).to.be.equal(value)
-    //   })
+    for (const [key, value] of matchesThatRequireChildren)
+      it(`${key} becomes ${value.name}`, () => {
+        const type = resolveCompiler(key)
+        expect(type?.constructor).to.be.equal(value)
+      })
   })
 
   describe('instanceable types resolve to corresponding schema types', () => {
@@ -56,10 +59,10 @@ describe('resolveCompiler', () => {
       [ String, StringType ],
       [ Map, SpecificType ],
       [ Set, SpecificType ],
-      // [ Boolean, BooleanType ],
-      // [ Number, NumberType ],
-      // [ Array, ArrayType ],
-      // [ Object, ObjectType ],
+      [ Boolean, BooleanType ],
+      [ Number, NumberType ],
+      [ Array, ArrayType ],
+      [ Object, ObjectType ],
 
       [ Foo, SpecificType ],
       [ Bar, SpecificType ]

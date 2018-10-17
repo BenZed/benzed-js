@@ -1,23 +1,22 @@
 import is from 'is-explicit'
-import { wrap } from '@benzed/array'
+import { wrap, flatten } from '@benzed/array'
 
 import { Type } from './types'
-import { runValidators as run, resolveCompiler } from './util'
+import { runValidators as run, SCHEMA } from './util'
+
+import resolveCompiler from './resolve-compiler'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
-const SCHEMA = Symbol('schema-data')
 const ROOT = Type.ROOT
 
 const SCHEMA_SHORTCUTS = {
   name: { value: 'validate' },
   type: { get () { return this[SCHEMA]?.type?.[ROOT] }, enumerable: true },
   props: { get () { return this[SCHEMA].props }, enumerable: true },
-
-  // lol, should really just be { value: true }
-  isSchema: { get () { return SCHEMA in this }, enumerable: true }
+  key: { get () { return this[SCHEMA].key }, enumerable: true }
 }
 
 /******************************************************************************/
@@ -44,6 +43,11 @@ const addChildrenToProps = (props, children) => {
 function Validator (input, props = {}) {
 
   let compiler
+  let key
+  if ('key' in props) {
+    key = props.key
+    delete props.key
+  }
 
   const isType = is(input, Type)
   const isSchema = !isType && SCHEMA in input
@@ -67,7 +71,11 @@ function Validator (input, props = {}) {
   }
 
   // check validators
-  validators = wrap(validators)
+  validators = validators
+    ::wrap()
+    ::flatten()
+    .filter(is.defined)
+
   if (!validators.every(is.func))
     throw new Error('compilers must return a validator or array of validators')
 
@@ -87,7 +95,8 @@ function Validator (input, props = {}) {
   const schema = {
     compiler,
     props,
-    type
+    type,
+    key
   }
 
   return defineProperties(validator, {

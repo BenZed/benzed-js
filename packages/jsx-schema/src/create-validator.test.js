@@ -2,10 +2,10 @@ import { expect } from 'chai'
 import createValidator, { SCHEMA } from './create-validator'
 import is from 'is-explicit'
 
-import {
-  StringType, BooleanType, NumberType, ArrayType, ObjectType, SpecificType,
-  Type, ValueType, MultiType
-} from './types'
+// import {
+//   StringType, BooleanType, NumberType, ArrayType, ObjectType, SpecificType,
+//   Type, ValueType, MultiType
+// } from './types'
 
 /* eslint-disable react/react-in-jsx-scope, react/prop-types */ // @jsx createValidator
 
@@ -32,7 +32,7 @@ describe('functional schema instead of class based one', () => {
 
       it('should have schema shortcuts', () => {
         const validator = <string />
-        expect(validator).to.have.property('isSchema', true)
+
         expect(validator).to.have.deep.property('props', { children: null })
         expect(validator).to.have.property('type', String)
       })
@@ -50,7 +50,7 @@ describe('functional schema instead of class based one', () => {
 
       expect(id).to.have.property('props')
       expect(id.props).to.have.property('uppercase', true)
-      expect(id.props).to.have.property('length', 9)
+      expect(id.props.length).to.have.property('value', 9)
       expect(id.type).to.be.equal(String)
     })
 

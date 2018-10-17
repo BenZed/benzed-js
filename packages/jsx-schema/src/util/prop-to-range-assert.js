@@ -82,9 +82,8 @@ function getAsserter (config) {
 const RANGE_LAYOUT = [
   {
     name: 'operator',
-    default: '<=>',
     test: value => OPERATORS.includes(value),
-    validate: value => OPERATORS.includes(value)
+    validate: value => OPERATORS.includes(value) || !is.defined(value)
       ? value
       : throw new Error(`${String(value)} is not a valid operator`)
   },
@@ -114,6 +113,9 @@ const defaultRangeConfig = propToConfig(RANGE_LAYOUT)
 
 function checkExplicitConfig (operator, numbers) {
 
+  if (!operator)
+    operator = numbers.value ? '==' : '<=>'
+
   const isBetween = operator === '<=>'
   if (isBetween === is.number(numbers.value))
     throw new Error(`value must ${isBetween ? 'not ' : ''}be defined for ${operator}`)
@@ -129,10 +131,16 @@ function checkExplicitConfig (operator, numbers) {
 
 function fixImplicitConfig (operator, numbers) {
 
-  const isBetween = operator === '<=>'
   numbers = Object
     .values(numbers)
     .filter(is.number)
+
+  if (!operator)
+    operator = numbers.length === 2
+      ? '<=>'
+      : '=='
+
+  const isBetween = operator === '<=>'
 
   numbers.sort()
 
