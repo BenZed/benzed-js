@@ -1,46 +1,43 @@
-import Schema from './schema'
-import PropTypeSchema from './prop-type-schema'
+import createValidator from './create-validator'
+
+import { Type, SpecificType } from './types'
 
 import {
-  required,
-  format,
-  length,
-  defaultTo,
-
-  cast
-
-} from './validators'
-
-import {
-  type, bool, string, number, object, func, array,
-  arrayOf, typeOf, oneOf, oneOfType, any
-} from './types'
-
-import { OPTIONAL_CONFIG } from './util/symbols'
-import argsToConfig from './util/args-to-config'
-
-// TODO rename everywhere
-import argsToRangeCompare from './util/args-to-range-compare'
+  isSchema, propIsEnabled, propToConfig, propsPluck, mergeResults
+} from './util'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Schema
+export default {
+
+  createValidator,
+
+  Type,
+  SpecificType,
+
+  isSchema,
+
+  propIsEnabled,
+  propToConfig,
+  propsPluck,
+
+  mergeResults
+
+}
 
 export {
+  createValidator,
 
-  Schema, PropTypeSchema,
+  Type,
+  SpecificType,
 
-  required, format, length, defaultTo,
+  isSchema,
 
-  cast,
+  propIsEnabled,
+  propToConfig,
+  propsPluck,
 
-  type, bool, string, number, object, func, array,
-  arrayOf, typeOf, oneOf, oneOfType, any, any as group,
-
-  argsToConfig, argsToRangeCompare,
-
-  OPTIONAL_CONFIG
-
+  mergeResults
 }

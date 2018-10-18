@@ -1,29 +1,35 @@
-import any from './any'
-import bool from './bool'
-import string from './string'
-import number from './number'
+import Type from './type'
 
-import func from './func'
-import object from './object'
+import SpecificType from './specific-type'
 
-import typeOf from './type-of'
+import StringType from './string-type'
+import NumberType from './number-type'
+import BooleanType from './boolean-type'
 
-import arrayOf from './array-of'
-import oneOf from './one-of'
-import oneOfType from './one-of-type'
+import ArrayType from './array-type'
+import ObjectType from './object-type'
+
+import ValueType from './value-type'
+import MultiType from './multi-type'
+
+/******************************************************************************/
+// Exports
+/******************************************************************************/
 
 export {
+  Type,
+  Type as GenericType,
 
-  any,
-  bool,
-  string,
-  number,
+  SpecificType,
 
-  func,
-  object,
-  arrayOf,
+  StringType,
+  NumberType,
+  BooleanType,
 
-  oneOf,
-  typeOf,
-  oneOfType
+  ArrayType,
+  ObjectType,
+
+  ValueType,
+  MultiType
+
 }

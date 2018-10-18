@@ -94,6 +94,7 @@
     "@benzed/math": "latest",
     "@benzed/react": "latest",
     "@benzed/schema": "latest",
-    "@benzed/string": "latest"
+    "@benzed/string": "latest",
+    "@benzed/jsx-app": "latest"
   }
 }

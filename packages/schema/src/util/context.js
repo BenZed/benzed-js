@@ -1,38 +1,43 @@
-import { copy } from '@benzed/immutable'
+import { COPY } from '@benzed/immutable'
+import { wrap } from '@benzed/array'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
 class Context {
-  constructor (data, args = [], path = []) {
+
+  path = null
+  data = null
+  value = null
+
+  constructor (path, value, data) {
+    this.path = wrap(path).filter(is.defined)
+    this.value = value
     this.data = data
-    this.args = args
-    this.path = copy(path)
-    this.throw = true
   }
 
   push (key) {
-    const context = this.copy()
 
-    context.path.push(key)
+    const context = this[COPY]()
 
-    return context
-  }
-
-  safe () {
-    const context = this.copy()
-    context.throw = false
+    context.path = [ ...context.path, key ]
 
     return context
   }
 
-  copy () {
-    const context = new Context(this.data, this.args, this.path)
-    context.throw = this.throw
+  [COPY] () {
+
+    const context = new this.constructor(
+      this.path,
+      this.value,
+      this.data
+    )
 
     return context
   }
+
 }
 
 /******************************************************************************/

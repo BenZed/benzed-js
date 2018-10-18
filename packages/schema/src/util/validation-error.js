@@ -1,27 +1,3 @@
-import { wrap } from '@benzed/array'
-import is from 'is-explicit'
-
-/******************************************************************************/
-// Message Property Descriptor
-/******************************************************************************/
-
-const message = {
-
-  get () {
-    let pathStr = this.path.join('.')
-    if (pathStr.length > 0)
-      pathStr += ' '
-
-    return `${pathStr}${this.rawMessage}`
-  },
-
-  set (value) {
-    this.rawMessage = value
-  },
-
-  enumerable: true,
-  configurable: false
-}
 
 /******************************************************************************/
 // Main
@@ -29,18 +5,28 @@ const message = {
 
 class ValidationError extends Error {
 
-  constructor (path, msg = 'Validation failed.', isInvalidType = false) {
-    super(msg)
+  name = 'ValidationError'
+  path = null
 
-    this.name = 'ValidationError'
-    this.path = is.defined(path) ? wrap(path) : []
-    this.isInvalidType = isInvalidType
-    this.rawMessage = this.message
+  rawMessage = null
 
-    Object.defineProperty(this, 'message', message)
+  get message () {
 
+    const { path, rawMessage } = this
+    const prefix = path.length === 0
+      ? path.join('.') + ' '
+      : ''
+
+    return `${prefix}${rawMessage}`
   }
 
+  constructor (rawMessage, value, path) {
+    super()
+
+    this.path = [ ...(path || []) ]
+    this.value = value
+    this.rawMessage = rawMessage
+  }
 }
 
 /******************************************************************************/
