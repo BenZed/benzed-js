@@ -3,13 +3,14 @@ import path from 'path'
 import is from 'is-explicit'
 import { randomBytes } from 'crypto'
 
-import { Schema, cast,
-  object, arrayOf, string, bool, number,
-  required, length, format, defaultTo
-} from '@benzed/schema'
+// eslint-disable-next-line no-unused-vars
+import { createValidator } from '@benzed/schema'
 import { get, set } from '@benzed/immutable'
 
 import { boolToObject, isEnabled } from './util'
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Config Validators
@@ -108,29 +109,6 @@ const eachKeyMustBeObject = value => {
   return value
 }
 
-const autoFillAuth = value => {
-
-  if (!is.plainObject(value))
-    return value
-
-  if (!is.string(value.secret)) {
-    const secret = randomBytes(48).toString('hex')
-    value = set(value, 'secret', secret)
-  }
-
-  // These are the feathers defaults, but they're needed for validation elsewhere
-  if (!is.string(value.path))
-    value = set(value, 'path', '/authentication')
-
-  if (!is.string(value.entity))
-    value = set(value, 'entity', 'user')
-
-  if (!is.string(value.service))
-    value = set(value, 'service', 'users')
-
-  return value
-}
-
 const fixPathOrEnv = value => {
 
   const isEnvVariableName = /^([A-Z]|_)+$/.test(value)
@@ -164,7 +142,7 @@ const finishPathsAndLinkToEnv = value => {
 }
 
 /******************************************************************************/
-// Defaults
+// defaults
 /******************************************************************************/
 
 const dataDbDir = () => {
@@ -176,112 +154,78 @@ const dataDbDir = () => {
 }
 
 /******************************************************************************/
-// Schemas
+// schemas
 /******************************************************************************/
 
-const ALLOW_ARBITRARY_KEYS = false
-const validateConfigObject = Schema(
-  {
+const ConfigUrl = <string
+  length={['>', 0, 'must not be empty']}
+  validate={[ fsExists(), fsContainsConfigJson() ]}
+/>
 
-    rest: object(
-      ALLOW_ARBITRARY_KEYS,
-      cast(boolToObject),
-      requiredIfNo('socketio'),
-      {
-        public: string(
-          fsExists(),
-          fsContains('index.html')
-        )
-      }
-    ),
+const Config = <object
+  cast={ConfigUrl}
+  plain
+  strict
+  validate={finishPathsAndLinkToEnv}>
 
-    socketio: object(
-      cast(boolToObject),
-      requiredIfNo('rest')
-    ),
+  <object key='rest'
+    cast={boolToObject}
+    validate={requiredIfNo('socketio')}
+  >
+    <string key='public'
+      validate={[fsExists(), fsContains('index.html')]}
+    />
+  </object>
 
-    mongodb: object(
-      {
-        username: string(),
-        password: string(),
-        database: string(required),
-        dbpath: string(
-          defaultTo(dataDbDir),
-          fsExists()
-        ),
-        hosts: arrayOf(
-          string(format(/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.')),
-          required,
-          length('>=', 1)
-        )
-      },
-      ALLOW_ARBITRARY_KEYS,
-      requiredIf('auth')
-    ),
+  <object key='socketio'
+    cast={boolToObject}
+    validate={requiredIfNo('rest')}
+  />
 
-    services: object(
-      cast(boolToObject),
-      eachKeyMustBeObject
-    ),
+  <object key='mongodb' validate={requiredIf('auth')}>
 
-    auth: object(
-      cast(boolToObject),
-      autoFillAuth
-    ),
+    <string key='username' />
+    <string key='password' />
+    <string key='database' />
+    <string key='dbpath'
+      default={dataDbDir}
+      validate={fsExists()}
+    />
 
-    port: number(
-      required
-    ),
+    <array key='hosts' length={[ '>=', 1 ]}>
+      <string
+        format={[/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.']}
+        required
+      />
+    </array>
 
-    logging: bool(
-      defaultTo(true)
-    )
-  },
-  ALLOW_ARBITRARY_KEYS,
-  finishPathsAndLinkToEnv
-)
+  </object>
 
-const validateConfigUrl = Schema(
-  string(
-    required,
-    notEmpty(),
-    fsExists(),
-    fsContainsConfigJson
-  )
-)
+  <object key='services'
+    cast={boolToObject}
+    validate={eachKeyMustBeObject}
+  />
 
-const validateConfig = (config, ...args) => {
+  <object key='auth' plain cast={boolToObject} >
+    <string key='secret' default={() => randomBytes(48).toString('hex')} />
+    <string key='path' default='/authentication' />
+    <string key='entity' default='user' />
+    <string key='service' default='users' />
+  </object>
 
-  if (is.string(config))
-    config = validateConfigUrl(config, ...args)
+  <number key='port' required />
 
-  if (!is.plainObject(config))
-    throw new Error('must be a plain object or url')
+  <bool key='logging' default={!!true} />
 
-  config = validateConfigObject(config, ...args)
-  return config
-}
+</object>
 
-const validateMode = new Schema(string(
-  trim,
-  notEmpty
-), 'mode')
-
-const validateClass = app => {
-
-  if (is.defined(app.rest) && !is.func(app.rest))
-    throw new Error('app.socketio not configured correctly. Must be a middleware function.')
-
-  if (is.defined(app.socketio) && !is.func(app.socketio))
-    throw new Error('app.socketio not configured correctly. Must be a middleware function.')
-
-  if (is.defined(app.services) && !is.objectOf.func(app.services))
-    throw new Error('app.services not configured correctly. Must be an object of functions.')
-
-}
+const Mode = <string key='mode'
+  trim
+  length={['>', 0, 'must not be empty']}
+/>
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { validateConfig, validateMode, validateClass, isEnabled }
+export { Config, Mode, isEnabled }

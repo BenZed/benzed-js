@@ -1,19 +1,11 @@
-import {
 
-  Schema,
-  number,
-  arrayOf,
-  func,
-  oneOf,
-  object,
-  string,
-
-  defaultTo,
-  required
-
-} from '@benzed/schema'
+// eslint-disable-next-line
+import { createValidator } from '@benzed/schema'
 
 import is from 'is-explicit'
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Data
@@ -29,17 +21,23 @@ const PRIORITY = Symbol('hook-priority')
 // Validation
 /******************************************************************************/
 
-const validateConfig = new Schema(object(
-  required,
-  {
-    name: string(defaultTo(ctx => ctx.data.exec.name || 'hook')),
-    priority: number(defaultTo(0)),
-    methods: arrayOf(oneOf(HOOK_METHODS), defaultTo(HOOK_METHODS)),
-    types: arrayOf(oneOf(HOOK_TYPES), defaultTo(HOOK_TYPES)),
-    exec: func(required),
-    setup: func()
-  })
-)
+const HookConfig = <object plain strict required >
+
+  <string key='name' default={ctx => ctx.value?.exec?.name || 'hook' }/>
+  <number key='priority' default={0}/>
+
+  <arrayOf key='methods' default={HOOK_METHODS}>
+    <oneOf>{HOOK_METHODS}</oneOf>
+  </arrayOf>
+
+  <arrayOf key='types' default={HOOK_TYPES}>
+    <oneOf>{HOOK_TYPES}</oneOf>
+  </arrayOf>
+
+  <func key='exec' required />
+  <func key='setup' />
+
+</object>
 
 /******************************************************************************/
 // Helper
@@ -105,7 +103,7 @@ class Hook {
 
   constructor (input) {
 
-    const config = validateConfig(input)
+    const config = HookConfig(input)
 
     const instancer = this::createInstancer(config)
 

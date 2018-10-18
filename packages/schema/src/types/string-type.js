@@ -95,6 +95,8 @@ class StringType extends SpecificType {
 
   // Canned Format Validators
 
+  // trim () {}
+
   // email () {}
 
   // phone () {}

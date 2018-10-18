@@ -121,11 +121,15 @@ class ObjectType extends Type {
     super(Object)
   }
 
+  cast () {
+
+  }
+
   compile (props) {
 
-    const typeProps = propsPluck(props, 'children', 'strict', 'plain')
+    const typeProps = propsPluck(props, 'children', 'strict', 'plain', 'cast')
 
-    const { children, plain, strict } = typeProps
+    const { children, plain, strict, cast } = typeProps
 
     // check children
     const hasChildren = children && children.length > 0
@@ -160,9 +164,10 @@ class ObjectType extends Type {
       : null
 
     return mergeResults(
+      // castValidator
+      super.compile(props),
       typeValidator,
       childValidator,
-      super.compile(props),
       strictValidator,
       typeProps
     )
