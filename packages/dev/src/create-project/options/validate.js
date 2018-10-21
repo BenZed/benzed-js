@@ -1,14 +1,15 @@
-import { object, Schema, string, bool, required, defaultTo } from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Shortcuts
 /******************************************************************************/
 
-const defaultToEmpty = defaultTo(() => Object({}))
-
 const mustBeEnabled = other =>
   (value, ctx) => {
-    return value === true && !ctx.data[other]
+    return value === true && !ctx.value[other]
       ? new Error(`requires ${other} to be enabled.`)
       : value
   }
@@ -17,20 +18,16 @@ const mustBeEnabled = other =>
 // Main
 /******************************************************************************/
 
-const validateOptions = new Schema(
-  object({
-    dir:      string(required),
-    name:     string(required),
-    api:      bool(defaultTo(false)),
-    socketio: bool(defaultTo(false)),
-    rest:     bool(defaultTo(false)),
-    auth:     bool(defaultTo(false), mustBeEnabled('api')),
-    files:    bool(defaultTo(false), mustBeEnabled('api')),
-    ui:       bool(defaultTo(false)),
-    routing:  bool(defaultTo(false), mustBeEnabled('ui'))
-  },
-  defaultToEmpty)
-)
+const validateOptions = <object strict plain default={{}}v>
+  <string key='dir' required />
+  <string key='name' required />
+  <bool key='api' default={false} />
+  <bool key='socketio' default={false} />
+  <bool key='rest' default={false} validate={mustBeEnabled('api')} />
+  <bool key='auth' default={false} validate={mustBeEnabled('api')} />
+  <bool key='ui' default={false} />
+  <bool key='routing' default={false} validate={mustBeEnabled('ui')} />
+</object>
 
 /******************************************************************************/
 // Exports

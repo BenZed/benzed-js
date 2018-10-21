@@ -4,6 +4,16 @@ import App from 'src/app'
 import { Service as MongoService } from 'feathers-mongodb'
 import { Service as MemoryService } from 'feathers-memory'
 
+import fs from 'fs-extra'
+import path from 'path'
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const databaseAdapterTestDir = path.resolve(__dirname, '../../../temp/database-adapter-test')
+fs.ensureDirSync(databaseAdapterTestDir)
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -22,7 +32,8 @@ describe('getDatabaseAdapter()', () => {
         logging: false,
         mongodb: {
           hosts: [ 'localhost:5716' ],
-          database: 'test-db'
+          database: 'test-db',
+          dbpath: databaseAdapterTestDir
         },
         socketio: true
       })

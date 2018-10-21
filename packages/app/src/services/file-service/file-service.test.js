@@ -169,7 +169,7 @@ function upload (url, dontStream) {
 // Tests
 /******************************************************************************/
 
-describe.only('File Service', () => {
+describe('File Service', () => {
 
   it('subclass of Service', () => {
     expect(is.subclassOf(FileService, Service)).to.be.equal(true)
@@ -197,7 +197,7 @@ describe.only('File Service', () => {
       describe('.storage.s3', () => {
         it('"s3" currently unsupported', () => newApp(
           ['services', 'files', 'storage', 's3'], 's3',
-          'storage.s3 \'s3\' not yet supported.'
+          'storage.s3 not yet supported.'
         ))
       })
 
@@ -297,73 +297,72 @@ describe.only('File Service', () => {
     it('handles partial file requests')
   })
 
-  createProjectAppAndTest(APP, state => {
-
-    before(async () => {
-      await state.client.connect()
-    })
-
-    describe('uploading to non-auth', () => {
-
-      metadata(state)
-      limitations(state)
-
-      it('any connection can upload files', async () => {
-        const [ id, file ] = await Promise.all(state::upload(URLS.data))
-
-        expect(id).to.not.be.equal(null)
-        expect(fs.existsSync(file)).to.be.equal(true)
-      })
-    })
-
-    serving(state)
-
-  })
-
-  createProjectAppAndTest(APP_WITH_AUTH, state => {
-
-    before(async () => {
-      await state.app::ensureUsers()
-      await state.client.connect()
-    })
-
-    describe('uploading to auth', () => {
-
-      let id
-      let file
-      before(async () => {
-        await state.client.authenticate({ strategy: 'local', ...USERS[0] })
-
-        const promises = state::upload(URLS.data);
-
-        ([ id, file ] = await Promise.all(promises))
-      })
-
-      it('user needs to be signed in to upload', async () => {
-        await state.client.logout()
-        const [ id ] = state::upload(URLS.data, DONT_STREAM)
-
-        await id::expectReject('Must be authenticated')
-        await state.client.authenticate({ strategy: 'local', ...USERS[0] })
-      })
-
-      it('signed in users can upload', () => {
-        expect(id).to.not.equal(null)
-        expect(fs.existsSync(file)).to.be.equal(true)
-      })
-
-      it('file has user id in uploader prop', async () => {
-        const doc = await state.app.files.get(id)
-        const [ bob ] = await state.app.users.find({ query: { email: USERS[0].email } })
-        expect(`${doc.uploader}`).to.be.equal(`${bob._id}`)
-      })
-
-      metadata(state)
-      limitations(state)
-
-    })
-
-    serving(state)
-
-  })
+  // createProjectAppAndTest(APP, state => {
+  //
+  //   before(async () => {
+  //     await state.client.connect()
+  //   })
+  //
+  //   describe('uploading to non-auth', () => {
+  //
+  //     metadata(state)
+  //     limitations(state)
+  //
+  //     it('any connection can upload files', async () => {
+  //       const [ id, file ] = await Promise.all(state::upload(URLS.data))
+  //
+  //       expect(id).to.not.be.equal(null)
+  //       expect(fs.existsSync(file)).to.be.equal(true)
+  //     })
+  //   })
+  //
+  //   serving(state)
+  //
+  // })
+  //
+  // createProjectAppAndTest(APP_WITH_AUTH, state => {
+  //
+  //   before(async () => {
+  //     await state.app::ensureUsers()
+  //     await state.client.connect()
+  //   })
+  //
+  //   describe('uploading to auth', () => {
+  //
+  //     let id
+  //     let file
+  //     before(async () => {
+  //       await state.client.authenticate({ strategy: 'local', ...USERS[0] })
+  //
+  //       const promises = state::upload(URLS.data);
+  //
+  //       ([ id, file ] = await Promise.all(promises))
+  //     })
+  //
+  //     it('user needs to be signed in to upload', async () => {
+  //       await state.client.logout()
+  //       const [ id ] = state::upload(URLS.data, DONT_STREAM)
+  //
+  //       await id::expectReject('Must be authenticated')
+  //       await state.client.authenticate({ strategy: 'local', ...USERS[0] })
+  //     })
+  //
+  //     it('signed in users can upload', () => {
+  //       expect(id).to.not.equal(null)
+  //       expect(fs.existsSync(file)).to.be.equal(true)
+  //     })
+  //
+  //     it('file has user id in uploader prop', async () => {
+  //       const doc = await state.app.files.get(id)
+  //       const [ bob ] = await state.app.users.find({ query: { email: USERS[0].email } })
+  //       expect(`${doc.uploader}`).to.be.equal(`${bob._id}`)
+  //     })
+  //
+  //     metadata(state)
+  //     limitations(state)
+  //
+  //   })
+  //
+  //   serving(state)
+  // })
 })

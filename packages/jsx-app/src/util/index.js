@@ -1,16 +1,10 @@
-import declareEntity from './declare-entity'
-import start from './start'
+import { ENTITY, FEATHERS } from './symbols'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default {
-  declareEntity,
-  start
-}
-
 export {
-  declareEntity,
-  start
+  ENTITY,
+  FEATHERS
 }

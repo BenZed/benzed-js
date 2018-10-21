@@ -116,6 +116,16 @@ describe('StringType', () => {
 
     })
 
+    describe('trim', () => {
+
+      it('trims strings', () => {
+        const code = <string trim />
+
+        expect(code('  hat  ')).to.be.equal('hat')
+      })
+
+    })
+
     describe('lowercase', () => {
 
       it('lowercases strings', () => {

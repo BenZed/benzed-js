@@ -1,16 +1,13 @@
-import declareEntity from './declare-entity'
-import start from './start'
+import app from './app'
+import rest from './rest'
+import socketio from './socketio'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default {
-  declareEntity,
-  start
-}
-
 export {
-  declareEntity,
-  start
+  app,
+  rest,
+  socketio
 }

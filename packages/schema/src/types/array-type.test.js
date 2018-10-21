@@ -3,6 +3,7 @@ import is from 'is-explicit'
 
 import Type from './type'
 import ArrayType from './array-type'
+import { wrap } from '@benzed/array'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -70,6 +71,7 @@ describe('ArrayType', () => {
   })
 
   describe('validators', () => {
+
     describe('cast', () => {
       it('defaults to wrap', () => {
         const whatever = <array cast />
@@ -80,6 +82,14 @@ describe('ArrayType', () => {
         const chars = <array cast={value => value.split('')} />
         expect(chars('cast'))
           .to.be.deep.equal(['c', 'a', 's', 't'])
+      })
+      it('can be an array of functions', () => {
+
+        const doubler = value => value * 2
+
+        const chars = <array cast={[ doubler, doubler, doubler, wrap ]} />
+        expect(chars(1))
+          .to.be.deep.equal([8])
       })
       it('enabled value must be true or a function', () => {
         expect(() => <array cast='to-a-number-or-whatever' />)

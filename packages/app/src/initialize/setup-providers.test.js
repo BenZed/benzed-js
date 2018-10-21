@@ -11,7 +11,7 @@ import setupProviders from './setup-providers'
 describe('setupProviders()', () => {
 
   it('must be bound to app', () => {
-    expect(setupProviders).to.throw('Cannot destructure property `feathers` of \'undefined\'')
+    expect(setupProviders).to.throw('Cannot')
   })
 
   it('is only export', () => {
@@ -45,10 +45,11 @@ describe('setupProviders()', () => {
           state.client.noticesReceived = 0
           state.client.io.on('test-notice', () => state.client.noticesReceived++)
           state.client.io.emit('test-message')
+
           await milliseconds(25)
         }
 
-        socketio (io) {
+        setupSocketMiddleware (io) {
           if (this && 'runsBound' in this)
             this.runsBound = true
 
@@ -92,20 +93,15 @@ describe('setupProviders()', () => {
             expect(state.client.noticesReceived).to.be.equal(1)
           })
       })
-
     })
   })
 
   describe('sets up rest', () => {
-
     describe('will be set up if', () => {
       it('config.rest is true')
     })
-
     describe('will not be set up if', () => {
       it('config.rest is false')
     })
-
   })
-
 })

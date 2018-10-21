@@ -1,25 +1,26 @@
-import is from 'is-explicit'
+import StringType from './string-type'
+
+// import { define, propToConfig, propIsEnabled } from '../util'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function addName (obj, name) {
+class UrlType extends StringType {
 
-  if (this !== undefined) {
-    name = obj
-    obj = this
-  }
+  file () { }
 
-  if (!is.object(obj) && !is.func(obj))
-    throw new Error('must be an object or function')
+  dir () { }
 
-  return Object.defineProperty(obj, 'name', { value: name })
+  ensure () { }
+
+  protocol () { }
+
+  exists () { }
 
 }
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default addName
+export default UrlType

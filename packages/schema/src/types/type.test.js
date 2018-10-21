@@ -127,20 +127,6 @@ describe('Type', () => {
           .to.be.equal(1000)
       })
 
-      it('order matters', () => {
-        expect(() => <any
-          required
-          default
-        />())
-          .to.throw('is required.')
-
-        expect(<any
-          default
-          required
-        />())
-          .to.be.equal(true)
-      })
-
       it('provided function gets called', () => {
         const rando = <any default={Math.random} />
         expect(typeof rando()).to.be.equal('number')
@@ -180,11 +166,19 @@ describe('Type', () => {
 
       })
 
-      it('throws if value does not have a numeric valueOf', () => {
+      it('ignore if value does not have a numeric valueOf', () => {
         const between1and10 = <any range={[0, 10]} />
 
-        expect(() => between1and10('sup'))
-          .to.throw('cannot compare range with non-numeric value')
+        for (const value of [ 'sup', null, undefined, {}, [], Symbol('ace') ])
+          expect(between1and10(value))
+            .to.be.deep.equal(value)
+      })
+
+      it('NaN should throw', () => {
+        const between1and10 = <any range={[0, 10]} />
+
+        expect(() => between1and10(NaN))
+          .to.throw('could not determine range of NaN')
       })
     })
 
@@ -196,17 +190,19 @@ describe('Type', () => {
           .to.throw('length must be equal to or greater than 3')
       })
 
-      it('throws if value does not have a numeric legnth', () => {
+      it('ignores if value does not have a numeric legnth', () => {
 
         const novel = { length: 501 }
         const short = { length: 10 }
 
         const book = <any length={['>', 500, 'must have more than 500 pages']} />
 
-        expect(() => book(501))
-          .to.throw('value does not have a numeric length')
+        expect(book(501))
+          .to.be.equal(501)
+
         expect(book(novel))
           .to.be.equal(novel)
+
         expect(() => book(short))
           .to.throw('must have more than 500 pages')
       })

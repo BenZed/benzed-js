@@ -1,4 +1,4 @@
-import addName from './add-name'
+import define from './define'
 import propIsEnabled from './prop-is-enabled'
 import propToConfig from './prop-to-config'
 import propToRangeAssert, { RANGE_LAYOUT } from './prop-to-range-assert'
@@ -17,7 +17,7 @@ import ValidationError from './validation-error'
 
 export {
 
-  addName,
+  define,
   runValidators,
 
   propIsEnabled,

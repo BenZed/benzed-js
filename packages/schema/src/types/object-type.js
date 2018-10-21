@@ -1,10 +1,12 @@
-import is from 'is-explicit'
+import { wrap } from '@benzed/array'
 
+import is from 'is-explicit'
 import Type from './type'
+import { inspect } from 'util'
 
 import {
 
-  addName, propIsEnabled, propsPluck, mergeResults, runValidators,
+  define, propIsEnabled, propsPluck, mergeResults, runValidators, propToConfig,
   isSchema, SCHEMA
 
 } from '../util'
@@ -40,6 +42,11 @@ function haveUniqueKeys () {
   return true
 }
 
+const strictConfig = propToConfig({
+  name: 'error',
+  test: [String, Function, Boolean]::is
+})
+
 /******************************************************************************/
 // Validators
 /******************************************************************************/
@@ -74,7 +81,8 @@ function runValidatorsOnEach (object, context) {
   }
 
   return async
-    ? Promise.all(async)
+    ? Promise
+      .all(async)
       .then(results => {
 
         for (let i = 0; i < results.length; i++) {
@@ -98,15 +106,32 @@ function runValidatorsOnEach (object, context) {
 
 function restrictToKeys (object) {
 
-  const children = this
+  const [ children, strict ] = this
 
-  const keys = []
+  const error = strict?.error
+
+  const goodKeys = []
   for (const schema of children)
-    keys.push(schema.key)
+    goodKeys.push(schema.key)
 
+  const badKeys = []
   for (const key in object)
-    if (!keys.includes(key))
-      delete object[key]
+    if (!goodKeys.includes(key))
+      if (error)
+        badKeys.push(key)
+      else
+        delete object[key]
+
+  if (badKeys.length > 0) {
+
+    const msg = is.func(error)
+      ? error(goodKeys, badKeys)
+      : error === true
+        ? `is limited to keys: ${inspect(...goodKeys)} received: ${inspect(...badKeys)}`
+        : error
+
+    throw new Error(msg)
+  }
 
   return object
 }
@@ -121,15 +146,11 @@ class ObjectType extends Type {
     super(Object)
   }
 
-  cast () {
-
-  }
-
   compile (props) {
 
     const typeProps = propsPluck(props, 'children', 'strict', 'plain', 'cast')
 
-    const { children, plain, strict, cast } = typeProps
+    const { children, plain, cast } = typeProps
 
     // check children
     const hasChildren = children && children.length > 0
@@ -140,7 +161,9 @@ class ObjectType extends Type {
       throw new Error(`${this.constructor.name} children must have unique keys`)
 
     const childValidator = children
-      ? children::runValidatorsOnEach
+      ? children::runValidatorsOnEach::define({
+        name: 'shape', priority: -45
+      })
       : null
 
     // consume 'plain' prop
@@ -153,18 +176,47 @@ class ObjectType extends Type {
         ? value
         : throw new Error(`must be a${plain ? ' plain' : 'n'} object`)
 
-    typeValidator::addName(`is${plain ? 'Plain' : ''}Object`)
+    typeValidator::define({
+      name: `is${plain ? 'Plain' : ''}Object`, priority: -50
+    })
 
     // consume 'strict' prop
-    if (strict && !hasChildren)
+    if (typeProps.strict && !hasChildren)
       throw new Error(`${this.constructor.name} strict can only be enabled on schemas with children`)
 
-    const strictValidator = strict
-      ? children::restrictToKeys
+    // just <object strict /> should not throw errors
+    if (typeProps.strict)
+      typeProps.strict = strictConfig(typeProps.strict === true
+        ? false
+        : typeProps.strict
+      )
+
+    const strictValidator = typeProps.strict
+      ? [ children, typeProps.strict ]
+        ::restrictToKeys
+        ::define({
+          name: 'strict', priority: -40
+        })
       : null
 
+    // consume 'cast' prop
+    const castIsEnabled = propIsEnabled(cast)
+    if (castIsEnabled && !is.func(cast) && !is.arrayOf.func(cast))
+      throw new Error(`${this.constructor.name} cast prop must be a function`)
+
+    let castValidator
+    if (castIsEnabled) {
+      castValidator = (value, context) => !is.defined(value) || isObjectTest(value)
+        ? value
+        : runValidators(wrap(cast), value, context)
+
+      castValidator::define({
+        name: `castTo${plain ? 'Plain' : ''}Object`, priority: -80
+      })
+    }
+
     return mergeResults(
-      // castValidator
+      castValidator,
       super.compile(props),
       typeValidator,
       childValidator,

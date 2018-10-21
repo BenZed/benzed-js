@@ -6,7 +6,7 @@ import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(copy, copier => {
+Test.optionallyBindableMethod(copy, copier => {
 
   describe('copies primitives', () => {
 
@@ -40,10 +40,7 @@ Test.optionallyBindableMethod.only(copy, copier => {
 
     it('works on plain objects', () => {
 
-      const obj = {
-        key: 'value'
-      }
-
+      const obj = { key: 'value' }
       const obj2 = copier(obj)
 
       expect(obj2).to.deep.equal(obj)
@@ -55,6 +52,14 @@ Test.optionallyBindableMethod.only(copy, copier => {
       const arr = [ 1, 2, 3, 4, 5 ]
 
       expect(copier(arr)).to.deep.equal(arr)
+
+    })
+
+    it('copies arrays with one length', () => {
+
+      const arrOfZero = [ 1 ]
+
+      expect(copier(arrOfZero)).to.be.deep.equal([ 1 ])
 
     })
 

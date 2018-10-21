@@ -1,12 +1,11 @@
 import feathers from '@feathersjs/feathers'
-import { get, set } from '@benzed/immutable'
+import { get, set, copy } from '@benzed/immutable'
 import { milliseconds } from '@benzed/async'
 import is from 'is-explicit'
 
 import {
   validateMode,
-  validateConfig,
-  validateClass
+  validateConfig
 } from './configure'
 
 import {
@@ -83,15 +82,13 @@ class App {
 
     this.mode = validateMode(mode)
 
-    const config = validateConfig(configInput, mode)
+    const config = validateConfig(copy(configInput), { data: { mode } })
 
     // create feathers app, apply config
     this.feathers = feathers()
 
     for (const key in config)
       this.set(key, config[key])
-
-    validateClass(this)
 
   }
 
@@ -197,9 +194,7 @@ class App {
 
     console.log(str)
   }
-
 }
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/

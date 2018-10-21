@@ -1,3 +1,14 @@
+import is from 'is-explicit'
+
+/******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const stringifyPath = (value, i) => i === 0
+  ? value
+  : is.number(value)
+    ? `[${value}]`
+    : `.${value}`
 
 /******************************************************************************/
 // Main
@@ -13,8 +24,8 @@ class ValidationError extends Error {
   get message () {
 
     const { path, rawMessage } = this
-    const prefix = path.length === 0
-      ? path.join('.') + ' '
+    const prefix = path.length > 0
+      ? path.map(stringifyPath).join('') + ' '
       : ''
 
     return `${prefix}${rawMessage}`

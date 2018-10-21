@@ -11,9 +11,9 @@ import is from 'is-explicit'
 // Data
 /******************************************************************************/
 
-const HOOK_METHODS = Object.freeze([ 'all', 'find', 'get', 'update', 'patch', 'create', 'remove' ])
+const HOOK_METHODS = [ 'all', 'find', 'get', 'update', 'patch', 'create', 'remove' ]
 
-const HOOK_TYPES = Object.freeze([ 'before', 'after', 'error' ])
+const HOOK_TYPES = [ 'before', 'after', 'error' ]
 
 const PRIORITY = Symbol('hook-priority')
 
@@ -26,11 +26,11 @@ const HookConfig = <object plain strict required >
   <string key='name' default={ctx => ctx.value?.exec?.name || 'hook' }/>
   <number key='priority' default={0}/>
 
-  <arrayOf key='methods' default={HOOK_METHODS}>
+  <arrayOf key='methods' default={HOOK_METHODS} cast>
     <oneOf>{HOOK_METHODS}</oneOf>
   </arrayOf>
 
-  <arrayOf key='types' default={HOOK_TYPES}>
+  <arrayOf key='types' default={HOOK_TYPES} cast>
     <oneOf>{HOOK_TYPES}</oneOf>
   </arrayOf>
 

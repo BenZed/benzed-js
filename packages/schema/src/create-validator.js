@@ -59,6 +59,18 @@ function runValidatorsPublic (value, options = {}) {
 
 }
 
+const byPriority = (a, b) => {
+
+  const ap = a.priority || 0
+  const bp = b.priority || 0
+
+  return ap > bp
+    ? 1
+    : ap < bp
+      ? -1
+      : 0
+}
+
 /******************************************************************************/
 // Validator psuedo type
 /******************************************************************************/
@@ -75,6 +87,9 @@ function Validator (input, props = {}) {
   // resolve compiler
   const isType = is(input, Type)
   const isSchema = !isType && SCHEMA in input
+  if (isSchema && 'children' in props && !is.defined(props.children))
+    delete props.children
+
   if (isSchema) {
     props = { ...input[SCHEMA].props, ...props }
     compiler = input[SCHEMA].compiler
@@ -103,6 +118,16 @@ function Validator (input, props = {}) {
 
   if (!validators.every(is.func))
     throw new Error('compilers must return a validator or array of validators')
+
+  // TEMP HACK okay, so I've gone and added priorities to all the stock validators
+  // so that they are run in an order that makes sense. By default, validations
+  // will happen in this order:
+  // default -> cast -> required -> type -> mutate -> extended -> custom
+  // Where extended are validators defined by extending type classes, and custom
+  // are validators defined by the 'validate' or 'validates' property.
+  // This doesn't solve all use cases, and is not very elegant, but it will do
+  // until I come up with something better.
+  validators.sort(byPriority)
 
   // check props
   if (!is.plainObject(props))

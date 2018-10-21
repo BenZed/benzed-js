@@ -1,11 +1,13 @@
 import path from 'path'
 import fs from 'fs'
+import is from 'is-explicit'
 
 import { copy } from '@benzed/immutable'
 import { between } from '@benzed/string'
-import { Schema, string, func, required } from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
-import is from 'is-explicit'
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Data
@@ -30,11 +32,11 @@ const mustHaveIndexHtml = publicDir => {
   return publicDir
 }
 
-const validateConfig = new Schema({
-  publicDir: string(required, mustHaveIndexHtml),
-  getComponent: func,
-  serializer: func
-})
+const validateConfig = <object>
+  <string key='publicDir' required validate={mustHaveIndexHtml} />
+  <func key='getComponent' />
+  <func key='serializer' />
+</object>
 
 /******************************************************************************/
 // HtmlTemplate
@@ -181,9 +183,10 @@ class HtmlTemplate {
 
       context = {}
 
-      ui = <StaticRouter location={req.url} context={context}>
-        <Component {...props}/>
-      </StaticRouter>
+      ui = React.createElement(StaticRouter, { location: req.url, context },
+        React.createElement(Component, props)
+      )
+
     }
 
     if (context && context.url) {

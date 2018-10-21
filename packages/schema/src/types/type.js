@@ -1,13 +1,12 @@
 import is from 'is-explicit'
 
 import {
-  addName, propIsEnabled, propToConfig, propToRangeAssert,
+  define, propIsEnabled, propToConfig, propToRangeAssert,
   RANGE_LAYOUT
 } from '../util'
 
 import { wrap, hasNumericLength } from '@benzed/array'
 import { copy, change } from '@benzed/immutable'
-import { round } from '@benzed/math'
 
 /******************************************************************************/
 // Data
@@ -24,26 +23,6 @@ const requireConfig = propToConfig({
   test: is.string,
   default: 'is required.'
 })
-
-const getNumericValue = value => {
-
-  const number = is.number(value)
-    ? value
-    : value.valueOf()
-
-  if (!is.number(number))
-    throw new Error('cannot compare range with non-numeric value')
-
-  return number
-}
-
-const getNumericLength = value => {
-
-  if (!hasNumericLength(value))
-    throw new Error('value does not have a numeric length')
-
-  return value.length
-}
 
 const LENGTH_LAYOUT = RANGE_LAYOUT::change(layout => {
 
@@ -137,7 +116,9 @@ class Type {
         ? value
         : throw new Error(err)
 
-    validator::addName('required')
+    validator::define({
+      name: 'required', priority: -70
+    })
 
     return {
       validator,
@@ -152,6 +133,11 @@ class Type {
     const validators = wrap(prop)
     if (!is.arrayOf.func(validators))
       throw new Error('validate takes a validator function or an array thereof')
+
+    for (const validator of validators)
+      validator::define({
+        priority: 100
+      })
 
     return validators
   }
@@ -171,7 +157,9 @@ class Type {
         ? value
         : setDefault(context)
 
-    return validator::addName('setDefault')
+    return validator::define({
+      name: 'setDefault', priority: -100
+    })
   }
 
   range (prop) {
@@ -181,20 +169,26 @@ class Type {
 
     const assertInRange = propToRangeAssert(prop)
 
-    const { operator, min, max, value } = prop = assertInRange.config
+    prop = assertInRange.config
 
     const validator = value => {
-      if (is.defined(value))
-        assertInRange(getNumericValue(value))
+
+      const number = is.number(value)
+        ? value
+        : value != null && value.valueOf()
+
+      if (is.nan(number))
+        throw new Error('could not determine range of NaN')
+
+      if (is.number(number))
+        assertInRange(number)
 
       return value
     }
 
-    const name = operator === '<=>'
-      ? `range${round(min)}${operator}${round(max)}`
-      : `range${operator}${round(value)}`
-
-    validator::addName(name)
+    validator::define({
+      name: 'range', priority: -25
+    })
 
     return {
       validator,
@@ -208,23 +202,19 @@ class Type {
       return null
 
     const assertLength = propToLengthAssert(prop)
-    const { operator, min, max, value } = prop = assertLength.config
+    prop = assertLength.config
 
     const validator = value => {
 
-      if (is.defined(value)) {
-        const length = getNumericLength(value)
-        assertLength(length)
-      }
+      if (hasNumericLength(value))
+        assertLength(value.length)
 
       return value
     }
 
-    const name = operator === '<=>'
-      ? `length${min}${operator}${max}`
-      : `length${operator}${value}`
-
-    validator::addName(name)
+    validator::define({
+      name: 'length', priority: -25
+    })
 
     return {
       validator,

@@ -40,9 +40,11 @@ function registerToFeathers (app, path, adapter, config) {
   else
     middleware.push(adapter)
 
-  return feathers
+  const feathersService = feathers
     .use(`/${path}`, ...middleware)
     .service(path)
+
+  return feathersService
 }
 
 /******************************************************************************/

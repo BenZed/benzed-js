@@ -5,7 +5,7 @@ import { includes as valueEqual } from '@benzed/immutable'
 import Type from './type'
 import { inspect } from 'util'
 
-import { addName, propIsEnabled, propsPluck, mergeResults } from '../util'
+import { define, propIsEnabled, propsPluck, mergeResults } from '../util'
 
 /******************************************************************************/
 // Equality Checks
@@ -43,7 +43,9 @@ function checkValue (values, equalityCheck) {
       ? value
       : throw new Error(`must be either: ${values.map(inspect).join(', ')}`)
 
-  return validator::addName('checkValue')
+  return validator::define({
+    name: 'isOneOf', priority: -50
+  })
 
 }
 

@@ -5,6 +5,8 @@ import {
   ArrayType, ObjectType, ValueType, MultiType
 } from './types'
 
+import { inspect } from 'util'
+
 /******************************************************************************/
 // Default Type Map
 /******************************************************************************/
@@ -70,7 +72,7 @@ function resolveCompiler (type) {
     output = new GenericType()
 
   if (!is(output, GenericType) && !is.func(output))
-    throw new Error(`could not resolve type ${type}`)
+    throw new Error(`could not resolve type: ${inspect(type)}`)
 
   return output
 }

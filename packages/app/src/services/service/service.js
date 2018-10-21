@@ -2,7 +2,8 @@ import is from 'is-explicit'
 
 import App from '../../app'
 
-import { Schema, string, bool, required, defaultTo, cast } from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
+
 import getDatabaseAdapter from './get-database-adapter'
 import registerToFeathers from './register-to-feathers'
 import compileHooks, {
@@ -14,47 +15,33 @@ import compileHooks, {
 
 import { boolToObject } from '../../util'
 
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
 
-const ALLOW_ARBITRARY_KEYS = false
-
-const defaultToName = (value, { args: [ name ] }) =>
+const removeFirstSlash = value =>
   is.string(value)
-    ? value
-    : name
+    ? value.replace(/^\/+/, '')
+    : value
 
-const removeFirstSlash = value => {
-  if (!is.string(value))
-    return value
+const validateConfig = <object plain>
+  <string key='path' default={ctx => ctx.data.name} validate={removeFirstSlash}/>
+  <bool key='auth' default={!!true} />
+  <object key='soft-delete' cast={boolToObject} />
+  <object key='versions' cast={boolToObject} />
+  <object key='live-edit' cast={boolToObject} />
+</object>
 
-  value = value.replace(/^\/+/, '')
+const validateName = <string required />
 
-  return value
-}
-
-const validateConfig = new Schema({
-
-  'path': string(defaultToName, removeFirstSlash),
-  'auth': bool(defaultTo(true)),
-  'soft-delete': cast(boolToObject),
-  'versions': cast(boolToObject),
-  'live-edit': cast(boolToObject)
-
-}, ALLOW_ARBITRARY_KEYS)
-
-const validateName = new Schema(
-  string(required('Name is required.'))
-)
-
-const validateApp = value => {
-
-  if (!is(value, App))
-    throw new Error('Must be an App instance.')
-
-  return value
-}
+const validateApp = <object validate={app =>
+  is(app, App)
+    ? app
+    : throw new Error('must be an App instance.')}
+/>
 
 /******************************************************************************/
 // Main
@@ -69,7 +56,7 @@ class Service {
       paginate // ,
       // versions,
       // 'live-edit': liveEdit,
-    } = config = validateConfig(config, name)
+    } = config = validateConfig(config, { data: { name } })
     name = validateName(name)
     app = validateApp(app)
 

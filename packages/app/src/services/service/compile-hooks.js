@@ -6,9 +6,13 @@ import {
   castQueryIds
 } from '../../hooks'
 
-import { Schema, object, arrayOf, func, defaultTo } from '@benzed/schema'
-
 import { Service as MemoryService } from 'feathers-memory'
+
+import { wrap } from '@benzed/array'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Symbol
@@ -20,37 +24,25 @@ const HOOKS = Symbol('hooks')
 // Validation
 /******************************************************************************/
 
-const emptyObject = () => Object({})
-const emptyArray = () => []
+const HookSchema = <arrayOf cast default={[]}>
+  <func/>
+</arrayOf>
 
-const methodArr = arrayOf(func, defaultTo(emptyArray))
+const HookMethodSchema = <object default={{}} plain strict>
+  <HookSchema key='all' />
+  <HookSchema key='get' />
+  <HookSchema key='find' />
+  <HookSchema key='create' />
+  <HookSchema key='patch' />
+  <HookSchema key='update' />
+  <HookSchema key='remove' />
+</object>
 
-const methodObj = object({
-  all: methodArr,
-  get: methodArr,
-  find: methodArr,
-  create: methodArr,
-  patch: methodArr,
-  update: methodArr,
-  remove: methodArr
-},
-defaultTo(emptyObject),
-true,
-'Must be an object with hook methods as keys.'
-)
-
-const validateHookTypeStructure = new Schema(
-  object({
-    before: methodObj,
-    after: methodObj,
-    error: methodObj
-  },
-  'Must be an object with hook types as keys',
-  true,
-  defaultTo(emptyObject))
-)
-
-const validateHookMethodStructure = new Schema(methodObj)
+const HookTypeSchema = <object plain strict>
+  <HookMethodSchema key='before' />
+  <HookMethodSchema key='after' />
+  <HookMethodSchema key='error' />
+</object>
 
 /******************************************************************************/
 // Hook Compiler
@@ -90,7 +82,7 @@ function addServiceHooks (app, config) {
 
   let serviceHooks = service.addHooks(config, app)
   if (serviceHooks) {
-    serviceHooks = validateHookTypeStructure(serviceHooks)
+    serviceHooks = HookTypeSchema(serviceHooks)
     mergeHooks(service[HOOKS], serviceHooks)
   }
 
@@ -170,8 +162,8 @@ function compileHooks (app, config, adapter) {
 export default compileHooks
 
 export {
-  validateHookTypeStructure,
-  validateHookMethodStructure,
+  HookTypeSchema as validateHookTypeStructure,
+  HookMethodSchema as validateHookMethodStructure,
   mergeHooks,
   HOOKS
 }

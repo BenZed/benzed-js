@@ -39,6 +39,8 @@ describe('createValidator', () => {
 
       expect(() => upper(100)).to.throw(ValidationError)
     })
+
+    it('sorts validators by priority')
   })
 
   it('can nest existing validators', () => {
@@ -49,6 +51,30 @@ describe('createValidator', () => {
     expect(id.props).to.have.property('uppercase', true)
     expect(id.props.length).to.have.property('value', 9)
     expect(id.type).to.be.equal(String)
+  })
+
+  it('nesting validators doesn\'t overwrite children', () => {
+
+    const Vector = <object strict>
+      <number key='x' required />
+      <number key='y' required />
+    </object>
+
+    let Coords
+    expect(() => {
+      Coords = <object strict>
+        <Vector key='position' />
+        <Vector key='scale' default={{ x: 1, y: 1 }} />
+      </object>
+    }).to.not.throw(Error)
+
+    expect(Coords({
+      position: { x: 100, y: 100 }
+    })).to.be.deep.equal({
+      position: { x: 100, y: 100 },
+      scale: { x: 1, y: 1 }
+    })
+
   })
 
   it('can use custom compilers', () => {

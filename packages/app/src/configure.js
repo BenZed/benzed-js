@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto'
 
 // eslint-disable-next-line no-unused-vars
 import { createValidator } from '@benzed/schema'
-import { get, set } from '@benzed/immutable'
+import { get } from '@benzed/immutable'
 
 import { boolToObject, isEnabled } from './util'
 
@@ -13,27 +13,17 @@ import { boolToObject, isEnabled } from './util'
 /* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
-// Config Validators
+// ConfigSchema Validators
 /******************************************************************************/
 
 // TODO Temporary, this will be moved to @benzed/schema
 
-function trim (value) {
-  return value && value.trim()
-}
+function fsContainsConfigSchemaJson (value, { data }) {
 
-function notEmpty (value) {
-  return value && value.length > 0
-    ? value
-    : new Error(`must not be an empty string.`)
-}
-
-function fsContainsConfigJson (value, { args }) {
-
-  if (!value)
+  if (!is.string(value))
     return value
 
-  const [ mode ] = args
+  const { mode } = data
   try {
     const jsonUrl = path.join(value, mode)
 
@@ -46,24 +36,24 @@ function fsContainsConfigJson (value, { args }) {
 }
 
 function fsContains (...names) {
-  return (value, ctx) => {
+  return value => {
 
-    if (!value)
+    if (!is.string(value))
       return value
 
     return names
       .map(name => path.join(value, name))
       .every(url => fs.existsSync(url))
       ? value
-      : new Error(`must contain files '${names}': ${value}`)
+      : throw new Error(`must contain files '${names}': ${value}`)
   }
 }
 
 function fsExists (...exts) {
-  return (value, { original }) => {
+  return value => {
 
-    if (!value)
-      return
+    if (!is.string(value))
+      return value
 
     if (!fs.existsSync(value))
       throw new Error(`does not exist: ${value}`)
@@ -82,15 +72,15 @@ function fsExists (...exts) {
 
 function requiredIfNo (other) {
 
-  return (value, ctx) => value == null && !get(ctx.data, other)
-    ? new Error(`required if ${other} is disabled.`)
+  return (value, ctx) => !value && !get(ctx.value, other)
+    ? throw new Error(`required if ${other} is disabled.`)
     : value
 }
 
 function requiredIf (other) {
 
-  return (value, ctx) => value == null && get(ctx.data, other)
-    ? new Error(`required if ${other} is enabled.`)
+  return (value, ctx) => !value && get(ctx.value, other)
+    ? throw new Error(`required if ${other} is enabled.`)
     : value
 }
 
@@ -104,7 +94,7 @@ const eachKeyMustBeObject = value => {
 
   for (const key in value)
     if (value[key] !== null && !is.plainObject(value[key]))
-      return new Error('must be comprised of objects')
+      throw new Error('must be comprised of objects')
 
   return value
 }
@@ -157,32 +147,34 @@ const dataDbDir = () => {
 // schemas
 /******************************************************************************/
 
-const ConfigUrl = <string
-  length={['>', 0, 'must not be empty']}
-  validate={[ fsExists(), fsContainsConfigJson() ]}
+const ConfigSchemaUrl = <any
+  length={[ '>', 0 ]}
+  validate={[ fsExists(), fsContainsConfigSchemaJson ]}
 />
 
-const Config = <object
-  cast={ConfigUrl}
+const ConfigSchema = <object
   plain
-  strict
+  key='config'
   validate={finishPathsAndLinkToEnv}>
 
   <object key='rest'
     cast={boolToObject}
+    plain
     validate={requiredIfNo('socketio')}
   >
     <string key='public'
+      cast
       validate={[fsExists(), fsContains('index.html')]}
     />
   </object>
 
   <object key='socketio'
     cast={boolToObject}
+    plain
     validate={requiredIfNo('rest')}
   />
 
-  <object key='mongodb' validate={requiredIf('auth')}>
+  <object key='mongodb' plain validate={requiredIf('auth')}>
 
     <string key='username' />
     <string key='password' />
@@ -192,9 +184,9 @@ const Config = <object
       validate={fsExists()}
     />
 
-    <array key='hosts' length={[ '>=', 1 ]}>
+    <array key='hosts' length={[ '>=', 1 ]} cast>
       <string
-        format={[/([A-z]|[0-9]|-|\.)+:\d+/, 'Must be a url.']}
+        format={[/([A-z]|[0-9]|-|\.)+:\d+/, 'must be a url.']}
         required
       />
     </array>
@@ -219,13 +211,24 @@ const Config = <object
 
 </object>
 
-const Mode = <string key='mode'
+const ModeSchema = <string key='mode'
   trim
-  length={['>', 0, 'must not be empty']}
+  length={['>', 0, 'must not be an empty string.']}
 />
+
+const validateConfig = (input, options) => {
+
+  if (is.string(input))
+    input = ConfigSchemaUrl(input, options)
+
+  if (!is.plainObject(input))
+    throw new Error('must be a url or plain object')
+
+  return ConfigSchema(input)
+}
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export { Config, Mode, isEnabled }
+export { validateConfig, ModeSchema as validateMode, isEnabled }

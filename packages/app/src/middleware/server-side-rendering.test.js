@@ -59,7 +59,7 @@ describe('serverSideRender()', () => {
       it('must be a string', () => {
         expect(() => serverSideRender({
           publicDir: {}
-        })).to.throw(`publicDir Must be of type: String`)
+        })).to.throw(`publicDir must be of type: String`)
       })
       it('throws if public dir does not have an index.html', () => {
         expect(() => serverSideRender({
@@ -91,7 +91,7 @@ describe('serverSideRender()', () => {
         )
       })
       it('is required', () => {
-        expect(() => serverSideRender({})).to.throw('publicDir is Required.')
+        expect(() => serverSideRender({})).to.throw('publicDir is required.')
       })
     })
 
@@ -101,7 +101,7 @@ describe('serverSideRender()', () => {
         expect(() => serverSideRender({
           publicDir,
           getComponent: {}
-        })).to.throw('getComponent Must be of type: Function')
+        })).to.throw('getComponent must be of type: Function')
       })
     })
 
@@ -112,7 +112,7 @@ describe('serverSideRender()', () => {
           publicDir,
           getComponent: () => () => <h1>YO</h1>,
           serializer: {}
-        })).to.throw('serializer Must be of type: Function')
+        })).to.throw('serializer must be of type: Function')
       })
     })
 

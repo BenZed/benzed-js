@@ -6,10 +6,10 @@ import is from 'is-explicit'
 import { equals, merge, EQUALS, indexOf } from '@benzed/immutable'
 import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
-import {
-  Schema, required, string, any, typeOf, number, defaultTo
-} from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 /******************************************************************************/
 // Symbols
 /******************************************************************************/
@@ -25,40 +25,32 @@ const isSubclassOfServiceRecord = value => is.subclassOf(value, ServiceRecord)
   ? value
   : new Error('must be a subclass of ServiceRecord')
 
-const validateConfig = new Schema({
-
-  client: typeOf(
-    ClientStore,
-    required('Must be instanced with a client store.')
-  ),
-
-  serviceName: string(
-    defaultTo(p =>
-      p.data.record &&
-      p.data.record.name &&
-      p.data.record.name.toLowerCase() + 's'),
+const validateConfig = <object>
+  <ClientStore
+    key='client'
+    required='Must be instanced with a client store.'
+  />
+  <string
+    key='serviceName'
+    default={ctx => ctx.value?.record?.toLowerCase?.() + 's'}
+  />
+  <number
+    key='maxScopedRecords'
+    default={10000}
     required
-  ),
-
-  maxScopedRecords: number(
-    defaultTo(10000),
-    // range('>=', 100),
+  />
+  <number
+    key='pollInterval'
+    default={5000}
+    range={['>=', 500]}
     required
-  ),
-
-  pollInterval: number(
-    defaultTo(5000),
-    // range('>=', 250),
+  />
+  <func key='record'
+    default={ServiceRecord}
+    validate={isSubclassOfServiceRecord}
     required
-  ),
-
-  record: any(
-    defaultTo({ value: ServiceRecord, call: false }),
-    isSubclassOfServiceRecord,
-    required
-  )
-
-}, required)
+  />
+</object>
 
 /******************************************************************************/
 // Query Queue

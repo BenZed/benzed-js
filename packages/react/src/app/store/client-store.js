@@ -5,15 +5,18 @@ import FetchService from '@feathersjs/rest-client/lib/fetch'
 import SocketIOService from '@feathersjs/transport-commons/client'
 import authentication from '@feathersjs/authentication-client'
 
-import { Schema, arrayOf, string, object, required, oneOf, cast } from '@benzed/schema'
 import { until } from '@benzed/async'
 import { copy } from '@benzed/immutable'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 import Store, { task } from '../../store'
 import { isClient } from '../../util'
 
 import fetch from 'isomorphic-fetch'
 import io from 'socket.io-client'
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Data
@@ -78,27 +81,25 @@ const mustIncludeProtocol = host =>
     ? host
     : new Error('Host must include http(s) protocol.')
 
-const validateConfig = new Schema(
-  {
-    hosts: arrayOf(
-      string,
-      required,
-      mustIncludeProtocol
-    ),
+const validateConfig = <object required='ClientStore configuration is required.'>
 
-    provider: oneOf(
-      ['rest', 'socketio'],
+  <array key='hosts'
+    required
+    length={['>', 0]}
+  >
+    <string
       required
-    ),
+      validate={mustIncludeProtocol}
+    />
+  </array>
 
-    auth: object(
-      cast(boolOrStringToToken),
-      authAutoFill
-    )
-  },
+  <oneOf key='provider'>
+    {'rest'}{'socketio'}
+  </oneOf>
 
-  required('ClientStore configuration is required.')
-)
+  <object key='auth' cast={boolOrStringToToken} validate={authAutoFill} />
+
+</object>
 
 /******************************************************************************/
 // Custom Rest Functionality

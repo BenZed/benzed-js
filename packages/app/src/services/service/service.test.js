@@ -2,6 +2,17 @@ import { expect } from 'chai'
 import Service from './service'
 
 import App from '../../app'
+
+import fs from 'fs-extra'
+import path from 'path'
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const serviceTestDbDir = path.resolve(__dirname, '../../../temp/service-test-db')
+fs.ensureDirSync(serviceTestDbDir)
+
 // import { CONFIG_OBJ } from 'test/util'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -16,22 +27,22 @@ describe('Service', () => {
 
     describe('takes a config object, name and App instance', () => {
       it('throws if config is not an object', () => {
-        expect(() => new Service('oy')).to.throw('Must be an Object')
+        expect(() => new Service('oy')).to.throw('must be a plain object')
       })
       it('throws if name is not a string', () => {
         expect(() => new Service({}, null))
           .to.not
-          .throw('Must be of type: String')
+          .throw('must be of type: String')
 
         expect(() => new Service({}, {}))
           .to
-          .throw('Must be of type: String')
+          .throw('must be of type: String')
       })
       it('throws if app is not an app instance', () => {
         expect(() => new Service({}, 'comments'))
-          .to.throw('Must be an App instance.')
+          .to.throw('must be an App instance.')
         expect(() => new Service({}, 'comments', {}))
-          .to.throw('Must be an App instance.')
+          .to.throw('must be an App instance.')
       })
     })
 
@@ -77,7 +88,8 @@ describe('Service', () => {
           },
           mongodb: {
             database: 'test-db',
-            hosts: 'localhost:4616'
+            hosts: 'localhost:4616',
+            dbpath: serviceTestDbDir
           }
         })
 

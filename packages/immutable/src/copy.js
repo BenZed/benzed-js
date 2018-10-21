@@ -79,11 +79,21 @@ function copyConsideringRefs (value, refs) {
     const args = getArgsFromIterable(value, refs)
 
     return isArray
-      ? new Type(...args)
+      ? newArrayOfType(Type, args, refs)
       : new Type(args)
   }
 
   return copyPlainObject(value, refs)
+}
+
+function newArrayOfType (Type, array, refs) {
+
+  const output = new Type(array.length)
+
+  for (let i = 0; i < array.length; i++)
+    output[i] = copyConsideringRefs(array[i], refs)
+
+  return output
 }
 
 /******************************************************************************/

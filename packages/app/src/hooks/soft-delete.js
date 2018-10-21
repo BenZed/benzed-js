@@ -1,9 +1,12 @@
 import Hook from './hook'
 import { AUTH_PRIORITY } from './jwt-auth'
 
-import { Schema, func, string, bool, defaultTo } from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { NotFound } from '@feathersjs/errors'
 import { set } from '@benzed/immutable'
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
 // Data
@@ -62,12 +65,12 @@ async function throwIfDeleted (hook, { field, disableParam }) {
 // Main
 /******************************************************************************/
 
-const setup = new Schema({
-  field:              string(defaultTo('deleted')),
-  disableParam:       string(defaultTo('$disableSoftDelete')),
-  allowClientDisable: bool(defaultTo(false)),
-  setDeleted:         func(defaultTo(() => setDeletedTimestamp))
-})
+const setup = <object>
+  <string key='field' default='deleted'/>
+  <string key='disableParam' default='$disableSoftDelete'/>
+  <bool key='allowClientDisable' default={false} />
+  <func key='setDeleted' default={() => setDeletedTimestamp} />
+</object>
 
 async function exec (ctx) {
 

@@ -6,7 +6,7 @@ import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(change, change => {
+Test.optionallyBindableMethod(change, change => {
 
   let data, data2
   before(() => {

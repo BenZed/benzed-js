@@ -1,24 +1,20 @@
-import { Schema, defaultTo, string, object, required } from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap, unwrap } from '@benzed/array'
 
 import Hook from './hook'
 import { boolToObject } from '../util'
 
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const setup = new Schema(object({
-
-  cast: boolToObject,
-  shape: {
-    createField: string(defaultTo('created')),
-    updateField: string(defaultTo('updated'))
-  },
-
-  validators: required
-
-}))
+const setup = <object cast={boolToObject} required>
+  <string key='createFiled' default='created' />
+  <string key='updateField' default='updated' />
+</object>
 
 async function exec (ctx) {
 

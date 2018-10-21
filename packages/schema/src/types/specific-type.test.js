@@ -15,7 +15,11 @@ import is from 'is-explicit'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-class Foo { }
+class Foo {
+  constructor (input) {
+    this.input = input
+  }
+}
 
 describe('SpecificType', () => {
 
@@ -50,6 +54,21 @@ describe('SpecificType', () => {
         expect(() => <Foo cast={new Foo()} />)
           .to
           .throw('cast validator requires a function')
+      })
+
+      it('can take an array of functions as well', () => {
+
+        const doubler = value => is.number(value)
+          ? value * 2
+          : 1
+
+        const toFoo = value => is(value, Foo)
+          ? Foo
+          : new Foo(value)
+
+        const triple = <Foo cast={[ doubler, doubler, doubler, toFoo ]} />
+
+        expect(triple(1)).to.have.property('input', 8)
       })
 
       it('throws if given true, which is meant to be used as a default caster in extended types', () => {

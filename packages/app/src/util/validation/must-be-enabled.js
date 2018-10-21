@@ -1,12 +1,12 @@
 import isEnabled from '../is-enabled'
-import { OPTIONAL_CONFIG, argsToConfig } from '@benzed/schema'
+import { propToConfig } from '@benzed/schema'
 import is from 'is-explicit'
 
 /******************************************************************************/
 // Config
 /******************************************************************************/
 
-const mustBeEnabledConfig = argsToConfig([
+const mustBeEnabledConfig = propToConfig([
   {
     name: 'err',
     test: is.string,
@@ -18,18 +18,16 @@ const mustBeEnabledConfig = argsToConfig([
 //
 /******************************************************************************/
 
-function mustBeEnabled (...args) {
+function mustBeEnabled (prop) {
 
-  const config = mustBeEnabledConfig(args)
+  const config = mustBeEnabledConfig(prop)
 
   const mustBeEnabled = value => isEnabled(value)
     ? value
-    : new Error(config.err)
+    : throw new Error(config.err)
 
   return mustBeEnabled
 }
-
-mustBeEnabled[OPTIONAL_CONFIG] = true
 
 /******************************************************************************/
 // Exports

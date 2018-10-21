@@ -4,7 +4,7 @@ import { clamp } from '@benzed/math'
 
 import SpecificType from './specific-type'
 
-import { addName, propToConfig, propIsEnabled } from '../util'
+import { define, propToConfig, propIsEnabled } from '../util'
 
 /******************************************************************************/
 // Layout
@@ -65,7 +65,9 @@ class NumberType extends SpecificType {
         ? clamp(value, min, max)
         : value
 
-    validator::addName(`clamp${min}-${max}`)
+    validator::define({
+      name: 'clamp', priority: -25
+    })
 
     return {
       validator,

@@ -4,7 +4,7 @@ import { SYNC } from './object-type'
 
 import { wrap } from '@benzed/array'
 
-import { addName, propIsEnabled, runValidators, isSchema, SCHEMA } from '../util'
+import { define, propIsEnabled, runValidators, isSchema, SCHEMA } from '../util'
 
 /******************************************************************************/
 // Validators
@@ -73,8 +73,15 @@ class ArrayType extends Type {
       throw new Error(`${this.constructor.name} may have a maximum of one child`)
 
     const typeValidator = hasChildren
-      ? children::isArrayOf
-      : isArray
+      ? children
+        ::isArrayOf
+        ::define({
+          name: 'isArrayOf', priority: -50
+        })
+
+      : isArray::define({
+        name: 'isArray', priority: -50
+      })
 
     return typeValidator
   }
@@ -88,19 +95,21 @@ class ArrayType extends Type {
       prop = wrap
 
     const castFunc = prop
-    if (!is.func(castFunc))
+    if (!is.func(castFunc) && !is.arrayOf.func(castFunc))
       throw new Error(`${this.constructor.name} cast prop must be true or a function`)
 
-    const validator = value =>
+    const validator = (value, context) =>
       is.defined(value) && !is.array(value)
-        ? castFunc(value)
+        ? runValidators(wrap(castFunc), value, context)
         : value
 
-    validator::addName(`castToArray`)
+    validator::define({
+      name: 'castToArray', priority: -80
+    })
 
     return {
       validator,
-      castFunc
+      prop: castFunc
     }
   }
 

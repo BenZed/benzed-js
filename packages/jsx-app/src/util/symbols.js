@@ -1,16 +1,13 @@
-import declareEntity from './declare-entity'
-import start from './start'
+
+const ENTITY = Symbol('entity')
+
+const FEATHERS = Symbol('feathers-app-instance')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default {
-  declareEntity,
-  start
-}
-
 export {
-  declareEntity,
-  start
+  ENTITY,
+  FEATHERS
 }

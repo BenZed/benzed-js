@@ -1,13 +1,15 @@
 import is from 'is-explicit'
 
-import { Schema, string, length, trim } from '@benzed/schema'
 import { wrap, unwrap } from '@benzed/array'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 import { BadRequest } from '@feathersjs/errors'
 
 import Hook from '../../../hooks/hook'
-
 import { AUTH_PRIORITY } from '../../../hooks/jwt-auth'
+
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
 
 // TODO this should be moved to src/services/user-services/hooks
 
@@ -21,16 +23,8 @@ export const DEFAULT_LENGTH = 8
 // Setup
 /******************************************************************************/
 
-function setup (_length = DEFAULT_LENGTH) {
-  return {
-    validateLength: new Schema(
-      string(
-        length('>=', _length),
-        trim
-      )
-    )
-  }
-}
+const setup = (length = DEFAULT_LENGTH) =>
+  <string trim length={[ '>=', length ]} />
 
 /******************************************************************************/
 // Exec
@@ -68,7 +62,7 @@ function exec (ctx) {
         }
       })
 
-    const { validateLength } = hook.options
+    const validateLength = hook.options
 
     try {
       validateLength(password)

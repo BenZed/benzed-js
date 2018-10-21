@@ -1,4 +1,4 @@
-import { argsToConfig, OPTIONAL_CONFIG } from '@benzed/schema'
+import { propToConfig } from '@benzed/schema'
 import is from 'is-explicit'
 import fs from 'fs-extra'
 
@@ -12,7 +12,7 @@ const IS_CLIENT = typeof window === 'object'
 // Helper
 /******************************************************************************/
 
-const folderConfig = argsToConfig([
+const folderConfig = propToConfig([
   {
     name: 'err',
     test: is.string,
@@ -26,30 +26,25 @@ const folderConfig = argsToConfig([
 ])
 
 async function isExistingFolderAsync (value, { err }) {
-  try {
-    const stat = await fs.stat(value, fs.F_OK)
-    return stat.isDirectory()
-      ? value
-      : new Error(err)
-
-  } catch {
-    return new Error(err)
-  }
+  const stat = await fs.stat(value, fs.F_OK)
+  return stat.isDirectory()
+    ? value
+    : throw new Error(err)
 }
 
 function isExistingFolderSync (value, { err }) {
   return fs.existsSync(value) && fs.statSync(value).isDirectory()
     ? value
-    : new Error(err)
+    : throw new Error(err)
 }
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function folderExists (...args) {
+function folderExists (prop) {
 
-  const config = folderConfig(args)
+  const config = folderConfig(prop)
 
   const folderExists = value =>
     IS_CLIENT || !is.string(value)
@@ -60,8 +55,6 @@ function folderExists (...args) {
 
   return folderExists
 }
-
-folderExists[OPTIONAL_CONFIG] = true
 
 /******************************************************************************/
 // Exports

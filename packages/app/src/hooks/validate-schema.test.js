@@ -4,29 +4,24 @@ import validateSchema from './validate-schema'
 import { PRIORITY } from './hook'
 import App from '../app'
 import Service from '../services'
-import is from 'is-explicit'
 
-import { Schema, string, required, arrayOf, defaultTo, length } from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
-// eslint-disable-next-line no-unused-vars
-/* global describe it before after beforeEach afterEach */
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
+/* global describe it before after */
 
 /******************************************************************************/
 // Articles Service
 /******************************************************************************/
 
-const uppercase = value => is.string(value)
-  ? value.toUpperCase()
-  : value
-
-const articlesSchema = new Schema({
-  body: string(required),
-  code: string(uppercase, length('==', 3)),
-  scores: arrayOf(
-    string(required),
-    defaultTo(() => [0])
-  )
-})
+const articlesSchema = <object>
+  <string key='body' required />
+  <string key='code' uppercase length={3} />
+  <array key='scores' default={[0]}>
+    <number required />
+  </array>
+</object>
 
 class ArticlesService extends Service {
 
@@ -116,7 +111,7 @@ describe('validate-schema hook', () => {
     await app
       .articles
       .create({})
-      ::expectValidationError({ body: 'is Required.' })
+      ::expectValidationError({ body: 'is required.' })
 
     await app
       .articles

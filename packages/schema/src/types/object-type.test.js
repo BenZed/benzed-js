@@ -145,20 +145,69 @@ describe('ObjectType', () => {
         })
 
       })
+
       it('throws if no children are defined', () => {
         expect(() => <object strict/>)
           .to.throw('ObjectType strict can only be enabled on schemas with children')
       })
+
+      it('can be configured to throw', () => {
+        expect(() => <object key='config' strict={{ error: true }}>
+          <string key='foo' />
+        </object>({ bar: true }))
+          .to
+          .throw('config is limited to keys: \'foo\' received: \'bar\'')
+      })
+
       it('isn\'t defined on props if not used', () => {
         const anyOlObject = <object />
         expect(anyOlObject.props).to.not.have.property('strict')
       })
 
       it('exists in props if it is used', () => {
+
         const strictObj = <object strict >
           <string key='name'/>
         </object>
-        expect(strictObj.props).to.have.property('strict', true)
+
+        expect(strictObj.props)
+          .to.have
+          .deep
+          .property('strict', { error: false })
+      })
+    })
+
+    describe('cast', () => {
+
+      it('allows function to cast to object', () => {
+        const thing = <object cast={() => Object({})} />
+
+        expect(thing('sup')).to.be.deep.equal({})
+      })
+
+      it('works in conjunction with plain', () => {
+        const plainThing = <object plain cast={o => Object({ ...o })} />
+
+        function Vector (x = 0, y = 0) {
+          this.x = x
+          this.y = x
+        }
+
+        expect(plainThing(new Vector())).to.be.deep.equal({ x: 0, y: 0 })
+      })
+
+      it('can take an array of functions as well', () => {
+        const doubler = value => is.number(value)
+          ? value * 2
+          : 1
+
+        const toNum = value => is.number(value)
+          ? { value }
+          : value
+
+        const triple = <object cast={[ doubler, doubler, doubler, toNum ]} />
+
+        expect(triple(2)).to.be.deep.equal({ value: 16 })
       })
     })
   })

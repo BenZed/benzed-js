@@ -19,6 +19,9 @@ const CONFIG_OBJ = {
 const CONFIG_URL = createProjectConfigJson(CONFIG_OBJ, 'config-test', 'default')
 createProjectConfigJson(CONFIG_OBJ, 'config-test', 'example')
 
+const configAuthDataDir = path.resolve(__dirname, '../temp/confg-auth-data')
+fs.ensureDirSync(configAuthDataDir)
+
 /******************************************************************************/
 // Shortcut
 /******************************************************************************/
@@ -39,14 +42,15 @@ describe('config app instance', () => {
   describe('argument', () => {
 
     it('must be a string or plain object', () => {
-      const Foo = class { }
-      const badValues = [ 1, false, null, undefined, new Date(), Symbol('cake'), new Foo() ]
+
+      const badValues = [ null, undefined, 1, false, Symbol('cake') ]
       for (const badValue of badValues)
-        expectNewTestApp(badValue).to.throw('must be a plain object or url')
+        expectNewTestApp(badValue).to.throw('must be a url or plain object')
 
       const goodValues = [ CONFIG_URL, CONFIG_OBJ ]
       for (const goodValue of goodValues)
         expectNewTestApp(goodValue).to.not.throw(Error)
+
     })
 
     describe('if string', () => {
@@ -98,7 +102,7 @@ describe('config app instance', () => {
           it(`${String(badValue)}`, () => {
             expectNewTestApp(CONFIG_OBJ, badValue)
               .to
-              .throw('Must be of type: String')
+              .throw('mode must be of type: String')
           })
       })
 
@@ -107,7 +111,7 @@ describe('config app instance', () => {
         for (const badValue of badValues)
           expectNewTestApp(CONFIG_OBJ, badValue)
             .to
-            .throw('ust not be an empty string')
+            .throw('mode must not be an empty string')
       })
 
       it('if combined with a configUrl string, must match the name of a config file', () => {
@@ -121,10 +125,10 @@ describe('config app instance', () => {
 
   describe('config.port', () => {
     it('is required', () => {
-      expectNewTestApp(CONFIG_OBJ::set('port', null)).to.throw('port is Required')
+      expectNewTestApp(CONFIG_OBJ::set('port', null)).to.throw('config.port is required')
     })
     it('must be a number', () => {
-      expectNewTestApp(CONFIG_OBJ::set('port', 'cake')).to.throw('Must be of type: Number')
+      expectNewTestApp(CONFIG_OBJ::set('port', 'cake')).to.throw('config.port must be of type: Number')
     })
   })
 
@@ -132,7 +136,8 @@ describe('config app instance', () => {
 
     const withDB = CONFIG_OBJ::set('mongodb', {
       hosts: 'localhost:3200',
-      database: 'test-db'
+      database: 'test-db',
+      dbpath: configAuthDataDir
     })
 
     it('not required', () => {
@@ -144,7 +149,7 @@ describe('config app instance', () => {
     it('must be an object if defined', () => {
       const badValues = [ 10, Symbol('str'), 'str' ]
       for (const badValue of badValues)
-        expectNewTestApp(withDB::set('auth', badValue)).to.throw('Must be an Object')
+        expectNewTestApp(withDB::set('auth', badValue)).to.throw('config.auth must be a plain object')
     })
 
     it('booleans are cast to objects', () => {
@@ -211,7 +216,9 @@ describe('config app instance', () => {
 
         const badValues = [ Symbol('-'), {} ]
         for (const badValue of badValues)
-          expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'public' ], badValue)).to.throw('Must be of type: String')
+          expectNewTestApp(CONFIG_OBJ::set([ 'rest', 'public' ], badValue))
+            .to
+            .throw('config.rest.public must be of type: String')
       })
       it('must point toward a public folder with an index.html file', () => {
         const badValues = [
@@ -237,7 +244,7 @@ describe('config app instance', () => {
 
       for (const badValue of ['socketio', [], Symbol('not')])
         expectNewTestApp(CONFIG_OBJ::set('rest', true)::set('socketio', badValue))
-          .to.throw('socketio Must be an Object')
+          .to.throw('config.socketio must be a plain object')
 
     })
   })
@@ -254,15 +261,14 @@ describe('config app instance', () => {
       for (const badValue of [ true, false, [true], 'cake', Symbol('oy') ]) {
         const config = CONFIG_OBJ::set('mongodb', badValue)
         it(inspect`${badValue} should fail`, () => {
-          expectNewTestApp(config).to.throw('mongodb Must be an Object')
+          expectNewTestApp(config).to.throw('mongodb must be a plain object')
         })
       }
     })
 
     it('is not required', () => {
       const config = CONFIG_OBJ::set('mongodb', null)
-      expectNewTestApp(config).to.not.throw('mongodb Must be an Object')
-
+      expectNewTestApp(config).to.not.throw('mongodb must be a plain object')
     })
     it('required if auth is enabled', () => {
 
@@ -275,7 +281,8 @@ describe('config app instance', () => {
     const notStrings = [ {}, Symbol('oy') ]
     const withDB = CONFIG_OBJ::set('mongodb', {
       database: 'test-database',
-      hosts: 'localhost:3200'
+      hosts: 'localhost:3200',
+      dbpath: configAuthDataDir
     })
 
     describe('config.mongodb.username', () => {
@@ -283,7 +290,7 @@ describe('config app instance', () => {
         for (const badValue of notStrings)
           it(inspect`${badValue} should fail`, () => {
             const config = withDB::set(['mongodb', 'username'], badValue)
-            expectNewTestApp(config).to.throw('username Must be of type: String')
+            expectNewTestApp(config).to.throw('username must be of type: String')
           })
       })
     })
@@ -293,7 +300,7 @@ describe('config app instance', () => {
         for (const badValue of notStrings)
           it(inspect`${badValue} should fail`, () => {
             const config = withDB::set(['mongodb', 'password'], badValue)
-            expectNewTestApp(config).to.throw('password Must be of type: String')
+            expectNewTestApp(config).to.throw('password must be of type: String')
           })
       })
     })
@@ -303,7 +310,7 @@ describe('config app instance', () => {
         for (const badValue of notStrings)
           it(inspect`${badValue} should fail`, () => {
             const config = CONFIG_OBJ::set(['mongodb', 'database'], badValue)
-            expectNewTestApp(config).to.throw('database Must be of type: String')
+            expectNewTestApp(config).to.throw('database must be of type: String')
           })
       })
     })
@@ -318,7 +325,7 @@ describe('config app instance', () => {
 
       it('must be an array of strings', () => {
         const config = withDB::set(['mongodb', 'hosts'], [{}, {}, {}])
-        expectNewTestApp(config).to.throw('hosts Must be an Array of String')
+        expectNewTestApp(config).to.throw('hosts[0] must be of type: String')
       })
 
       describe('each string must be a url formatted', () => {
@@ -326,14 +333,14 @@ describe('config app instance', () => {
         for (const badValue of ['name@email.com', 'CONST_thing', 'ahh mazing', 'foo[bar]']) {
           const bad = withDB::set(['mongodb', 'hosts'], badValue)
           it(`'${badValue}' should throw`, () => {
-            expectNewTestApp(bad).to.throw('hosts Must be a url.')
+            expectNewTestApp(bad).to.throw('hosts[0] must be a url.')
           })
         }
 
         for (const goodValue of ['localhost:3200', '192.168.1.102:27107', 'gears.server.quake:4500']) {
           const good = withDB::set(['mongodb', 'hosts'], goodValue)
           it(`'${goodValue}' should not throw`, () => {
-            expectNewTestApp(good).to.not.throw('Must be a url.')
+            expectNewTestApp(good).to.not.throw('must be a url.')
           })
         }
 
@@ -356,7 +363,7 @@ describe('config app instance', () => {
     it('must be a bool', () => {
       for (const badValue of [ [], {}, 'heyhey', 1000, Symbol('quake') ])
         expectNewTestApp(CONFIG_OBJ::set('logging', badValue))
-          .to.throw('logging Must be of type: Boolean')
+          .to.throw('logging must be of type: Boolean')
     })
     it('defaults to true', () => {
       const app = new TestApp(CONFIG_OBJ)
@@ -386,14 +393,11 @@ describe('config autocompletes', () => {
     const app = new TestApp(withPath)
     const { settings } = app.feathers
 
-    expect(settings).to.have.property('up-one')
-    expect(settings['up-one']).to.be.equal(path.resolve(cwd, upOne))
+    expect(settings).to.have.property('up-one', path.resolve(cwd, upOne))
 
-    expect(settings).to.have.property('across-one')
-    expect(settings['across-one']).to.be.equal(path.resolve(cwd, acrossOne))
+    expect(settings).to.have.property('across-one', path.resolve(cwd, acrossOne))
 
-    expect(settings).to.have.property('absolute')
-    expect(settings['absolute']).to.be.equal(absolute)
+    expect(settings).to.have.property('absolute', absolute)
 
   })
   it('UPPER_SNAKE_CASE values read from process.env', () => {

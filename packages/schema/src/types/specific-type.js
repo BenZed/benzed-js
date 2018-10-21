@@ -1,7 +1,10 @@
 import Type from './type'
+
+import { wrap } from '@benzed/array'
+
 import is from 'is-explicit'
 
-import { addName, propIsEnabled } from '../util'
+import { define, runValidators, propIsEnabled, mergeResults } from '../util'
 
 /******************************************************************************/
 // Data
@@ -33,14 +36,15 @@ class SpecificType extends Type {
           ? value
           : throw new TypeError(`must be of type: ${rootType.name}`)
 
-      typeValidator::addName(`is${rootType.name}`)
+      typeValidator::define({
+        name: `is${rootType.name}`, priority: -50
+      })
     }
 
-    const superResult = super.compile(props)
-
-    superResult.validators.push(typeValidator)
-
-    return superResult
+    return mergeResults(
+      super.compile(props),
+      typeValidator
+    )
   }
 
   cast (prop) {
@@ -48,21 +52,23 @@ class SpecificType extends Type {
     if (!propIsEnabled(prop))
       return null
 
-    if (prop === true)
+    const castFunc = prop
+    if (castFunc === true)
       throw new Error(`${this.constructor.name} does not have a default casting function.`)
 
-    else if (!is.func(prop))
+    else if (!is.func(castFunc) && !is.arrayOf.func(castFunc))
       throw new Error('cast validator requires a function')
 
-    const castFunction = prop
     const rootType = this[ROOT]
 
-    const validator = value =>
+    const validator = (value, context) =>
       value != null && !is(value, rootType)
-        ? castFunction(value)
+        ? runValidators(wrap(castFunc), value, context)
         : value
 
-    validator::addName(`castTo${rootType && rootType.name}`)
+    validator::define({
+      name: `castTo${rootType && rootType.name}`, priority: -80
+    })
 
     return {
       validator,

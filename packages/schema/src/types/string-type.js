@@ -1,7 +1,7 @@
 import SpecificType from './specific-type'
 import is from 'is-explicit'
 
-import { addName, propToConfig, propIsEnabled } from '../util'
+import { define, propToConfig, propIsEnabled } from '../util'
 
 /******************************************************************************/
 // Validator Config
@@ -63,7 +63,9 @@ class StringType extends SpecificType {
       ? value
       : throw new Error(err)
 
-    validator::addName(`formatAs::${regexp.toString()}`)
+    validator::define({
+      name: 'format', priority: -20
+    })
 
     return {
       validator,
@@ -79,7 +81,11 @@ class StringType extends SpecificType {
       ? value.toUpperCase()
       : value
 
-    return validator::addName('toUppercase')
+    // TODO maybe throw if uppercase and lowercase are defined on the same schema?
+
+    return validator::define({
+      name: 'uppercase', priority: -25
+    })
   }
 
   lowercase (prop) {
@@ -90,12 +96,27 @@ class StringType extends SpecificType {
       ? value.toLowerCase()
       : value
 
-    return validator::addName('toLowercase')
+    // TODO maybe throw if uppercase and lowercase are defined on the same schema?
+
+    return validator::define({
+      name: 'lowercase', priority: -25
+    })
+  }
+
+  trim (prop) {
+    if (!propIsEnabled(prop))
+      return null
+
+    const validator = value => is.string(value)
+      ? value.trim()
+      : value
+
+    return validator::define({
+      name: 'trim', priority: -25
+    })
   }
 
   // Canned Format Validators
-
-  // trim () {}
 
   // email () {}
 

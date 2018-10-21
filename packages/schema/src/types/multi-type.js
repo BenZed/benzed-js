@@ -1,7 +1,7 @@
 import Type from './type'
 import is from 'is-explicit'
 
-import { isSchema, runValidators, SCHEMA } from '../util'
+import { isSchema, runValidators, define, SCHEMA } from '../util'
 
 /******************************************************************************/
 // Validators
@@ -59,7 +59,7 @@ class MultiType extends Type {
     if (!hasChildren)
       throw new Error(`${this.constructor.name} must have children`)
 
-    const typeValidator = children::mustBeOneOf
+    const typeValidator = children::mustBeOneOf::define({ name: 'isOneOfType' })
     return typeValidator
   }
 

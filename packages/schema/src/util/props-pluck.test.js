@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import { Test } from '@benzed/dev'
 
 import propsPluck from './props-pluck'
-import { copy } from '@benzed/immutable'
+import { copy, reverse } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -31,14 +31,22 @@ Test.optionallyBindableMethod(propsPluck, propsPluck => {
       expect(props).to.not.have.property('bar')
       expect(props).to.have.property('city')
     })
+
+    it('preserves order', () => {
+      const props = copy(PROPS)
+      const keys = Object.keys(props)
+
+      const plucked = propsPluck(props, ...keys::reverse())
+
+      expect(Object.keys(plucked)).to.be.deep.equal(keys)
+    })
+
   })
 
   describe('doesnt create objects unnecessarily', () => {
-
     it('returns null if no keys found', () => {
       expect(propsPluck({}, 'hammer')).to.be.equal(null)
     })
-
   })
 
 })

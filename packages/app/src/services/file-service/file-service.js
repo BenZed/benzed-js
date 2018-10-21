@@ -1,10 +1,6 @@
 import { copy } from '@benzed/immutable'
 import { PromiseQueue } from '@benzed/async'
-import {
-  Schema, number, defaultTo, typeOf,
-  object, length, string, range,
-  required, format, any
-} from '@benzed/schema'
+import { createValidator } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 import Service from '../service'
 import { ObjectId } from 'mongodb'
@@ -30,6 +26,9 @@ import {
 
 import { serveFile } from './middleware'
 
+// @jsx createValidator
+/* eslint-disable react/react-in-jsx-scope */
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
@@ -38,66 +37,35 @@ const MAX_UPLOAD_SIZE = 1024 * 512 // 512 megabytes
 
 const s3NotYetSupported = value =>
   value != null
-    ? new Error('\'s3\' not yet supported.')
+    ? throw new Error('not yet supported.')
     : value
 
-const validateSettings = new Schema({
-  rest: mustBeEnabled('File Service requires rest to be enabled.'),
-  mongodb: mustBeEnabled('File Service requires a database.')
-})
+const validateSettings = <object>
+  <object key='rest' validate={mustBeEnabled('File Service requires rest to be enabled.')}/>
+  <object key='mongodb' validate={mustBeEnabled('File Service requires a database.')}/>
+</object>
 
-const defaultToEmptyObject = defaultTo(() => Object({}))
+const validateConfig = <object plain default={{}} required>
 
-const validateConfig = new Schema(
-  object({
-    storage: object({
-      local: string(
-        folderExists,
-        required
-      ),
-      s3: string(
-        s3NotYetSupported
-      )
-    },
-    defaultToEmptyObject),
+  <object key='storage' default={{}}>
+    <string key='local' cast validate={folderExists()} required />
+    <string key='s3' cast validate={s3NotYetSupported} />
+  </object>
 
-    upload: object({
-      maxSize: number(
-        defaultTo(MAX_UPLOAD_SIZE)
-      ),
-      numConcurrent: number(
-        defaultTo(32)
-      )
-    },
-    defaultToEmptyObject)// ,
+  <object key='upload' default={{}} >
+    <number key='maxSize' default={MAX_UPLOAD_SIZE} />
+    <number key='numConcurrent' default={32} />
+  </object>
 
-  },
-  required)
-)
+</object>
 
-const fileSchema = new Schema(object({
-
-  ext: string(
-    format(/^\.\w+/),
-    length('<=', 6)
-  ),
-
-  name: string,
-
-  type: string(
-    required,
-    defaultTo(mime.default_type)
-  ),
-
-  size: number,
-
-  uploader: any(
-    value => ObjectId.isValid(value)
-      ? ObjectId(value)
-      : value
-  )
-
-}, false))
+const fileSchema = <object plain strict>
+  <string key='ext' format={/^\.\w+/} length={['<=', 6]} />
+  <string key='name' />
+  <string key='type' default={mime.default_type} required />
+  <number key='size' default={0} required />
+  <ObjectId key='uploader' cast={value => ObjectId(value)} />
+</object>
 
 /******************************************************************************/
 // Uploader
@@ -229,11 +197,13 @@ class FileService extends Service {
 
     // Something breaks if we don't copy it
     const appConfig = app.config::copy()
+
     validateSettings(appConfig)
 
     config = validateConfig(config)
 
     const service = super(config, name, app)
+
     return service
   }
 

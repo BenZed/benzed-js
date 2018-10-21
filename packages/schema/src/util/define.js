@@ -1,29 +1,28 @@
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function propsPluck (...args) {
+function define (obj, fields) {
 
-  const props = this === undefined
-    ? args.shift()
-    : this
+  if (this !== undefined) {
+    fields = obj
+    obj = this
+  }
 
-  const names = args
+  if (!is.object(obj) && !is.func(obj))
+    throw new Error('must be an object or function')
 
-  let output = null
-  for (const name in props)
-    if (names.includes(name)) {
-      output = output || {}
-      output[name] = props[name]
-      delete props[name]
-    }
+  for (const key in fields)
+    Object.defineProperty(obj, key, { value: fields[key] })
 
-  return output
+  return obj
+
 }
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default propsPluck
+export default define
