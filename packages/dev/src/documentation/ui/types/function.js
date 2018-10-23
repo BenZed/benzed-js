@@ -2,7 +2,7 @@ import React from 'react'
 import is from 'is-explicit'
 
 import { Title, Table, Section, Label } from '../helper'
-import { PropTypeSchema, arrayOf, object } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 
 /******************************************************************************/
 // Helper
@@ -87,10 +87,11 @@ const Args = ({ args }) => {
   return <Table key='table' title='Arguments' data={data} />
 }
 
-Args.propTypes = new PropTypeSchema({
-  args: arrayOf(object)
-})
-
+Args.propTypes = createPropTypesFor(React => <proptypes>
+  <array key='args'>
+    <object />
+  </array>
+</proptypes>)
 /******************************************************************************/
 // Returns
 /******************************************************************************/
@@ -114,9 +115,12 @@ const Returns = ({ returns }) => {
   return <Table key='table' title='Returns' data={data} />
 }
 
-Returns.propTypes = new PropTypeSchema({
-  returns: arrayOf(object)
-})
+Returns.propTypes = createPropTypesFor(React =>
+  <proptypes>
+    <array key='returns'>
+      <object />
+    </array>
+  </proptypes>)
 
 /******************************************************************************/
 // Main Component

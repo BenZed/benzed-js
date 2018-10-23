@@ -1,8 +1,5 @@
 {
-  "name": "benzed-mono",
-  "version": "0.0.1",
   "description": "Mono repo for all of BenZeds util and helper classes for scoped npm distribution.",
-  "main": "index.js",
   "scripts": {
     "babel:dev": "node scripts/babel-dev.js",
     "update": "bash scripts/update.sh",

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Page from './page'
-import { PropTypeSchema, object, required } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 import $ from '../../theme'
 
@@ -32,21 +32,27 @@ const Band = styled.h1`
 /******************************************************************************/
 
 const Missing = ({ location }) =>
+
   <MissingPage>
+
     <Band>
       PAGE NOT FOUND
     </Band>
+
     <br/>
+
     <h2>{location.pathname} is not a valid page.</h2>
+
   </MissingPage>
 
 /******************************************************************************/
 // Prop Types
 /******************************************************************************/
 
-Missing.propTypes = new PropTypeSchema({
-  location: object(required)
-})
+Missing.propTypes = createPropTypesFor(React =>
+  <proptypes>
+    <object key='location' required />
+  </proptypes>)
 
 /******************************************************************************/
 // Exports

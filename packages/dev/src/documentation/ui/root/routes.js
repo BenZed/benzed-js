@@ -2,7 +2,7 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import { Missing } from '../pages'
 
-import { PropTypeSchema, arrayOf, object, any } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 import { push } from '@benzed/immutable'
 
 import is from 'is-explicit'
@@ -85,17 +85,18 @@ const Routes = ({ children, docs, location, ...props }) => {
   return elements.length === 0
     ? <Missing location={location} />
     : elements
-
 }
 
 /******************************************************************************/
 // Prop Types
 /******************************************************************************/
 
-Routes.propTypes = new PropTypeSchema({
-  children: any,
-  packages: arrayOf(object)
-})
+Routes.propTypes = createPropTypesFor(React => <proptypes>
+  <any key='children' />
+  <array key='packages' required >
+    <object required />
+  </array>
+</proptypes>)
 
 /******************************************************************************/
 // Exports

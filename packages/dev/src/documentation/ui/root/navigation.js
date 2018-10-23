@@ -4,9 +4,8 @@ import styled from 'styled-components'
 import is from 'is-explicit'
 import { NavLink } from 'react-router-dom'
 
-import { PropTypeSchema, string, arrayOf, object } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 import { Flex, isEvent, storage } from '@benzed/react'
-import { fromCamelCase } from '@benzed/string'
 
 import $ from '../../theme'
 
@@ -87,9 +86,9 @@ const Toggle = styled.button.attrs({
 
 class ToggleLink extends React.Component {
 
-  static propTypes = new PropTypeSchema({
-    prefix: string
-  })
+  static propTypes = createPropTypesFor(React => <proptypes>
+    <string key='prefix' />
+  </proptypes>)
 
   state = {
     open: false
@@ -187,9 +186,11 @@ const Navigation = ({ docs }) => {
 // Prop Types
 /******************************************************************************/
 
-Navigation.propTypes = new PropTypeSchema({
-  packages: arrayOf(object)
-})
+Navigation.propTypes = createPropTypesFor(React => <object>
+  <array key='packages'>
+    <object required />
+  </array>
+</object>)
 
 /******************************************************************************/
 // Exports

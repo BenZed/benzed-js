@@ -9,7 +9,7 @@ import TopBar from './topbar'
 
 import { theme as docDefaultTheme } from '../../theme'
 
-import { PropTypeSchema, any, arrayOf, object } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 
 /******************************************************************************/
 // Main Layout
@@ -55,10 +55,12 @@ const DocumentationWebsite = ({ theme, title, subtitle, children, docs }) =>
 // Prop Types
 /******************************************************************************/
 
-DocumentationWebsite.propTypes = new PropTypeSchema({
-  children: any,
-  packages: arrayOf(object)
-})
+DocumentationWebsite.propTypes = createPropTypesFor(React => <proptypes>
+  <any key='children' />
+  <array key='packages'>
+    <object required />
+  </array>
+</proptypes>)
 
 /******************************************************************************/
 // Exports
