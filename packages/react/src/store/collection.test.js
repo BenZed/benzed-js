@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
 import { Store } from './store'
-import StoreCollection from './store-collection'
+import StoreCollection from './collection'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */

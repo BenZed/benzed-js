@@ -1,8 +1,8 @@
 import React from 'react'
-import { injectGlobal, ThemeProvider } from 'styled-components'
-import { PropTypeSchema, object, required } from '@benzed/schema'
+import { createGlobalStyle as css, ThemeProvider } from 'styled-components'
+import { createPropTypesFor } from '@benzed/schema'
 
-import { Cloner } from '../util'
+import { $, Cloner } from '../util'
 
 /******************************************************************************/
 // TEMP
@@ -16,119 +16,108 @@ import { Cloner } from '../util'
 // Helper
 /******************************************************************************/
 
-let tempInjectedGlobal = false
+const GlobalStyle = css`
 
-function tempInjectGlobal (theme) {
+  * {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    flex-direction: column;
+  }
 
-  tempInjectedGlobal = true
+  footer, header, hgroup, menu, nav, section {
+    display: block;
+  }
 
-  injectGlobal`
+  body {
+    color: ${`${$.theme.fg}`};
+    background-color: ${`${$.theme.bg}`};
+    font-family: ${$.theme.fonts.body};
+    line-height: 1;
+  }
 
-    * {
-      box-sizing: border-box;
-      flex: 0 0 auto;
-      flex-direction: column;
-    }
+  pre {
+    margin: 0em;
+  }
 
-    footer, header, hgroup, menu, nav, section {
-      display: block;
-    }
+  main {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  }
 
-    body {
-      color: ${`${theme.fg}`};
-      background-color: ${`${theme.bg}`};
-      font-family: ${theme.fonts.body};
-      line-height: 1;
-    }
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-family: ${$.theme.fonts.title};
+  }
 
-    pre {
-      margin: 0em;
-    }
+  a:link {
+    color: inherit;
+  }
+  a:visited {
+    color: inherit;
+  }
 
-    main {
-      display: flex;
-      width: 100vw;
-      height: 100vh;
-    }
+  form {
+    display: inherit;
+  }
 
-    h1, h2, h3, h4, h5, h6 {
-      margin: 0;
-      font-family: ${theme.fonts.title};
-    }
+  input, button {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    color: inherit;
+  }
 
-    a:link {
+  button {
+    cursor: pointer;
+    padding: 0.5em;
+  }
+
+  input {
+
+    padding: 0.25em;
+
+    &::placeholder {
       color: inherit;
-    }
-    a:visited {
-      color: inherit;
+      opacity: 0.5;
     }
 
-    form {
-      display: inherit;
-    }
+    border-bottom: 1px solid;
 
-    input, button {
-      outline: none;
-      border: none;
-      background-color: transparent;
-      color: inherit;
-    }
+  }
 
-    button {
-      cursor: pointer;
-      padding: 0.5em;
-    }
+  ol, ul {
+    list-style: none;
+  }
 
-    input {
-
-      padding: 0.25em;
-
-      &::placeholder {
-        color: inherit;
-        opacity: 0.5;
-      }
-
-      border-bottom: 1px solid;
-
-    }
-
-    ol, ul {
-      list-style: none;
-    }
-
-    blockquote, q {
-      quotes: none;
-    }
-  `
-}
+  blockquote, q {
+    quotes: none;
+  }
+`
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-const GlobalStyle = ({ theme, children }) => {
+const ThemedGlobalStyle = ({ theme, children }) =>
 
-  if (!tempInjectedGlobal)
-    tempInjectGlobal(theme)
-
-  return <ThemeProvider theme={theme}>
-    <Cloner>{ children }</Cloner>
+  <ThemeProvider theme={theme}>
+    <React.Fragment>
+      <GlobalStyle />
+      { children }
+    </React.Fragment>
   </ThemeProvider>
-
-}
 
 /******************************************************************************/
 // Prop Types
 /******************************************************************************/
 
-GlobalStyle.propTypes = new PropTypeSchema({
-
-  theme: object(required)
-
-})
+ThemedGlobalStyle.propTypes = createPropTypesFor(React => <proptypes>
+  <object key='theme' required />
+</proptypes>)
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default GlobalStyle
+export default ThemedGlobalStyle

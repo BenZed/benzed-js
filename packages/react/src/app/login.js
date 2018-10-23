@@ -3,7 +3,7 @@ import React, { Children, createElement, cloneElement } from 'react'
 import { Modal } from '../layout'
 import { Visible, Fade, Slide } from '../effect'
 
-import { PropTypeSchema, typeOf, required } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 import { equals } from '@benzed/immutable'
 
 import { StoreConsumer } from '../store/context'
@@ -19,7 +19,7 @@ import is from 'is-explicit'
 const mustHaveAuth = value =>
   value && value.config && value.config.auth
     ? value
-    : new Error('must have authentication enabled.')
+    : throw new Error('must have authentication enabled.')
 
 /******************************************************************************/
 // Layout Components
@@ -80,9 +80,11 @@ const LoginModal = ({
 
 class LoginLogic extends React.Component {
 
-  static propTypes = new PropTypeSchema({
-    client: typeOf(ClientStore, required, mustHaveAuth)
-  })
+  static propTypes = createPropTypesFor(React => <proptypes>
+    <ClientStore key='client'
+      required
+      validate={mustHaveAuth} />
+  </proptypes>)
 
   static defaultProps = {
     children: LoginModal
@@ -91,7 +93,6 @@ class LoginLogic extends React.Component {
   state = {
     email: '',
     password: '',
-
     status: 'disconnected',
     error: null
   }

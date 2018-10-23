@@ -1,6 +1,6 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
-import { PropTypeSchema, typeOf, required } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 
 /******************************************************************************/
 // Main
@@ -8,9 +8,9 @@ import { PropTypeSchema, typeOf, required } from '@benzed/schema'
 
 class Portal extends React.Component {
 
-  static propTypes = new PropTypeSchema({
-    targetId: typeOf(String, required)
-  })
+  static propTypes = createPropTypesFor(React => <proptypes>
+    <string key='targetId' required />
+  </proptypes>)
 
   state = {
     target: null
@@ -30,7 +30,7 @@ class Portal extends React.Component {
     this.setTarget(this.props)
   }
 
-  componentWillReceiveProps (props) {
+  componentDidReceiveProps (props) {
     if (props.targetId !== this.props.targetId)
       this.setTarget(props)
   }

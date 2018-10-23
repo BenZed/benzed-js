@@ -10,9 +10,16 @@ import is from 'is-explicit'
 
 function testPropTypes (Component, tests) {
 
-  const describer = getDescriber(this)
+  if (!testPropTypes.warned) {
+    console.warn(
+      'testPropTypes tests are currently ignored because the new' +
+      'schema proptypes syntax currently does nothing')
+    testPropTypes.warned = true
+  }
 
-  describer(`testing propTypes for ${Component.name}`, () => {
+  // getDescriber(this) <- replace describe.skip with this when <proptypes/> supported
+  describe.skip(`testing propTypes for ${Component.name}`, () => {
+
     let propTypes
     before(() => {
       propTypes = Component && Component.propTypes

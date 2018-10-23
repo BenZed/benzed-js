@@ -1,5 +1,5 @@
 import React, { Children, createContext } from 'react'
-import { PropTypeSchema, typeOf, required } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 
 /******************************************************************************/
 // Context
@@ -15,11 +15,10 @@ class Visible extends React.Component {
 
   // Props
 
-  static propTypes = new PropTypeSchema({
-    visible: typeOf(Boolean),
-    delay: typeOf(Number), // (range('>', 0)) <- TODO when range validator is implemented
-    children: required
-  })
+  static propTypes = createPropTypesFor(React => <proptypes>
+    <bool key='visible' />
+    <number key='delay' range={['>', 0]} />
+  </proptypes>)
 
   static defaultProps = {
     visible: true,

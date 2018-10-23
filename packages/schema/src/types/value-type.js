@@ -41,7 +41,7 @@ function checkValue (values, equalityCheck) {
   const validator = value =>
     equalityCheck(values, value)
       ? value
-      : throw new Error(`must be either: ${values.map(inspect).join(', ')}`)
+      : throw new Error(`must be one of: ${values.map(inspect).join(', ')}`)
 
   return validator::define({
     name: 'isOneOf', priority: -50

@@ -1,5 +1,5 @@
 import React, { createContext } from 'react'
-import { PropTypeSchema, string, func, required } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 import StoreObserver from './observer'
 
 /******************************************************************************/
@@ -30,12 +30,10 @@ const StoreConsumer = ({ children, store: name, ...props }) =>
 
   }</StoreContext>
 
-StoreConsumer.propTypes = {
-  store: string(required),
-  children: func(required)
-}
-
-StoreConsumer.propTypes = StoreConsumer.propTypes::PropTypeSchema()
+StoreConsumer.propTypes = createPropTypesFor(React => <proptypes>
+  <string key='store' required />
+  <func key='children' required />
+</proptypes>)
 
 /******************************************************************************/
 // Exports

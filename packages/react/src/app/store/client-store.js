@@ -79,11 +79,12 @@ const authAutoFill = auth => {
 const mustIncludeProtocol = host =>
   /^https?:\/\//.test(host)
     ? host
-    : new Error('Host must include http(s) protocol.')
+    : throw new Error('Host must include http(s) protocol.')
 
 const validateConfig = <object required='ClientStore configuration is required.'>
 
   <array key='hosts'
+    cast
     required
     length={['>', 0]}
   >
@@ -93,7 +94,7 @@ const validateConfig = <object required='ClientStore configuration is required.'
     />
   </array>
 
-  <oneOf key='provider'>
+  <oneOf key='provider' required>
     {'rest'}{'socketio'}
   </oneOf>
 

@@ -25,6 +25,7 @@ module.exports = {
   rules: {
     'react/jsx-boolean-value': 'error',
     'react/jsx-pascal-case': 'error',
+    'react/prop-types': 'off',
     'jsx-quotes': [
       'error',
       'prefer-single'

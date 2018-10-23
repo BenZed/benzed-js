@@ -223,12 +223,17 @@ describe('serverSideRender()', () => {
         expect(state.app.listener).to.not.equal(null)
       })
 
-      it('serves component and style tags', async () => {
+      it('serves style tags', async () => {
         const res = await fetch(state.address)
         const body = await res.text()
 
-        const styleTags = body::between('<style data-styled-components', '</style>')
+        const styleTags = body::between('<style data-styled', '</style>')
         expect(styleTags).to.not.be.equal(null)
+      })
+
+      it('serves component and style tags', async () => {
+        const res = await fetch(state.address)
+        const body = await res.text()
 
         const mountedMain = body::between('<main', '</main')
         expect(mountedMain).to.not.be.equal(null)

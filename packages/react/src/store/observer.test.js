@@ -2,7 +2,7 @@ import React from 'react'
 import { expect } from 'chai'
 
 import Store from './store'
-import { Observer } from './observer'
+import Observer from './observer'
 
 import renderer from 'react-test-renderer'
 
@@ -36,13 +36,6 @@ class MessageStore extends Store {
 // Message Consumer
 /******************************************************************************/
 
-const Messages = ({ messages }) =>
-  <ul>
-    { messages.messages.map((msg, i) =>
-      <li key={i}>{msg.body}</li>
-    )}
-  </ul>
-
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -56,9 +49,12 @@ describe('Observer component', () => {
 
       const messageList = renderer.create(
         <Observer
-          stores={{ messages }}
-          listen='messages'>
-          <Messages/>
+          store={messages}>
+          { store => <ul>
+            { store.messages.map((msg, i) =>
+              <li key={i}>{msg.body}</li>
+            )}
+          </ul>}
         </Observer>
       )
 

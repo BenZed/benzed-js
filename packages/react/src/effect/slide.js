@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { observe } from './visible'
 import { CssCloner } from '../util/cloner'
 
-import { PropTypeSchema, typeOf } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 
 /******************************************************************************/
 // RegExp
@@ -66,10 +66,10 @@ const Slide = styled(CssCloner).attrs({
   transition: transform 250ms;
 `::observe()
 
-Slide.propTypes = new PropTypeSchema({
-  from: typeOf(String),
-  to: typeOf(String)
-})
+Slide.propTypes = createPropTypesFor(React => <proptypes>
+  <string key='from' />
+  <string key='to' />
+</proptypes>)
 
 /******************************************************************************/
 // Exports

@@ -38,7 +38,7 @@ describe('ValueType', () => {
         .to.be.equal('black')
 
       expect(() => chess('orange'))
-        .to.throw('must be either: \'black\', \'white\'')
+        .to.throw('must be one of: \'black\', \'white\'')
     })
 
     it('children are required', () => {

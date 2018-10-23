@@ -1,5 +1,5 @@
 import React from 'react'
-import { PropTypeSchema, typeOf, arrayOf, required } from '@benzed/schema'
+import { createPropTypesFor } from '@benzed/schema'
 import Store from './store'
 
 import { get, copy } from '@benzed/immutable'
@@ -30,11 +30,12 @@ class StoreObserver extends React.Component {
     value: getValue(this.props.store, this.props.path)
   }
 
-  static propTypes = {
-    path: arrayOf(typeOf(String)),
-    store: typeOf(Store, required),
-    children: typeOf(Function, required)
-  }
+  static propTypes = createPropTypesFor(React => <proptypes>
+    <array key='path'>
+      <string required />
+    </array>
+    <Store key='store' required />
+  </proptypes>)
 
   static defaultProps = {
     path: []
@@ -73,10 +74,6 @@ class StoreObserver extends React.Component {
   }
 
 }
-
-// Gotta do it like this so the linter will stfu
-
-StoreObserver.propTypes = StoreObserver.propTypes::PropTypeSchema()
 
 /******************************************************************************/
 // Exports

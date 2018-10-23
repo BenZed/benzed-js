@@ -28,6 +28,8 @@ const TYPE_MAP = new Map([
   [ 'arrayOf', ArrayType ],
   [ Array, ArrayType ],
 
+  [ 'proptypes', ObjectType ],
+  [ 'shape', ObjectType ],
   [ 'object', ObjectType ],
   [ 'objectOf', ObjectType ],
   [ Object, ObjectType ],

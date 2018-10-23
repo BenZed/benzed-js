@@ -23,7 +23,7 @@ const QUERY = Symbol('query-queue')
 
 const isSubclassOfServiceRecord = value => is.subclassOf(value, ServiceRecord)
   ? value
-  : new Error('must be a subclass of ServiceRecord')
+  : throw new Error('must be a subclass of ServiceRecord')
 
 const validateConfig = <object>
   <ClientStore
@@ -46,7 +46,7 @@ const validateConfig = <object>
     required
   />
   <func key='record'
-    default={ServiceRecord}
+    default={() => ServiceRecord}
     validate={isSubclassOfServiceRecord}
     required
   />
