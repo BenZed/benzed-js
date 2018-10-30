@@ -25,9 +25,7 @@ function resolveChildren (values, name) {
     throw new Error(`${name} must have children`)
 
   if (values.length === 1) {
-
     values = values[0]
-
     values = is.string(values)
       ? values.split(/\s+/)
       : wrap(values)

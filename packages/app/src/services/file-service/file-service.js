@@ -15,12 +15,12 @@ import mime from 'mime'
 
 import {
 
-  BadRequest,
-  NotAuthenticated,
-  Unprocessable,
-  TooManyRequests,
-  LengthRequired,
-  Conflict
+// BadRequest,
+// NotAuthenticated,
+// Unprocessable,
+// TooManyRequests,
+// LengthRequired,
+// Conflict
 
 } from '@feathersjs/errors'
 
@@ -106,7 +106,7 @@ class WebsocketUploader {
     data.name = name
     data.type = ext
       ? mime.lookup(ext)
-      : mime['default_type']
+      : mime.default_type
 
     if (user)
       data.uploader = `${user._id}`
@@ -203,7 +203,6 @@ class FileService extends Service {
     config = validateConfig(config)
 
     const service = super(config, name, app)
-
     return service
   }
 

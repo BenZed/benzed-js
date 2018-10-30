@@ -32,7 +32,7 @@ Test.optionallyBindableMethod(change, change => {
   })
 
   it('throws if mutator is not an object', () => {
-    expect(() => change({}, null)).to.throw('utator must be a function')
+    expect(() => change({}, null)).to.throw('mutator is not a function')
   })
 
   it('throws if data is not an object', () => {

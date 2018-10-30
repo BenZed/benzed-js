@@ -154,9 +154,10 @@ describe('ObjectType', () => {
       it('can be configured to throw', () => {
         expect(() => <object key='config' strict={{ error: true }}>
           <string key='foo' />
-        </object>({ bar: true }))
+          <string key='bar' />
+        </object>({ cake: true, town: false }))
           .to
-          .throw('config is limited to keys: \'foo\' received: \'bar\'')
+          .throw('config is limited to keys: \'foo\',\'bar\' received: \'cake\',\'town\'')
       })
 
       it('isn\'t defined on props if not used', () => {

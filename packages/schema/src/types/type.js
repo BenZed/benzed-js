@@ -76,7 +76,7 @@ class Type {
       }
 
       const prop = props[validatorName]
-      const result = this[validatorName](prop)
+      const result = this[validatorName](prop, props)
 
       const isAdvancedResult = is.plainObject(result)
       if (isAdvancedResult) {

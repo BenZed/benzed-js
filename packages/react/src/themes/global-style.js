@@ -29,8 +29,8 @@ const GlobalStyle = css`
   }
 
   body {
-    color: ${`${$.theme.fg}`};
-    background-color: ${`${$.theme.bg}`};
+    color: ${$.theme.fg};
+    background-color: ${$.theme.bg};
     font-family: ${$.theme.fonts.body};
     line-height: 1;
   }
@@ -100,7 +100,6 @@ const GlobalStyle = css`
 /******************************************************************************/
 
 const ThemedGlobalStyle = ({ theme, children }) =>
-
   <ThemeProvider theme={theme}>
     <React.Fragment>
       <GlobalStyle />

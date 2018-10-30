@@ -2,7 +2,7 @@ import is from 'is-explicit'
 import {
   GenericType, SpecificType,
   StringType, NumberType, BooleanType,
-  ArrayType, ObjectType, ValueType, MultiType
+  ArrayType, ObjectType, ValueType, MultiType, UrlType
 } from './types'
 
 import { inspect } from 'util'
@@ -47,6 +47,8 @@ const TYPE_MAP = new Map([
   [ 'function', Function ],
   [ 'set', Set ],
   [ 'map', Map ],
+
+  // [ 'url', UrlType ],
 
   [ 'any', null ]
 ])

@@ -122,12 +122,13 @@ function restrictToKeys (object) {
       else
         delete object[key]
 
-  if (badKeys.length > 0) {
+  if (error && badKeys.length > 0) {
 
     const msg = is.func(error)
       ? error(goodKeys, badKeys)
       : error === true
-        ? `is limited to keys: ${inspect(...goodKeys)} received: ${inspect(...badKeys)}`
+        ? `is limited to keys: ${goodKeys.map(inspect).join(',')} ` +
+          `received: ${badKeys.map(inspect).join(',')}`
         : error
 
     throw new Error(msg)

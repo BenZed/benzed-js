@@ -11,7 +11,7 @@ const dependencies = Promise.all([
 // Execute
 /******************************************************************************/
 
-window.addEventListener('load', async () => {
+void async function load () { // eslint-disable-line wrap-iife
 
   const [
     React,
@@ -59,4 +59,4 @@ window.addEventListener('load', async () => {
   </StoreProvider>
 
   render(component, tag)
-})
+}()

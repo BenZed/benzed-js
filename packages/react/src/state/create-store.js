@@ -1,24 +1,15 @@
-import copy from './copy'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function change (data, mutator) {
+function createStore (state, actions) {
 
-  if (this !== undefined) {
-    mutator = data
-    data = this
+  return {
+    state,
+    dispatch
   }
 
-  if (data == null || typeof data !== 'object')
-    throw new Error('data must be an object')
-
-  const copied = copy(data)
-
-  mutator(copied)
-
-  return copied
 
 }
 
@@ -26,4 +17,4 @@ function change (data, mutator) {
 // Exports
 /******************************************************************************/
 
-export default change
+export default createStore

@@ -12,6 +12,8 @@ import ObjectType from './object-type'
 import ValueType from './value-type'
 import MultiType from './multi-type'
 
+import UrlType from './url-type'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
@@ -30,6 +32,8 @@ export {
   ObjectType,
 
   ValueType,
-  MultiType
+  MultiType,
+
+  UrlType
 
 }
