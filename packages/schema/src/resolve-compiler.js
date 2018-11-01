@@ -2,7 +2,7 @@ import is from 'is-explicit'
 import {
   GenericType, SpecificType,
   StringType, NumberType, BooleanType,
-  ArrayType, ObjectType, ValueType, MultiType, UrlType
+  ArrayType, ObjectType, ValueType, MultiType//, UrlType
 } from './types'
 
 import { inspect } from 'util'

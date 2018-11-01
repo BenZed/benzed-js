@@ -18,7 +18,7 @@ const { ROOT } = SpecificType
 /******************************************************************************/
 
 const JS_FILE = path.join(__dirname, './url-type.js')
-const DIR = __dirname
+// const DIR = __dirname
 
 // @jsx require('../create-validator').default
 /* eslint-disable react/react-in-jsx-scope */

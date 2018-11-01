@@ -30,7 +30,7 @@ const LoginModal = ({
   email, password, setEmail, setPassword, submit, visible, status, ...props
 }) =>
   <Visible visible={visible}>
-    <Fade>
+    <Fade {...props}>
       <Modal>
 
         <Slide from='top'>
@@ -180,8 +180,8 @@ class LoginLogic extends React.Component {
 /******************************************************************************/
 
 const Login = props =>
-  <StoreConsumer>
-    {stores => <LoginLogic client={stores.client} {...props} />}
+  <StoreConsumer store='client'>
+    {client => <LoginLogic client={client} {...props} />}
   </StoreConsumer>
 
 /******************************************************************************/
