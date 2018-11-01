@@ -8,6 +8,7 @@ test
 test-util
 temp
 src
+jsx
 *.tgz
 *.test.js
 *.doc.js
