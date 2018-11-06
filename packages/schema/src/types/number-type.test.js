@@ -5,9 +5,9 @@ import NumberType from './number-type'
 import SpecificType from './specific-type'
 
 import is from 'is-explicit'
-import { SCHEMA } from '../util'
+import { $$schema } from '../util'
 
-const { ROOT } = SpecificType
+const { $$root } = SpecificType
 
 // @jsx require('../create-validator').default
 /* eslint-disable react/react-in-jsx-scope */
@@ -25,14 +25,14 @@ describe('NumberType', () => {
   })
 
   it('has number as root type', () => {
-    expect(new NumberType()[ROOT])
+    expect(new NumberType()[$$root])
       .to
       .be
       .equal(Number)
   })
 
   it('is resolved by Schema', () => {
-    expect(<number/>[SCHEMA].type)
+    expect(<number/>[$$schema].type)
       .to
       .be
       .instanceof(NumberType)

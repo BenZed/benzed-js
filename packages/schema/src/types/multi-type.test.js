@@ -20,7 +20,7 @@ describe('MultiType', () => {
   })
 
   it('has null as root type', () => {
-    expect(new MultiType()[Type.ROOT])
+    expect(new MultiType()[Type.$$root])
       .to
       .be
       .equal(null)
@@ -54,5 +54,7 @@ describe('MultiType', () => {
       expect(() => <multi/>)
         .to.throw('MultiType must have children')
     })
+
   })
+
 })

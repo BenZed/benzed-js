@@ -10,7 +10,7 @@ import { define, runValidators, propIsEnabled, mergeResults } from '../util'
 // Data
 /******************************************************************************/
 
-const { ROOT } = Type
+const { $$root } = Type
 
 /******************************************************************************/
 // Main
@@ -21,13 +21,13 @@ class SpecificType extends Type {
   constructor (type) {
     super(type)
 
-    if (!is.instanceable(this[Type.ROOT]))
+    if (!is.instanceable(this[Type.$$root]))
       throw new Error(`${this.constructor.name} requires an instanceable type.`)
   }
 
   compile (props) {
 
-    const rootType = this[ROOT]
+    const rootType = this[$$root]
 
     let typeValidator = null
     if (is.defined(rootType)) {
@@ -59,7 +59,7 @@ class SpecificType extends Type {
     else if (!is.func(castFunc) && !is.arrayOf.func(castFunc))
       throw new Error('cast validator requires a function')
 
-    const rootType = this[ROOT]
+    const rootType = this[$$root]
 
     const validator = (value, context) =>
       value != null && !is(value, rootType)

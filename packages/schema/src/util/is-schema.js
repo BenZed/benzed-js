@@ -4,7 +4,7 @@ import is from 'is-explicit'
 // Data
 /******************************************************************************/
 
-const SCHEMA = Symbol('schema-data')
+const $$schema = Symbol('schema-data')
 
 /******************************************************************************/
 // Main
@@ -14,7 +14,7 @@ function isSchema (input) {
   if (this !== undefined)
     input = this
 
-  return is.object(input) && is.plainObject(input[SCHEMA])
+  return is.object(input) && is.plainObject(input[$$schema])
 }
 
 /******************************************************************************/
@@ -24,5 +24,5 @@ function isSchema (input) {
 export default isSchema
 
 export {
-  SCHEMA
+  $$schema
 }

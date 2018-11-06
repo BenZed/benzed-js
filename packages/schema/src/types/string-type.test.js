@@ -6,9 +6,9 @@ import SpecificType from './specific-type'
 
 import is from 'is-explicit'
 
-import { SCHEMA } from '../util'
+import { $$schema } from '../util'
 
-const { ROOT } = SpecificType
+const { $$root } = SpecificType
 
 // @jsx require('../create-validator').default
 /* eslint-disable react/react-in-jsx-scope */
@@ -26,14 +26,14 @@ describe('StringType', () => {
   })
 
   it('has string as root type', () => {
-    expect(new StringType()[ROOT])
+    expect(new StringType()[$$root])
       .to
       .be
       .equal(String)
   })
 
   it('is resolved by Schema', () => {
-    expect(<string/>[SCHEMA].type)
+    expect(<string/>[$$schema].type)
       .to
       .be
       .instanceof(StringType)

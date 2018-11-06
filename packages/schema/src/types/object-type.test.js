@@ -20,7 +20,7 @@ describe('ObjectType', () => {
   })
 
   it('has object as root type', () => {
-    expect(new ObjectType()[Type.ROOT])
+    expect(new ObjectType()[Type.$$root])
       .to
       .be
       .equal(Object)

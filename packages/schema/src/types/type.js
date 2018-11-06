@@ -12,7 +12,7 @@ import { copy, change } from '@benzed/immutable'
 // Data
 /******************************************************************************/
 
-const ROOT = Symbol('root-type')
+const $$root = Symbol('root-type')
 
 /******************************************************************************/
 // Helper
@@ -53,10 +53,10 @@ class Type {
     return 'SchemaType'
   }
 
-  static ROOT = ROOT
+  static $$root = $$root
 
   constructor (type = null) {
-    this[ROOT] = type
+    this[$$root] = type
   }
 
   compile (props) {

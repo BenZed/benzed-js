@@ -7,7 +7,7 @@ import propsPluck from './props-pluck'
 import runValidators from './run-validators'
 import mergeResults from './merge-results'
 
-import isSchema, { SCHEMA } from './is-schema'
+import isSchema, { $$schema } from './is-schema'
 import Context from './context'
 import ValidationError from './validation-error'
 
@@ -31,6 +31,6 @@ export {
   ValidationError,
 
   RANGE_LAYOUT,
-  SCHEMA
+  $$schema
 
 }

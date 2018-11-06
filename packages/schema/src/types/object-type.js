@@ -7,7 +7,7 @@ import { inspect } from 'util'
 import {
 
   define, propIsEnabled, propsPluck, mergeResults, runValidators, propToConfig,
-  isSchema, SCHEMA
+  isSchema, $$schema
 
 } from '../util'
 
@@ -15,7 +15,7 @@ import {
 // Data
 /******************************************************************************/
 
-const SYNC = Symbol('resolved-syncronously')
+const $$sync = Symbol('resolved-syncronously')
 
 /******************************************************************************/
 // Helper
@@ -63,7 +63,7 @@ function runValidatorsOnEach (object, context) {
 
     const schema = schemas[i]
 
-    const { validators, key } = schema[SCHEMA]
+    const { validators, key } = schema[$$schema]
     const value = object[key]
 
     const result = runValidators(
@@ -73,7 +73,7 @@ function runValidatorsOnEach (object, context) {
     )
 
     if (is(result, Promise)) {
-      async = async || Array(schemas.length).fill(SYNC)
+      async = async || Array(schemas.length).fill($$sync)
       async[i] = result
 
     } else if (result !== undefined || key in object)
@@ -87,7 +87,7 @@ function runValidatorsOnEach (object, context) {
 
         for (let i = 0; i < results.length; i++) {
           const result = results[i]
-          if (result === SYNC)
+          if (result === $$sync)
             continue
 
           if (is(result, Error))
@@ -233,4 +233,4 @@ class ObjectType extends Type {
 
 export default ObjectType
 
-export { SYNC }
+export { $$sync }

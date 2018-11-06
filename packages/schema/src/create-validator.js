@@ -2,7 +2,7 @@ import is from 'is-explicit'
 import { wrap, flatten } from '@benzed/array'
 
 import { Type } from './types'
-import { runValidators, Context, SCHEMA } from './util'
+import { runValidators, Context, $$schema } from './util'
 
 import resolveCompiler from './resolve-compiler'
 
@@ -10,13 +10,13 @@ import resolveCompiler from './resolve-compiler'
 // Data
 /******************************************************************************/
 
-const ROOT = Type.ROOT
+const { $$root } = Type
 
 const SCHEMA_SHORTCUTS = {
   name:  { value: 'validate' },
-  type:  { get () { return this[SCHEMA]?.type?.[ROOT] }, enumerable: true },
-  props: { get () { return this[SCHEMA].props }, enumerable: true },
-  key:   { get () { return this[SCHEMA].key }, enumerable: true }
+  type:  { get () { return this[$$schema]?.type?.[$$root] }, enumerable: true },
+  props: { get () { return this[$$schema].props }, enumerable: true },
+  key:   { get () { return this[$$schema].key }, enumerable: true }
 }
 
 /******************************************************************************/
@@ -86,13 +86,13 @@ function Validator (input, props = {}) {
 
   // resolve compiler
   const isType = is(input, Type)
-  const isSchema = !isType && SCHEMA in input
+  const isSchema = !isType && $$schema in input
   if (isSchema && 'children' in props && !is.defined(props.children))
     delete props.children
 
   if (isSchema) {
-    props = { ...input[SCHEMA].props, ...props }
-    compiler = input[SCHEMA].compiler
+    props = { ...input[$$schema].props, ...props }
+    compiler = input[$$schema].compiler
 
   } else if (isType)
     compiler = ::input.compile
@@ -134,7 +134,7 @@ function Validator (input, props = {}) {
     throw new Error('props must be a plain object')
 
   const type = isSchema
-    ? input[SCHEMA].type
+    ? input[$$schema].type
     : isType
       ? input
       : null
@@ -146,7 +146,7 @@ function Validator (input, props = {}) {
 
   return defineProperties(validator, {
     ...SCHEMA_SHORTCUTS,
-    [SCHEMA]: { value: schema }
+    [$$schema]: { value: schema }
   })
 
 }
@@ -172,4 +172,4 @@ function createValidator (type, props, ...children) {
 
 export default createValidator
 
-export { SCHEMA }
+export { $$schema }

@@ -1,7 +1,7 @@
 import Type from './type'
 import is from 'is-explicit'
 
-import { isSchema, runValidators, define, SCHEMA } from '../util'
+import { isSchema, runValidators, define, $$schema } from '../util'
 
 /******************************************************************************/
 // Validators
@@ -14,7 +14,7 @@ function mustBeOneOf (value, context, index = 0, pass = !is.defined(value), erro
   if (!pass) for (let i = index; i < schemas.length; i++) {
 
     const schema = schemas[i]
-    const { validators } = schema[SCHEMA]
+    const { validators } = schema[$$schema]
 
     try {
 

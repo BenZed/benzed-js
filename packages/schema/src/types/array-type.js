@@ -1,10 +1,10 @@
 import is from 'is-explicit'
 import Type from './type'
-import { SYNC } from './object-type'
+import { $$sync } from './object-type'
 
 import { wrap } from '@benzed/array'
 
-import { define, propIsEnabled, runValidators, isSchema, SCHEMA } from '../util'
+import { define, propIsEnabled, runValidators, isSchema, $$schema } from '../util'
 
 /******************************************************************************/
 // Validators
@@ -25,11 +25,11 @@ function isArrayOf (array, context) {
   if (array) for (let i = 0; i < array.length; i++) {
     const value = array[i]
 
-    const { validators } = schema[SCHEMA]
+    const { validators } = schema[$$schema]
 
     const result = runValidators(validators, value, context.push(i))
     if (is(result, Promise)) {
-      async = Array(array.length).fill(SYNC)
+      async = async || Array(array.length).fill($$sync)
       async[i] = result
     } else
       array[i] = result
@@ -41,7 +41,7 @@ function isArrayOf (array, context) {
       .then(results => {
         for (let i = 0; i < results.length; i++) {
           const result = results[i]
-          if (result === SYNC)
+          if (result === $$sync)
             continue
 
           if (is(result, Error))
@@ -51,6 +51,7 @@ function isArrayOf (array, context) {
         }
         return array
       })
+
     : array
 }
 

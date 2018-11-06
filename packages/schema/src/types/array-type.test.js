@@ -21,7 +21,7 @@ describe('ArrayType', () => {
   })
 
   it('has array as root type', () => {
-    expect(new ArrayType()[Type.ROOT])
+    expect(new ArrayType()[Type.$$root])
       .to
       .be
       .equal(Array)
@@ -76,6 +76,47 @@ describe('ArrayType', () => {
         <string />
       </array>).to.throw('ArrayType may have a maximum of one child')
     })
+
+    let arrayOfDelays
+    before(() => {
+      const delayFoo = value =>
+        value.includes('delay-')
+          ? new Promise(resolve => {
+
+            const time = parseInt(value.replace('delay-', ''))
+
+            setTimeout(
+              () => resolve(`${time}`),
+              time
+            )
+
+          })
+
+          : value
+
+      arrayOfDelays = <array>
+        <string validate={delayFoo} />
+      </array>
+    })
+
+    it('resolves async validators', async () => {
+      const result = await arrayOfDelays([
+        'delay-0',
+        'delay-10',
+        'delay-50',
+        '100',
+        '1000'
+      ])
+
+      expect(result)
+        .to
+        .be
+        .deep
+        .equal([
+          '0', '10', '50', '100', '1000'
+        ])
+    })
+
   })
 
   describe('validators', () => {

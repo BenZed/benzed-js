@@ -2,7 +2,7 @@ import 'colors'
 import is from 'is-explicit'
 import { expect } from 'chai'
 
-import createValidator, { SCHEMA } from './create-validator'
+import createValidator, { $$schema } from './create-validator'
 import { ValidationError } from './util'
 
 /* eslint-disable react/react-in-jsx-scope, react/prop-types */ // @jsx createValidator
@@ -24,7 +24,7 @@ describe('createValidator', () => {
 
     it('should have symbolic Schema property', () => {
       const validator = <string />
-      expect(validator).to.have.property(SCHEMA)
+      expect(validator).to.have.property($$schema)
     })
 
     it('should have schema shortcuts', () => {
@@ -90,7 +90,7 @@ describe('createValidator', () => {
     expect(double(4)).to.be.equal(8)
     expect(triple(3)).to.be.equal(9)
 
-    expect(double).to.have.property(SCHEMA)
+    expect(double).to.have.property($$schema)
   })
 
   describe('examples', () => {

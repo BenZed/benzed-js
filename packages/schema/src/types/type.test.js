@@ -1,5 +1,5 @@
 import { createValidator } from '../' // eslint-disable-line no-unused-vars
-import { SCHEMA } from '../create-validator'
+import { $$schema } from '../create-validator'
 
 import { expect } from 'chai'
 import Type from './type'
@@ -23,7 +23,7 @@ describe('Type', () => {
   })
 
   it('most basic type, used for \'any\'', () => {
-    expect(<any/>[SCHEMA]
+    expect(<any/>[$$schema]
       .type
       .constructor
     ).to.be.equal(Type)

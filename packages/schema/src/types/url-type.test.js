@@ -9,9 +9,9 @@ import { expectResolve } from '@benzed/dev'
 import is from 'is-explicit'
 import path from 'path'
 
-import { SCHEMA } from '../util'
+import { $$schema } from '../util'
 
-const { ROOT } = SpecificType
+const { $$root } = SpecificType
 
 /******************************************************************************/
 // Data
@@ -36,14 +36,14 @@ describe.skip('UrlType', () => {
   })
 
   it('has string as root type', () => {
-    expect(new UrlType()[ROOT])
+    expect(new UrlType()[$$root])
       .to
       .be
       .equal(String)
   })
 
   it('is resolved by Schema', () => {
-    expect(<url/>[SCHEMA].type)
+    expect(<url/>[$$schema].type)
       .to
       .be
       .instanceof(UrlType)

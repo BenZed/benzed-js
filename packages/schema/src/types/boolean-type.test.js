@@ -3,14 +3,14 @@ import { expect } from 'chai'
 // eslint-disable-next-line no-unused-vars
 import BooleanType from './boolean-type'
 import SpecificType from './specific-type'
-import { SCHEMA } from '../util'
+import { $$schema } from '../util'
 import is from 'is-explicit'
 
 /******************************************************************************/
 // Data
 /******************************************************************************/
 
-const { ROOT } = SpecificType
+const { $$root } = SpecificType
 
 // @jsx require('../create-validator').default
 /* eslint-disable react/react-in-jsx-scope */
@@ -28,14 +28,14 @@ describe('BooleanType', () => {
   })
 
   it('has bool as root type', () => {
-    expect(new BooleanType()[ROOT])
+    expect(new BooleanType()[$$root])
       .to
       .be
       .equal(Boolean)
   })
 
   it('is resolved by Schema', () => {
-    expect(<bool/>[SCHEMA].type)
+    expect(<bool/>[$$schema].type)
       .to
       .be
       .instanceof(BooleanType)

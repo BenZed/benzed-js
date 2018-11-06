@@ -20,7 +20,7 @@ describe('ValueType', () => {
   })
 
   it('has null as root type', () => {
-    expect(new ValueType()[Type.ROOT])
+    expect(new ValueType()[Type.$$root])
       .to
       .be
       .equal(null)

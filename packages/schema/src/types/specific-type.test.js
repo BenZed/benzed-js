@@ -5,7 +5,7 @@ import SpecificType from './specific-type'
 
 // eslint-disable-next-line
 import createValidator from '../create-validator'
-import { SCHEMA } from '../util'
+import { $$schema } from '../util'
 
 import is from 'is-explicit'
 
@@ -34,7 +34,7 @@ describe('SpecificType', () => {
 
     const foo = <Foo/>
 
-    expect(foo[SCHEMA].type.constructor).to.be.equal(SpecificType)
+    expect(foo[$$schema].type.constructor).to.be.equal(SpecificType)
     expect(foo.type).to.be.equal(Foo)
   })
 
