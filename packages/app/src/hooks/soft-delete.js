@@ -34,6 +34,7 @@ function setDeletedTimestamp () {
 }
 
 async function throwIfDeleted (hook, { field, disableParam }) {
+
   const { service, id, method, app, params } = hook
 
   const auth = app.get('auth')
@@ -119,11 +120,10 @@ async function exec (ctx) {
         ctx.data,
         set(ctx.params, disableParam, true)
       )
-
       break
 
     case 'create':
-    // No soft deleting needs to happen on reate
+    // No soft deleting needs to happen on create
       break
   }
 

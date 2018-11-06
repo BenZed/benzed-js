@@ -38,6 +38,14 @@ describe('ArrayType', () => {
       expect(() => arr('cake'))
         .to.throw('must be an array')
     })
+    it('allows null or undefined', () => {
+
+      expect(() => (<array cast>
+        <number />
+      </array>)(null))
+        .to.not.throw(Error)
+
+    })
   })
 
   describe('children', () => {

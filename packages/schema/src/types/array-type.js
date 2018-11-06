@@ -19,11 +19,10 @@ function isArrayOf (array, context) {
 
   const [ schema ] = this
 
-  array = isArray(array)
-
   let async = null
 
-  for (let i = 0; i < array.length; i++) {
+  array = isArray(array)
+  if (array) for (let i = 0; i < array.length; i++) {
     const value = array[i]
 
     const { validators } = schema[SCHEMA]
@@ -37,7 +36,8 @@ function isArrayOf (array, context) {
   }
 
   return async
-    ? Promise.all(async)
+    ? Promise
+      .all(async)
       .then(results => {
         for (let i = 0; i < results.length; i++) {
           const result = results[i]
