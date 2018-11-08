@@ -45,6 +45,17 @@ describe('MultiType', () => {
           .to.throw('must be of type: Boolean')
     })
 
+    it('allows null and undefined', () => {
+
+      const stringOrNum = <oneOfType>
+        <string/>
+        <number/>
+      </oneOfType>
+
+      expect(stringOrNum(null)).to.be.equal(null)
+      expect(stringOrNum(undefined)).to.be.equal(undefined)
+    })
+
     it('children must be schemas', () => {
       expect(() => <multi>hey</multi>)
         .to.throw('MultiType must have schemas as children')

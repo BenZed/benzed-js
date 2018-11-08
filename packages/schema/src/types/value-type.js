@@ -37,7 +37,7 @@ function resolveChildren (values, name) {
 function checkValue (values, equalityCheck) {
 
   const validator = value =>
-    equalityCheck(values, value)
+    !is.defined(value) || equalityCheck(values, value)
       ? value
       : throw new Error(`must be one of: ${values.map(inspect).join(', ')}`)
 

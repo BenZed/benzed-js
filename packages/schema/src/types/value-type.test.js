@@ -41,6 +41,18 @@ describe('ValueType', () => {
         .to.throw('must be one of: \'black\', \'white\'')
     })
 
+    it('allows null and undefined', () => {
+      const coin = <value>
+        {'heads'}{'tails'}
+      </value>
+
+      expect(coin(null))
+        .to.be.equal(null)
+
+      expect(coin(undefined))
+        .to.be.equal(undefined)
+    })
+
     it('children are required', () => {
       expect(() => <value/>)
         .to.throw('ValueType must have children')

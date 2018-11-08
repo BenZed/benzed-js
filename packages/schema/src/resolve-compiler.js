@@ -47,6 +47,7 @@ const TYPE_MAP = new Map([
   [ 'function', Function ],
   [ 'set', Set ],
   [ 'map', Map ],
+  [ 'date', Date ],
 
   // [ 'url', UrlType ],
 

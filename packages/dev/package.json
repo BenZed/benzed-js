@@ -8,7 +8,7 @@
   "scripts": {
     "test": "mocha --opts .mocha.opts",
     "test:dev": "npx watch 'npm run test' src test/test-create-project ../react/src",
-    "babel": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files",
+    "babel": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files --verbose",
     "babel:dev": "npm run babel -- --watch",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
