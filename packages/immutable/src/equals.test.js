@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { equals, EQUALS } from '../src'
+import { equals, $$equals } from '../src'
 
 import { Test, inspect } from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
@@ -96,7 +96,7 @@ Test.optionallyBindableMethod(equals, equals => {
         const bar = () => 'bar'
         const bar2 = () => 'bar'
 
-        foo[EQUALS] = foo2[EQUALS] = bar[EQUALS] = bar2[EQUALS] = function (other) {
+        foo[$$equals] = foo2[$$equals] = bar[$$equals] = bar2[$$equals] = function (other) {
           return other() === this()
         }
 
@@ -141,7 +141,7 @@ Test.optionallyBindableMethod(equals, equals => {
         expect(equals(foo, bar)).to.be.equal(false)
       })
 
-      it('implementing symbolic EQUALS', () => {
+      it('implementing symbolic $$equals', () => {
 
         let calls = 0
 
@@ -151,7 +151,7 @@ Test.optionallyBindableMethod(equals, equals => {
             this.bar = bar
           }
 
-          [EQUALS] (b) {
+          [$$equals] (b) {
             calls++
             return b instanceof Foo && b.bar === this.bar
           }
@@ -201,7 +201,7 @@ Test.optionallyBindableMethod(equals, equals => {
 
       })
 
-      it('symbolic EQUALS takes precedence', () => {
+      it('symbolic $$equals takes precedence', () => {
 
         class Foo {
           constructor (bar = 'bar') {
@@ -212,7 +212,7 @@ Test.optionallyBindableMethod(equals, equals => {
             throw new Error('don\'t use this method')
           }
 
-          [EQUALS] (b) {
+          [$$equals] (b) {
             return b instanceof Foo && b.bar === this.bar
           }
         }
@@ -242,7 +242,7 @@ Test.optionallyBindableMethod(equals, equals => {
     let count = 0
 
     class EqualSpy {
-      [EQUALS] (b) {
+      [$$equals] (b) {
         count++
         return this === b
       }
@@ -303,7 +303,7 @@ Test.optionallyBindableMethod(equals, equals => {
     }
 
     class AccountSymbolEquals extends AccountStringEquals {
-      [EQUALS] = accountEquals
+      [$$equals] = accountEquals
     }
 
     const testAccount = Account => () => {
@@ -334,7 +334,7 @@ Test.optionallyBindableMethod(equals, equals => {
 
     }
 
-    describe('works on EQUALS method', testAccount(AccountStringEquals))
+    describe('works on $$equals method', testAccount(AccountStringEquals))
 
     describe('works on \'equals\' method', testAccount(AccountSymbolEquals))
 

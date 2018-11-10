@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { copy, equals, ValueMap, COPY, EQUALS } from '../src'
+import { copy, equals, ValueMap, $$copy, $$equals } from '../src'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -20,7 +20,7 @@ class CustomId {
       this.id *= 0.1
   }
 
-  [EQUALS] (b) {
+  [$$equals] (b) {
     return typeof b === 'object' &&
       b !== null &&
       'id' in b &&
@@ -423,8 +423,8 @@ describe('ValueMap', () => {
 
     })
 
-    it('implements COPY', () => {
-      expect(typeof map1[COPY]).to.be.equal('function')
+    it('implements $$copy', () => {
+      expect(typeof map1[$$copy]).to.be.equal('function')
       expect(map2).to.be.instanceof(ValueMap)
       expect(map1.size).to.be.equal(map2.size)
 
@@ -432,8 +432,8 @@ describe('ValueMap', () => {
         expect(map2.get(key)).to.be.equal(value)
     })
 
-    it('implements EQUALS', () => {
-      expect(typeof map1[EQUALS]).to.be.equal('function')
+    it('implements $$equals', () => {
+      expect(typeof map1[$$equals]).to.be.equal('function')
 
       const map3 = new ValueMap()
 

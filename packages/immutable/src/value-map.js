@@ -2,7 +2,7 @@ import equals from './equals'
 import copy from './copy'
 import { indexOf } from './array'
 
-import { COPY, EQUALS } from './symbols'
+import { $$copy, $$equals } from './symbols'
 
 /******************************************************************************/
 // Symbols
@@ -120,7 +120,7 @@ class ValueMap {
     return 'ValueMap'
   }
 
-  [COPY] () {
+  [$$copy] () {
 
     const map = new ValueMap()
 
@@ -130,7 +130,7 @@ class ValueMap {
     return map
   }
 
-  [EQUALS] (to) {
+  [$$equals] (to) {
 
     if (typeof to !== 'object' || to instanceof ValueMap === false)
       return false

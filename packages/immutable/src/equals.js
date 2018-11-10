@@ -1,4 +1,4 @@
-import { EQUALS } from './symbols'
+import { $$equals } from './symbols'
 
 /******************************************************************************/
 // Data
@@ -47,7 +47,7 @@ function namesAndSymbols (value) {
  *
  * - Are both NaN.
  *
- * - Implement symbolic EQUALS or string 'equals' method, which returns
+ * - Implement symbolic $$equals or string 'equals' method, which returns
  * true when given the opposing operand as input.
  *
  * - Are both objects with value equal string and symbolic keys.
@@ -79,11 +79,11 @@ function equals (a, b) {
   const aIsObject = aIsFunc || (aType === 'object' && a !== null)
   const bIsObject = bIsFunc || (bType === 'object' && b !== null)
 
-  if (aIsObject && typeof a[EQUALS] === 'function')
-    return a[EQUALS](b)
+  if (aIsObject && typeof a[$$equals] === 'function')
+    return a[$$equals](b)
 
-  if (bIsObject && typeof b[EQUALS] === 'function')
-    return b[EQUALS](a)
+  if (bIsObject && typeof b[$$equals] === 'function')
+    return b[$$equals](a)
 
   if (aIsObject && typeof a.equals === 'function')
     return a.equals(b)

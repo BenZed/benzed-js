@@ -2,7 +2,7 @@ import { expect } from 'chai'
 
 import _merge from './merge'
 import copy from './copy'
-import { COPY } from './symbols'
+import { $$copy } from './symbols'
 
 import Test, { inspect } from '@benzed/dev'
 
@@ -54,7 +54,7 @@ Test.optionallyBindableMethod(_merge, merge => {
             : obj[key]
       }
 
-      [COPY] () {
+      [$$copy] () {
         count++
         return new CopySpy(this)
       }

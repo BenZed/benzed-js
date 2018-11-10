@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
 import { push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
-  includes, indexOf, lastIndexOf, copy, EQUALS } from '../src'
+  includes, indexOf, lastIndexOf, copy, $$equals } from '../src'
 
 import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
@@ -453,12 +453,12 @@ describe('array-like helpers', () => {
 
       const foos = primitives.map(p => new Foo(p))
 
-      it('works on objects with EQUALS method', () => {
+      it('works on objects with $$equals method', () => {
         expect(unique(foos).map(f => f.bar)).to.deep.equal(pResults)
       })
 
       class UltraFoo extends Foo {
-        [EQUALS] = Foo.prototype.equals
+        [$$equals] = Foo.prototype.equals
       }
 
       const ultrafoos = primitives.map(p => new UltraFoo(p))

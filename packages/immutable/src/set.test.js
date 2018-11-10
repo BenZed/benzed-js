@@ -25,6 +25,25 @@ Test.optionallyBindableMethod(set, setter => {
     expect(obj1).to.not.have.property('key')
   })
 
+  it('set with zero length path returns target value', () => {
+
+    const obj1 = { foo: 'bar' }
+
+    const obj2 = set(obj1, [], { foo: 'bane' })
+
+    expect(obj2).to.be.deep.equal({ foo: 'bane' })
+  })
+
+  it('set works on functions', () => {
+
+    const func = () => {}
+
+    set(func, [ 'calls' ], 0)
+
+    expect(func.calls).to.be.equal(0)
+
+  })
+
   it('creates nested paths if they do not exist', () => {
     const obj = setter(obj1, ['foo', 'bar'], 100)
     expect(obj.foo).to.have.property('bar', 100)
@@ -79,7 +98,7 @@ Test.optionallyBindableMethod(set, setter => {
   })
 
   describe('throws if input is not an object', () => {
-    for (const value of [ null, undefined, 1, true, 'string', Symbol('sup'), function cake () {} ])
+    for (const value of [ null, undefined, 1, true, 'string', Symbol('sup') ])
       it(`throw if input is ${inspect(value)}`, () => {
         expect(() => console.log(set(value, 'foo', 'bar'))).to.throw(TypeError)
       })

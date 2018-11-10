@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import Test from '@benzed/dev'
 
 import copyJson from './copy-json'
-import { CIRCULAR } from './symbols'
+import { $$circular } from './symbols'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -40,8 +40,8 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
       expect(copyJson(BAR)).to.be.equal(null)
     })
 
-    it('CIRCULAR symbol returns null', () => {
-      expect(copyJson(CIRCULAR)).to.be.equal(null)
+    it('$$circular symbol returns null', () => {
+      expect(copyJson($$circular)).to.be.equal(null)
     })
 
   })

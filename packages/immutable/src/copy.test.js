@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { copy } from '../src'
+import { copy, $$copy } from '../src'
 
 import Test from '@benzed/dev'
 
@@ -34,6 +34,13 @@ Test.optionallyBindableMethod(copy, copier => {
       expect(copier(regexp)).to.be.equal(regexp)
     })
 
+    it('looks for copy methods on functions before returning them mutably', () => {
+      const one = () => { return 1 }
+      one[$$copy] = () => 1
+
+      expect(copier(one)).to.be.equal(1)
+    })
+
   })
 
   describe('copies objects', () => {
@@ -44,22 +51,6 @@ Test.optionallyBindableMethod(copy, copier => {
       const obj2 = copier(obj)
 
       expect(obj2).to.deep.equal(obj)
-
-    })
-
-    it('works on arrays', () => {
-
-      const arr = [ 1, 2, 3, 4, 5 ]
-
-      expect(copier(arr)).to.deep.equal(arr)
-
-    })
-
-    it('copies arrays with one length', () => {
-
-      const arrOfZero = [ 1 ]
-
-      expect(copier(arrOfZero)).to.be.deep.equal([ 1 ])
 
     })
 
@@ -120,6 +111,14 @@ Test.optionallyBindableMethod(copy, copier => {
 
       expect(arr2).to.deep.equal(arr)
       expect(arr2).to.not.equal(arr)
+
+    })
+
+    it('arrays with one length', () => {
+
+      const arrOfZero = [ 5 ]
+
+      expect(copier(arrOfZero)).to.be.deep.equal([ 5 ])
 
     })
 

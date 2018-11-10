@@ -1,6 +1,17 @@
 import copy from './copy'
 
 /******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const isSettable = value => {
+
+  const type = typeof value
+  return type === 'function' || (type === 'object' && value !== null)
+
+}
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
@@ -37,22 +48,18 @@ function setMutate (object, path, value) {
 
   path = path instanceof Array ? path : [ path ]
 
-  const isObject = typeof object === 'object' && object !== null
-  if (!isObject)
+  if (!isSettable(object))
     throw new TypeError(`Cant set property '${path}' of ${object}`)
 
   let ref = object
 
   const { length } = path
-  const finalIndex = length - 1
 
   for (let i = 0; i < length; i++) {
     const key = path[i]
 
-    const type = typeof ref[key]
-
-    const atFinalKey = i === finalIndex
-    if (!atFinalKey && ((type !== 'function' && type !== 'object') || ref[key] === null))
+    const atFinalKey = i === length - 1
+    if (!atFinalKey && !isSettable(ref[key]))
       ref[key] = typeof path[i + 1] === 'number' ? [] : {}
 
     if (!atFinalKey) {
@@ -60,12 +67,10 @@ function setMutate (object, path, value) {
       continue
     }
 
-    ref[key] = typeof value === 'function'
-      ? value(ref[key])
-      : value
+    ref[key] = value
   }
 
-  return object
+  return length === 0 ? value : object
 }
 
 /******************************************************************************/

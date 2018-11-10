@@ -30,6 +30,17 @@ Test.optionallyBindableMethod(get, getter => {
     expect(getter(obj, ['test', 'foo'])).to.be.equal('bar')
   })
 
+  it('zero length path returns input', () => {
+
+    const obj = {
+      foo: 'bar'
+    }
+
+    expect(get(obj, [])).to.be.deep.equal(obj)
+    expect(get(obj, [])).to.not.be.equal(obj)
+
+  })
+
   it('returns copies of gotten values', () => {
 
     const obj = {

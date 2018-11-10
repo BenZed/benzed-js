@@ -17,13 +17,16 @@ import {
 
 import ValueMap from './value-map'
 
-import { EQUALS, COPY } from './symbols'
+import { $$equals, $$copy } from './symbols'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 copy.json = copyJson
+copy.$$ = $$copy
+
+equals.$$ = $$equals
 
 /******************************************************************************/
 // Exports
@@ -45,5 +48,5 @@ export {
 
   ValueMap,
 
-  COPY, EQUALS
+  $$copy, $$equals
 }

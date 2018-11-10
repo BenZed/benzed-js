@@ -1,7 +1,7 @@
 import copy from './copy'
 import is from 'is-explicit'
 
-import { CIRCULAR } from './symbols'
+import { $$circular } from './symbols'
 
 /******************************************************************************/
 // Helper
@@ -13,7 +13,7 @@ function mergeMutate (a, b) {
   const isBObject = is.plainObject(b)
 
   // TODO untested
-  const bIsCircular = b === CIRCULAR
+  const bIsCircular = b === $$circular
   if (bIsCircular)
     return a
 

@@ -1,4 +1,4 @@
-import { COPY, CIRCULAR } from './symbols'
+import { $$copy, $$circular } from './symbols'
 
 /******************************************************************************/
 // Shortcuts
@@ -31,7 +31,7 @@ function copyPlainObject (object, refs) {
     if (hasValue)
       descriptor.value = copyConsideringRefs(descriptor.value, refs)
 
-    if (!hasValue || descriptor.value !== CIRCULAR)
+    if (!hasValue || descriptor.value !== $$circular)
       defineProperty(clone, key, descriptor)
   }
 
@@ -44,7 +44,7 @@ function getArgsFromIterable (value, refs) {
 
   for (const arg of value) {
     const result = copyConsideringRefs(arg, refs)
-    if (result !== CIRCULAR)
+    if (result !== $$circular)
       args.push(result)
   }
 
@@ -53,23 +53,25 @@ function getArgsFromIterable (value, refs) {
 
 function copyConsideringRefs (value, refs) {
 
-  if (value === null || typeof value !== 'object')
+  const type = typeof value
+
+  if (value === null || (type !== 'function' && type !== 'object'))
     return value
 
-  if (typeof value[COPY] === 'function')
-    return value[COPY]()
+  if (typeof value[$$copy] === 'function')
+    return value[$$copy]()
 
   if (typeof value.copy === 'function')
     return value.copy()
 
-  if (value instanceof RegExp)
+  if (type === 'function' || value instanceof RegExp)
     return value
 
   if (!refs)
     refs = []
 
   if (refs.includes(value))
-    return CIRCULAR
+    return $$circular
 
   refs.push(value)
 
@@ -103,7 +105,7 @@ function newArrayOfType (Type, array, refs) {
 /**
  * Returns a recursive duplicate of the input.
  *
- * If the input has a symbolic COPY or string copy method, it's output is
+ * If the input has a symbolic $$copy or string copy method, it's output is
  * returned.
  *
  * Otherwise, the copy is made by assigning string and symbol properties to new

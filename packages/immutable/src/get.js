@@ -37,7 +37,6 @@ function getMutate (object, path) {
   let ref = object
 
   const { length } = path
-  const finalIndex = length - 1
 
   for (let i = 0; i < length; i++) {
 
@@ -47,7 +46,7 @@ function getMutate (object, path) {
 
     const key = path[i]
 
-    const atFinalKey = i === finalIndex
+    const atFinalKey = i === length - 1
     if (atFinalKey)
       value = ref[key]
 
@@ -55,7 +54,7 @@ function getMutate (object, path) {
       ref = ref[key]
   }
 
-  return value
+  return length === 0 ? object : value
 }
 
 /******************************************************************************/

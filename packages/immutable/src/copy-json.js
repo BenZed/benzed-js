@@ -1,4 +1,4 @@
-import { CIRCULAR, EXCLUDED } from './symbols'
+import { $$circular, $$excluded } from './symbols'
 import { isIterable } from '@benzed/array'
 
 /******************************************************************************/
@@ -8,7 +8,7 @@ import { isIterable } from '@benzed/array'
 function convertPrimitive (value, type) {
 
   if (type === 'function' || type === 'symbol' || type === 'undefined')
-    return EXCLUDED
+    return $$excluded
 
   if (type === 'number' && (Number.isNaN(value) || !isFinite(value)))
     return `${value}`
@@ -31,7 +31,7 @@ function copyConsideringRefs (value, refs) {
     refs = []
 
   if (refs.includes(value))
-    return CIRCULAR
+    return $$circular
 
   refs.push(value)
 
@@ -39,7 +39,7 @@ function copyConsideringRefs (value, refs) {
     const json = []
     for (const item of value) {
       const result = copyConsideringRefs(item, refs)
-      if (result !== EXCLUDED && result !== CIRCULAR)
+      if (result !== $$excluded && result !== $$circular)
         json.push(result)
     }
     return json
@@ -48,7 +48,7 @@ function copyConsideringRefs (value, refs) {
   const json = {}
   for (const key in value) {
     const result = copyConsideringRefs(value[key], refs)
-    if (result !== EXCLUDED && result !== CIRCULAR)
+    if (result !== $$excluded && result !== $$circular)
       json[key] = result
   }
 
@@ -66,7 +66,7 @@ function copyJson (...args) {
     : this
 
   const result = copyConsideringRefs(value)
-  return result !== EXCLUDED
+  return result !== $$excluded
     ? result
     : null
 }

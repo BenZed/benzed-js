@@ -3,24 +3,24 @@
 // Symbols for pseudo javascript valuetype operators
 /******************************************************************************/
 
-const COPY = Symbol('=')
+const $$copy = Symbol('=')
 
-const EQUALS = Symbol('==')
+const $$equals = Symbol('==')
 
 /******************************************************************************/
 // Symbols for internal use
 /******************************************************************************/
 
-const CIRCULAR = Symbol('circular-reference')
-const EXCLUDED = Symbol('value-should-not-be-included-in-copy')
+const $$circular = Symbol('circular-reference')
+const $$excluded = Symbol('value-should-not-be-included-in-copy')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
-  COPY,
-  EQUALS,
-  EXCLUDED,
-  CIRCULAR
+  $$copy,
+  $$equals,
+  $$excluded,
+  $$circular
 }
