@@ -13,9 +13,15 @@ import { expectReject, expectResolve } from '@benzed/dev'
 // FIXME
 // import { createProjectAppAndTest } from '../../../../app/test-util/test-project'
 const createProjectAppAndTest = () => {
-  console.log(__filename.red, 'test ignored: createProjectAppAndTest')
-  console.log('@benzed/app is going to change'.magenta +
-'and @babel/register no longer transpiles paths not in the target directory'.magenta)
+  if (createProjectAppAndTest.warned)
+    return
+
+  createProjectAppAndTest.warned = true
+  console.log(__filename.red)
+  console.log(
+    '@benzed/app is going to change\n'.magenta +
+    '@babel/register no longer transpiles paths not in the target directory'.magenta
+  )
 }
 
 /******************************************************************************/
@@ -402,21 +408,25 @@ describe('Client Store', () => {
     })
 
     createProjectAppAndTest({
+
       services: {
         users: true,
         articles: true
       },
+
       mongodb: {
         database: 'rest-client-auth-test',
         dbpath: DB_PATH,
         hosts: [ 'localhost:' + (PORT + 100) ]
       },
+
       port: PORT,
       rest: true,
       logging: false,
       auth: {
         secret: 'deterministic'
       }
+
     }, state => {
 
       beforeEach(async () => {

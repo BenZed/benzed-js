@@ -98,7 +98,10 @@ const validateConfig = <object required='ClientStore configuration is required.'
     {'rest'}{'socketio'}
   </oneOf>
 
-  <object key='auth' cast={boolOrStringToToken} validate={authAutoFill} />
+  <object key='auth'
+    cast={boolOrStringToToken}
+    validate={authAutoFill}
+  />
 
 </object>
 
@@ -372,9 +375,11 @@ class ClientStore extends Store {
 
     const host = this.get('host')
     if (!host)
-      throw new Error(`Cannot login, ` + (provider === 'rest'
-        ? 'host has not been resolved.'
-        : 'not connected to host.'))
+      throw new Error(
+        `Cannot login, ` + (provider === 'rest'
+          ? 'host has not been resolved.'
+          : 'not connected to host.')
+      )
 
     const data = { strategy: 'local', email, password }
 
