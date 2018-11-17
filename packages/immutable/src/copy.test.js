@@ -34,6 +34,13 @@ Test.optionallyBindableMethod(copy, copier => {
       expect(copier(regexp)).to.be.equal(regexp)
     })
 
+    it('works on Dates', () => {
+      const date = new Date()
+      const date2 = copier(date)
+      expect(date2.getTime()).to.be.equal(date.getTime())
+      expect(date2).to.not.be.equal(date)
+    })
+
     it('looks for copy methods on functions before returning them mutably', () => {
       const one = () => { return 1 }
       one[$$copy] = () => 1
@@ -46,12 +53,10 @@ Test.optionallyBindableMethod(copy, copier => {
   describe('copies objects', () => {
 
     it('works on plain objects', () => {
-
       const obj = { key: 'value' }
       const obj2 = copier(obj)
 
       expect(obj2).to.deep.equal(obj)
-
     })
 
     it('copies symbolic properties', () => {
@@ -105,21 +110,18 @@ Test.optionallyBindableMethod(copy, copier => {
   describe('copies iterables', () => {
 
     it('arrays', () => {
-
       const arr = [ 1, 2, 3, 4, 5 ]
       const arr2 = copier(arr)
 
       expect(arr2).to.deep.equal(arr)
       expect(arr2).to.not.equal(arr)
-
     })
 
     it('arrays with one length', () => {
-
       const arrOfZero = [ 5 ]
-
-      expect(copier(arrOfZero)).to.be.deep.equal([ 5 ])
-
+      expect(copier(arrOfZero))
+        .to.be
+        .deep.equal([ 5 ])
     })
 
     it('array subclasses', () => {

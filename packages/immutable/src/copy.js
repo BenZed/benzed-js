@@ -67,6 +67,9 @@ function copyConsideringRefs (value, refs) {
   if (type === 'function' || value instanceof RegExp)
     return value
 
+  if (value instanceof Date)
+    return new Date(value.getTime())
+
   if (!refs)
     refs = []
 

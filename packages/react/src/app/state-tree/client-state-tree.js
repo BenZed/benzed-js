@@ -146,7 +146,6 @@ async function connectRest () {
   let newHost = null
   for (const host of hosts) {
     const res = await feathers.rest(host).catch(err => err)
-
     const status = res.code || res.status
     if (is.number(status) && status < 500) {
       newHost = host
@@ -186,7 +185,7 @@ class ClientStateTreeSocketIOService extends SocketIOService {
     super({
       ...settings,
       events,
-      connection: feathers.socket,
+      connection: feathers.io,
       method: 'emit'
     })
 
@@ -253,18 +252,17 @@ async function connectSocketIO () {
   const feathers = tree[$$feathers]
 
   const { hosts } = tree.config
-  const { socket } = feathers
+  const { io } = feathers
 
   for (const host of hosts) {
-    await socket::trySocketHost(host)
-    if (socket.connected)
+    await io::trySocketHost(host)
+    if (io.connected)
       break
   }
 
-  if (socket.connected)
-    tree('host').set(socket.io.uri)
+  tree('host').set(io.connected ? io.io.uri : null)
 
-  return socket.connected
+  return io.connected
 }
 
 /******************************************************************************/
@@ -282,7 +280,7 @@ const createFeathersClient = tree => {
     client.rest = fetch
     client.defaultService = tree::getFetchService
   } else {
-    client.socket = io(...IO_OPT)
+    client.io = io(...IO_OPT)
     client.defaultService = tree::getSocketIOService
   }
 
@@ -293,16 +291,49 @@ const createFeathersClient = tree => {
   return client
 }
 
+async function authenticate (data) {
+
+  const tree = this
+  const feathers = tree[$$feathers]
+
+  const { set: setAuth } = tree('auth')
+
+  setAuth({ userId: null, status: 'authenticating' })
+
+  if (tree.userId)
+    await tree.logout()
+
+  let userId = null
+  let status = null
+
+  try {
+    const { accessToken } = await feathers.authenticate(data)
+    const payload = await feathers.passport.verifyJWT(accessToken)
+    userId = payload.userId
+
+  } catch ({ name, message, code, errors }) {
+    status = { name, message, code, errors }
+  }
+
+  setAuth({ userId, status })
+
+  return userId
+
+}
+
 /******************************************************************************/
 // Setup
 /******************************************************************************/
 
-const initialState = {
+const STATE = {
   host: null,
-  userId: null
+  auth: {
+    status: null,
+    userId: null
+  }
 }
 
-const actions = {
+const ACTIONS = {
 
   async connect () {
 
@@ -325,9 +356,36 @@ const actions = {
 
   },
 
-  login () { },
+  login (email, password) {
 
-  logout () { }
+    const { provider } = this.config
+
+    if (!this.host)
+      throw new Error(provider === 'rest'
+        ? 'Host not resolved.'
+        : 'Not connected to host.'
+      )
+
+    const data = { strategy: 'local', email, password }
+
+    return this::authenticate(data)
+
+  },
+
+  logout () {
+
+    const { provider } = this.config
+
+    if (!this.host)
+      throw new Error(provider === 'rest'
+        ? 'Host not resolved.'
+        : 'Not connected to host.'
+      )
+
+    this('auth').set({ userId: null, status: null })
+
+    return this[$$feathers].logout()
+  }
 
 }
 
@@ -340,9 +398,19 @@ function ClientStateTree (config) {
   // config = config |> copy |> validateConfig |> freeze
   config = freeze(validateConfig(copy(config)))
 
+  const state = { ...STATE }
+  const actions = { ...ACTIONS }
+
+  if (!config.auth) {
+    delete state.auth
+    delete actions.login
+    delete actions.logout
+  }
+  // const { connect, login, logout } = actions
+
   const tree = new StateTree(
-    { ...initialState },
-    { ...actions }
+    state,
+    actions
   )
 
   defineProperty(tree, 'config', { value: config, enumerable: true })

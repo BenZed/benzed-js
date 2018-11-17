@@ -21,12 +21,12 @@
   "license": "ISC",
   "description": "Data sanitization and validation via jsx syntax",
   "devDependencies": {
-    "@benzed/dev": "^0.11.0"
+    "@benzed/dev": "^0.11.1"
   },
   "dependencies": {
-    "@benzed/array": "^1.5.0",
-    "@benzed/math": "^1.2.0",
-    "@benzed/immutable": "^1.4.0",
+    "@benzed/array": "^1.5.1",
+    "@benzed/math": "^1.2.1",
+    "@benzed/immutable": "^1.5.1",
     "is-explicit": "^2.1.0"
   }
 }

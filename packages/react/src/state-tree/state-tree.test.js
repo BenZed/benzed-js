@@ -1,8 +1,10 @@
 import { expect } from 'chai'
-import { push, copy } from '@benzed/immutable'
+import { copy } from '@benzed/immutable'
+import { clamp } from '@benzed/math'
+
 import is from 'is-explicit'
 
-import StateTree from './state-tree'
+import StateTree, { $$state } from './state-tree'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -29,15 +31,16 @@ const ScoreStateTree = () =>
 
     addScore (amount) {
 
-      const scores = this('scores')
+      const { set: setScore } = this('scores')
+      const { set: setAverage } = this('average')
 
-      scores.set([ ...this.scores, amount ])
+      setScore([ ...this.scores, amount ])
 
       const value = this
         .scores
         .reduce((a, v) => a + v) / this.scores.length
 
-      this('average').set(value)
+      setAverage(value)
     }
   })
 
@@ -99,6 +102,23 @@ describe('StateTree', () => {
       expect(setCount1).to.be.equal(setCount2)
     })
 
+  })
+
+  describe('toJSON', () => {
+
+    let counter
+    let state
+    before(() => {
+      counter = CounterStateTree()
+      state = counter.toJSON()
+    })
+
+    it('returns state', () => {
+      expect(state).to.be.deep.equal(counter[$$state])
+    })
+    it('returned is a copy', () => {
+      expect(state).to.not.be.equal(counter[$$state])
+    })
   })
 
   describe('subscriptions', () => {
@@ -206,7 +226,53 @@ describe('StateTree', () => {
         foo () {}
       })).to.throw(`'foo' cannot be used as a state key.`)
     })
-
   })
 
+  describe.only('nesting', () => {
+    let app, player
+    before(() => {
+
+      const Bar = () => new StateTree({
+        amount: 100,
+        max: 100
+      }, {
+        set (amount) {
+          const { max } = this
+          this('amount').set(clamp(amount, 0, max))
+        }
+      })
+
+      player = new StateTree({
+        hp: Bar(),
+        mana: Bar(),
+        controller: 'ai'
+      }, {
+        setController (value) {
+          this('controller').set(value)
+        }
+      })
+
+      app = new StateTree({
+        scores: [],
+        player
+      }, { })
+    })
+
+    it('trees can be nested as states in other trees', () => {
+      expect($$state in app.player).to.be.equal(true)
+      expect($$state in app.player.hp).to.be.equal(true)
+    })
+
+    it.only('subscribers are deferred to nested trees', () => {
+
+      let called = false
+      const func = () => { called = true }
+
+      app.subscribe(func, [ 'player', 'hp', 'amount' ])
+      app.player.hp.set(50)
+
+      expect(app.player.hp.amount).to.be.equal(50)
+      expect(called).to.be.equal(true)
+    })
+  })
 })

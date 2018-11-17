@@ -9,7 +9,7 @@ import { equals } from '@benzed/immutable'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('@task decorator', () => {
+describe.skip('@task decorator', () => {
 
   it('is a function', () => {
     expect(task).to.be.instanceof(Function)

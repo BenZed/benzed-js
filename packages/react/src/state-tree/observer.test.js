@@ -1,36 +1,14 @@
 import React from 'react'
 import { expect } from 'chai'
 
-import Store from './store'
+import StateTree, { $$state } from './state-tree'
 import Observer from './observer'
 
 import renderer from 'react-test-renderer'
 
-import { push } from '@benzed/immutable'
-
+import { push, get } from '@benzed/immutable'
+import { milliseconds } from '@benzed/async'
 /* eslint-disable react/prop-types */
-
-/******************************************************************************/
-// Example Store
-/******************************************************************************/
-
-class MessageStore extends Store {
-
-  messages = []
-
-  addMessage (body) {
-
-    const msg = {
-      body,
-      time: new Date()
-    }
-
-    const msgs = this.messages::push(msg)
-
-    this.set('messages', msgs)
-  }
-
-}
 
 /******************************************************************************/
 // Message Consumer
@@ -39,29 +17,38 @@ class MessageStore extends Store {
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.skip('Observer component', () => {
-
-  const messages = new MessageStore()
+describe.only('Observer component', () => {
+  let messages
+  before(() => {
+    messages = new StateTree({
+      all: []
+    }, {
+      addMessage (value) {
+        const [ all, setAll ] = this('all')
+        setAll(all::push(value))
+      }
+    })
+  })
 
   describe('basic usage', () => {
 
     it('is used to send state changes to child components', () => {
 
-      const messageList = renderer.create(
-        <Observer
-          store={messages}>
-          { store => <ul>
-            { store.messages.map((msg, i) =>
-              <li key={i}>{msg.body}</li>
-            )}
-          </ul>}
-        </Observer>
-      )
+      const MessageList = () => <Observer
+        tree={messages}
+        path={['all']}
+      >
+        { all => <ul>
+          { all.map((msg, i) =>
+            <li key={i}>{msg}</li>
+          ) }
+        </ul>}
+      </Observer>
 
+      const messageList = renderer.create(<MessageList/>)
       expect(messageList.toJSON().children).to.be.equal(null)
 
       messages.addMessage('Hello World.')
-
       expect(messageList.toJSON().children).to.be.deep.equal([
         {
           children: [ 'Hello World.' ],

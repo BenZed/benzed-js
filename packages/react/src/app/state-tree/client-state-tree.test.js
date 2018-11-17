@@ -1,7 +1,9 @@
 import { expect } from 'chai'
 import ClientStateTree, { $$feathers } from './client-state-tree'
-import { set } from '@benzed/immutable'
+import { copy, get, set } from '@benzed/immutable'
 import io from 'socket.io-client'
+import is from 'is-explicit'
+import { $$state } from '../../state-tree/state-tree'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach createTestApi */
@@ -29,7 +31,7 @@ function expectNewClient (config, call = false) {
 // Tests
 /******************************************************************************/
 
-describe.only('Client State Tree', () => {
+describe('Client State Tree', () => {
 
   let restClient, restClientNoAuth, socketIoClient
   before(() => {
@@ -177,17 +179,17 @@ describe.only('Client State Tree', () => {
       describe('io manager is initialized with specific options', () => {
         it('does not auto connect', () => {
           const feathers = socketIoClient[$$feathers]
-          expect(feathers.socket.io.autoConnect).to.be.equal(false)
+          expect(feathers.io.io.autoConnect).to.be.equal(false)
         })
 
         it('does not auto reconnect', () => {
           const feathers = socketIoClient[$$feathers]
-          expect(feathers.socket.io._reconnection).to.be.equal(false)
+          expect(feathers.io.io._reconnection).to.be.equal(false)
         })
 
         it('500 ms timeout', () => {
           const feathers = socketIoClient[$$feathers]
-          expect(feathers.socket.io._timeout).to.be.equal(500)
+          expect(feathers.io.io._timeout).to.be.equal(500)
         })
       })
 
@@ -200,9 +202,9 @@ describe.only('Client State Tree', () => {
         it('has Socket instance as socket property', () => {
           const feathers = socketIoClient[$$feathers]
 
-          expect(feathers).to.have.property('socket')
-          expect(feathers.socket).to.be.instanceof(io.Socket)
-          expect(feathers.socket.io).to.be.instanceof(io.Manager)
+          expect(feathers).to.have.property('io')
+          expect(feathers.io).to.be.instanceof(io.Socket)
+          expect(feathers.io.io).to.be.instanceof(io.Manager)
         })
 
         it('has custom service getter function', () => {
@@ -228,28 +230,157 @@ describe.only('Client State Tree', () => {
   })
 
   for (const provider of [ 'rest', 'socketio' ])
-    for (const auth of [ true, false ])
+    for (const auth of [ false, true ])
       createTestApi({ [provider]: true, auth }, state => {
-        let client
-        before(() => {
+        let client, users
+        before(async () => {
+
+          users = auth && await state.api.service('users').create([
+            {
+              email: 'some-user@gmail.com',
+              password: 'password'
+            }
+          ])
+
           client = new ClientStateTree({
-            hosts: state.address,
+            hosts: [ 'http://some-other-host', state.address ],
             provider,
             auth
           })
+
         })
-        describe(`usage in a ${provider} non-auth app`, () => {
 
-          describe('connect action', () => {
+        describe(`usage in a ${provider} ${auth ? 'auth' : 'non-auth'} app`, () => {
 
-            let returned
-            before(async () => {
-              returned = await client.connect()
+          let host
+          before(async () => {
+            host = await client.connect()
+          })
+
+          let userId = null
+          const authStateHistory = []
+          if (auth) before(async function () {
+
+            this.timeout(5000)
+
+            const { email } = users[0]
+
+            authStateHistory.push(copy(client.auth))
+            client.subscribe((state, path) => {
+              authStateHistory.push(get(state, path))
+            }, 'auth')
+
+            await client.login(email, 'bad-password')
+
+            userId = await client.login(email, 'password')
+            await client.logout()
+          })
+
+          describe('initial state', () => {
+
+            let keys
+            before(() => {
+              keys = Object.keys(client[$$state])
             })
 
-            it.only('connects to one of the configured available hosts', () => {
+            it(`has ${auth ? '2 keys' : '1 key'}: ${auth ? 'host, auth' : 'host'}`,
+              () => {
+                expect(keys).to.be.deep.equal(
+                  auth
+                    ? [ 'host', 'auth' ]
+                    : [ 'host' ]
+                )
+              })
+
+          })
+
+          describe('connect action', () => {
+            it('connects to any host it can get a response from', () => {
               expect(client.host)
                 .to.be.equal(state.address)
+            })
+
+            it('returns connected host', () => {
+              expect(client.host)
+                .to.be.equal(host)
+              if (provider === 'socketio')
+                expect(client[$$feathers].io.connected).to.be.equal(true)
+            })
+          })
+
+          describe('login action', () => {
+
+            if (!auth)
+              it('should not exist', () => {
+                expect(client.login).to.not.be.instanceof(Function)
+                expect(client.auth).to.be.equal(undefined)
+              })
+
+            if (auth) it('sets auth.userId if successful', () => {
+              expect(authStateHistory.some(auth => is.defined(auth.userId)))
+                .to.be.equal(true)
+            })
+
+            if (auth) it('returns logged in user id', () => {
+              expect(is.defined(userId)).to.be.equal(true)
+            })
+
+            if (auth) it('sets auth.status to \'authenticating\' until response has been received',
+              () => {
+                expect(authStateHistory.some(auth => auth.status === 'authenticating'))
+                  .to.be.equal(true)
+              })
+
+            if (auth) it('sets auth.status with error object if login failed',
+              () => {
+                expect(authStateHistory.some(auth => auth.status?.message === 'Invalid login'))
+                  .to.be.equal(true)
+              })
+
+            if (auth) it('clears auth.status if successful', () => {
+              expect(
+                authStateHistory
+                  .some(auth => is.defined(auth.userId) && auth.status === null)
+              ).to.be.equal(true)
+            })
+
+            if (auth) it('throws if host not resolved', () => {
+              const notConnected = new ClientStateTree({
+                hosts: [ 'http://some-other-host', state.address ],
+                provider,
+                auth
+              })
+              expect(() => notConnected.login('whats@up.com', 'fail'))
+                .to.throw(provider === 'rest'
+                  ? 'Host not resolved'
+                  : 'Not connected to host')
+            })
+
+          })
+
+          describe('logout action', () => {
+            if (!auth) it('should not exist', () => {
+              expect(client.logout).to.be.equal(undefined)
+            })
+
+            if (auth) it('sets auth.userId to null', () => {
+              expect(client.auth.userId).to.be.equal(null)
+            })
+
+            if (auth) it('sets auth.status to null', () => {
+              expect(client.auth.status).to.be.equal(null)
+            })
+
+            if (auth) it('throws if host not resolved', () => {
+              const notConnected = new ClientStateTree({
+                hosts: [ 'http://some-other-host', state.address ],
+                provider,
+                auth
+              })
+              expect(() => notConnected.logout())
+                .to.throw(provider === 'rest'
+                  ? 'Host not resolved'
+                  : 'Not connected to host')
             })
           })
         })

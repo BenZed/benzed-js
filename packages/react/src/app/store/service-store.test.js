@@ -57,7 +57,7 @@ class Message extends ServiceRecord {
 // Tests
 /******************************************************************************/
 
-describe('ServiceStore', () => {
+describe.skip('ServiceStore', () => {
 
   let client
   before(() => {
@@ -112,6 +112,7 @@ describe('ServiceStore', () => {
       queue = messages[QUERY_QUEUE]
 
       await client.connect()
+
     })
 
     const APP_TYPE = APP.rest ? 'rest' : 'socketio'

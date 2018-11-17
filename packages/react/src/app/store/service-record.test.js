@@ -7,7 +7,7 @@ import ServiceRecord from './service-record'
 
 class FakeStore {}
 
-describe('ServiceRecord', () => {
+describe.skip('ServiceRecord', () => {
 
   it('is a class', () => {
     expect(ServiceRecord).to.throw('invoked without \'new')

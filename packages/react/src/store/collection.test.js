@@ -6,7 +6,7 @@ import StoreCollection from './collection'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('StoreCollection', () => {
+describe.skip('StoreCollection', () => {
 
   it('is a class', () => {
     expect(StoreCollection).to.throw('cannot be invoked without \'new')

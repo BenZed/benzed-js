@@ -5,7 +5,7 @@ import { get, EQUALS } from '@benzed/immutable'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('Store', () => {
+describe.skip('Store', () => {
 
   it('is a class', () => {
     expect(Store).to.throw('cannot be invoked without \'new')

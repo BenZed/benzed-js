@@ -61,7 +61,7 @@ function expectNewClient (config, call = false) {
 // Tests
 /******************************************************************************/
 
-describe('Client Store', () => {
+describe.skip('Client Store', () => {
 
   it('is a class', () => {
     expect(ClientStore).to.throw('invoked without \'new\'')

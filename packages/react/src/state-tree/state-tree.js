@@ -34,6 +34,7 @@ const applyState = (tree, value, path = []) => {
     return false
 
   if (hasPath) {
+
     checkStateKey(tree, path[0])
     set.mut(state, path, value)
 
@@ -111,7 +112,7 @@ const notify = (tree, path) => {
       if (!finished && atMaxSubPathIndex) {
         finished = true
         state = state || copy(getState(tree))
-        sub.callback(state, sub.path)
+        sub.callback(state, sub.path, tree)
       }
 
       // subscriber will not be considered for further state calls
@@ -201,13 +202,23 @@ function subscribe (callback, ...paths) {
 
   for (let path of paths) {
 
+    // cast path
     if (!is.defined(path))
       path = []
     else
       path = wrap(path)
 
+    // validated path
     if (path.length > 0 && !is.arrayOf(path, [String, Symbol]))
       throw new Error('paths must be arrays of strings or symbols')
+
+    // defer subscribers
+    let ref = this[$$state]
+    for (let i = 0; i < path.length; i++) {
+      ref = get.mut(ref, path[i])
+      if (is.func(ref) && $$state in ref)
+        return ref.subscribe(callback, path.slice(i + 1))
+    }
 
     this[$$subscribers].push({ callback, path })
   }
@@ -222,6 +233,13 @@ function unsubscribe (callback) {
   for (let i = subs.length - 1; i >= 0; i--)
     if (equals(subs[i].callback, callback))
       subs.splice(i, 1)
+}
+
+function stateTreeToJSON () {
+  const tree = this
+  const state = tree[$$state]
+
+  return copy.json(state)
 }
 
 /******************************************************************************/
@@ -255,6 +273,7 @@ function StateTree (initial, actions) {
 
   addSubcriptionLogic(stateTree)
   addActions(stateTree, actions)
+  stateTree.toJSON = stateTreeToJSON
   applyInitialState(stateTree, initial)
 
   return stateTree
@@ -265,3 +284,7 @@ function StateTree (initial, actions) {
 /******************************************************************************/
 
 export default StateTree
+
+export {
+  $$state
+}

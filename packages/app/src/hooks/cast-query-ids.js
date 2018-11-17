@@ -44,8 +44,9 @@ function exec (ctx) {
   if (!is.plainObject(query._id))
     query._id = ensureType(query._id, Type)
 
-  else if (is.array(query._id.$in))
-    query._id.$in = ensureType(query._id.$in, Type)
+  else for (const $op of ['$nin', '$in'])
+    if (is.array(query._id[$op]))
+      query._id[$op] = ensureType(query._id[$op], Type)
 
   return ctx
 }

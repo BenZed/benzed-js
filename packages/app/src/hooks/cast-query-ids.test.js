@@ -61,7 +61,7 @@ describe('cast-query-ids hook', () => {
     const docs = await things.find({
       query: {
         _id: {
-          '$in': all.map(d => `${d._id}`)
+          $in: all.map(d => `${d._id}`)
         }
       }
     })
