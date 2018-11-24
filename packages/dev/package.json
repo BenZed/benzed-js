@@ -20,7 +20,7 @@
     "webpack": "NODE_ENV=production webpack",
     "webpack:dev": "NODE_ENV=development webpack-dev-server",
     "serve": "node lib/scripts/serve-docs.js",
-    "serve:dev": "NODE_ENV=development nodemon --watch lib/documentation/api --watch config lib/scripts/serve-docs.js",
+    "serve:dev": "NODE_ENV=development nodemon --watch lib/documentation --watch lib/scripts lib/scripts/serve-docs.js",
     "build": "npm run lint && npm run babel && npm run webpack && npm run test",
     "start": "npm run build && npm run serve"
   },
@@ -75,7 +75,6 @@
     "mocha": "^5.2.0",
     "module-alias": "^2.1.0",
     "nodemon": "^1.18.6",
-    "react-test-renderer": "^16.6.3",
     "style-loader": "^0.23.1",
     "styled-components-test-utils": "^0.4.1",
     "targz": "^1.0.1",
@@ -83,7 +82,10 @@
     "webapp-webpack-plugin": "^2.3.1",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.10"
+    "webpack-dev-server": "^3.1.10",
+    "nedb": "^1.8.0",
+    "feathers-nedb": "^3.1.0",
+    "doctrine": "^3.0.0"
   },
   "devDependencies": {
     "@benzed/app": "^0.8.1",
@@ -96,6 +98,7 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-highlight": "^0.12.0",
+    "react-markdown": "^4.0.3",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "styled-components": "^4.1.1"

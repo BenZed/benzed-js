@@ -1,20 +1,10 @@
-import {
-
-  ClientStateTree,
-  ServiceStateTree
-
-} from './state-tree'
-
-import Login from './Login'
+import QuickHook from './quick-hook'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
-
-  ClientStateTree,
-  ServiceStateTree,
-  // Login
-
+  QuickHook,
+  QuickHook as createQuickHook
 }

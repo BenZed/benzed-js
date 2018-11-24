@@ -12,8 +12,9 @@ const bg = new Color('#282c34')
 // Theme
 /******************************************************************************/
 
-const theme = merge(themes.basic, {
+const theme = {
 
+  ...themes.basic,
   fg: bg.mix(new Color('white'), 0.1),
   bg: fg.mix(new Color('white'), 0.75),
 
@@ -34,7 +35,7 @@ const theme = merge(themes.basic, {
     link: new Color('#61aeee')
   }
 
-})
+}
 
 /******************************************************************************/
 // Styler

@@ -63,11 +63,11 @@ class StateTreeObserver extends React.Component {
 
   render () {
 
-    const { children } = this.props
+    const { children, path, tree } = this.props
 
     return this.state.value === undefined
       ? null
-      : children(this.state.value)
+      : children(this.state.value, path, tree)
   }
 
 }

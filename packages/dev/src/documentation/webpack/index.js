@@ -8,8 +8,9 @@ const dependencies = Promise.all([
   import('react'),
   import('react-dom'),
   import('react-router-dom'),
-  import('../ui/root'),
-  import('./docs')
+  import('@benzed/react'),
+  import('../ui'),
+  import('../theme')
 ])
 
 /******************************************************************************/
@@ -52,16 +53,34 @@ dependencies.then(([
   { default: React },
   { hydrate },
   { BrowserRouter },
-  { default: Website },
-  { default: docs }
+  { GlobalStyle, ClientStateTree, ServiceStateTree },
+  { default: View },
+  { theme }
 
 ]) => {
 
   const props = getServerProps()
   const main = getMainTag()
 
+  const client = new ClientStateTree({
+    hosts: `http://localhost:5100`,
+    provider: 'rest'
+  })
+
+  const docs = new ServiceStateTree({
+    serviceName: 'docs',
+    client
+  })
+
+  client.connect()
+
   const element = <BrowserRouter>
-    <Website {...props} docs={docs} />
+    <GlobalStyle theme={theme}>
+      <View {...props}
+        title='Global Mechanic'
+        docs={docs}
+      />
+    </GlobalStyle>
   </BrowserRouter>
 
   hydrate(element, main)

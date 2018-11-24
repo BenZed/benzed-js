@@ -1,5 +1,4 @@
-import StateTree from '../../state-tree'
-import { $$state } from '../../state-tree/state-tree'
+import StateTree, { $$state } from '../../state-tree/state-tree'
 import { $$feathers } from './client-state-tree'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars

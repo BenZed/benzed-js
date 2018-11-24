@@ -7,7 +7,7 @@ import is from 'is-explicit'
 import fetch from 'isomorphic-fetch'
 import io from 'socket.io-client'
 
-import StateTree from '../../state-tree'
+import { StateTree } from '../../state-tree'
 import { isClient } from '../../util'
 
 import { copy } from '@benzed/immutable'
