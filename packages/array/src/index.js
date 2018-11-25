@@ -8,6 +8,8 @@ import { isArrayLike, hasNumericLength } from './is-array-like'
 import isIterable from './is-iterable'
 
 import { wrap, unwrap } from './wrap'
+import first from './first'
+import last from './last'
 
 import SortedArray from './sorted-array'
 
@@ -19,6 +21,8 @@ export {
   pluck,
   flatten,
 
+  first,
+  last,
   wrap,
   unwrap,
 

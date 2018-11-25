@@ -363,6 +363,13 @@ function ServiceStateTree (config, state, actions) {
 
   defineProperty(tree, 'config', { value: config, enumerable: true })
   defineProperty(tree, $$queue, { value: new QueryQueue(), enumerable: true })
+  defineProperty(tree, 'all', {
+    get () {
+      const { count, ...records } = this.records
+      return Object.values(records)
+    },
+    enumerable: true
+  })
 
   return tree
 }

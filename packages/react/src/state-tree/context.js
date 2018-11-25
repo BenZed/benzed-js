@@ -19,13 +19,13 @@ const StateTreeProvider = ({ children, tree }) =>
   </StateTreeContext.Provider>
 
 const StateTreeConsumer = ({ children, ...props }) =>
-  <StateTreeContext>{tree =>
+  <StateTreeContext.Consumer>{tree =>
 
     <StateTreeObserver {...props} tree={tree} >
       {children}
     </StateTreeObserver>
 
-  }</StateTreeContext>
+  }</StateTreeContext.Consumer>
 
 /******************************************************************************/
 // Prop Types

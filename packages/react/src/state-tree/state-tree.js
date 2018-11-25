@@ -2,6 +2,7 @@ import is from 'is-explicit'
 
 import { equals, copy, get, set, reverse } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
+import { inspect } from 'util'
 
 /******************************************************************************/
 // Data
@@ -242,6 +243,14 @@ function stateTreeToJSON () {
   return copy.json(state)
 }
 
+function stateTreeToString () {
+
+  const tree = this
+
+  return inspect(tree[$$state])
+
+}
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -274,6 +283,7 @@ function StateTree (initial, actions) {
   addSubcriptionLogic(stateTree)
   addActions(stateTree, actions)
   stateTree.toJSON = stateTreeToJSON
+  stateTree.toString = stateTreeToString
   applyInitialState(stateTree, initial)
 
   return stateTree
