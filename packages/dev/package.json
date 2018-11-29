@@ -20,7 +20,7 @@
     "webpack": "NODE_ENV=production webpack",
     "webpack:dev": "NODE_ENV=development webpack-dev-server",
     "serve": "node lib/scripts/serve-docs.js",
-    "serve:dev": "NODE_ENV=development nodemon --watch lib/documentation --watch lib/scripts lib/scripts/serve-docs.js",
+    "serve:dev": "NODE_ENV=development nodemon --watch src/documentation --ignore src/documentation/webpack lib/scripts/serve-docs.js",
     "build": "npm run lint && npm run babel && npm run webpack && npm run test",
     "start": "npm run build && npm run serve"
   },

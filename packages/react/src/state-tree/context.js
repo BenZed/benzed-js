@@ -18,7 +18,9 @@ const StateTreeProvider = ({ children, tree }) =>
     { children }
   </StateTreeContext.Provider>
 
-const StateTreeConsumer = ({ children, ...props }) =>
+const StateTreeConsumer = StateTreeContext.Consumer
+
+const StateTreeListener = ({ children, ...props }) =>
   <StateTreeContext.Consumer>{tree =>
 
     <StateTreeObserver {...props} tree={tree} >
@@ -31,7 +33,7 @@ const StateTreeConsumer = ({ children, ...props }) =>
 // Prop Types
 /******************************************************************************/
 
-StateTreeConsumer.propTypes = createPropTypesFor(React => <proptypes>
+StateTreeListener.propTypes = createPropTypesFor(React => <proptypes>
   <func key='children' required />
 </proptypes>)
 
@@ -39,4 +41,4 @@ StateTreeConsumer.propTypes = createPropTypesFor(React => <proptypes>
 // Exports
 /******************************************************************************/
 
-export { StateTreeProvider, StateTreeContext, StateTreeConsumer }
+export { StateTreeProvider, StateTreeConsumer, StateTreeListener }

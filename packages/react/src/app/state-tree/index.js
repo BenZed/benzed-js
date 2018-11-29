@@ -1,5 +1,6 @@
 import ClientStateTree from './client-state-tree'
 import ServiceStateTree from './service-state-tree'
+import UiStateTree from './ui-state-tree'
 
 /******************************************************************************/
 // Exports
@@ -7,5 +8,6 @@ import ServiceStateTree from './service-state-tree'
 
 export {
   ClientStateTree,
-  ServiceStateTree
+  ServiceStateTree,
+  UiStateTree
 }

@@ -5,18 +5,13 @@ import { milliseconds } from '@benzed/async'
 
 import React from 'react'
 import renderer from 'react-test-renderer'
-import ClientStore from './store/client-store'
 
 import path from 'path'
 import fs from 'fs-extra'
 
 // FIXME
 // import { createProjectAppAndTest } from '../../../../app/test-util/test-project'
-const createProjectAppAndTest = () => {
-  console.log(__filename.red, 'test ignored: createProjectAppAndTest')
-  console.log('@benzed/app is going to change'.magenta +
-'and @babel/register no longer transpiles paths not in the target directory'.magenta)
-}
+const createProjectAppAndTest = () => { }
 
 /******************************************************************************/
 // Helper

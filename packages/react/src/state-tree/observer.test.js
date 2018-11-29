@@ -17,7 +17,7 @@ import { milliseconds } from '@benzed/async'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('Observer component', () => {
+describe('Observer component', () => {
   let messages
   before(() => {
     messages = new StateTree({

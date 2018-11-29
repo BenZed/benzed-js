@@ -10,8 +10,6 @@ class WhiteList {
 
   constructor (keys) {
     this.keys.push(...keys)
-
-    return this::Cloner
   }
 
   apply (props) {
@@ -60,9 +58,9 @@ function Cloner ({ children, ...props }) {
 // Extend
 /******************************************************************************/
 
-Cloner.whitelist = (...args) => new WhiteList(args)
+Cloner.whitelist = (...args) => new WhiteList(args)::Cloner
 
-Cloner.blacklist = (...args) => new BlackList(args)
+Cloner.blacklist = (...args) => new BlackList(args)::Cloner
 
 /******************************************************************************/
 // Canned

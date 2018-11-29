@@ -2,6 +2,8 @@ import React from 'react'
 import { createPropTypesFor } from '@benzed/schema'
 import { $$state } from './state-tree'
 import { get } from '@benzed/immutable'
+import { first } from '@benzed/array'
+
 import is from 'is-explicit'
 
 /******************************************************************************/
@@ -12,37 +14,41 @@ const isStateTree = value => is.defined(value) && $$state in value === false
   ? throw new Error('must be a State Tree')
   : null
 
+const getDefaultMappedState = tree => tree
+
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
 class StateTreeObserver extends React.Component {
 
-  state = (({ mapState, path, tree }) => {
-    const value = mapState(tree.toJSON(), path, tree)
+  state = (({ mapState, path, root: _root, tree }) => {
+    const sourceTree = get.mut(tree, _root)
+    const value = mapState(sourceTree, path)
     return { value }
   })(this.props)
 
   static propTypes = createPropTypesFor(React => <proptypes>
-    <array key='path'>
-      <string required />
-    </array>
+    <array key='path' />
     <func key='tree' required validate={isStateTree} />
     <func key='mapState' />
   </proptypes>)
 
   static defaultProps = {
+    root: [],
     path: [],
-    mapState: get.mut
+    mapState: getDefaultMappedState
   }
 
   // Handlers
 
-  update = (state, path, tree) => {
+  update = (state, path) => {
 
-    const { mapState } = this.props
+    const { mapState, root: _root, tree } = this.props
 
-    const mapped = mapState(state, path, tree)
+    const sourceTree = get.mut(tree, _root)
+
+    const mapped = mapState(sourceTree, path)
 
     this.setState({ value: mapped })
   }
@@ -50,24 +56,32 @@ class StateTreeObserver extends React.Component {
   // LifeCycle
 
   componentDidMount () {
-    const { tree, path } = this.props
+    const { tree, root: _root, path } = this.props
 
-    tree.subscribe(this.update, path)
+    const sourceTree = get.mut(tree, _root)
+
+    const paths = path.length > 0 && is.array(first(path))
+      ? path
+      : [ path ]
+
+    sourceTree.subscribe(this.update, ...paths)
   }
 
   componentWillUnmount () {
-    const { tree } = this.props
+    const { tree, root: _root } = this.props
 
-    tree.unsubscribe(this.update)
+    const sourceTree = get.mut(tree, _root)
+
+    sourceTree.unsubscribe(this.update)
   }
 
   render () {
 
-    const { children, path, tree } = this.props
+    const { children, path } = this.props
 
     return this.state.value === undefined
       ? null
-      : children(this.state.value, path, tree)
+      : children(this.state.value, path)
   }
 
 }

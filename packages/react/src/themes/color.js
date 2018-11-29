@@ -1,6 +1,6 @@
 import Color from 'color'
 
-import { COPY, EQUALS, equals } from '@benzed/immutable'
+import { $$copy, $$equals, equals } from '@benzed/immutable'
 
 // TODO Build this
 
@@ -27,11 +27,11 @@ import { COPY, EQUALS, equals } from '@benzed/immutable'
 //
 // }
 
-Color.prototype[COPY] = function () {
+Color.prototype[$$copy] = function () {
   return new Color([...this.color])
 }
 
-Color.prototype[EQUALS] = function (b) {
+Color.prototype[$$equals] = function (b) {
   return b instanceof Color && equals(this.color, b.color)
 }
 

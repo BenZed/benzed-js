@@ -19,7 +19,8 @@ function convertPrimitive (value, type) {
 function copyConsideringRefs (value, refs) {
 
   let type = typeof value
-  if (value !== null && type === 'object' && typeof value.toJSON === 'function') {
+  const isObject = (value !== null && type === 'object') || type === 'function'
+  if (isObject && typeof value.toJSON === 'function') {
     value = value.toJSON()
     type = typeof value
   }

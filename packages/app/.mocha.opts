@@ -1,6 +1,6 @@
 --require @babel/register
 --require @babel/polyfill
---require ./test-util
+--require ./test
 --bail
-src/**/*.test.js
+src/jsx/**/*.test.js
 test-util/end-tests.js

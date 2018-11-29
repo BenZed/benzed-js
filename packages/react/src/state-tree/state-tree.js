@@ -14,6 +14,7 @@ const $$state = Symbol('state')
 const $$setters = Symbol('setters')
 
 const $$any = Symbol('update-on-any-path')
+const $$parentkey = Symbol('state-key-in-parent')
 
 /******************************************************************************/
 // Helper
@@ -30,8 +31,8 @@ const applyState = (tree, value, path = []) => {
     ? get.mut(state, path)
     : state
 
-  const stateIsChanging = equals(stateAtPath, value)
-  if (stateIsChanging)
+  const stateIsNotChanging = equals(stateAtPath, value)
+  if (stateIsNotChanging)
     return false
 
   if (hasPath) {
@@ -77,14 +78,15 @@ const getState = (tree, path = []) => {
     : state
 }
 
-const notify = (tree, path) => {
+const notify = (tree, path, sourceTree = tree) => {
+
+  if (tree.parent)
+    notify(tree.root, [ ...getPathToChild(tree), ...path ], tree)
 
   // reversed so subscribers can be removed without complicating the loop
   const subs = reverse(tree[$$subscribers])
   if (subs.length === 0)
     return
-
-  let state = null
 
   const { length: pathLength } = path
 
@@ -112,8 +114,7 @@ const notify = (tree, path) => {
       // at final key, send state to subscriber
       if (!finished && atMaxSubPathIndex) {
         finished = true
-        state = state || copy(getState(tree))
-        sub.callback(state, sub.path, tree)
+        sub.callback(sourceTree, sub.path)
       }
 
       // subscriber will not be considered for further state calls
@@ -131,6 +132,30 @@ const checkStateKey = (tree, key) => {
 
   if (key in tree[$$state] === false)
     throw new Error(`'${key}' is not a valid state key.`)
+
+}
+
+const getPathToChild = child => {
+
+  const path = []
+
+  let parent = child
+  while (parent && parent.parent) {
+    path.push(parent[$$parentkey])
+    parent = parent.parent
+  }
+
+  path.reverse()
+
+  return path
+}
+
+const hoistSubscriber = (tree, callback, path, pathToChild) => {
+
+  if (!pathToChild)
+    pathToChild = getPathToChild(tree)
+
+  tree.root.subscribe(callback, [ ...pathToChild, ...path ])
 
 }
 
@@ -163,12 +188,19 @@ const applyInitialState = (tree, initial) => {
 
   applyState(tree, initial)
 
+  // hoist subscribers
+  for (const key of keys) {
+    const value = tree[$$state][key]
+    const isNestedState = is.object(value) && $$state in value
+    if (isNestedState)
+      hoistSubscribers(tree, value, key)
+  }
+
 }
 
 const addActions = (tree, actions) => {
 
   const keys = Object.keys(actions)
-
   for (const key of keys) {
 
     if (key in tree)
@@ -184,15 +216,43 @@ const addActions = (tree, actions) => {
 
 }
 
-const addSubcriptionLogic = (tree) => {
+const addSubcription = (tree) => {
 
   Object.defineProperties(tree, {
     [$$subscribers]: { value: [] },
     subscribe: { value: subscribe },
-    unsubscribe: { value: unsubscribe }
+    unsubscribe: { value: unsubscribe },
+    root: { get () {
+      let _root = this.parent
+
+      while (_root && _root.parent)
+        _root = _root.parent
+
+      return _root
+    } },
+    parent: { value: null, configurable: true, writable: true },
+    [$$parentkey]: { value: null, configurable: true, writable: true }
   })
 
 }
+
+const hoistSubscribers = (tree, child, key) => {
+
+  child.parent = tree
+  child[$$parentkey] = key
+
+  const pathToChild = getPathToChild(child)
+
+  while (child[$$subscribers].length > 0) {
+    const { func, path } = child[$$subscribers].shift()
+    hoistSubscriber(child, func, path, pathToChild)
+  }
+
+}
+
+/******************************************************************************/
+// Instance Methods
+/******************************************************************************/
 
 function subscribe (callback, ...paths) {
   if (!is.func(callback))
@@ -213,21 +273,19 @@ function subscribe (callback, ...paths) {
     if (path.length > 0 && !is.arrayOf(path, [String, Symbol]))
       throw new Error('paths must be arrays of strings or symbols')
 
-    // defer subscribers
-    let ref = this[$$state]
-    for (let i = 0; i < path.length; i++) {
-      ref = get.mut(ref, path[i])
-      if (is.func(ref) && $$state in ref)
-        return ref.subscribe(callback, path.slice(i + 1))
-    }
-
-    this[$$subscribers].push({ callback, path })
+    if (this.parent)
+      hoistSubscriber(this, callback, path)
+    else
+      this[$$subscribers].push({ callback, path })
   }
 }
 
 function unsubscribe (callback) {
-  // if (!is.func(callback))
-  //   throw new Error('callback argument must be a function')
+  if (!is.func(callback))
+    throw new Error('callback argument must be a function')
+
+  if (this.parent)
+    return this.root.unsubscribe(callback)
 
   const subs = this[$$subscribers]
 
@@ -246,7 +304,6 @@ function stateTreeToJSON () {
 function stateTreeToString () {
 
   const tree = this
-
   return inspect(tree[$$state])
 
 }
@@ -280,11 +337,12 @@ function StateTree (initial, actions) {
     return _interface
   }
 
-  addSubcriptionLogic(stateTree)
+  addSubcription(stateTree)
   addActions(stateTree, actions)
+  applyInitialState(stateTree, initial)
+
   stateTree.toJSON = stateTreeToJSON
   stateTree.toString = stateTreeToString
-  applyInitialState(stateTree, initial)
 
   return stateTree
 }
@@ -296,5 +354,6 @@ function StateTree (initial, actions) {
 export default StateTree
 
 export {
-  $$state
+  $$state,
+  $$setters
 }

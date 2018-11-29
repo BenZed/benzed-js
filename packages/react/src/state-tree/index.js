@@ -1,6 +1,6 @@
 import StateTree from './state-tree'
 import StateTreeObserver from './observer'
-import { StateTreeProvider, StateTreeConsumer } from './context'
+import { StateTreeProvider, StateTreeConsumer, StateTreeListener } from './context'
 
 /******************************************************************************/
 // Exports
@@ -10,5 +10,6 @@ export {
   StateTree,
   StateTreeObserver,
   StateTreeProvider,
+  StateTreeListener,
   StateTreeConsumer
 }

@@ -4,32 +4,34 @@ import isClient from './is-client'
 // MapStorage
 /******************************************************************************/
 
-const STORE = Symbol('object-used-to-store')
+const $$store = Symbol('object-used-to-store')
 
 class JSONStorage {
 
   constructor (storage) {
-    this[STORE] = storage || new Map()
+    this[$$store] = storage || new Map()
   }
 
-  [STORE] = null
+  [$$store] = null
 
   get isMapStorage () {
 
-    const store = this[STORE]
+    const store = this[$$store]
 
     return store instanceof Map
   }
 
   getItem (key) {
-    const store = this[STORE]
+    const store = this[$$store]
 
     const value = this.isMapStorage
       ? store.get(key)
       : store.getItem(key)
 
     try {
-      return JSON.parse(value)
+      return value === undefined
+        ? value
+        : JSON.parse(value)
     } catch (e) {
       e.name = 'ParseJsonError'
       console.warn(e)
@@ -39,7 +41,7 @@ class JSONStorage {
   }
 
   setItem (key, value) {
-    const store = this[STORE]
+    const store = this[$$store]
 
     const str = JSON.stringify(value)
 
@@ -51,7 +53,7 @@ class JSONStorage {
   }
 
   removeItem (key) {
-    const store = this[STORE]
+    const store = this[$$store]
 
     if (this.isMapStorage)
       store.delete(key)
@@ -60,13 +62,20 @@ class JSONStorage {
   }
 
   clear () {
-    const store = this[STORE]
+    const store = this[$$store]
 
     store.clear()
   }
 
+  key (i) {
+    const store = this[$$store]
+    return this.isMapStorage
+      ? [ ...store.keys() ][i]
+      : store.key(i)
+  }
+
   get length () {
-    const store = this[STORE]
+    const store = this[$$store]
 
     return this.isMapStorage
       ? store.size

@@ -11,6 +11,58 @@ import { push, copy } from '@benzed/immutable'
 const DEVELOPMENT = process.env.NODE_ENV === 'development'
 
 /******************************************************************************/
+// Development
+/******************************************************************************/
+
+// HACK this just rewrites the webpack index.js if it exists to force a webpack
+// reload. This should be configurable.
+const reloadWebpack = async () => {
+
+  const index = path.join(process.cwd(), 'src', 'documentation', 'webpack', 'index.js')
+  try {
+    await fs.stat(index)
+  } catch (err) {
+    // Doesn't exist
+    return
+  }
+
+  const data = await fs.readFile(index)
+  await fs.writeFile(index, data)
+}
+
+const watchBuildDocs = (service, rootDir) => {
+
+  const build = async () => {
+    build.inprogress = true
+
+    await service.remove(null)
+    await buildDocs(service, rootDir)
+    await reloadWebpack()
+
+    build.inprogress = false
+  }
+
+  build()
+
+  fs.watch(rootDir, { recursive: true }, async (event, file) => {
+
+    // Ignore if building is already in progress
+    if (build.inprogress)
+      return
+
+    // Markdown files only
+    if (path.extname(file) !== '.md')
+      return
+
+    // Ignore files that are being built by babel
+    if (file.includes('/lib/') || file.includes('/dist/'))
+      return
+
+    await build()
+  })
+}
+
+/******************************************************************************/
 // Helper
 /******************************************************************************/
 
@@ -130,7 +182,7 @@ const buildDocs = async (service, dir, trail = []) => {
     const urlIsDir = await isDir(url)
     const urlIsPkg = urlIsDir && await isPackage(url)
     if (urlIsDir) {
-      buildDocs(
+      await buildDocs(
         service,
         urlIsPkg
           ? path.join(url, 'src')
@@ -144,14 +196,17 @@ const buildDocs = async (service, dir, trail = []) => {
     // files ending in .test.js, which I don't want
     const ext = name.substr(name.indexOf('.'))
     if (ext === '.js')
-      buildJsDoc(service, url, trail)
+      await buildJsDoc(service, url, trail)
 
     else if (ext === '.doc.md')
-      buildMdDoc(service, url, ext, trail)
+      await buildMdDoc(service, url, ext, trail)
 
     // else if (ext === '.doc.js')
     //   buildJsxDoc(service, url, ext)
   }
+
+  if (trail.length === 0)
+    console.log('docs built:', (await service.find({ paginate: false })).length)
 
 }
 
@@ -173,7 +228,7 @@ async function generateDocs () {
   const service = api.service('docs')
 
   if (DEVELOPMENT)
-    await service.remove(null)
+    watchBuildDocs(service, rootDir)
 
   if (await service::hasNoDocs())
     await buildDocs(service, rootDir)

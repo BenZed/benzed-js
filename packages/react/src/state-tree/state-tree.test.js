@@ -2,8 +2,6 @@ import { expect } from 'chai'
 import { copy } from '@benzed/immutable'
 import { clamp } from '@benzed/math'
 
-import is from 'is-explicit'
-
 import StateTree, { $$state } from './state-tree'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -44,7 +42,7 @@ const ScoreStateTree = () =>
     }
   })
 
-describe('StateTree', () => {
+describe.only('StateTree', () => {
 
   it('is a function', () => {
     expect(StateTree).to.be.instanceof(Function)
@@ -126,21 +124,21 @@ describe('StateTree', () => {
     describe('stateTree.subscribe', () => {
 
       let counter
-      let state
+      let tree
       let path
       before(() => {
         counter = CounterStateTree()
-        counter.subscribe((...args) => { [ state, path ] = args })
+        counter.subscribe((...args) => { [ tree, path ] = args })
         counter.increment()
       })
 
       it('allows a function to be called when state changes', () => {
-        expect(state).to.not.be.equal(undefined)
+        expect(tree).to.not.be.equal(undefined)
       })
 
-      it('function receives new state as a plain object copy', () => {
-        expect(state).to.have.property('count', 1)
-        expect(is.plainObject(state)).to.be.equal(true)
+      it('function receives tree as first argument', () => {
+        expect(tree).to.have.property('count', 1)
+        expect(tree).to.be.equal(counter)
       })
 
       it('function receives path', () => {
@@ -228,7 +226,7 @@ describe('StateTree', () => {
     })
   })
 
-  describe.only('nesting', () => {
+  describe('nesting', () => {
     let app, player
     before(() => {
 
@@ -263,16 +261,55 @@ describe('StateTree', () => {
       expect($$state in app.player.hp).to.be.equal(true)
     })
 
-    it.only('subscribers are deferred to nested trees', () => {
+    it('parents are notified of changes to child state trees', () => {
+
+      let called = false
+      const func = () => { called = true }
+
+      app.subscribe(func)
+      app.player.hp.set(50)
+
+      expect(called).to.be.equal(true)
+    })
+
+    it('subscribers are deferred to nested trees', () => {
 
       let called = false
       const func = () => { called = true }
 
       app.subscribe(func, [ 'player', 'hp', 'amount' ])
-      app.player.hp.set(50)
+      app.player.hp.set(75)
 
-      expect(app.player.hp.amount).to.be.equal(50)
+      expect(app.player.hp.amount).to.be.equal(75)
       expect(called).to.be.equal(true)
     })
+
+    it('on state update, tree argument comes from tree belonging to action, rather than root', () => {
+      let sourceTree
+      const func = tree => { sourceTree = tree }
+      app.player.hp.subscribe(func)
+      app.player.hp.set(50)
+
+      expect(sourceTree).to.be.equal(app.player.hp)
+    })
+
+    describe('root property', () => {
+      it('is added to child state trees', () => {
+        expect(app.player.hp).to.have.property('root')
+      })
+      it('value is parent', () => {
+        expect(app.player.hp).to.have.property('root', app)
+      })
+    })
+
+    describe('parent property', () => {
+      it('is added to child state trees', () => {
+        expect(app.player.hp).to.have.property('parent')
+      })
+      it('value is parent', () => {
+        expect(app.player.hp).to.have.property('parent', app.player)
+      })
+    })
+
   })
 })

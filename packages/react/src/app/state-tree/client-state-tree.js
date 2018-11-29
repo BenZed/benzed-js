@@ -349,11 +349,9 @@ const ACTIONS = {
         condition: connect,
         interval: CONNECTION_TIMEOUT
       })
-
     }
 
     return this.host
-
   },
 
   login (email, password) {
@@ -406,7 +404,6 @@ function ClientStateTree (config) {
     delete actions.login
     delete actions.logout
   }
-  // const { connect, login, logout } = actions
 
   const tree = new StateTree(
     state,

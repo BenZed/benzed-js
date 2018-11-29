@@ -35,6 +35,8 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
       expect(copyJson(function () {})).to.be.equal(null)
     })
 
+    it('functions with toJSON properties work')
+
     it('symbols return null', () => {
       const BAR = Symbol('bar')
       expect(copyJson(BAR)).to.be.equal(null)

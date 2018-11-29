@@ -1,3 +1,5 @@
+// TODO this needs to be updated to work with ClientStateTree
+
 import React, { Children, createElement, cloneElement } from 'react'
 
 import { Modal } from '../layout'
@@ -5,9 +7,6 @@ import { Visible, Fade, Slide } from '../effect'
 
 import { createPropTypesFor } from '@benzed/schema'
 import { equals } from '@benzed/immutable'
-
-import { StoreConsumer } from '../store/context'
-import ClientStore from './store/client-store'
 
 import { isEvent } from '../util'
 import is from 'is-explicit'
@@ -81,9 +80,9 @@ const LoginModal = ({
 class LoginLogic extends React.Component {
 
   static propTypes = createPropTypesFor(React => <proptypes>
-    <ClientStore key='client'
+    {/* <ClientStore key='client'
       required
-      validate={mustHaveAuth} />
+      validate={mustHaveAuth} /> */}
   </proptypes>)
 
   static defaultProps = {

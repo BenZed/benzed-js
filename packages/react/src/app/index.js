@@ -1,11 +1,14 @@
 import {
 
   ClientStateTree,
-  ServiceStateTree
+  ServiceStateTree,
+  UiStateTree
 
 } from './state-tree'
 
-import Login from './Login'
+import ServiceView from './service-view'
+
+import Login from './login'
 
 /******************************************************************************/
 // Exports
@@ -15,6 +18,9 @@ export {
 
   ClientStateTree,
   ServiceStateTree,
-  // Login
+  UiStateTree,
+
+  Login,
+  ServiceView
 
 }
