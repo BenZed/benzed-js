@@ -9,6 +9,9 @@ import path from 'path'
 clearConsole()
 addPath(path.resolve(__dirname, '../'))
 
+if (process.env.NODE_ENV !== 'test')
+  process.env.NODE_ENV = 'test'
+
 /******************************************************************************/
 // Export
 /******************************************************************************/

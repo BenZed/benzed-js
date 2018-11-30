@@ -2,5 +2,5 @@
 --require @babel/polyfill
 --require ./test
 --bail
-src/jsx/**/*.test.js
-test-util/end-tests.js
+src/**/*.test.js
+test/end-tests.js

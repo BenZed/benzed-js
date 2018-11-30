@@ -1,21 +1,25 @@
-import App from './app'
+import declareEntity from './declare-entity'
+import start from './start'
+import end from './end'
 
-import { Service, UserService, FileService } from './services'
-import { Hook } from './hooks'
+import { QuickHook } from './service/hooks'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default App
+export default {
+  declareEntity,
+  start,
+  end,
+
+  QuickHook
+}
 
 export {
+  declareEntity,
+  start,
+  end,
 
-  App,
-  Hook,
-
-  Service,
-  UserService,
-  FileService
-
+  QuickHook
 }

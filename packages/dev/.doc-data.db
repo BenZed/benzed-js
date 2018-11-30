@@ -3716,3 +3716,520 @@
 {"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"iIHx1K7b8BexxLZq"}
 {"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"Kmps9uP2e8xPvEFN"}
 {"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"DuWRp7AI6YGcmp7B"}
+{"$$deleted":true,"_id":"3NOkRajKC8qzhKmp"}
+{"$$deleted":true,"_id":"409pD5AYZx4h55P4"}
+{"$$deleted":true,"_id":"42FNLIs6jVBi5qvL"}
+{"$$deleted":true,"_id":"5CSkOj57IC1bsUcF"}
+{"$$deleted":true,"_id":"5kFbI261D6Hqhctx"}
+{"$$deleted":true,"_id":"6cMzFAcXeMuowbJJ"}
+{"$$deleted":true,"_id":"7FCp127usuZkW6Zq"}
+{"$$deleted":true,"_id":"7OoivoAa4DwCdB6j"}
+{"$$deleted":true,"_id":"7QxJrdIUUaJ3uFgF"}
+{"$$deleted":true,"_id":"882NuExu6WnQYex1"}
+{"$$deleted":true,"_id":"8j8gX8zbOdA8kOFi"}
+{"$$deleted":true,"_id":"9i9c4rrknrUx6YwO"}
+{"$$deleted":true,"_id":"Dqw41Htm5sJPxGdk"}
+{"$$deleted":true,"_id":"DuWRp7AI6YGcmp7B"}
+{"$$deleted":true,"_id":"Gb4Ir3bhqen6nK7W"}
+{"$$deleted":true,"_id":"GtisB3LV2YDQnaFm"}
+{"$$deleted":true,"_id":"HBpwkInyOAdKLDxb"}
+{"$$deleted":true,"_id":"HMnAkpTgVmmmN7yt"}
+{"$$deleted":true,"_id":"JwOJzOwf7RWLXnv0"}
+{"$$deleted":true,"_id":"KYcfEXTqC82zso2F"}
+{"$$deleted":true,"_id":"KdzCTZEYo4Ymy34d"}
+{"$$deleted":true,"_id":"Kmps9uP2e8xPvEFN"}
+{"$$deleted":true,"_id":"NiwsqXYz3D9jOmkv"}
+{"$$deleted":true,"_id":"Oh1kdiYpMsmbI3jC"}
+{"$$deleted":true,"_id":"QRJqB0IXx7VUtxxo"}
+{"$$deleted":true,"_id":"R60U5uguRpuTvlxN"}
+{"$$deleted":true,"_id":"VgM2i0xVAy1FOxH8"}
+{"$$deleted":true,"_id":"WwRdVu9m3dmjJZhI"}
+{"$$deleted":true,"_id":"ZNO36ShIbf83WhXg"}
+{"$$deleted":true,"_id":"ZQRirtviwSqNqopV"}
+{"$$deleted":true,"_id":"ZUeKD0RYdRYb6Occ"}
+{"$$deleted":true,"_id":"c8lfr0v9ail3e7pd"}
+{"$$deleted":true,"_id":"dMDMPrK66VXZyiT6"}
+{"$$deleted":true,"_id":"iIHx1K7b8BexxLZq"}
+{"$$deleted":true,"_id":"pWXbhZyIWtMt9aTJ"}
+{"$$deleted":true,"_id":"rE909SzVpHqxqCSq"}
+{"name":"app","path":["app","jsx","app"],"data":"","type":"md","_id":"zuHdQMl0AaltdZqJ"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"4azFG9M4uCsl6UP4"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"RyoYKQ8DAQO7IGXW"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"InoR2xcT4iSvAS2i"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"5cMUYcdvE6cfUZc2"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"hBbAeqotE9N0H300"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"axVhqD2922qhw3Ug"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"HQsY2lVI7p43yfGi"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"m0s1n8DFccMbcvMB"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"LRYIb2nCX7Mm9vdX"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"A44Kg6igNWWCaRCV"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"q7ZMvfj2nsEWzWSs"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"tDHFtHieMdoretB6"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"iTtVIGYeX6idaZPS"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"6YSBP6Ox9gKBaIxu"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"6bAFKECHbAn3X9FM"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"ukKyyvHKomIDXyQt"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"yYmRrb35RIG0ztMW"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"CmhWO8SS2tCPYG66"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"jMWLh97ZSXMHrzPt"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"FYLlLtuNPUm55QAv"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"F2AZvV8y5lWI25X3"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"3H2GslkgHukjza1v"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"NJhqreMZAZfisrhp"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"p4mHuE9dcoGieAE1"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"GR241vg5eDwBXaIL"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"2migOj7EREoqc1ky"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"c224vrcxWO2SFEk7"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"VO2QJ3ERY2wcNz2q"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"HIsNSpvLkWIylePB"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"5iKDcMnziwSaSIvw"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"Kvs8FsCf1B4VPl9i"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"VElJ87FncEwesePU"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"LNiMqlPdBwzaGhnX"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"a5CTMzbyRJUBCRNj"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"nSeRm6JtN0cIYcHq"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"achkW4tJOXAb3rzs"}
+{"$$deleted":true,"_id":"2migOj7EREoqc1ky"}
+{"$$deleted":true,"_id":"3H2GslkgHukjza1v"}
+{"$$deleted":true,"_id":"4azFG9M4uCsl6UP4"}
+{"$$deleted":true,"_id":"5cMUYcdvE6cfUZc2"}
+{"$$deleted":true,"_id":"5iKDcMnziwSaSIvw"}
+{"$$deleted":true,"_id":"6YSBP6Ox9gKBaIxu"}
+{"$$deleted":true,"_id":"6bAFKECHbAn3X9FM"}
+{"$$deleted":true,"_id":"A44Kg6igNWWCaRCV"}
+{"$$deleted":true,"_id":"CmhWO8SS2tCPYG66"}
+{"$$deleted":true,"_id":"F2AZvV8y5lWI25X3"}
+{"$$deleted":true,"_id":"FYLlLtuNPUm55QAv"}
+{"$$deleted":true,"_id":"GR241vg5eDwBXaIL"}
+{"$$deleted":true,"_id":"HIsNSpvLkWIylePB"}
+{"$$deleted":true,"_id":"HQsY2lVI7p43yfGi"}
+{"$$deleted":true,"_id":"InoR2xcT4iSvAS2i"}
+{"$$deleted":true,"_id":"Kvs8FsCf1B4VPl9i"}
+{"$$deleted":true,"_id":"LNiMqlPdBwzaGhnX"}
+{"$$deleted":true,"_id":"LRYIb2nCX7Mm9vdX"}
+{"$$deleted":true,"_id":"NJhqreMZAZfisrhp"}
+{"$$deleted":true,"_id":"RyoYKQ8DAQO7IGXW"}
+{"$$deleted":true,"_id":"VElJ87FncEwesePU"}
+{"$$deleted":true,"_id":"VO2QJ3ERY2wcNz2q"}
+{"$$deleted":true,"_id":"a5CTMzbyRJUBCRNj"}
+{"$$deleted":true,"_id":"achkW4tJOXAb3rzs"}
+{"$$deleted":true,"_id":"axVhqD2922qhw3Ug"}
+{"$$deleted":true,"_id":"c224vrcxWO2SFEk7"}
+{"$$deleted":true,"_id":"hBbAeqotE9N0H300"}
+{"$$deleted":true,"_id":"iTtVIGYeX6idaZPS"}
+{"$$deleted":true,"_id":"jMWLh97ZSXMHrzPt"}
+{"$$deleted":true,"_id":"m0s1n8DFccMbcvMB"}
+{"$$deleted":true,"_id":"nSeRm6JtN0cIYcHq"}
+{"$$deleted":true,"_id":"p4mHuE9dcoGieAE1"}
+{"$$deleted":true,"_id":"q7ZMvfj2nsEWzWSs"}
+{"$$deleted":true,"_id":"tDHFtHieMdoretB6"}
+{"$$deleted":true,"_id":"ukKyyvHKomIDXyQt"}
+{"$$deleted":true,"_id":"yYmRrb35RIG0ztMW"}
+{"$$deleted":true,"_id":"zuHdQMl0AaltdZqJ"}
+{"name":"app","path":["app","jsx","app"],"data":"# App\n","type":"md","_id":"sodqIXkWnr5B4izx"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"me9XolssikGxyAUR"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"m5zH9mOLdI3OpQ4W"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"g7GfY8aLEfcaATZv"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"ySD2BI55gmDxIqUr"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"EyKH6PMQt7IKcz6M"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"utX4NuzaeeYfFu6W"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"EZ23cn0zhkterw2J"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"wljFzH1EtTDRTtpN"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"jbnhIRRrRyrXOIGS"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"wB1Ak5cyMCOG6rbF"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"WUxU8ydwHDUjzOCF"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"doyURoQqDkJ22FeR"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"Cajd6984luOaqLt6"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"0KPqpsItSG7ag8Zq"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"U9KaxhjzjhDEJzL3"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"nRxCQx04WEoJMyln"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"fIb9hGCD99juEzZz"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"oo2lgBHAY3eamluP"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"4G895aO8Eijm6QHj"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"VClxRQSDlQL8DqLk"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"GE9hjOACFYoVScUi"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"ENA7trqcR4ejoKYV"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"eKRbw0mhlsdEOP85"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"ViY3oTiE3b01Tgxf"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"FkGLNbKXuVitOsCm"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"N0f35689jDAFkl9T"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"Bnan5nNcRxq8Nwow"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"NerhZNSd7ehxGsJH"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"dRtlXuYSFiUd6KBl"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"3rzyEUsyzz6ascrT"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"WZwEXNDkzX08YSyn"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"zl4V4Y9Ws0zuOpaH"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"YKG0ITphIBBQ5Iuh"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"r4EXqAJVCTYfcBHp"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"jt9g1meUhtpdzj5q"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"uDk35s1NX9APYHpk"}
+{"$$deleted":true,"_id":"0KPqpsItSG7ag8Zq"}
+{"$$deleted":true,"_id":"3rzyEUsyzz6ascrT"}
+{"$$deleted":true,"_id":"4G895aO8Eijm6QHj"}
+{"$$deleted":true,"_id":"Bnan5nNcRxq8Nwow"}
+{"$$deleted":true,"_id":"Cajd6984luOaqLt6"}
+{"$$deleted":true,"_id":"ENA7trqcR4ejoKYV"}
+{"$$deleted":true,"_id":"EZ23cn0zhkterw2J"}
+{"$$deleted":true,"_id":"EyKH6PMQt7IKcz6M"}
+{"$$deleted":true,"_id":"FkGLNbKXuVitOsCm"}
+{"$$deleted":true,"_id":"GE9hjOACFYoVScUi"}
+{"$$deleted":true,"_id":"N0f35689jDAFkl9T"}
+{"$$deleted":true,"_id":"NerhZNSd7ehxGsJH"}
+{"$$deleted":true,"_id":"U9KaxhjzjhDEJzL3"}
+{"$$deleted":true,"_id":"VClxRQSDlQL8DqLk"}
+{"$$deleted":true,"_id":"ViY3oTiE3b01Tgxf"}
+{"$$deleted":true,"_id":"WUxU8ydwHDUjzOCF"}
+{"$$deleted":true,"_id":"WZwEXNDkzX08YSyn"}
+{"$$deleted":true,"_id":"YKG0ITphIBBQ5Iuh"}
+{"$$deleted":true,"_id":"dRtlXuYSFiUd6KBl"}
+{"$$deleted":true,"_id":"doyURoQqDkJ22FeR"}
+{"$$deleted":true,"_id":"eKRbw0mhlsdEOP85"}
+{"$$deleted":true,"_id":"fIb9hGCD99juEzZz"}
+{"$$deleted":true,"_id":"g7GfY8aLEfcaATZv"}
+{"$$deleted":true,"_id":"jbnhIRRrRyrXOIGS"}
+{"$$deleted":true,"_id":"jt9g1meUhtpdzj5q"}
+{"$$deleted":true,"_id":"m5zH9mOLdI3OpQ4W"}
+{"$$deleted":true,"_id":"me9XolssikGxyAUR"}
+{"$$deleted":true,"_id":"nRxCQx04WEoJMyln"}
+{"$$deleted":true,"_id":"oo2lgBHAY3eamluP"}
+{"$$deleted":true,"_id":"r4EXqAJVCTYfcBHp"}
+{"$$deleted":true,"_id":"sodqIXkWnr5B4izx"}
+{"$$deleted":true,"_id":"uDk35s1NX9APYHpk"}
+{"$$deleted":true,"_id":"utX4NuzaeeYfFu6W"}
+{"$$deleted":true,"_id":"wB1Ak5cyMCOG6rbF"}
+{"$$deleted":true,"_id":"wljFzH1EtTDRTtpN"}
+{"$$deleted":true,"_id":"ySD2BI55gmDxIqUr"}
+{"$$deleted":true,"_id":"zl4V4Y9Ws0zuOpaH"}
+{"name":"app","path":["app","jsx","app"],"data":"# App\n","type":"md","_id":"64QweyEKjAXML66M"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"YVpkLfcMKYGJgI8Z"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"RS30oZ49qmeZJRs6"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"pFJEyxfJt3erSizB"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"Udg8TsvcHNnWR5qR"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"oY4Z02MmgPNTI8t4"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"pXKIoDGOIdA7Nj2E"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"ckiihKFA4SP39Wwn"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"sNsw1ONYjwPK97fk"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"Pq2nKgRvfItv5O52"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"6bRW4gq1WbvRjnmf"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"6usFkGtq85h2UcVr"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"t5a4CD5WsL8HzImD"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"nXh9XwlTP56QXuRy"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"CHOuCgEqERNjLs3j"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"5rrtzYSvLznFjhNn"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"nvLYjBLgHqeuLnzL"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"mZXJ0PGivfHi7B7x"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"tomkTPpg5JHLEieS"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"AfDRsuXMZQBZry3H"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"Aig2c2SaqMDaWsgH"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"gA6mJGcGK9oZzLKP"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"wKK8igETkaFmFmFu"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"OLQmJ7bUCR9uBOpg"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"JvEypaeUaPjdXItl"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"CyfSkTTKhjWK3TLg"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"V6aSKF4dTlEw3SYs"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"7Eb9YF5ArVSKwoBJ"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"Javyu2iRwm4CZmjQ"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"aQwauPUm48BJhv64"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"hipCyK0KfhZl0l2K"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"gPNJ9jt0cGIhcoEN"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"9yNF3offD4aMCBXM"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"RqbOKnLkjZHrfDeT"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"pVMEIbfyktPZJzNk"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"LdRVpsnL2wFDjz4P"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"1f1ZATcwLiLvhCeW"}
+{"$$deleted":true,"_id":"1f1ZATcwLiLvhCeW"}
+{"$$deleted":true,"_id":"5rrtzYSvLznFjhNn"}
+{"$$deleted":true,"_id":"64QweyEKjAXML66M"}
+{"$$deleted":true,"_id":"6bRW4gq1WbvRjnmf"}
+{"$$deleted":true,"_id":"6usFkGtq85h2UcVr"}
+{"$$deleted":true,"_id":"7Eb9YF5ArVSKwoBJ"}
+{"$$deleted":true,"_id":"9yNF3offD4aMCBXM"}
+{"$$deleted":true,"_id":"AfDRsuXMZQBZry3H"}
+{"$$deleted":true,"_id":"Aig2c2SaqMDaWsgH"}
+{"$$deleted":true,"_id":"CHOuCgEqERNjLs3j"}
+{"$$deleted":true,"_id":"CyfSkTTKhjWK3TLg"}
+{"$$deleted":true,"_id":"Javyu2iRwm4CZmjQ"}
+{"$$deleted":true,"_id":"JvEypaeUaPjdXItl"}
+{"$$deleted":true,"_id":"LdRVpsnL2wFDjz4P"}
+{"$$deleted":true,"_id":"OLQmJ7bUCR9uBOpg"}
+{"$$deleted":true,"_id":"Pq2nKgRvfItv5O52"}
+{"$$deleted":true,"_id":"RS30oZ49qmeZJRs6"}
+{"$$deleted":true,"_id":"RqbOKnLkjZHrfDeT"}
+{"$$deleted":true,"_id":"Udg8TsvcHNnWR5qR"}
+{"$$deleted":true,"_id":"V6aSKF4dTlEw3SYs"}
+{"$$deleted":true,"_id":"YVpkLfcMKYGJgI8Z"}
+{"$$deleted":true,"_id":"aQwauPUm48BJhv64"}
+{"$$deleted":true,"_id":"ckiihKFA4SP39Wwn"}
+{"$$deleted":true,"_id":"gA6mJGcGK9oZzLKP"}
+{"$$deleted":true,"_id":"gPNJ9jt0cGIhcoEN"}
+{"$$deleted":true,"_id":"hipCyK0KfhZl0l2K"}
+{"$$deleted":true,"_id":"mZXJ0PGivfHi7B7x"}
+{"$$deleted":true,"_id":"nXh9XwlTP56QXuRy"}
+{"$$deleted":true,"_id":"nvLYjBLgHqeuLnzL"}
+{"$$deleted":true,"_id":"oY4Z02MmgPNTI8t4"}
+{"$$deleted":true,"_id":"pFJEyxfJt3erSizB"}
+{"$$deleted":true,"_id":"pVMEIbfyktPZJzNk"}
+{"$$deleted":true,"_id":"pXKIoDGOIdA7Nj2E"}
+{"$$deleted":true,"_id":"sNsw1ONYjwPK97fk"}
+{"$$deleted":true,"_id":"t5a4CD5WsL8HzImD"}
+{"$$deleted":true,"_id":"tomkTPpg5JHLEieS"}
+{"$$deleted":true,"_id":"wKK8igETkaFmFmFu"}
+{"name":"app","path":["app"],"data":"\n\n# App\n\nApps can be declared by chaining app entities via jsx:\n\n```js\n\n\n\n```\n","type":"md","_id":"llv8emXneCZfL3KK"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"LvZ7R47DRMQpbLyi"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"vMpBEriPozSoCHDr"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"D3T2uR1IqW2UEhMz"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"8d7JhDdxrdVrTQDI"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"a110FvoRxJErHnE8"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"3jYVBgzFkyn4HEmY"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"cxSdCPGjrudo1Pui"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"2bUCDyFqnE2btqhp"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"kPgOPdlqTJa3mNyb"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"g9NdtROMxed3tmjq"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"syS50wKYQhD2jWcv"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"5sEiq81JxbLyDHw9"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"W2KJWbaYNeWHjb46"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"QbTVSSGcQZ1oMaKI"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"DhzKc7LYTZ8gNH4j"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"ptI1xD9GBuzgP4bs"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"x2iilRocPlpu8EBJ"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"VtY8oKaxx6zY6CaR"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"IJXxqpiaqtQguKzE"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"fyr4Z6A02w5xXETk"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"tYfqO4XuDK0Zekg2"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"NCTKn4187jk3WCLY"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"QOT9jZt5u8GpYCfg"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"i1dMg9DJDQqSo0cd"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"JCA5xjU8NPZzoiYp"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"7AjdiFUjvD9qDRlF"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"i8vlRibiKB16rEzO"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"SjF00h5UUtofKZXE"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"qm3F0QMV5Ja5noGb"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"YJcDez2qvDnM7KLp"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"reFnWL4hRaAyieL5"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"N8EypQ46R3JG0ZeU"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"jZkWOjybYXNe0sV4"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"TyUtscZmnBais7mg"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"Wg7J5QbFaZ7uQ6ll"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"bJkT44SVnE6pUobl"}
+{"$$deleted":true,"_id":"2bUCDyFqnE2btqhp"}
+{"$$deleted":true,"_id":"3jYVBgzFkyn4HEmY"}
+{"$$deleted":true,"_id":"5sEiq81JxbLyDHw9"}
+{"$$deleted":true,"_id":"7AjdiFUjvD9qDRlF"}
+{"$$deleted":true,"_id":"8d7JhDdxrdVrTQDI"}
+{"$$deleted":true,"_id":"D3T2uR1IqW2UEhMz"}
+{"$$deleted":true,"_id":"DhzKc7LYTZ8gNH4j"}
+{"$$deleted":true,"_id":"IJXxqpiaqtQguKzE"}
+{"$$deleted":true,"_id":"JCA5xjU8NPZzoiYp"}
+{"$$deleted":true,"_id":"LvZ7R47DRMQpbLyi"}
+{"$$deleted":true,"_id":"N8EypQ46R3JG0ZeU"}
+{"$$deleted":true,"_id":"NCTKn4187jk3WCLY"}
+{"$$deleted":true,"_id":"QOT9jZt5u8GpYCfg"}
+{"$$deleted":true,"_id":"QbTVSSGcQZ1oMaKI"}
+{"$$deleted":true,"_id":"SjF00h5UUtofKZXE"}
+{"$$deleted":true,"_id":"TyUtscZmnBais7mg"}
+{"$$deleted":true,"_id":"VtY8oKaxx6zY6CaR"}
+{"$$deleted":true,"_id":"W2KJWbaYNeWHjb46"}
+{"$$deleted":true,"_id":"Wg7J5QbFaZ7uQ6ll"}
+{"$$deleted":true,"_id":"YJcDez2qvDnM7KLp"}
+{"$$deleted":true,"_id":"a110FvoRxJErHnE8"}
+{"$$deleted":true,"_id":"bJkT44SVnE6pUobl"}
+{"$$deleted":true,"_id":"cxSdCPGjrudo1Pui"}
+{"$$deleted":true,"_id":"fyr4Z6A02w5xXETk"}
+{"$$deleted":true,"_id":"g9NdtROMxed3tmjq"}
+{"$$deleted":true,"_id":"i1dMg9DJDQqSo0cd"}
+{"$$deleted":true,"_id":"i8vlRibiKB16rEzO"}
+{"$$deleted":true,"_id":"jZkWOjybYXNe0sV4"}
+{"$$deleted":true,"_id":"kPgOPdlqTJa3mNyb"}
+{"$$deleted":true,"_id":"llv8emXneCZfL3KK"}
+{"$$deleted":true,"_id":"ptI1xD9GBuzgP4bs"}
+{"$$deleted":true,"_id":"qm3F0QMV5Ja5noGb"}
+{"$$deleted":true,"_id":"reFnWL4hRaAyieL5"}
+{"$$deleted":true,"_id":"syS50wKYQhD2jWcv"}
+{"$$deleted":true,"_id":"tYfqO4XuDK0Zekg2"}
+{"$$deleted":true,"_id":"vMpBEriPozSoCHDr"}
+{"$$deleted":true,"_id":"x2iilRocPlpu8EBJ"}
+{"name":"app","path":["app"],"data":"\n\n# App\n\nApps can be declared by chaining app entities via jsx:\n\n```js\n\n```\n","type":"md","_id":"VaQM45lVAOAu9tl5"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"JZo8mJB0lywEbNz8"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"XWnU8jcswZy01620"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"X0q9TWmRo6yqaGIz"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"SWPpBGqCZGdg95Im"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"kdPSPDz2XNd20dno"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"bH0a1V2eE4XWVlvF"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"52NtaZGkVXs2BHsy"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"icvY67Sz5Nffobgq"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"5V0eJhd7Y0PE1DLj"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"fi4N6bVRxhxH12Fp"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"UjkBXJhRGowyw8YU"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"EB73UnpBE6juEryr"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"1DgXsVXbHx4eJoyZ"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"370dr6RnJuSMu6Yk"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"3hMRWQLvrLNfQH4Z"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"q02kQ7WVQNdkj3RH"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"eqZAJGGIL3Krnbre"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"DcCdLeBs2GhwWjWn"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"DmYkWHC4FrKKWHc7"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"wQAsTXSSkWwSZakM"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"9tCevRCFU9x24nS0"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"LGVdfu5n2Xb0JWqk"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"Hul6kv1bJCPR5FzZ"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"WHbcC0846PFbA5Ny"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"uUabuc42RJ4RYN2N"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"xydllRHXEcRg3Qbf"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"ur8siRrHZ9oIFDuA"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"4s0M4PazjIw9EZeU"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"iv5hhwuQ0qswWWsd"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"7qWgDy5eDLPZGK1R"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"tUDhsxksGEa6qRKm"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"Th7uRdUus5aMRPUa"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"871Dqn84fERwmyX3"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"dfbeuo1Cbfc3mptm"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"SsJuBJWVnSc7SiVS"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"kMy1l5mv2bWN4WYC"}
+{"$$deleted":true,"_id":"1DgXsVXbHx4eJoyZ"}
+{"$$deleted":true,"_id":"370dr6RnJuSMu6Yk"}
+{"$$deleted":true,"_id":"3hMRWQLvrLNfQH4Z"}
+{"$$deleted":true,"_id":"4s0M4PazjIw9EZeU"}
+{"$$deleted":true,"_id":"52NtaZGkVXs2BHsy"}
+{"$$deleted":true,"_id":"5V0eJhd7Y0PE1DLj"}
+{"$$deleted":true,"_id":"7qWgDy5eDLPZGK1R"}
+{"$$deleted":true,"_id":"871Dqn84fERwmyX3"}
+{"$$deleted":true,"_id":"9tCevRCFU9x24nS0"}
+{"$$deleted":true,"_id":"DcCdLeBs2GhwWjWn"}
+{"$$deleted":true,"_id":"DmYkWHC4FrKKWHc7"}
+{"$$deleted":true,"_id":"EB73UnpBE6juEryr"}
+{"$$deleted":true,"_id":"Hul6kv1bJCPR5FzZ"}
+{"$$deleted":true,"_id":"JZo8mJB0lywEbNz8"}
+{"$$deleted":true,"_id":"LGVdfu5n2Xb0JWqk"}
+{"$$deleted":true,"_id":"SWPpBGqCZGdg95Im"}
+{"$$deleted":true,"_id":"SsJuBJWVnSc7SiVS"}
+{"$$deleted":true,"_id":"Th7uRdUus5aMRPUa"}
+{"$$deleted":true,"_id":"UjkBXJhRGowyw8YU"}
+{"$$deleted":true,"_id":"VaQM45lVAOAu9tl5"}
+{"$$deleted":true,"_id":"WHbcC0846PFbA5Ny"}
+{"$$deleted":true,"_id":"X0q9TWmRo6yqaGIz"}
+{"$$deleted":true,"_id":"XWnU8jcswZy01620"}
+{"$$deleted":true,"_id":"bH0a1V2eE4XWVlvF"}
+{"$$deleted":true,"_id":"dfbeuo1Cbfc3mptm"}
+{"$$deleted":true,"_id":"eqZAJGGIL3Krnbre"}
+{"$$deleted":true,"_id":"fi4N6bVRxhxH12Fp"}
+{"$$deleted":true,"_id":"icvY67Sz5Nffobgq"}
+{"$$deleted":true,"_id":"iv5hhwuQ0qswWWsd"}
+{"$$deleted":true,"_id":"kMy1l5mv2bWN4WYC"}
+{"$$deleted":true,"_id":"kdPSPDz2XNd20dno"}
+{"$$deleted":true,"_id":"q02kQ7WVQNdkj3RH"}
+{"$$deleted":true,"_id":"tUDhsxksGEa6qRKm"}
+{"$$deleted":true,"_id":"uUabuc42RJ4RYN2N"}
+{"$$deleted":true,"_id":"ur8siRrHZ9oIFDuA"}
+{"$$deleted":true,"_id":"wQAsTXSSkWwSZakM"}
+{"$$deleted":true,"_id":"xydllRHXEcRg3Qbf"}
+{"name":"app","path":["app"],"data":"\n\n# App\n\nApps can be declared by chaining app entities via jsx:\n\n```js\nimport App from '@benzed/app'\n\n// @jsx App.declareEntity\n\nconst app = <app>\n  <rest />\n</app>\n\nApp.start(app)\n```\n","type":"md","_id":"RK8HDpFAJtNhXfQR"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"cq880LorBBjw7EIB"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"HIvoOuUdeRjXqwbb"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"JXPJhmsZ2zLer8RL"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"mkyS9TKnyWxJCwST"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"ruVNi5YtFq8aLBOr"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"b4ohythK405FxBYz"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"wYyW70JWSW3DduMC"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"tpORm05K8DAWYJAo"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"YjUMo37lDGdiFtyN"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"A09mSbbLT79M5RQV"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"w4D5VsBGG2FcL5iz"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"HHjBDgMGq9CzWnXX"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"OqfqaE0dZvKu6IOh"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"LiFXxAu1R4LUX7rf"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"fdTzjLhMG1JYdi5V"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"pjbrzs76JoIUUB9a"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"V0mSlzmoIzoz1xHB"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"QHy1zAeXCcll4zF8"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"o4EousjLAwc6WpZT"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"Emp15JKh66tFIFFz"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"5FptOjeJ0xWSALp1"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"YTq0aHmQld0tSjv4"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"mvXvx1jdnUuzWCeF"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"7vnuQQsNhk5dav4J"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"1eyYsLBsjjlF0x9w"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"A06b1O5AvbcxStuB"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"IXx4P5gEfymxkaWy"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"iTCUQVz2ZLelnxNX"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"mCMoimlSMEjRR7xH"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"ccgBZKkE5DJmzAez"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"Ez9iUmL4nGkuMi6r"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"MxUbJrlAjVkuAt9Y"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"LijrriFotpu5Y5Ug"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"rFttxZYDq6e1ColE"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"duti4u6N2ssxnM1l"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"MPc1yx262qZ3sDws"}
+{"$$deleted":true,"_id":"1eyYsLBsjjlF0x9w"}
+{"$$deleted":true,"_id":"5FptOjeJ0xWSALp1"}
+{"$$deleted":true,"_id":"7vnuQQsNhk5dav4J"}
+{"$$deleted":true,"_id":"A06b1O5AvbcxStuB"}
+{"$$deleted":true,"_id":"A09mSbbLT79M5RQV"}
+{"$$deleted":true,"_id":"Emp15JKh66tFIFFz"}
+{"$$deleted":true,"_id":"Ez9iUmL4nGkuMi6r"}
+{"$$deleted":true,"_id":"HHjBDgMGq9CzWnXX"}
+{"$$deleted":true,"_id":"HIvoOuUdeRjXqwbb"}
+{"$$deleted":true,"_id":"IXx4P5gEfymxkaWy"}
+{"$$deleted":true,"_id":"JXPJhmsZ2zLer8RL"}
+{"$$deleted":true,"_id":"LiFXxAu1R4LUX7rf"}
+{"$$deleted":true,"_id":"LijrriFotpu5Y5Ug"}
+{"$$deleted":true,"_id":"MPc1yx262qZ3sDws"}
+{"$$deleted":true,"_id":"MxUbJrlAjVkuAt9Y"}
+{"$$deleted":true,"_id":"OqfqaE0dZvKu6IOh"}
+{"$$deleted":true,"_id":"QHy1zAeXCcll4zF8"}
+{"$$deleted":true,"_id":"RK8HDpFAJtNhXfQR"}
+{"$$deleted":true,"_id":"V0mSlzmoIzoz1xHB"}
+{"$$deleted":true,"_id":"YTq0aHmQld0tSjv4"}
+{"$$deleted":true,"_id":"YjUMo37lDGdiFtyN"}
+{"$$deleted":true,"_id":"b4ohythK405FxBYz"}
+{"$$deleted":true,"_id":"ccgBZKkE5DJmzAez"}
+{"$$deleted":true,"_id":"cq880LorBBjw7EIB"}
+{"$$deleted":true,"_id":"duti4u6N2ssxnM1l"}
+{"$$deleted":true,"_id":"fdTzjLhMG1JYdi5V"}
+{"$$deleted":true,"_id":"iTCUQVz2ZLelnxNX"}
+{"$$deleted":true,"_id":"mCMoimlSMEjRR7xH"}
+{"$$deleted":true,"_id":"mkyS9TKnyWxJCwST"}
+{"$$deleted":true,"_id":"mvXvx1jdnUuzWCeF"}
+{"$$deleted":true,"_id":"o4EousjLAwc6WpZT"}
+{"$$deleted":true,"_id":"pjbrzs76JoIUUB9a"}
+{"$$deleted":true,"_id":"rFttxZYDq6e1ColE"}
+{"$$deleted":true,"_id":"ruVNi5YtFq8aLBOr"}
+{"$$deleted":true,"_id":"tpORm05K8DAWYJAo"}
+{"$$deleted":true,"_id":"w4D5VsBGG2FcL5iz"}
+{"$$deleted":true,"_id":"wYyW70JWSW3DduMC"}
+{"name":"app","path":["app"],"data":"\n\n# App\n\nApps can be declared by chaining app entities via jsx:\n\n```js\nimport App from '@benzed/app'\n\n// @jsx App.declareEntity\n\nconst app = <app>\n  <rest />\n</app>\n\nApp.start(app)\n```\n","type":"md","_id":"DYYWqperw8OWmGl4"}
+{"name":"adjacent","path":["array","adjacent"],"data":"The adjacent function gets the neighbour of the supplied value in an array:\n```js\nimport { adjacent } from '@benzed/array'\n\nconst next = adjacent([ 'one', 'two', 'three' ], 'one')\nconsole.log(next) // 'two'\n```\n\nIf the supplied value is at the end of the array, the returned value will\nbe wrapped around:  \n```js\nconst first = adjacent([ 1, 2, 3, 4 ], 4)\nconsole.log(first) // 1\n```\n\nOptionally takes a delta argument:\n```js\nconst array = [ 'min', 1, 2, 3, 'max' ]\nconst two = adjacent(array, 'min', 2)\nconsole.log(two) // 2\n\nconst min = adjacent(array, 'max', -4)\nconsole.log(min) // 'min'\n```\n\nOptionally bindable:\n```js\nconst three = [1,2,3]::adjacent(1, 2)\nconsole.log(three) // 3\n```\n","type":"md","_id":"6ut773qOxwDzWUIn"}
+{"name":"first","path":["array","first"],"data":"Returns the first element of an array\n```js\nimport { first } from '@benzed/array'\n\nfirst([ 'one', 'two', 'three' ]) // 'one'\n```\n","type":"md","_id":"LGPTEuyCDaqCFKAm"}
+{"name":"flatten","path":["array","flatten"],"data":"The flatten function takes an Array and decomposes any nested arrays.\n\n```js\nimport { flatten } from '@benzed/array'\n\nconst flattened = flatten([1, [2], [3, [4]]])\nconsole.log(flattened) // [1, 2, 3, 4]\n```\n\nOptionally bindable:\n\n```js\nconst flattened = [1, [2]]::flatten()\nconsole.log(flattened) // [1, 2]\n```\n","type":"md","_id":"VF5bd2n2kx5oc51d"}
+{"name":"last","path":["array","last"],"data":"Returns the last element of an array\n```js\nimport { last } from '@benzed/array'\n\nlast([ 'one', 'two', 'three' ]) // 'three'\n```\n","type":"md","_id":"0gJSvlGS0W3peDRM"}
+{"name":"pluck","path":["array","pluck"],"data":"\nThe pluck function removes a number of items from an array that pass a test:\n```js\nimport { pluck } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst even = pluck(arr, n => n % 2 === 0)\n\nconsole.log(even) // [ 2, 4, 6 ]\nconsole.log(arr) // [ 1, 3, 5 ]\n```\n\nThe input array is mutated, and items that pass the test are returned in a new array.\n\nCan also take a count argument, which maximizes the number of elements returned:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst firstTwoOdd = pluck(arr, n => n % 2 === 1, 2)\n\nconsole.log(firstTwoOdd) // [ 1, 3 ]\nconsole.log(arr) // [ 2, 4, 5, 6 ]\n```\n\nPluck is also optionally bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nconst odd = arr::pluck(n => n % 2 === 1)\n\nconsole.log(odd) // [ 1, 3, 5 ]\nconsole.log(arr) // [ 2, 4, 6 ]\n```\n","type":"md","_id":"GqlyoXowqkxbnmTa"}
+{"name":"shuffle","path":["array","shuffle"],"data":"The shuffle function randomizes the order of an array.\nMutates the array in place, does not return a new array:\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"XIcKfNHUw6mx4nJ6"}
+{"name":"unique","path":["array","unique"],"data":"\nThe shuffle function randomizes the order of an array.\n\nReturns the Array, mutated in place.\n\n```js\nimport { shuffle } from '@benzed/array'\n\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\nshuffle(arr)\n\nconsole.log(arr) // will now be in a random order\n```\n\nOptionally Bindable:\n```js\nconst arr = [ 1, 2, 3, 4, 5, 6 ]\narr::shuffle()\n```\n\nAlso works on strings:\n```js\nconst str = '1234578'\nstr::shuffle() // returns a randomized string\n```\n","type":"md","_id":"1LA4kA6SswKxhrjg"}
+{"name":"wrap","path":["array","wrap"],"data":"\n\nThe wrap function ensures that a given value is an array. If it is not an\narray, the value gets wrapped into one:\n```js\nimport { wrap } from '@benzed/array'\n\nconst one = wrap(1)\n\nconsole.log(one) // [1]\nconsole.log(wrap(one)) // [1]\n```\n\nOptionally Bindable:\n```js\n1::wrap() // [1]\n```\n\n","type":"md","_id":"FCShew2zVblWRhCk"}
+{"name":"unwrap","path":["array","unwrap"],"data":"\n\nThe unwrap function ensures that a given value is not an array. If it is an array,\nthe first element in the array is returned:\n```js\nimport { unwrap } from '@benzed/array'\n\nconst one = unwrap([1])\n\nconsole.log(one) // 1\nconsole.log(unwrap(one)) // 1\n```\n\nOptionally Bindable:\n```js\n[1]::unwrap() // 1\n```\n","type":"md","_id":"tyuJrpw9Jp6ZLDQv"}
+{"name":"api","path":["dev","documentation","api"],"data":"Heading\n=======\n\n# h1\n## h2\n### h3\n#### h4\n##### h5\n###### h6\n\nParagraphs are separated\nby a blank line.\n\nTwo spaces at the end of a line  \nproduces a line break.\n\nText attributes _italic_, **bold**, `monospace`.  \n\nHorizontal rule:\n\n---\n\nBullet list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. wash\n  2. rinse\n  3. repeat\n\nA [link][example].\n\n  [example]: http://example.com\n\n![Image](Image_icon.png \"icon\")\n\n> Markdown uses email-style\n> characters for blockquoting.\n\n```js\n\nimport Monkey from './monkey'\n\n// Code with Syntax Highlighting, as well\n\nconst result = value => (value * 2 + 1) - Infinity\nconst x = true || false\n\nclass Code extends Monkey { }\n\n```\n","type":"md","_id":"iAbo22rvCtNXnSvS"}
+{"name":"display","path":["react","app","display"],"data":"\n\n# App Components\n","type":"md","_id":"HQ7zlKoFw5sTuxpK"}
+{"name":"service-view","path":["react","app","service-view"],"data":"# ServiceView\n\nService view is a table that fetches service-table data.\n","type":"md","_id":"f2Bq61szl54cGOco"}
+{"name":"client-state-tree","path":["react","app","state-tree","client-state-tree"],"data":"# Client State Tree\n","type":"md","_id":"cAaLY3YJDw9JCzId"}
+{"name":"service-state-tree","path":["react","app","state-tree","service-state-tree"],"data":"# Service State Tree\n","type":"md","_id":"DE0E28NXnqc3kt6V"}
+{"name":"ui-state-tree","path":["react","app","state-tree","ui-state-tree"],"data":"# Ui State Tree\n","type":"md","_id":"n1Wk4DbT2vXMMxdg"}
+{"name":"data-form","path":["react","data-form"],"data":"\n\n# Data Form Components\n\nForm components are for inputting data.\n\nThe components here are opinionated, but low level enough that they should be\nable to be mutated for any purpose.\n\n```js\nimport { Form } from '@benzed/react'\n\nconst form = <Form>\n  <Form.String value={value} onChange={onChange} placeholder='age' />\n  <Form.Number />\n</Form>\n\n```\n","type":"md","_id":"hP5eJKHWbxoJDANP"}
+{"name":"data-view","path":["react","data-view"],"data":"\n\n# Data View Components\n\nDisplay components are specifically for displaying data.\n\nThe components listed here are low level, requiring specific props and input\nmethods for data to become visible.\n\nTables and Grids are virtualized, only rendering data that's currently visible.\n","type":"md","_id":"L1QIZnuCjdteHNK4"}
+{"name":"display","path":["react","effect","display"],"data":"\n\n# Effect Components\n","type":"md","_id":"y5rKAtMT2PMVKuTb"}
+{"name":"fade","path":["react","effect","fade"],"data":"","type":"md","_id":"w9qV11ffbUbxuwM2"}
+{"name":"scroll-visible","path":["react","effect","scroll-visible"],"data":"","type":"md","_id":"jsvOMqGGGoAKJ3JZ"}
+{"name":"slide","path":["react","effect","slide"],"data":"","type":"md","_id":"ShrvALDJK6IxFmtT"}
+{"name":"visible","path":["react","effect","visible"],"data":"","type":"md","_id":"ZiAQXsI51c3wIGQG"}
+{"name":"layout","path":["react","layout"],"data":"\n\n# Layout Components\n","type":"md","_id":"umnGfGPz9wSz4Jwu"}
+{"name":"flex","path":["react","layout","flex"],"data":"# Flex Component\n\nLayout component with props that manipulate flex properties.\n\n```js\n  <Flex\n    grow={1} // flex-grow\n    shrink={0} // flex-shrink\n    basis={0} // flex-basis\n    justify='center' // justify-content\n    items='center' // align-items\n    content='stretch' // align-content\n    self='stretch' // align-self\n    wrap // wrap\n  />\n\n```\n","type":"md","_id":"pAOTYbKoQqWRhrfT"}
+{"name":"modal","path":["react","layout","modal"],"data":"","type":"md","_id":"FCzkCTYxtAdq3HCV"}
+{"name":"scroll","path":["react","layout","scroll"],"data":"","type":"md","_id":"E2j9OZDfun6ihRCc"}
+{"name":"state-tree","path":["react","state-tree"],"data":"# State Tree\n","type":"md","_id":"NF8rmM1zJJfiSHoC"}
+{"name":"util","path":["react","util"],"data":"\n\n# Utility Classes and Methods\n","type":"md","_id":"BLpIave9EQLx2HSN"}
+{"name":"cloner","path":["react","util","cloner"],"data":"# Cloner Component\n\nCloner is a component that passes it's props to each of it's children.\n\nBy default, it passes all props:\n\n```js\n\nconst List = () =>\n  <Cloner style={{ color: 'red' }}>\n    <ul>1</ul>\n    <ul>2</ul>\n    <ul>2</ul>\n  <Cloner/>\n\n```\n","type":"md","_id":"jSbaBn9brM0bull9"}
+{"name":"is-client","path":["react","util","is-client"],"data":"# isClient\n\nReturns true if the current javascript environment has a global window object.\n\n```js\nimport { isClient } from '@benzed/react'\n\nisClient() // true if browser, false if node\n\n```\n","type":"md","_id":"Lzid6nEgf9POqoN0"}
+{"name":"is-event","path":["react","util","is-event"],"data":"# isEvent\n\nReturns true if the passed argument is an object with a 'target' property\n\n```js\nimport { isEvent } from '@benzed/react'\n\nconst notEvent = 'nope-just-a-string'\nisEvent(notEvent) // false\n\nconst fakeEvent = { target: true }\nisEvent(fakeEvent) // true\n\n```\n","type":"md","_id":"SJUa0mY0kXLpLPA6"}
+{"name":"styler","path":["react","util","styler"],"data":"The Styler class is a syntax shortening class that creates style functions\nfor styled components.\n\nYou wouldn't instance a Styler directly. Instead, you'd create an interface\nfor one:\n```js\nimport { Styler } from '@benzed/react'\nimport styled from 'styled-components'\n\nconst $ = Styler.createInterface()\n\nconst RedDiv = styled.div`\n  background-color: ${$.prop('color')};\n`\n// <RedDiv color='red' /> will have a red background\n```\n\nThe interface contains the same methods and properties that the class does,\nand using those properties creates new instances of stylers:\n\n```js\n$.prop('hidden')\n// equivalent to\nnew Styler().prop('hidden')\n```\n\nInterfaces can be created with a theme, which will add theme getters to\nthe resulting Styler.\n```js\nconst theme = {\n  bg: 'black',\n  fg: 'white'\n}\n\nconst $ = Styler.createInterface(theme)\n\nconst Section = styled.section`\n  background-color: ${$.theme.bg};\n  color: ${$.theme.fg};\n`\n\n// <Section /> will have be theme colored\n```\n","type":"md","_id":"SdXa5Lmrx18Sj5of"}
+{"name":"between","path":["string","between"],"data":"The between function returns a subset of a string, that which exists between two delimeters.\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('<b>bold</b>', '<b>', '</b>')\n\nconsole.log(text) // bold\n```\n\nReturns null if markers cannot be found:\n```js\nimport { between } from '@benzed/string'\n\nconst text = between('Hello world!', '{', '}')\n\nconsole.log(text) // null\n```\n","type":"md","_id":"xz4gIVYfaFfXP9EF"}
+{"name":"capitalize","path":["string","capitalize"],"data":"Describe the capitalize function.\n\n```js\nimport { capitalize } from '@benzed/string'\n```\n","type":"md","_id":"MPHalTSyKjRX8qww"}
+{"name":"from-camel-case","path":["string","from-camel-case"],"data":"Describe the fromCamelCase function.\n\n```js\nimport { fromCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"RTyMxbxNsjISJSt9"}
+{"name":"to-camel-case","path":["string","to-camel-case"],"data":"Describe the toCamelCase function.\n\n```js\nimport { toCamelCase } from '@benzed/string'\n```\n","type":"md","_id":"OXviV2IZrwd06crc"}

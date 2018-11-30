@@ -1,15 +1,19 @@
-import { boolToObject } from './validation'
-import isEnabled from './is-enabled'
-import isRequestLocal from './is-request-local'
-import getConnectionSocket from './get-connection-socket'
+import { $$entity } from './symbols'
+import setupNedbService from './setup-nedb-service'
+import setupVersionsService from './setup-versions-service'
+import getPort from './get-port'
+import emitSequential from './emit-sequential'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
-  boolToObject,
-  isEnabled,
-  isRequestLocal,
-  getConnectionSocket
+
+  getPort,
+  emitSequential,
+  setupNedbService,
+  setupVersionsService,
+
+  $$entity
 }
