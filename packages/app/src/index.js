@@ -1,8 +1,7 @@
 import declareEntity from './declare-entity'
-import start from './start'
-import end from './end'
+import run from './run'
 
-import { QuickHook } from './service/hooks'
+import QuickHook from './hooks'
 
 /******************************************************************************/
 // Exports
@@ -10,16 +9,14 @@ import { QuickHook } from './service/hooks'
 
 export default {
   declareEntity,
-  start,
-  end,
+  run,
 
   QuickHook
 }
 
 export {
   declareEntity,
-  start,
-  end,
+  run,
 
   QuickHook
 }

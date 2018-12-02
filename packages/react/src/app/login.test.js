@@ -40,13 +40,6 @@ const APP = {
   }
 }
 
-const createClientStore = (override = {}) => new ClientStore({
-  hosts: 'http://localhost:' + PORT,
-  provider: 'rest',
-  auth: true,
-  ...override
-})
-
 fs.ensureDirSync(DB_PATH)
 fs.removeSync(DB_PATH)
 fs.ensureDirSync(DB_PATH)
@@ -58,7 +51,7 @@ fs.ensureDirSync(DB_PATH)
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('Login component', () => {
+describe.skip('Login component', () => {
 
   Test.propTypes(LoginLogic, expectError => {
     describe('props.client', () => {

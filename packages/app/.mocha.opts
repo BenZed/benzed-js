@@ -3,4 +3,5 @@
 --require ./test
 --bail
 src/**/*.test.js
+test/**/*.test.js
 test/end-tests.js

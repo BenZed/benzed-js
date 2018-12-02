@@ -1,5 +1,5 @@
 
-import * as entities from './entities'
+import ENTITIES from './entities'
 import { $$entity } from './util'
 
 import is from 'is-explicit'
@@ -10,8 +10,17 @@ import is from 'is-explicit'
 
 function declareEntity (type, props, ...children) {
 
-  if (type in entities === false)
+  const factory = is.string(type)
+    ? ENTITIES[type]
+    : is.func(type)
+      ? type
+      : null
+
+  if (!is.func(factory))
     throw new Error(`'${type}' not a recognized entity.`)
+
+  if ($$entity in factory)
+    throw new Error('cannot declare nested entities, place it inside a function.')
 
   props = { ...props }
   children = children.filter(is.defined)
@@ -20,9 +29,9 @@ function declareEntity (type, props, ...children) {
     ? children
     : null
 
-  const entity = entities[type]({ ...props, children })
+  const entity = factory({ ...props, children })
   if (!is.func(entity))
-    throw new Error(`'${type}' entity did not resolve to function.`)
+    throw new Error(`'${factory.name}' did not resolve to function.`)
 
   entity[$$entity] = { type, props, children }
 

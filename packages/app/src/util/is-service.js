@@ -1,26 +1,23 @@
-import { clearConsole, TestApi, TestClient } from '@benzed/dev'
-import { addPath } from 'module-alias'
-import path from 'path'
-
-/* global */
+import is from 'is-explicit'
 
 /******************************************************************************/
-// Env
+// Data
 /******************************************************************************/
 
-if (process.env.NODE_ENV !== 'test')
-  process.env.NODE_ENV = 'test'
+const METHODS = [
+  'find', 'get', 'update', 'patch', 'remove', 'create', 'setup'
+]
 
 /******************************************************************************/
-// Global
+// Main
 /******************************************************************************/
 
-clearConsole()
-addPath(path.resolve(__dirname, '../'))
-
-global.TestApi = TestApi
-global.TestClient = TestClient
+const isService = input =>
+  is.object(input) &&
+  METHODS.some(method => is.func(input[method]))
 
 /******************************************************************************/
-// Export
+// Exports
 /******************************************************************************/
+
+export default isService

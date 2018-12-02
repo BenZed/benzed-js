@@ -42,7 +42,7 @@ const ScoreStateTree = () =>
     }
   })
 
-describe.only('StateTree', () => {
+describe('StateTree', () => {
 
   it('is a function', () => {
     expect(StateTree).to.be.instanceof(Function)

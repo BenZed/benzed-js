@@ -4,9 +4,14 @@ import { copy, get, set } from '@benzed/immutable'
 import io from 'socket.io-client'
 import is from 'is-explicit'
 import { $$state } from '../../state-tree/state-tree'
+import { Test } from '@benzed/dev'
+import App from '@benzed/app' // eslint-disable-line no-unused-vars
+
+/* @jsx App.declareEntity */
+/* eslint-disable react/react-in-jsx-scope */
 
 // eslint-disable-next-line no-unused-vars
-/* global describe it before after beforeEach afterEach createTestApi */
+/* global describe it before after beforeEach afterEach */
 
 /******************************************************************************/
 // Data
@@ -231,7 +236,27 @@ describe('Client State Tree', () => {
 
   for (const provider of [ 'rest', 'socketio' ])
     for (const auth of [ false, true ])
-      createTestApi({ [provider]: true, auth }, state => {
+      Test.Api(<app>
+        { App.declareEntity(provider, {})}
+        { provider !== 'rest' && auth
+          ? <rest/>
+          : null
+        }
+        { auth
+          ? <auth />
+          : null
+        }
+        {
+          auth
+            ? <service-nedb name='users' >
+              <hooks before all >
+                <hook-auth jwt />
+              </hooks>
+            </service-nedb>
+            : null
+        }
+      </app>, state => {
+
         let client, users
         before(async () => {
 

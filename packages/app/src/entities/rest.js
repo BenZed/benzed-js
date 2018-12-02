@@ -27,6 +27,13 @@ const rest = props => {
     // Move settings to deferred feathers object
     app.settings = merge(app.settings, settings)
 
+    // Ensure error handling comes last
+    app.once('start',
+      () => app.once('listen',
+        () => app.use(express.errorHandler())
+      )
+    )
+
     return app
   }
 

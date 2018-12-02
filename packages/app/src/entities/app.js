@@ -6,6 +6,7 @@ import is from 'is-explicit'
 import { inspect } from 'util'
 
 import { emitSequential, getPort } from '../util'
+import { applyHooks } from './service'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -108,7 +109,7 @@ const addMiddleware = (app, middlewares, index = 0) => {
 const invalidPropsMessage = (g, b) => `recieved props it does not use: ${b}`
 
 /******************************************************************************/
-//
+// Validation
 /******************************************************************************/
 
 const validateAppProps = <object
@@ -138,19 +139,20 @@ const validateAppProps = <object
 
 const app = props => {
 
-  const { port, children: middleware } = validateAppProps(props)
+  const { port, logging, children: middleware } = validateAppProps(props)
 
   return () => {
 
     const app = feathers()
 
     app.set('port', port)
+    app.set('logging', logging)
 
     app.log = log
     app.end = end
     app.start = start
 
-    return addMiddleware(app, middleware)
+    return addMiddleware(app, [ ...middleware, applyHooks ])
   }
 }
 

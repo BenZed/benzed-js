@@ -41,5 +41,7 @@ describe('<rest/>', () => {
 
     it('throws is provided children')
     it('throws if not invoked with app')
+
+    it('adds error handling')
   })
 })

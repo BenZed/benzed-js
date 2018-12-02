@@ -5,11 +5,13 @@ import ClientStateTree, { $$feathers } from './client-state-tree'
 import { milliseconds } from '@benzed/async'
 import is from 'is-explicit'
 import { $$state } from '../../state-tree/state-tree'
+import App from '@benzed/app'
+import { Test } from '@benzed/dev'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
 // eslint-disable-next-line no-unused-vars
-/* global describe it before after beforeEach afterEach createTestApi */
+/* global describe it before after beforeEach afterEach  */
 
 /******************************************************************************/
 // Helper
@@ -115,7 +117,11 @@ describe('Service StateTree', () => {
   })
 
   for (const provider of [ 'rest', 'socketio' ])
-    createTestApi({ [provider]: true, services: { messages: true } }, state => {
+    Test.Api(App.declareEntity('app', {},
+      App.declareEntity(provider, {})
+      // App.declareEntity('service', { name: 'messages' }, [
+      // ])
+    ), state => {
 
       let client, messages, queue
       before(function () {
@@ -278,8 +284,6 @@ describe('Service StateTree', () => {
 
             return messages.find({})
           })
-
         })
-
     })
 })
