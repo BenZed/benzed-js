@@ -1,5 +1,3 @@
-import feathers from '@feathersjs/feathers'
-
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 import is from 'is-explicit'
@@ -142,6 +140,8 @@ const app = props => {
   const { port, logging, children: middleware } = validateAppProps(props)
 
   return () => {
+
+    const feathers = require('@feathersjs/feathers')
 
     const app = feathers()
 

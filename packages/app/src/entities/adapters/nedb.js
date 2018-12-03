@@ -1,10 +1,8 @@
 import path from 'path'
-import fs from 'fs-extra'
+import fs from 'fs'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
-import { Service as NedbService } from 'feathers-nedb'
-import NeDB from 'nedb'
 import is from 'is-explicit'
 import { isService } from '../../util'
 
@@ -47,6 +45,8 @@ const NEDB_MODELS = {}
 // so we have to cache them here.
 const getNeDBModel = config => {
 
+  const NeDB = require('nedb')
+
   const { filename, autoload } = config
 
   // Dont need to cache models if they're in-memory only
@@ -75,6 +75,8 @@ const nedb = props => {
 
   const options = validateOptions(rest)
   return config => {
+
+    const { Service: NedbService } = require('feathers-nedb')
 
     if (isService(config))
       throw new Error('cannot apply multiple database adapters to a service')

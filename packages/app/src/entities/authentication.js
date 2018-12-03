@@ -1,6 +1,4 @@
-import authentication from '@feathersjs/authentication'
-import local from '@feathersjs/authentication-local'
-import jwt from '@feathersjs/authentication-jwt'
+
 import { randomBytes } from 'crypto'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
@@ -29,6 +27,10 @@ const auth = props => {
       throw new Error('authentication cannot be configured without rest')
 
     app.set('authentication', validateOptions(options))
+
+    const authentication = require('@feathersjs/authentication')
+    const local = require('@feathersjs/authentication-local')
+    const jwt = require('@feathersjs/authentication-jwt')
 
     app.configure(authentication(options))
       .configure(jwt())

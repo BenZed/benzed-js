@@ -1,0 +1,26 @@
+{
+  "name": "@benzed/doc",
+  "version": "0.0.1",
+  "main": "lib",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "mocha --opts .mocha.opts",
+    "test:dev": "npx watch 'npm run test' src test",
+    "babel": "rm -rf lib; mkdir lib; babel src --out-dir lib --copy-files --verbose",
+    "babel:dev": "npm run babel -- --watch",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
+    "prepublishOnly": "npm run lint && npm run test && npm run babel",
+    "lint": "eslint src --fix"
+  },
+  "keywords": [],
+  "author": "BenZed",
+  "license": "ISC",
+  "description": "Documentation for all BenZed components. Exports components for extending.",
+  "devDependencies": {
+    "@benzed/dev": "^0.11.1"
+  }
+}

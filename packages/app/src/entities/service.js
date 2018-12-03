@@ -1,5 +1,4 @@
 import is from 'is-explicit'
-import { Service as MemoryService } from 'feathers-memory'
 import { isService } from '../util'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
@@ -50,8 +49,11 @@ function useService (path) {
     delete service._hooksToAdd
 
     // if there was no adapter up the line, this object will still just be a config
-    if (!isService(service))
+    if (!isService(service)) {
+      const { Service: MemoryService } = require('feathers-memory')
+
       service = new MemoryService(service)
+    }
 
     app.use(path, service)
 

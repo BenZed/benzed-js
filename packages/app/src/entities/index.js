@@ -1,5 +1,6 @@
 import app from './app'
 import express from './express'
+import expressError from './express-error'
 import socketio from './socketio'
 import authentication from './authentication'
 import service from './service'
@@ -20,6 +21,7 @@ const ENTITIES = {
   app,
   mongod,
   express,
+  'express-error': expressError,
   socketio,
   authentication,
   service,

@@ -1,4 +1,3 @@
-import feathersSocketIO from '@feathersjs/socketio'
 
 /******************************************************************************/
 // Terminate Collection
@@ -25,6 +24,8 @@ const socketio = props => {
     app.set('socketio', options)
 
     app.on('end', app::terminateIoConnection)
+
+    const feathersSocketIO = require('@feathersjs/socketio')
 
     app.configure(
       feathersSocketIO(options/*, socketMiddleware */)

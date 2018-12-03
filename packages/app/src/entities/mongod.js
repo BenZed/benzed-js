@@ -1,4 +1,3 @@
-import { MongoClient } from 'mongodb'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 // @jsx Schema.createValidator
@@ -40,6 +39,8 @@ async function tryConnect (arg) {
   const app = this
 
   try {
+
+    const { MongoClient } = require('mongodb')
 
     const client = await MongoClient.connect(uri, { useNewUrlParser: true })
 

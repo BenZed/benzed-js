@@ -1,15 +1,8 @@
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { hooks as localHooks } from '@feathersjs/authentication-local'
 import hookGeneric from './hook'
 
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
-
-/******************************************************************************/
-// Data
-/******************************************************************************/
-
-const { hashPassword } = localHooks
 
 /******************************************************************************/
 // Validation
@@ -28,11 +21,13 @@ const hookAuth = props => {
 
   const { children, ...rest } = props
 
+  const { hooks } = require('@feathersjs/authentication-local')
+
   const options = validateOptions(rest)
 
   return hookGeneric({
     ...options,
-    func: hashPassword
+    func: hooks.hashPassword
   })
 
 }

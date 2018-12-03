@@ -1,15 +1,8 @@
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import is from 'is-explicit'
-import { hooks as authHooks } from '@feathersjs/authentication'
 import hookGeneric from './hook'
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
-
-/******************************************************************************/
-// Data
-/******************************************************************************/
-
-const authenticate = options => authHooks.authenticate(options.strategy)
 
 /******************************************************************************/
 // Validation
@@ -32,7 +25,11 @@ const hookAuth = props => {
 
   const { children, strategy } = props
 
+  const { hooks } = require('@feathersjs/authentication')
+
   const strategies = validateStrategies(children || strategy)
+
+  const authenticate = options => hooks.authenticate(options.strategy)
 
   return hookGeneric({
     strategy: strategies,

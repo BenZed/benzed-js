@@ -1,7 +1,4 @@
 import { merge } from '@benzed/immutable'
-import express from '@feathersjs/express'
-import compress from 'compression'
-import cors from 'cors'
 
 /******************************************************************************/
 // Main
@@ -12,6 +9,10 @@ const _express = props => {
   const { children, ...options } = props
 
   return app => {
+
+    const express = require('@feathersjs/express')
+    const cors = require('cors')
+    const compress = require('compression')
 
     app.set('express', options)
 
@@ -26,13 +27,6 @@ const _express = props => {
 
     // Move settings to deferred feathers object
     app.settings = merge(app.settings, settings)
-
-    // Ensure error handling comes last
-    app.once('start',
-      () => app.once('listen',
-        () => app.use(express.errorHandler())
-      )
-    )
 
     return app
   }
