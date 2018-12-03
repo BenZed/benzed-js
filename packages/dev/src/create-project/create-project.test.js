@@ -139,22 +139,22 @@ describe('createProject()', () => {
 
     })
 
-    // const TEMP_NEW_PROJECT_NAME = 'gears-api'
+    // const TEMP_NEW_PROJECT_NAME = 'sky-net'
     // describe.only(`creates ${TEMP_NEW_PROJECT_NAME}`, () => {
     //
     //   const options = {
-    //     dir: path.resolve(process.cwd(), '../../../global-mechanic/modules'),
+    //     dir: path.resolve(process.cwd(), '../../../'),
     //     name: TEMP_NEW_PROJECT_NAME,
     //
     //     socketio: true,
     //     rest: true,
     //
-    //     ui: false,
+    //     ui: true,
     //     api: true,
     //
     //     auth: true,
-    //     files: true,
-    //     routing: false
+    //     files: false,
+    //     routing: true
     //   }
     //
     //   testCreateProject(options)

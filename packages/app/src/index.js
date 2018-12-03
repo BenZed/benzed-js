@@ -1,7 +1,14 @@
 import declareEntity from './declare-entity'
 import run from './run'
 
-import QuickHook from './hooks'
+import * as allHooks from './hooks'
+import * as schemas from './schemas'
+
+/******************************************************************************/
+// Setup
+/******************************************************************************/
+
+const { default: QuickHook, ...hooks } = allHooks
 
 /******************************************************************************/
 // Exports
@@ -10,6 +17,8 @@ import QuickHook from './hooks'
 export default {
   declareEntity,
   run,
+  hooks,
+  schemas,
 
   QuickHook
 }
@@ -17,6 +26,8 @@ export default {
 export {
   declareEntity,
   run,
+  hooks,
+  schemas,
 
   QuickHook
 }

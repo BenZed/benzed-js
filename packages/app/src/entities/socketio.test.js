@@ -44,7 +44,7 @@ describe('<socketio/>', () => {
 
     it('adds an app \'end\' listener that closes the socketio connection', () => {
       const app = (<app>
-        <rest/>
+        <express/>
       </app>)()
 
       const end = app._events?.end

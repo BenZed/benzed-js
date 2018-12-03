@@ -24,7 +24,7 @@ describe('<authentication/>', () => {
 
     it('adds auth functionality to an app', () => {
 
-      const app = <app><rest/></app>
+      const app = <app><express/></app>
 
       const feathers = app()
 
@@ -38,7 +38,7 @@ describe('<authentication/>', () => {
 
     it('sets props to app.settings.auth', () => {
       const app = <app>
-        <rest/>
+        <express/>
         <authentication entity='people' />
       </app>
 

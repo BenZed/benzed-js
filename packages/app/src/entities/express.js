@@ -7,13 +7,13 @@ import cors from 'cors'
 // Main
 /******************************************************************************/
 
-const rest = props => {
+const _express = props => {
 
   const { children, ...options } = props
 
   return app => {
 
-    app.set('rest', options)
+    app.set('express', options)
 
     const settings = { ...app.settings }
     app = express(app)
@@ -43,4 +43,4 @@ const rest = props => {
 // Exports
 /******************************************************************************/
 
-export default rest
+export default _express

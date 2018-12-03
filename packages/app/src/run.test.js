@@ -14,7 +14,7 @@ describe('run', () => {
   let app
   before(async () => {
     app = await run(<app>
-      <rest/>
+      <express/>
     </app>)
   })
 
@@ -28,7 +28,7 @@ describe('run', () => {
 
     const PORT = 7171
 
-    const app = await run(<app port={PORT}><rest/></app>)
+    const app = await run(<app port={PORT}><express/></app>)
     expect(app.listener.address().port).to.be.equal(PORT)
 
     await app.end()

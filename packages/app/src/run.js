@@ -1,5 +1,4 @@
 import { milliseconds } from '@benzed/async'
-import { $$entity } from './util'
 
 /******************************************************************************/
 // Data

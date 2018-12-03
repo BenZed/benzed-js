@@ -234,12 +234,12 @@ describe('Client State Tree', () => {
     })
   })
 
-  for (const provider of [ 'rest', 'socketio' ])
+  for (const provider of [ 'express', 'socketio' ])
     for (const auth of [ false, true ])
       Test.Api(<app>
         { App.declareEntity(provider, {})}
-        { provider !== 'rest' && auth
-          ? <rest/>
+        { provider !== 'express' && auth
+          ? <express/>
           : null
         }
         { auth

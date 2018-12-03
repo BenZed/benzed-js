@@ -1,5 +1,5 @@
 import app from './app'
-import rest from './rest'
+import express from './express'
 import socketio from './socketio'
 import authentication from './authentication'
 import service from './service'
@@ -19,7 +19,7 @@ import * as quickhooks from '../hooks'
 const ENTITIES = {
   app,
   mongod,
-  rest,
+  express,
   socketio,
   authentication,
   service,

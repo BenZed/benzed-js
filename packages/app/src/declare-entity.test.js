@@ -14,17 +14,17 @@ import { $$entity } from './util'
 describe('declareEntity', () => {
 
   it('returns an entity', () => {
-    const rest = <rest />
+    const express = <express />
 
-    expect(rest)
+    expect(express)
       .to
       .have
       .property($$entity)
 
-    expect(rest[$$entity])
+    expect(express[$$entity])
       .to
       .have
-      .property('type', 'rest')
+      .property('type', 'express')
   })
 
   it('must be a valid type', () => {
@@ -52,7 +52,7 @@ describe('declareEntity', () => {
     const UserService = <service name='users' />
 
     expect(() => <app>
-      <rest/>
+      <express/>
       <UserService />
     </app>).to.throw('cannot declare nested entities, place it inside a function.')
 
@@ -67,7 +67,7 @@ describe('declareEntity', () => {
     </service>
 
     const app = <app>
-      <rest/>
+      <express/>
       <UserService strategy='jwt local' />
     </app>
 

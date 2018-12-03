@@ -25,7 +25,7 @@ describe('test app', () => {
 
   Test.Api(create.app(JSX => <app>
 
-    <rest />
+    <express />
 
     <authentication />
 

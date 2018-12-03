@@ -12,7 +12,7 @@ import App from '@benzed/app'
 // @jsx App.declareEntity
 
 const app = <app>
-  <rest />
+  <express />
 </app>
 
 App.start(app)

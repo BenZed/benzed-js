@@ -221,17 +221,21 @@ async function hasNoDocs () {
 // Main
 /******************************************************************************/
 
-async function generateDocs () {
+const DocsGenerate = props => {
 
-  const api = this
-  const { root: rootDir } = api.settings.docs
-  const service = api.service('docs')
+  const rootDir = props.root
 
-  if (DEVELOPMENT)
-    watchBuildDocs(service, rootDir)
+  return async api => {
 
-  if (await service::hasNoDocs())
-    await buildDocs(service, rootDir)
+    const service = api.service('docs')
+
+    if (DEVELOPMENT)
+      watchBuildDocs(service, rootDir)
+
+    if (await service::hasNoDocs())
+      await buildDocs(service, rootDir)
+
+  }
 
 }
 
@@ -239,4 +243,4 @@ async function generateDocs () {
 // Exports
 /******************************************************************************/
 
-export default generateDocs
+export default DocsGenerate
