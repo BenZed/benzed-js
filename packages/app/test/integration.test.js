@@ -53,6 +53,8 @@ describe('test app', () => {
       {ctx => { ctx.app.appLevelHooksCalled = true }}
     </hooks>
 
+    <express-error />
+
   </app>), state => {
 
     before(() =>

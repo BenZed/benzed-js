@@ -1,5 +1,6 @@
 import declareEntity from './declare-entity'
 import run from './run'
+import getConfig from './get-config'
 
 import * as allHooks from './hooks'
 import * as schemas from './schemas'
@@ -17,6 +18,8 @@ const { default: QuickHook, ...hooks } = allHooks
 export default {
   declareEntity,
   run,
+  getConfig,
+
   hooks,
   schemas,
 
@@ -26,6 +29,8 @@ export default {
 export {
   declareEntity,
   run,
+  getConfig,
+
   hooks,
   schemas,
 

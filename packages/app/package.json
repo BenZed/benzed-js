@@ -13,7 +13,7 @@
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
-    "prepublishOnly": "npm run lint && npm run test && npm run babel",
+    "prepublishOnly": "npm run babel",
     "lint": "eslint src --fix"
   },
   "keywords": [],
@@ -45,10 +45,12 @@
     "cors": "^2.8.5",
     "feathers-hooks-common": "^4.17.14",
     "feathers-memory": "^2.2.0",
+    "feathers-nedb": "^3.1.0",
     "feathers-mongodb": "^3.4.0",
     "fs-extra": "^7.0.1",
     "is-explicit": "^2.1.0",
     "mongodb": "^3.1.9",
+    "nedb": "^1.8.0",
     "objectid": "^3.2.1",
     "save-dev": "^2.0.0"
   },

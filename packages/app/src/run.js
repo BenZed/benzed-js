@@ -1,4 +1,6 @@
 import { milliseconds } from '@benzed/async'
+import { $$entity } from './util'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Data
@@ -36,8 +38,11 @@ async function kill (err) {
 
 async function run (entity) {
 
-  if (this !== undefined && entity === undefined)
+  if (is.func(this) && !is.func(entity))
     entity = this
+
+  if ($$entity in entity === false)
+    throw new Error('run requires an app entity')
 
   let app
 
