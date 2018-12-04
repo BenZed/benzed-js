@@ -18,7 +18,7 @@ const NOT_APPLICABLE_METHODS = [ 'find', 'get', 'remove' ]
 /******************************************************************************/
 
 export default new QuickHook({
-  name: 'validate-password',
+  name: 'password-validate',
   types: 'before',
 
   setup: <object plain key='password'>

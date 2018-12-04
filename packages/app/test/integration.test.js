@@ -36,15 +36,15 @@ describe('test app', () => {
       <hooks before all>
         <authenticate strategy='jwt' />
 
-        <validate-password length={8} />
-        <hash-password />
+        <password-validate length={8} />
+        <password-hash />
 
-        <validate-schema schema={userSchema} />
-        <write-date-fields />
+        <schema-validate schema={userSchema} />
+        <dates-write />
       </hooks>
 
       <hooks after all>
-        <remove-password />
+        <password-protect />
       </hooks>
 
     </service>

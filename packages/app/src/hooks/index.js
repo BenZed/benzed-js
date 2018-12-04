@@ -1,8 +1,8 @@
 import softDelete from './soft-delete'
-import writeDateFields from './write-date-fields'
+import writeDateFields from './dates-write'
 
-import validatePassword from './validate-password'
-import validateSchema from './validate-schema'
+import passwordValidate from './password-validate'
+import schemaValidate from './schema-validate'
 
 import permissionsCheck from './permissions-check'
 import permissionsFilter from './permissions-filter'
@@ -20,8 +20,8 @@ export {
   softDelete,
   writeDateFields,
 
-  validateSchema,
-  validatePassword,
+  schemaValidate,
+  passwordValidate,
 
   permissionsCheck,
   permissionsFilter

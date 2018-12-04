@@ -19,7 +19,7 @@ const validateOptions = <object key='config' plain>
 // Helper
 /******************************************************************************/
 
-const buildService = (mutators, context, index = 0) => {
+const applyMutators = (mutators, context, index = 0) => {
 
   for (let i = index; i < mutators.length; i++) {
     const mutator = mutators[i]
@@ -31,7 +31,7 @@ const buildService = (mutators, context, index = 0) => {
         if (is.defined(resolved))
           context = resolved
 
-        return buildService(mutators, context, i + 1)
+        return applyMutators(mutators, context, i + 1)
       })
 
     else if (is.defined(result))
@@ -94,7 +94,7 @@ const service = props => {
       applyHooks
     ]
 
-    return buildService(mutators, { name, id })
+    return applyMutators(mutators, { name, id })
 
   }
 
@@ -106,4 +106,4 @@ const service = props => {
 
 export default service
 
-export { applyHooks }
+export { applyHooks, applyMutators }

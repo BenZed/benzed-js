@@ -10,7 +10,7 @@ import { wrap } from '@benzed/array'
 
 export default new QuickHook({
 
-  name: 'write-date-fields',
+  name: 'dates-write',
   types: 'before',
 
   setup: <object strict plain default={{}}>

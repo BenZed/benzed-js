@@ -16,9 +16,9 @@ export default new QuickHook({
   name: 'permissions-filter',
   types: 'after',
   provider: 'external',
-  setup: <PermissionFunction/>,
+  setup: <PermissionFunction name='filter' />,
 
-  exec (ctx, { checker }) {
+  exec (ctx, { filter }) {
 
     const { params, result } = ctx
     const { user } = params
@@ -40,7 +40,7 @@ export default new QuickHook({
     // are nulled out, which is not ideal.
     for (let i = 0; i < docs.length; i++) {
       const doc = docs[i]
-      docs[i] = checker(user.permissions, ctx, doc)
+      docs[i] = filter(user.permissions, ctx, doc)
         ? doc
         : null
     }

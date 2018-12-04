@@ -12,11 +12,16 @@ import Portal from './portal'
 
 import storage from './storage'
 
+import { addEventListener, on, removeEventListener, off } from './event-listener'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
+
+  addEventListener, on,
+  removeEventListener, off,
 
   isClient,
   isMobile,

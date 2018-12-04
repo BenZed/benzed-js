@@ -25,7 +25,7 @@ const DocsService = ({ data }) =>
     <paginate default={50} max={100} />
 
     <hooks before all>
-      <authenticate strategy='jwt'/>
+      <authenticate />
     </hooks>
 
     <hooks before create update remove>

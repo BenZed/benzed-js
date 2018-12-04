@@ -8,26 +8,26 @@ import hookGeneric from './hook'
 // Validation
 /******************************************************************************/
 
-const validateOptions = <object key='hash-password' plain>
-  <string key='passwordField' default='password'/>
-  <func key='hash' />
+const validateOptions = <object key='remove-password' plain>
+  <string key='passwordField' default='password' />
 </object>
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const hookAuth = props => {
+const passwordProtect = props => {
 
   const { children, ...rest } = props
 
-  const { hooks } = require('@feathersjs/authentication-local')
-
   const options = validateOptions(rest)
+
+  const { hooks } = require('@feathersjs/authentication-local')
 
   return hookGeneric({
     ...options,
-    func: hooks.hashPassword
+    func: options =>
+      hooks.protect(options.passwordField)
   })
 
 }
@@ -36,4 +36,4 @@ const hookAuth = props => {
 // Exports
 /******************************************************************************/
 
-export default hookAuth
+export default passwordProtect

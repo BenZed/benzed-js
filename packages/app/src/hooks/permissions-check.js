@@ -4,7 +4,7 @@ import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import is from 'is-explicit'
 
 // @jsx Schema.createValidator
-/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/react-in-jsx-scope, react/prop-types */
 
 /******************************************************************************/
 // Helper
@@ -78,9 +78,9 @@ const toPermissionFunc = input => {
     : noPermission
 }
 
-const PermissionFunction = <object key='permission'>
+const PermissionFunction = ({ name }) => <object key='permission'>
   <func
-    key='checker'
+    key={name}
     cast={toPermissionFunc}
     required
   />
@@ -97,9 +97,9 @@ export default new QuickHook({
   types: 'before',
   provider: 'external',
 
-  setup: <PermissionFunction/>,
+  setup: <PermissionFunction name='checker' />,
 
-  async exec (ctx, { checker }) {
+  async exec (ctx, { checker, ...rest }) {
 
     const { params, method, app, id, service } = ctx
 

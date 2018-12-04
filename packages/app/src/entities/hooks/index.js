@@ -1,6 +1,6 @@
 import authenticate from './authenticate'
-import hashPassword from './hash-password'
-import removePassword from './remove-password'
+import passwordHash from './password-hash'
+import passwordProtect from './password-protect'
 import hooks from './hooks'
 import hook from './hook'
 
@@ -9,5 +9,5 @@ import hook from './hook'
 /******************************************************************************/
 
 export {
-  hashPassword, removePassword, authenticate, hooks, hook
+  passwordHash, passwordProtect, authenticate, hooks, hook
 }

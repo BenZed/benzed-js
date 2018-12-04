@@ -47,7 +47,7 @@ describe('<authentication/>', () => {
         .to.have.property('entity', 'people')
     })
 
-    it('throws if provided children')
+    it('applies child hooks to the authentication service')
     it('throws if not invoked with app')
   })
 })

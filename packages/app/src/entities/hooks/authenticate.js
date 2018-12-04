@@ -11,6 +11,7 @@ import hookGeneric from './hook'
 const validateStrategies = <array key='auth'
   length={['>', 0]}
   required
+  default={['jwt']}
   cast={v => is.string(v)
     ? v.split(' ')
     : v}>

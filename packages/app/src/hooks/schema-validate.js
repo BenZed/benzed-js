@@ -39,7 +39,7 @@ const mustBeSchema = value =>
 
 export default new QuickHook({
 
-  name: 'validate-schema',
+  name: 'schema-validate',
   types: 'before',
 
   setup: <object key='validate'>

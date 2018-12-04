@@ -40,7 +40,9 @@ import {
   isClient, isMobile, isEvent,
   storage,
   Cloner, CssCloner, Portal,
-  Styler, $
+  Styler, $,
+  addEventListener, on,
+  removeEventListener, off
 } from './util'
 
 /******************************************************************************/
@@ -76,6 +78,6 @@ export {
   Login, ServiceView, ClientStateTree, ServiceStateTree, UiStateTree,
 
   // Util
-  isClient, isEvent, isMobile, storage, Cloner, CssCloner, Portal, Styler, $
-
+  isClient, isEvent, isMobile, storage, Cloner, CssCloner, Portal, Styler, $,
+  addEventListener, on, removeEventListener, off
 }

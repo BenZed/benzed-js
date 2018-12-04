@@ -1,5 +1,6 @@
-
 import { randomBytes } from 'crypto'
+
+import { applyHooks, applyMutators } from './service'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
@@ -19,7 +20,7 @@ const validateOptions = <object key='auth'>
 
 const auth = props => {
 
-  const { children, ...options } = props
+  const { children: mutators, ...options } = props
 
   return app => {
 
@@ -38,7 +39,9 @@ const auth = props => {
 
     const { authenticate } = authentication.hooks
 
-    app.service(options.path).hooks({
+    const service = app.service(options.path)
+
+    service.hooks({
       before: {
         create: [
           authenticate([ 'local', 'jwt' ])
@@ -48,6 +51,8 @@ const auth = props => {
         ]
       }
     })
+
+    return applyMutators([ ...mutators || [], applyHooks ], service)
 
   }
 

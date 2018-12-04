@@ -1,6 +1,6 @@
 import React from 'react'
 import Visible from './visible'
-import { addEventListener, removeEventListener } from 'add-event-listener'
+import { on, off } from '../util'
 
 /******************************************************************************/
 // Main Component
@@ -42,12 +42,12 @@ class ScrollVisible extends React.Component {
   // Life Cycle
 
   componentDidMount () {
-    addEventListener(window, 'scroll', this.onScroll)
+    window::on('scroll', this.onScroll)
     this.onScroll()
   }
 
   componentWillUnmount () {
-    removeEventListener(window, 'scroll', this.onScroll)
+    window::off('scroll', this.onScroll)
   }
 
   render () {

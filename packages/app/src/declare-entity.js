@@ -1,3 +1,4 @@
+import { flatten } from '@benzed/array'
 
 import ENTITIES from './entities'
 import { $$entity } from './util'
@@ -23,7 +24,7 @@ function declareEntity (type, props, ...children) {
     throw new Error('cannot declare nested entities, place it inside a function.')
 
   props = { ...props }
-  children = children.filter(is.defined)
+  children = flatten(children).filter(is.defined)
 
   children = children.length > 0
     ? children
