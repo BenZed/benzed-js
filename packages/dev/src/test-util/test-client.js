@@ -2,6 +2,8 @@ import socketio from 'socket.io-client'
 import feathers from '@feathersjs/client'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import fetch from 'isomorphic-fetch'
+import fs from 'fs-extra'
+import FormData from 'form-data'
 
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
@@ -49,8 +51,67 @@ function connect () {
   })
 }
 
-function upload () {
-  throw new Error('not yet implemented')
+async function upload (url, meta, fields = null) {
+
+  const app = this
+
+  const read = fs.createReadStream(url)
+
+  if (meta === undefined)
+    meta = await this
+      .service('meta')
+      .create({})
+
+  if (fields === null)
+    fields = { 'meta-id': `${meta._id}` }
+
+  const form = new FormData()
+  for (const name in fields)
+    form.append(name, fields[name])
+  form.append('file', read)
+
+  const data = {
+    method: 'POST',
+    headers: form.getHeaders(),
+    body: form
+  }
+
+  const res = await fetch(app.address, data)
+
+  const text = await res.text()
+
+  let json
+  try {
+    json = JSON.parse(text)
+  } catch (err) {
+    throw new Error(`did not receive JSON: ${text}`)
+  }
+
+  if (json && json.code >= 400)
+    throw new Error(json.message)
+
+  return json
+}
+
+async function download (id, to) {
+
+  const app = this
+
+  const res = await fetch(`${app.address}/${id}`)
+  if (res.status >= 400) {
+    const json = await res.json()
+    throw new Error(json.message)
+  }
+
+  const dest = fs.createWriteStream(to)
+
+  return new Promise((resolve, reject) => {
+    res.body.pipe(dest)
+    res.body.on('error', reject)
+    dest.on('finish', resolve)
+    dest.on('error', reject)
+  })
+
 }
 
 /******************************************************************************/
@@ -63,10 +124,10 @@ function TestClient (config) {
 
   const app = feathers()
 
-  const address = `http://localhost:${port}`
+  app.address = `http://localhost:${port}`
 
   if (provider === 'socketio') {
-    const socket = socketio(address, {
+    const socket = socketio(app.address, {
       autoConnect: false,
       reconnection: false,
       timeout: 2500,
@@ -75,12 +136,14 @@ function TestClient (config) {
     app.configure(feathers.socketio(socket))
 
   } else if (provider === 'rest')
-    app.configure(feathers.rest(address).fetch(fetch))
+    app.configure(feathers.rest(app.address).fetch(fetch))
 
   if (auth)
     app.configure(feathers.authentication())
 
   app.upload = upload
+
+  app.download = download
 
   if (provider === 'socketio')
     app.connect = connect

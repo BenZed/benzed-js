@@ -5,6 +5,7 @@ import { inspect } from 'util'
 
 import { emitSequential, getPort } from '../util'
 import { applyHooks } from './service'
+import colors from 'colors/safe'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -26,23 +27,42 @@ async function ensurePort () {
   return port
 }
 
+const $$logtimestamp = Symbol('log-timestamp')
+
+const time = () => {
+  const date = new Date()
+  return `` +
+    `${date.getMonth() + 1}/${date.getDate()}-${date.getHours()}:` +
+    `${date.getMinutes()}:${date.getSeconds()}`
+}
+
 function log (strings, ...params) {
 
   const app = this
-
   if (!app.get('logging'))
     return
 
-  let str = ''
+  const arr = []
   for (let i = 0; i < strings.length; i++) {
-    str += strings[i]
+    arr.push(strings[i])
     if (i < params.length)
-      str += typeof params[i] === 'string'
-        ? params[i]
-        : inspect(params[i])
+      arr.push(
+        typeof params[i] === 'string'
+          ? params[i]
+          : inspect(params[i])
+      )
   }
 
-  console.log(str)
+  const now = time()
+
+  console.log(
+    now === this[$$logtimestamp]
+      ? colors.gray(now)
+      : now,
+    arr.join('')
+  )
+
+  this[$$logtimestamp] = now
 }
 
 async function end () {

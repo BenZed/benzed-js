@@ -8,7 +8,6 @@ module.exports = {
   },
 
   extends: [
-    'plugin:react/recommended',
     'standard'
   ],
 
@@ -23,8 +22,6 @@ module.exports = {
   ],
 
   rules: {
-    'react/jsx-boolean-value': 'error',
-    'react/jsx-pascal-case': 'error',
     'jsx-quotes': [
       'error',
       'prefer-single'

@@ -4,7 +4,7 @@ import is from 'is-explicit'
 // Data
 /******************************************************************************/
 
-const $$schema = Symbol('schema-data')
+const $$schema = Symbol.for('schema-data')
 
 /******************************************************************************/
 // Main

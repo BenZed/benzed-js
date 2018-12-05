@@ -31,7 +31,7 @@ async function updateEvery (docs) {
 const mustBeSchema = value =>
   isSchema(value)
     ? value
-    : throw new Error('must be a validator created by Schema.')
+    : throw new Error('must be a validator created by @benzed/schema.')
 
 /******************************************************************************/
 // Exports

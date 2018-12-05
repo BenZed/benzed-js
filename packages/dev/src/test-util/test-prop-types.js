@@ -2,7 +2,7 @@ import getDescriber from './get-describer'
 import { expect } from 'chai'
 import is from 'is-explicit'
 
-/* global before it */
+/* global before it describe */
 
 /******************************************************************************/
 // Main
