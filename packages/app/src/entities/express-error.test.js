@@ -22,5 +22,9 @@ describe('<express-error/>', () => {
     it('throws is provided children')
     it('throws if not invoked with app')
 
+    it('logger option')
+
+    it('html option')
+
   })
 })

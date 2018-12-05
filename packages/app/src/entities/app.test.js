@@ -32,6 +32,12 @@ describe('<app/>', () => {
 
   })
 
+  describe('remaining props', () => {
+
+    it('are placed in app.settings')
+
+  })
+
   describe('entity function', () => {
 
     it('creates a feathers app', () => {

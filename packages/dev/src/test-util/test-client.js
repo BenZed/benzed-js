@@ -1,8 +1,10 @@
+
+import fs from 'fs-extra'
+
 import socketio from 'socket.io-client'
 import feathers from '@feathersjs/client'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import fetch from 'isomorphic-fetch'
-import fs from 'fs-extra'
 import FormData from 'form-data'
 
 /* @jsx Schema.createValidator */

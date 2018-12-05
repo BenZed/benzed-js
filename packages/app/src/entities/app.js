@@ -124,16 +124,11 @@ const addMiddleware = (app, middlewares, index = 0) => {
   return app
 }
 
-const invalidPropsMessage = (g, b) => `recieved props it does not use: ${b}`
-
 /******************************************************************************/
 // Validation
 /******************************************************************************/
 
-const validateAppProps = <object
-  key='app'
-  plain
-  strict={invalidPropsMessage}>
+const validateAppProps = <object key='app' plain>
 
   <number key='port'
     cast
@@ -145,9 +140,9 @@ const validateAppProps = <object
     default={process.env.NODE_ENV !== 'test'}
   />
 
-  <arrayOf key='children' default={[]}>
+  <array key='children' default={[]}>
     <func required />
-  </arrayOf>
+  </array>
 
 </object>
 
@@ -157,7 +152,12 @@ const validateAppProps = <object
 
 const app = props => {
 
-  const { port, logging, children: middleware } = validateAppProps(props)
+  const {
+    port,
+    logging,
+    children: middleware,
+    ...config
+  } = validateAppProps(props)
 
   return () => {
 
@@ -167,6 +167,8 @@ const app = props => {
 
     app.set('port', port)
     app.set('logging', logging)
+    for (const key in config)
+      app.set(key, config[key])
 
     app.log = log
     app.end = end

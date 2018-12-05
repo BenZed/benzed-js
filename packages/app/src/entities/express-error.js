@@ -3,7 +3,7 @@
 // Main
 /******************************************************************************/
 
-const expressError = props => {
+const expressError = ({ logger = false, html }) => {
 
   return app => {
 
@@ -12,7 +12,10 @@ const expressError = props => {
     if (!app.rest)
       throw new Error('cant use express error handling without express enabled')
 
-    app.use(express.errorHandler())
+    app.use(express.errorHandler({
+      html,
+      logger
+    }))
 
   }
 
