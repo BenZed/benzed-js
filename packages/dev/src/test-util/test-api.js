@@ -1,4 +1,5 @@
 import TestClient from './test-client'
+import is from 'is-explicit'
 
 /* global before after */
 
@@ -6,7 +7,12 @@ import TestClient from './test-client'
 // Main
 /******************************************************************************/
 
-function TestApi (entity, func) {
+function TestApi (entity, settings, func) {
+
+  if (is.func(settings)) {
+    func = settings
+    settings = {}
+  }
 
   const state = {}
 
@@ -14,15 +20,16 @@ function TestApi (entity, func) {
     state.api = await entity()
     await state.api.start()
 
-    state.client = new TestClient({
+    state.client = settings && new TestClient({
       port: state.api.get('port'),
       auth: !!state.api.get('auth'),
-      provider: state.api.io ? 'socketio' : 'rest'
+      provider: state.api.io ? 'socketio' : 'rest',
+      ...settings
     })
 
     state.address = `http://localhost:${state.api.get('port')}`
 
-    if (state.client.connect)
+    if (state?.client.connect)
       await state.client.connect()
   })
 
