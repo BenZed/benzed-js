@@ -9,7 +9,7 @@ import { isApp } from '../util'
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
 /******************************************************************************/
-// Terminate Collection
+// Event Handlers
 /******************************************************************************/
 
 const terminateSocketIo = app => {
@@ -20,11 +20,25 @@ const terminateSocketIo = app => {
 }
 
 /******************************************************************************/
+// Helpers
+/******************************************************************************/
+
+function combine (io) {
+
+  const [ app, middleware ] = this
+
+  if (middleware) for (const func of middleware)
+    func(io, app)
+}
+
+/******************************************************************************/
 // Validate
 /******************************************************************************/
 
 const validate = <object key='socketio'>
-  <MustBeEmpty key='children' />
+  <array key='children' default={[]}>
+    <func required />
+  </array>
 </object>
 
 /******************************************************************************/
@@ -42,8 +56,10 @@ const socketio = props => {
 
     const socketioify = require('@feathersjs/socketio')
 
+    const middleware = [ app, children ]::combine
+
     app.configure(
-      socketioify(options/*, socketMiddleware */)
+      socketioify(options, middleware)
     )
 
     app.on('end', terminateSocketIo)

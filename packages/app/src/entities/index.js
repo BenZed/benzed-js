@@ -6,6 +6,7 @@ import authentication from './authentication'
 import service from './service'
 import paginate from './paginate'
 import mongod from './mongod'
+import channels from './channels'
 import * as hooks from './hooks'
 import * as adapters from './adapters'
 import { fromCamelCase } from '@benzed/string'
@@ -22,8 +23,11 @@ const ENTITIES = {
   mongod,
   express,
   'express-error': expressError,
-  socketio,
   authentication,
+
+  socketio,
+  channels,
+
   service,
   paginate,
   ...Object.entries(hooks)

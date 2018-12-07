@@ -1,5 +1,6 @@
 import TestClient from './test-client'
 import is from 'is-explicit'
+import getDescriber from './get-describer'
 
 /* global before after */
 
@@ -7,43 +8,50 @@ import is from 'is-explicit'
 // Main
 /******************************************************************************/
 
-function TestApi (entity, settings, func) {
+function TestApi (...args) {
 
-  if (is.func(settings)) {
-    func = settings
-    settings = {}
-  }
+  const [ entity, func ] = args.filter(is.func)
+  const [ description ] = args.filter(is.string)
+  const [ settings = {} ] = args.filter(is.plainObject)
 
-  const state = {}
+  const describer = getDescriber(this)
 
-  before(async () => {
-    state.api = await entity()
-    await state.api.start()
+  describer(description || settings.description || 'in a test app', () => {
 
-    state.client = settings && new TestClient({
-      port: state.api.get('port'),
-      auth: !!state.api.get('auth'),
-      provider: state.api.io ? 'socketio' : 'rest',
-      ...settings
+    const state = {}
+
+    before(async () => {
+      state.api = await entity()
+      await state.api.start()
+
+      state.client = settings.client !== false
+        ? new TestClient({
+          port: state.api.get('port'),
+          auth: !!state.api.get('auth'),
+          provider: state.api.io ? 'socketio' : 'rest',
+          ...settings
+        })
+        : null
+
+      state.address = `http://localhost:${state.api.get('port')}`
+
+      if (state?.client.connect)
+        await state.client.connect()
     })
 
-    state.address = `http://localhost:${state.api.get('port')}`
+    func(state)
 
-    if (state?.client.connect)
-      await state.client.connect()
+    after(function () {
+
+      this.timeout(8000)
+
+      return state.api?.end()
+    })
   })
 
-  func(state)
-
-  after(function () {
-
-    this.timeout(8000)
-
-    return state.api?.end()
-  })
 }
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default TestApi
+export default getDescriber.wrap(TestApi)

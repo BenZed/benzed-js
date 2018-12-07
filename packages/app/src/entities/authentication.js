@@ -27,7 +27,7 @@ const auth = props => {
     if (!app.rest)
       throw new Error('authentication cannot be configured without rest')
 
-    app.set('authentication', validateOptions(options))
+    validateOptions(options)
 
     const authentication = require('@feathersjs/authentication')
     const local = require('@feathersjs/authentication-local')

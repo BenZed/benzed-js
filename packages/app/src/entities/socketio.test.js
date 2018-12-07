@@ -49,9 +49,30 @@ describe('<socketio/>', () => {
       expect(app._events?.end::wrap()).to.have.length(end.length + 1)
     })
 
-    it('throws is provided children', () => {
-      expect(() => <socketio>{() => {}}</socketio>)
-        .to.throw('socketio.children must be empty')
+    it('provided children are combined as socket middleware', async () => {
+
+      const test = {
+        args: [],
+        callme (props) {
+          return io => {
+            test.args.push(io)
+          }
+        }
+      }
+
+      const app = (<app>
+        <socketio>
+          <test.callme/>
+          <test.callme/>
+        </socketio>
+      </app>)()
+
+      await app.start()
+
+      expect(test.args).to.have.length(2)
+      expect(test.args.every(io => io === app.io)).to.be.equal(true)
+
+      await app.end()
     })
 
     it('throws if not invoked with app', () => {
