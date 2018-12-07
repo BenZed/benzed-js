@@ -9,9 +9,9 @@ async function emitSequential (type, ...args) {
 
   const emitter = this
 
-  const { _events } = emitter
+  const { _events: events } = emitter
 
-  const handlers = wrap(_events && _events[type])
+  const handlers = wrap(events && events[type])
     .filter(is.defined)
 
   for (const handler of handlers)

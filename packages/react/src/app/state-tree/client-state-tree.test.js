@@ -36,7 +36,7 @@ function expectNewClient (config, call = false) {
 // Tests
 /******************************************************************************/
 
-describe('Client State Tree', () => {
+describe.only('Client State Tree', () => {
 
   let restClient, restClientNoAuth, socketIoClient
   before(() => {
@@ -236,24 +236,34 @@ describe('Client State Tree', () => {
 
   for (const provider of [ 'express', 'socketio' ])
     for (const auth of [ false, true ])
-      Test.Api(<app>
-        { App.declareEntity(provider, {})}
-        { provider !== 'express' && auth
-          ? <express/>
-          : null
+      Test.Api(<app logging={false}>
+        {
+          provider === 'socketio'
+            ? <socketio />
+            : null
+        }
+        {
+          provider === 'express' || auth
+            ? <express/>
+            : null
         }
         { auth
-          ? <auth />
+          ? <authentication />
           : null
         }
         {
           auth
-            ? <service-nedb name='users' >
+            ? <service name='users' >
               <hooks before all >
-                <hook-auth jwt />
+                <authenticate />
+                <password-hash />
               </hooks>
-            </service-nedb>
+            </service>
             : null
+        }
+        { provider === 'express' || auth
+          ? <express-error />
+          : null
         }
       </app>, state => {
 
@@ -269,7 +279,7 @@ describe('Client State Tree', () => {
 
           client = new ClientStateTree({
             hosts: [ 'http://some-other-host', state.address ],
-            provider,
+            provider: provider === 'express' ? 'rest' : 'socketio',
             auth
           })
 
@@ -372,15 +382,14 @@ describe('Client State Tree', () => {
             if (auth) it('throws if host not resolved', () => {
               const notConnected = new ClientStateTree({
                 hosts: [ 'http://some-other-host', state.address ],
-                provider,
+                provider: provider === 'express' ? 'rest' : 'socketio',
                 auth
               })
               expect(() => notConnected.login('whats@up.com', 'fail'))
-                .to.throw(provider === 'rest'
+                .to.throw(provider === 'express'
                   ? 'Host not resolved'
                   : 'Not connected to host')
             })
-
           })
 
           describe('logout action', () => {
@@ -399,11 +408,11 @@ describe('Client State Tree', () => {
             if (auth) it('throws if host not resolved', () => {
               const notConnected = new ClientStateTree({
                 hosts: [ 'http://some-other-host', state.address ],
-                provider,
+                provider: provider === 'express' ? 'rest' : 'socketio',
                 auth
               })
               expect(() => notConnected.logout())
-                .to.throw(provider === 'rest'
+                .to.throw(provider === 'express'
                   ? 'Host not resolved'
                   : 'Not connected to host')
             })

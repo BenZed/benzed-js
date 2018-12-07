@@ -116,7 +116,7 @@ describe('Service StateTree', () => {
     })
   })
 
-  for (const provider of [ 'rest', 'socketio' ])
+  for (const provider of [ 'express', 'socketio' ])
     Test.Api(App.declareEntity('app', {},
       App.declareEntity(provider, {})
       // App.declareEntity('service', { name: 'messages' }, [
@@ -128,7 +128,10 @@ describe('Service StateTree', () => {
 
         this.timeout(5000)
 
-        client = new ClientStateTree({ provider, hosts: state.address })
+        client = new ClientStateTree({
+          provider: provider === 'express' ? 'rest' : 'socketio',
+          hosts: state.address
+        })
         messages = new ServiceStateTree({
           serviceName: 'messages',
           client

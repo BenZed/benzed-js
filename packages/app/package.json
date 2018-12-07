@@ -1,6 +1,6 @@
 {
   "name": "@benzed/app",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -13,7 +13,7 @@
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
-    "prepublishOnly": "npm run babel",
+    "prepublishOnly": "npm run babel && npm run test",
     "lint": "eslint src --fix"
   },
   "keywords": [],

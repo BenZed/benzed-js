@@ -1,4 +1,8 @@
 import styled from 'styled-components'
+import React from 'react'
+
+import { Visible, Fade } from '../effect'
+import { createPropTypesFor } from '@benzed/schema'
 
 /******************************************************************************/
 // Data
@@ -10,13 +14,24 @@ const Z = 1000
 // Sub Components
 /******************************************************************************/
 
-const Modal = styled.div`
-  position: fixed;
+const Backdrop = styled.div.attrs(props => {
+  return {
+    style: { zIndex: props.z }
+  }
+})`
+  position: ${props =>
+    props.fixed
+      ? 'fixed'
+      : 'absolute'};
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  z-index: ${Z};
+
+  cursor: ${props =>
+    props.onClick
+      ? 'pointer'
+      : 'default'};
 
   display: flex;
   flex-direction: column;
@@ -28,10 +43,34 @@ const Modal = styled.div`
 `
 
 /******************************************************************************/
+// Modal
+/******************************************************************************/
+
+const Modal = ({ visible, children, ...rest }) =>
+
+  <Visible visible={visible}>
+    <Fade>
+      <Backdrop {...rest}>
+        {children}
+      </Backdrop>
+    </Fade>
+  </Visible>
+
+/******************************************************************************/
 // Extend
 /******************************************************************************/
 
-Modal.Z = Z
+Modal.defaultProps = {
+  position: 'fixed',
+  z: Z
+}
+
+Modal.propTypes = createPropTypesFor(React =>
+  <proptypes>
+    <value key='position'>fixed absolute sticky</value>
+    <bool key='visible' />
+  </proptypes>
+)
 
 /******************************************************************************/
 // Exports

@@ -33,15 +33,6 @@ describe('<socketio/>', () => {
       expect(feathers).to.have.property('channel')
     })
 
-    it('sets props to app.settings.socketio', () => {
-      const app = <app>
-        <socketio engine='uws' />
-      </app>
-
-      const feathers = app()
-      expect(feathers.settings.socketio).to.have.property('engine', 'uws')
-    })
-
     it('adds an app \'end\' listener that closes the socketio connection', () => {
       const app = (<app>
         <express/>
@@ -58,7 +49,15 @@ describe('<socketio/>', () => {
       expect(app._events?.end::wrap()).to.have.length(end.length + 1)
     })
 
-    it('throws is provided children')
-    it('throws if not invoked with app')
+    it('throws is provided children', () => {
+      expect(() => <socketio>{() => {}}</socketio>)
+        .to.throw('socketio.children must be empty')
+    })
+
+    it('throws if not invoked with app', () => {
+      const entity = <socketio/>
+      expect(entity).to.throw('<socketio/> must be parented to an <app/> entity')
+    })
+
   })
 })

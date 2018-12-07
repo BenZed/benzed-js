@@ -1,18 +1,16 @@
-import { clearConsole } from '@benzed/dev'
+import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
-import { addPath } from 'module-alias'
-import path from 'path'
-
-import 'colors'
+/* @jsx Schema.createValidator */
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
-// Execute
+// Main
 /******************************************************************************/
 
-process.env.NODE_ENV = 'test'
-clearConsole()
-addPath(path.resolve(__dirname, '../'))
+const MustBeEmpty = <array key='children' length={[ 0, 'must be empty' ]} />
 
 /******************************************************************************/
-// Export
+// Exports
 /******************************************************************************/
+
+export default MustBeEmpty

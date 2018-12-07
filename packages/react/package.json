@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "publishConfig": {
     "access": "public"
   },
@@ -14,7 +14,7 @@
     "release:major": "npm version major && npm publish",
     "webpack": "NODE_ENV=production webpack",
     "webpack:dev": "NODE_ENV=development webpack-dev-server",
-    "prepublishOnly": "npm run lint && npm run test && npm run babel",
+    "prepublishOnly": "npm run test && npm run babel",
     "lint": "eslint src --fix"
   },
   "main": "lib",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@benzed/app": "^0.8.1",
     "@benzed/dev": "^0.11.1",
-    "styled-components-test-utils": "^0.4.1"
+    "react-test-renderer": "^16.6.3"
   },
   "peerDependencies": {
     "styled-components": "^4.0.2",

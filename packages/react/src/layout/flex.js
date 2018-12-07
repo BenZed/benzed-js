@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import { createPropTypesFor } from '@benzed/schema'
 import is from 'is-explicit'
@@ -7,10 +6,10 @@ import is from 'is-explicit'
 //
 /******************************************************************************/
 
-const wrap = ({ wrap }) =>
-  wrap === 'reverse'
+const wrap = ({ wrapped }) =>
+  wrapped === 'reverse'
     ? 'wrap-reverse'
-    : wrap
+    : wrapped
       ? 'wrap'
       : 'nowrap'
 
@@ -18,16 +17,21 @@ const wrap = ({ wrap }) =>
 // Main Components
 /******************************************************************************/
 
-const Flex = styled.div.attrs({
-  style: ({ basis, grow, shrink, justify, items, content, self }) => Object({
-    flexGrow: grow,
-    flexShrink: shrink,
-    flexBasis: is.number(basis) ? `${basis}em` : basis,
-    justifyContent: justify,
-    alignItems: items,
-    alignContent: content,
-    alignSelf: self
-  })
+const Flex = styled.div.attrs(props => {
+
+  const { grow, shrink, basis, justify, items, content, self } = props
+
+  return {
+    style: {
+      flexGrow: grow,
+      flexShrink: shrink,
+      flexBasis: is.number(basis) ? `${basis}em` : basis,
+      justifyContent: justify,
+      alignItems: items,
+      alignContent: content,
+      alignSelf: self
+    }
+  }
 })`
   display: flex;
   flex-wrap: ${wrap};
@@ -49,7 +53,7 @@ Flex.propTypes = createPropTypesFor(React => <proptypes>
     <number />
   </multi>
 
-  <value key='wrap'>
+  <value key='wrapped'>
     {true}{false}{'reverse'}
   </value>
 

@@ -70,7 +70,7 @@ async function end () {
   const app = this
 
   if (app)
-    await app::emitSequential('end')
+    await app::emitSequential('end', app)
 
   if (app?.listener) {
     await new Promise(resolve => app.listener.close(resolve))
@@ -86,15 +86,17 @@ async function start () {
   if (!is.func(app.listen))
     throw new Error('cannot start app, no providers setup')
 
-  await app::emitSequential('start')
+  await app::emitSequential('start', app)
 
   const port = await app::ensurePort()
 
   app.listener = app.listen(port)
+
   await new Promise(resolve => app.listener.once('listening', resolve))
+
   app.log`app listening on ${port}`
 
-  await app::emitSequential('listen')
+  await app::emitSequential('listen', app)
 
 }
 

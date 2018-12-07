@@ -35,7 +35,12 @@ function TestApi (entity, settings, func) {
 
   func(state)
 
-  after(() => state.api?.end())
+  after(function () {
+
+    this.timeout(8000)
+
+    return state.api?.end()
+  })
 }
 /******************************************************************************/
 // Exports

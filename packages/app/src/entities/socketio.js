@@ -1,11 +1,18 @@
 
+/* eslint-disable no-unused-vars */
+import { MustBeEmpty } from './validation'
+import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
+/* eslint-enable no-unused-vars */
+
+import { isApp } from '../util'
+
+/* @jsx Schema.createValidator */
+/* eslint-disable react/react-in-jsx-scope */
 /******************************************************************************/
 // Terminate Collection
 /******************************************************************************/
 
-function terminateIoConnection () {
-
-  const app = this
+const terminateSocketIo = app => {
 
   if (app.io)
     return new Promise(resolve => app.io.close(resolve))
@@ -13,23 +20,33 @@ function terminateIoConnection () {
 }
 
 /******************************************************************************/
+// Validate
+/******************************************************************************/
+
+const validate = <object key='socketio'>
+  <MustBeEmpty key='children' />
+</object>
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
 const socketio = props => {
 
-  const { children, ...options } = props
+  const { children, ...options } = validate(props)
 
   return app => {
-    app.set('socketio', options)
 
-    app.on('end', app::terminateIoConnection)
+    if (!app::isApp())
+      throw new Error(`<socketio/> must be parented to an <app/> entity`)
 
-    const feathersSocketIO = require('@feathersjs/socketio')
+    const socketioify = require('@feathersjs/socketio')
 
     app.configure(
-      feathersSocketIO(options/*, socketMiddleware */)
+      socketioify(options/*, socketMiddleware */)
     )
+
+    app.on('end', terminateSocketIo)
   }
 }
 
