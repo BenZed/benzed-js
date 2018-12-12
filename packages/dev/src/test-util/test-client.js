@@ -60,7 +60,7 @@ async function upload (url, meta, fields = null) {
   const read = fs.createReadStream(url)
 
   if (meta === undefined)
-    meta = await this
+    meta = await app
       .service('meta')
       .create({})
 

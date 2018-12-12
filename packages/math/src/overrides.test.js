@@ -1,5 +1,5 @@
-import { random, round, floor, ceil, clamp } from '../src'
-import { assert } from 'chai'
+import { random, round, floor, ceil, max, min } from '../src'
+import { assert, expect } from 'chai'
 import Test from '@benzed/dev'
 
 /* global describe it */
@@ -31,7 +31,7 @@ describe('overridden methods', () => {
       }
     })
 
-    it('numbers can be provided as a third argument to return a seeded random number', () => {
+    it('third argument seed can be provided to seed a random number', () => {
 
       for (let seed = 0; seed < 100000; seed += 1) {
         const r1 = random(0, 10, seed)
@@ -42,80 +42,10 @@ describe('overridden methods', () => {
 
     })
 
-    const string = 'abcdefghijklmonqrstuvwxyz'
-    const array = ['one', 'two', 'three', 'four', 'five', 'six']
-    const arrayLike = {
-      0: 'one',
-      1: 'two',
-      2: 'three',
-      3: 'four',
-      4: 'five',
-      5: 'six',
-      length: 6
-    }
-    const set = new Set([ 0, 1, 2, 3, 4, 5, 6 ])
-    const map = new Map(Object.entries(array))
-    const iterable = {
-      0: 'one',
-      1: 'two',
-      2: 'three',
-      3: 'four',
-      4: 'five',
-      5: 'six',
-      * [Symbol.iterator] () {
-        for (const i in this)
-          yield (this[i])
-      }
-    }
-
-    const tests = { string, array, arrayLike, set, map, iterable }
-
-    for (const test in tests) {
-      const input = tests[test]
-
-      it(`${test}s can be provided as a third argument to return a random item`, () => {
-
-        const results = {}
-        const iterations = 100000
-
-        const testObj = typeof input !== 'string' && Symbol.iterator in input
-          ? [ ...input ]
-          : input
-
-        for (let i = 0; i < iterations * testObj.length; i++) {
-          const item = testObj::random()
-          if (item in results === false)
-            results[item] = 0
-
-          results[item]++
-        }
-
-        const resultKeys = Object.keys(results)
-        assert(resultKeys.length === testObj.length, `not every item represented: ${resultKeys.length}/${testObj.length}`)
-
-        for (const key of resultKeys) {
-          const count = results[key]
-
-          const min = iterations * 0.95
-          const max = iterations * 1.05
-          const inRange = count::clamp(min, max) === count
-          assert(inRange, `${key} is not showing up in random results distributed evenly. ${count} !~= ${min} <=> ${max}`)
-        }
-
-      })
-    }
-
-    it('third arguments can be bound', () => {
+    it('seed arguments can be bound', () => {
 
       const seedCanBeBound = 100::random(0, 100) === 100::random(0, 100) // eslint-disable-line no-self-compare
       assert(seedCanBeBound, 'seed can\'t be bound')
-
-      const char = 'character'::random()
-      assert('character'.includes(char), `${char} is not in character`)
-
-      const arr = [100, 101, 102, 103]
-      const item = arr::random()
-      assert(arr.includes(item), `${item} is not in ${arr}`)
 
     })
 
@@ -147,4 +77,44 @@ describe('overridden methods', () => {
 
     })
   })
+
+  class Role {
+
+    constructor (name, worth) {
+      this.name = name
+      this.worth = worth
+    }
+
+    valueOf () {
+      return this.worth
+    }
+  }
+
+  const admin = new Role('admin', 3)
+  const producer = new Role('producer', 2)
+  const staff = new Role('staff', 1)
+  const freelance = new Role('freelance', 0)
+
+  for (const boundary of [ max, min ]) {
+
+    const isMax = boundary === max
+
+    describe(boundary.name + '(...params)', () => {
+
+      it(`returns the ${isMax ? 'highest' : 'lowest'} value`, () => {
+        const value = boundary(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        expect(value).to.be.equal(isMax ? 10 : 1)
+      })
+
+      it(`returns ${isMax ? -Infinity : Infinity} by default`, () => {
+        const value = boundary()
+        expect(value).to.be.equal(isMax ? -Infinity : Infinity)
+      })
+
+      it('works on objects implementing valueOf', () => {
+        expect(boundary(admin, producer, staff, freelance))
+          .to.be.equal(isMax ? admin : freelance)
+      })
+    })
+  }
 })
