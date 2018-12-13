@@ -3,6 +3,7 @@ import shuffle from './shuffle'
 import unique from './unique'
 import pluck from './pluck'
 import flatten from './flatten'
+import random from './random'
 
 import { isArrayLike, hasNumericLength } from './is-array-like'
 import isIterable from './is-iterable'
@@ -20,6 +21,7 @@ export {
   unique,
   pluck,
   flatten,
+  random,
 
   first,
   last,

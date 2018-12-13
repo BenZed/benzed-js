@@ -5,7 +5,7 @@ import Test from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(first, first => {
+Test.optionallyBindableMethod(first, first => {
 
   it('returns the first element of an array', () => {
     expect(first([1, 2, 3, 4, 5])).to.be.equal(1)
