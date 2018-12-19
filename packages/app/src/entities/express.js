@@ -71,16 +71,18 @@ const express = props => {
     const expressify = require('@feathersjs/express')
     const cors = require('cors')
     const compress = require('compression')
+    // const helmet = require('helmet')
 
     const old = deregister(app)
 
     app = expressify(app)
-      .configure(expressify.rest())
-      .options('*', cors())
+      // .use(helmet())
       .use(cors())
       .use(compress())
       .use(expressify.json())
       .use(expressify.urlencoded({ extended: true }))
+
+      .configure(expressify.rest())
 
     // Move settings to deferred feathers object
     register(app, old)

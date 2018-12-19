@@ -10,12 +10,12 @@
 // Symbolic Property Keys
 /******************************************************************************/
 
-const QUEUE = Symbol('queue')
-const CURRENT = Symbol('current')
-const MAX_CONCURRENT = Symbol('max-concurrent')
+const $$queue = Symbol('queue')
+const $$current = Symbol('current')
+const $$max = Symbol('max-concurrent')
 
-const NEXT = Symbol('next')
-const DONE = Symbol('done')
+const $$next = Symbol('next')
+const $$done = Symbol('done')
 
 /******************************************************************************/
 // Private Danglers
@@ -26,9 +26,9 @@ function next () {
   if (this.resolvingCount >= this.maxConcurrent)
     return
 
-  const queue = this[QUEUE]
-  const current = this[CURRENT]
-  const done = this[DONE]
+  const queue = this[$$queue]
+  const current = this[$$current]
+  const done = this[$$done]
 
   this.onNext(queue)
 
@@ -37,20 +37,20 @@ function next () {
   item.run(done)
 
   current.push(item)
-
 }
 
 function done (item) {
 
-  const queue = this[QUEUE]
-  const current = this[CURRENT]
-  const next = this[NEXT]
+  const queue = this[$$queue]
+  const current = this[$$current]
+  const next = this[$$next]
 
   const index = current.indexOf(item)
 
   current.splice(index, 1)
 
   this.onDone(queue)
+  // this.emit('done', queue)
 
   if (queue.length > 0)
     next()
@@ -94,20 +94,20 @@ class PromiseQueue {
 
   static Item = PromiseQueueItem;
 
-  [CURRENT] = [];
-  [QUEUE] = [];
+  [$$current] = [];
+  [$$queue] = [];
 
-  [NEXT] = this::next;
-  [DONE] = this::done;
+  [$$next] = this::next;
+  [$$done] = this::done;
 
-  [MAX_CONCURRENT] = null
+  [$$max] = null
 
   constructor (maxConcurrent = 1) {
 
     if (typeof maxConcurrent !== 'number' || !isFinite(maxConcurrent) || maxConcurrent < 1)
       throw new Error('maxConcurrent, if defined, must be a number above zero.')
 
-    this[MAX_CONCURRENT] = maxConcurrent
+    this[$$max] = maxConcurrent
 
   }
 
@@ -120,8 +120,8 @@ class PromiseQueue {
 
     const item = new Item(promiser, ...args)
 
-    this[QUEUE].push(item)
-    this[NEXT]()
+    this[$$queue].push(item)
+    this[$$next]()
 
     return item.complete
 
@@ -129,37 +129,37 @@ class PromiseQueue {
 
   clear (err = 'Cancelled') {
 
-    for (const item of this[QUEUE])
+    for (const item of this[$$queue])
       item.reject(new Error(err))
 
-    this[QUEUE].length = 0
+    this[$$queue].length = 0
   }
 
   get resolvingCount () {
-    return this[CURRENT].length
+    return this[$$current].length
   }
 
   get queuedCount () {
-    return this[QUEUE].length
-  }
-
-  get length () {
-    return this.queuedCount + this.resolvingCount
+    return this[$$queue].length
   }
 
   get count () {
-    return this.length
+    return this.queuedCount + this.resolvingCount
+  }
+
+  get length () {
+    return this.count
   }
 
   get maxConcurrent () {
-    return this[MAX_CONCURRENT]
+    return this[$$max]
   }
 
   get items () {
 
     const items = [
-      ...this[CURRENT],
-      ...this[QUEUE]
+      ...this[$$current],
+      ...this[$$queue]
     ]
 
     return items

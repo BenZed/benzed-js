@@ -95,11 +95,11 @@ async function upload (url, meta, fields = null) {
   return json
 }
 
-async function download (id, to) {
+async function download (id, to, preview = '') {
 
   const app = this
 
-  const res = await fetch(`${app.address}/${id}`)
+  const res = await fetch(`${app.address}/${id}${preview && '?preview=' + preview}`)
   if (res.status >= 400) {
     const json = await res.json()
     throw new Error(json.message)
@@ -138,13 +138,16 @@ function TestClient (config) {
     app.configure(feathers.socketio(socket))
 
   } else if (provider === 'rest')
-    app.configure(feathers.rest(app.address).fetch(fetch))
+    app.configure(
+      feathers
+        .rest(app.address)
+        .fetch(fetch)
+    )
 
   if (auth)
     app.configure(feathers.authentication())
 
   app.upload = upload
-
   app.download = download
 
   if (provider === 'socketio')

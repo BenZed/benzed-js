@@ -18,6 +18,11 @@ const tryReadJson = url => {
   try {
     json = fs.readJsonSync(url)
   } catch (err) {
+
+    // we want to throw syntax errors and the like
+    if (!err.message.includes('ENOENT'))
+      throw err
+
     json = {}
   }
 
@@ -32,7 +37,7 @@ const getConfig = (config = path.join(process.cwd(), 'config')) => {
   const defJson = path.join(config, 'default.json')
   const envJson = NODE_ENV
     ? path.join(config, `${NODE_ENV}.json`)
-    : {}
+    : { }
 
   return {
     ...tryReadJson(defJson),

@@ -19,9 +19,12 @@ class SortablePromiseQueueItem extends PromiseQueue.Item {
 
 }
 
-function descending (a, b) {
-  return a < b ? 1 : a > b ? -1 : 0
-}
+const descending = (a, b) =>
+  a < b
+    ? 1
+    : a > b
+      ? -1
+      : 0
 
 /******************************************************************************/
 // Main
@@ -43,8 +46,13 @@ class SortablePromiseQueue extends PromiseQueue {
   onNext (queue) {
     queue.sort((a, b) => {
 
-      const aOrder = is.func(a.order) ? a.order() : a.order
-      const bOrder = is.func(b.order) ? b.order() : b.order
+      const aOrder = is.func(a.order)
+        ? a.order()
+        : a.order
+
+      const bOrder = is.func(b.order)
+        ? b.order()
+        : b.order
 
       return this.sorter(aOrder, bOrder)
     })

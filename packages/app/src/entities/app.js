@@ -33,7 +33,7 @@ const time = () => {
   const date = new Date()
   return `` +
     `${date.getMonth() + 1}/${date.getDate()}-${date.getHours()}:` +
-    `${date.getMinutes()}:${date.getSeconds()}`
+    `${date.getMinutes()}:${date.getSeconds().toString().padStart(2, '0')}`
 }
 
 function log (strings, ...params) {
