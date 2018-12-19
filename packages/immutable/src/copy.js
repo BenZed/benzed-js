@@ -1,132 +1,147 @@
-import { $$copy, $$circular } from './symbols'
-
-/******************************************************************************/
-// Shortcuts
-/******************************************************************************/
-
-const {
-  getOwnPropertyNames,
-  getOwnPropertySymbols,
-  getOwnPropertyDescriptor,
-  defineProperty
-} = Object
+import { $$copy } from './symbols'
+import { namesAndSymbols } from './equals'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-function copyPlainObject (object, refs) {
+const { defineProperty } = Object
 
-  const clone = { }
+function addToPrototype (copier) {
 
-  const names = getOwnPropertyNames(object)
-  const symbols = getOwnPropertySymbols(object)
+  const Type = this
 
-  const keys = names.concat(symbols)
+  defineProperty(Type.prototype, $$copy, {
+    value: copier,
+    writable: true
+  })
 
+}
+
+const copyObjectConsideringCircularRefs = (value, refs = [ value ]) => {
+
+  const Type = value.constructor
+
+  const clone = new Type()
+
+  const keys = namesAndSymbols(value)
   for (const key of keys) {
-    const descriptor = getOwnPropertyDescriptor(object, key)
+    const keyValue = value[key]
+    if (refs.includes(keyValue))
+      continue
 
-    const hasValue = 'value' in descriptor // as opposed to a getter or setter
-    if (hasValue)
-      descriptor.value = copyConsideringRefs(descriptor.value, refs)
+    const isObject = keyValue !== null && typeof keyValue === 'object'
+    if (isObject)
+      refs.push(keyValue)
 
-    if (!hasValue || descriptor.value !== $$circular)
-      defineProperty(clone, key, descriptor)
+    const implementsSameCopier = isObject && keyValue[$$copy] === copyObject
+    clone[key] = implementsSameCopier
+      ? copyObjectConsideringCircularRefs(keyValue, refs)
+      : copyUsingImplementer(keyValue)
+
   }
 
   return clone
 }
 
-function getArgsFromIterable (value, refs) {
+const copyUsingImplementer = value => value != null
+  ? value[$$copy]()
+  : value
+
+/******************************************************************************/
+// Implementations
+/******************************************************************************/
+
+function returnSelf () {
+  return this
+}
+
+function copyObject () {
+  return copyObjectConsideringCircularRefs(this)
+}
+
+function copyArray () {
+  return this.map(copyUsingImplementer) // lol
+}
+
+function copyDate () {
+  const Date = this.constructor
+  return new Date(this.getTime())
+}
+
+function copyIterable () {
+  const Type = this.constructor
 
   const args = []
 
-  for (const arg of value) {
-    const result = copyConsideringRefs(arg, refs)
-    if (result !== $$circular)
-      args.push(result)
-  }
+  for (const value of this)
+    args.push(value == null
+      ? value
+      : value[$$copy]()
+    )
 
-  return args
+  return new Type(args)
 }
 
-function copyConsideringRefs (value, refs) {
+/******************************************************************************/
+// Apply Implementations
+/******************************************************************************/
 
-  const type = typeof value
+for (const Primitive of [ String, Number, Boolean ])
+  Primitive::addToPrototype(returnSelf)
 
-  if (value === null || (type !== 'function' && type !== 'object'))
-    return value
+for (const Immutable of [ RegExp, Symbol, Function ])
+  Immutable::addToPrototype(returnSelf)
 
-  if (typeof value[$$copy] === 'function')
-    return value[$$copy]()
+for (const WeakCollection of [ WeakSet, WeakMap ])
+  WeakCollection::addToPrototype(returnSelf)
 
-  if (typeof value.copy === 'function')
-    return value.copy()
+for (const Iterable of [ Set, Map ])
+  Iterable::addToPrototype(copyIterable)
 
-  if (type === 'function' || value instanceof RegExp)
-    return value
+Object::addToPrototype(copyObject)
 
-  if (value instanceof Date)
-    return new Date(value.getTime())
+Date::addToPrototype(copyDate)
 
-  if (!refs)
-    refs = []
+for (const ArrayType of [
+  // fun fact, copyObject actually works with the standard array type,
+  // but the copyArray implementation we have here is much faster
+  Array,
 
-  if (refs.includes(value))
-    return $$circular
-
-  refs.push(value)
-
-  const isArray = value instanceof Array
-  if (isArray || value instanceof Set || value instanceof Map) {
-    const Type = value.constructor
-    const args = getArgsFromIterable(value, refs)
-
-    return isArray
-      ? newArrayOfType(Type, args, refs)
-      : new Type(args)
-  }
-
-  return copyPlainObject(value, refs)
-}
-
-function newArrayOfType (Type, array, refs) {
-
-  const output = new Type(array.length)
-
-  for (let i = 0; i < array.length; i++)
-    output[i] = copyConsideringRefs(array[i], refs)
-
-  return output
-}
+  // the rest of the typed arrays, however, break using copyObject, so
+  // they need the copyArray implementation
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Int32Array,
+  Uint32Array,
+  Float32Array,
+  Float64Array
+])
+  ArrayType::addToPrototype(copyArray)
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-/**
- * Returns a recursive duplicate of the input.
- *
- * If the input has a symbolic $$copy or string copy method, it's output is
- * returned.
- *
- * Otherwise, the copy is made by assigning string and symbol properties to new
- * objects.
- *
- * In the case of arrays, maps and sets, new instances are returned with their
- * iteration results as arguments.
- *
- * @param  {*} value Object or value to copy.
- * @return {*}       Copied value or object.
- */
 function copy (...args) {
 
-  const value = args.length > 0
-    ? args[0]
-    : this
+  let value = this !== undefined
+    ? this
+    : args.shift()
 
-  return copyConsideringRefs(value)
+  const mutator = args.length > 0
+    ? args.shift()
+    : null
+
+  value = copyUsingImplementer(value)
+
+  if (typeof mutator === 'function')
+    mutator(value)
+
+  return value
 }
 
 /******************************************************************************/

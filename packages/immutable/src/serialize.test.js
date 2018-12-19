@@ -2,48 +2,48 @@ import { expect } from 'chai'
 
 import Test from '@benzed/dev'
 
-import copyJson from './copy-json'
+import serialize from './serialize'
 import { $$circular } from './symbols'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod(copyJson, copyJson => {
+Test.optionallyBindableMethod(serialize, serialize => {
 
   describe('copies data in a json compatible format', () => {
 
     const primitives = [ 0, false, true, 1, 'string', null ]
     for (const primitive of primitives)
       it(`${typeof primitive} ${primitive} returns ${primitive}`, () => {
-        expect(copyJson(primitive)).to.be.equal(primitive)
+        expect(serialize(primitive)).to.be.equal(primitive)
       })
 
     it('undefined returns null', () => {
-      expect(copyJson(undefined)).to.be.equal(null)
+      expect(serialize(undefined)).to.be.equal(null)
     })
 
     it('Infinity returns "Infinity"', () => {
-      expect(copyJson(Infinity)).to.be.equal('Infinity')
-      expect(copyJson(-Infinity)).to.be.equal('-Infinity')
+      expect(serialize(Infinity)).to.be.equal('Infinity')
+      expect(serialize(-Infinity)).to.be.equal('-Infinity')
     })
 
     it('NaN returns "NaN"', () => {
-      expect(copyJson(NaN)).to.be.equal('NaN')
+      expect(serialize(NaN)).to.be.equal('NaN')
     })
 
     it('functions return null', () => {
-      expect(copyJson(function () {})).to.be.equal(null)
+      expect(serialize(function () {})).to.be.equal(null)
     })
 
     it('functions with toJSON properties work')
 
     it('symbols return null', () => {
       const BAR = Symbol('bar')
-      expect(copyJson(BAR)).to.be.equal(null)
+      expect(serialize(BAR)).to.be.equal(null)
     })
 
     it('$$circular symbol returns null', () => {
-      expect(copyJson($$circular)).to.be.equal(null)
+      expect(serialize($$circular)).to.be.equal(null)
     })
 
   })
@@ -53,8 +53,8 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
     it('plain', () => {
       const obj = { foo: 'bar' }
 
-      expect(copyJson(obj)).to.be.deep.equal(obj)
-      expect(copyJson(obj)).to.not.equal(obj)
+      expect(serialize(obj)).to.be.deep.equal(obj)
+      expect(serialize(obj)).to.not.equal(obj)
     })
 
     it('symbol or function properties arnt included', () => {
@@ -66,7 +66,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
           return this.foo
         }
       }
-      expect(copyJson(obj)).to.deep.equal({ foo: 'bar' })
+      expect(serialize(obj)).to.deep.equal({ foo: 'bar' })
     })
 
     it('circular references arn\'t included', () => {
@@ -74,7 +74,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
       const foo = { bar: 'bar' }
       foo.foo = foo
 
-      expect(copyJson(foo)).to.be.deep.equal({ bar: 'bar' })
+      expect(serialize(foo)).to.be.deep.equal({ bar: 'bar' })
 
     })
 
@@ -91,7 +91,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
         [BAR] = 'bar'
       }
 
-      expect(copyJson(new Foo())).to.be.deep.equal({ bar: 'bar', cake: 'town' })
+      expect(serialize(new Foo())).to.be.deep.equal({ bar: 'bar', cake: 'town' })
     })
   })
 
@@ -116,8 +116,8 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
       const seargant = new Rank('seargant', 50)
 
       expect(admiral > seargant).to.be.equal(true)
-      expect(copyJson(admiral)).to.be.equal('admiral')
-      expect(copyJson(seargant)).to.be.equal('seargant')
+      expect(serialize(admiral)).to.be.equal('admiral')
+      expect(serialize(seargant)).to.be.equal('seargant')
 
     })
 
@@ -128,7 +128,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
         }
       }
 
-      expect(copyJson(obj)).to.be.equal(null)
+      expect(serialize(obj)).to.be.equal(null)
     })
 
     it('toJSON catches circular references', () => {
@@ -138,7 +138,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
         }
       }
 
-      expect(copyJson(obj)).to.be.deep.equal({})
+      expect(serialize(obj)).to.be.deep.equal({})
     })
 
   })
@@ -150,7 +150,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
       const arr = [ 'one', 2, { foo: 'bar' },
         Symbol('bad'), function () {} ]
 
-      expect(copyJson(arr)).to.be.deep.equal([
+      expect(serialize(arr)).to.be.deep.equal([
         'one', 2, { foo: 'bar' }
       ])
 
@@ -163,7 +163,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
         Symbol('ace'), function () {}
       ])
 
-      expect(copyJson(set)).to.be.deep.equal([
+      expect(serialize(set)).to.be.deep.equal([
         'one', 'two', 3
       ])
     })
@@ -173,7 +173,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
         ['one', 1], ['two', 2], [Symbol('three'), 3], [function () {}, 4]
       ])
 
-      expect(copyJson(map)).to.be.deep.equal([
+      expect(serialize(map)).to.be.deep.equal([
         ['one', 1], ['two', 2], [3], [4]
       ])
     })
@@ -199,7 +199,7 @@ Test.optionallyBindableMethod(copyJson, copyJson => {
         }
       }
 
-      expect(copyJson(iterable))
+      expect(serialize(iterable))
         .to.be.deep
         .equal([
           1, 2, 3, 'value'

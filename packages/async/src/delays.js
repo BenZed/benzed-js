@@ -28,6 +28,14 @@ const milliseconds = num =>
     )
   )
 
+const asyncConditionTimeout = delay => new Promise(
+  (resolve, reject) =>
+    setTimeout(
+      () => reject(
+        new Error(`could not resolve async condition in ${delay}ms`)
+      ),
+      delay
+    ))
 /**
  * until - Description
  *
@@ -58,9 +66,16 @@ async function until (config = {}) {
     let intervalDelta = 0
 
     let result = condition(totalDelta)
+    // TODO major bug: if the result is a promise that never resolves, it skips the
+    // timeout
     if (result instanceof Promise) {
       const intervalStart = Date.now()
-      result = await result
+
+      result = await Promise.race([
+        result,
+        asyncConditionTimeout(intervalDelay)
+      ])
+
       intervalDelta = Date.now() - intervalStart
     }
 

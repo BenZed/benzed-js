@@ -19,10 +19,7 @@ const Backdrop = styled.div.attrs(props => {
     style: { zIndex: props.z }
   }
 })`
-  position: ${props =>
-    props.fixed
-      ? 'fixed'
-      : 'absolute'};
+  position: ${props => props.position};
   top: 0;
   left: 0;
   bottom: 0;

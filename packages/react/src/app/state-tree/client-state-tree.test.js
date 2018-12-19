@@ -4,7 +4,7 @@ import { copy, get, set } from '@benzed/immutable'
 import io from 'socket.io-client'
 import is from 'is-explicit'
 import { $$state } from '../../state-tree/state-tree'
-import { Test } from '@benzed/dev'
+import { Test, expectReject } from '@benzed/dev'
 import App from '@benzed/app' // eslint-disable-line no-unused-vars
 
 /* @jsx App.declareEntity */
@@ -340,6 +340,21 @@ describe.only('Client State Tree', () => {
                 .to.be.equal(host)
               if (provider === 'socketio')
                 expect(client[$$feathers].io.connected).to.be.equal(true)
+            })
+
+            it('throws if host cannot be found', () => {
+              const badPort = state.api.listener.address().port + 1
+
+              const client = new ClientStateTree({
+                provider: provider === 'express'
+                  ? 'rest'
+                  : 'socketio',
+                hosts: [
+                  'http://localhost:' + badPort
+                ]
+              })
+
+              return client.connect()::expectReject('Host could not be resolved.')
             })
           })
 

@@ -6,7 +6,7 @@ import {
 } from '../util'
 
 import { wrap, hasNumericLength } from '@benzed/array'
-import { copy, change } from '@benzed/immutable'
+import { copy } from '@benzed/immutable'
 
 /******************************************************************************/
 // Data
@@ -24,7 +24,7 @@ const requireConfig = propToConfig({
   default: 'is required.'
 })
 
-const LENGTH_LAYOUT = RANGE_LAYOUT::change(layout => {
+const LENGTH_LAYOUT = RANGE_LAYOUT::copy(layout => {
 
   const ERR = 1
   const MIN = 2

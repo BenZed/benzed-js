@@ -1,6 +1,6 @@
 {
   "name": "@benzed/immutable",
-  "version": "1.5.2",
+  "version": "2.0.0",
   "main": "lib",
   "publishConfig": {
     "access": "public"

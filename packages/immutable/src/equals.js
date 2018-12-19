@@ -1,126 +1,179 @@
 import { $$equals } from './symbols'
+import { isArrayLike } from '@benzed/array'
 
 /******************************************************************************/
-// Data
+// Helper
 /******************************************************************************/
 
-const {
-  getOwnPropertyNames,
-  getOwnPropertySymbols
-} = Object
+const { defineProperty, getOwnPropertyNames, getOwnPropertySymbols } = Object
 
-/******************************************************************************/
-// Helpers
-/******************************************************************************/
+function addToPrototype (copier) {
 
-function arraysEqual (a, b) {
+  const Type = this
 
-  if (a.length !== b.length)
-    return false
+  defineProperty(Type.prototype, $$equals, {
+    value: copier,
+    writable: true
+  })
 
-  for (let i = 0; i < a.length; i++)
-    if (!equals(a[i], b[i]))
-      return false
-
-  return true
 }
 
-function namesAndSymbols (value) {
+const namesAndSymbols = value => {
 
   const names = getOwnPropertyNames(value)
   const symbols = getOwnPropertySymbols(value)
 
   return names.concat(symbols)
+}
+
+const compareUsingImplementers = (left, right) => {
+
+  if (left == null || right == null || left === right)
+    return left === right
+
+  if (left[$$equals](right))
+    return true
+
+  // if the right hand side uses a different implementation
+  return right[$$equals] !== left[$$equals]
+    ? right[$$equals](left)
+    : false
 
 }
 
-/******************************************************************************/
-// Main
-/******************************************************************************/
+const arrayLikesAreEqual = (left, right) => {
 
-/**
- * Compares value equality of two inputs.
- *
- * Two operands are considered value equal if they:
- *
- * - Are equal primitives.
- *
- * - Are both NaN.
- *
- * - Implement symbolic $$equals or string 'equals' method, which returns
- * true when given the opposing operand as input.
- *
- * - Are both objects with value equal string and symbolic keys.
- *
- * - Are both arrays with order and value equal items.
- *
- * - Are reference equal.
- *
- * @param  {*} a Left hand operand.
- * @param  {*} b Right hand operand.
- * @return {boolean} True if two elements are value equal, false if not.
- */
-function equals (a, b) {
-
-  if (this !== undefined) {
-    b = a
-    a = this
-  }
-
-  if (a === b)
-    return true
-
-  const aType = typeof a
-  const bType = typeof b
-
-  const aIsFunc = aType === 'function'
-  const bIsFunc = bType === 'function'
-
-  const aIsObject = aIsFunc || (aType === 'object' && a !== null)
-  const bIsObject = bIsFunc || (bType === 'object' && b !== null)
-
-  if (aIsObject && typeof a[$$equals] === 'function')
-    return a[$$equals](b)
-
-  if (bIsObject && typeof b[$$equals] === 'function')
-    return b[$$equals](a)
-
-  if (aIsObject && typeof a.equals === 'function')
-    return a.equals(b)
-
-  if (bIsObject && typeof b.equals === 'function')
-    return b.equals(a)
-
-  if (Number.isNaN(a))
-    return Number.isNaN(b)
-
-  if (a instanceof Date && b instanceof Date)
-    return a.getTime() === b.getTime()
-
-  if ((aIsFunc && bIsFunc) || aIsFunc !== bIsFunc)
+  if (left.length !== right.length)
     return false
 
-  if (!aIsObject || !bIsObject)
+  for (let i = 0; i < left.length; i++)
+    if (!compareUsingImplementers(left[i], right[i]))
+      return false
+
+  return true
+}
+
+/******************************************************************************/
+// Implementations
+/******************************************************************************/
+
+function identical (right) {
+  const left = this
+  return left === right
+}
+
+function identicalOrBothNaN (right) {
+  const left = this
+  return left === right || (Number.isNaN(left) && Number.isNaN(right))
+}
+
+function equalIterable (right) {
+  const left = this
+
+  if (right === null || typeof right !== 'object' || !right[Symbol.iterator])
     return false
 
-  if (Array.isArray(a) && Array.isArray(b))
-    return arraysEqual(a, b)
+  return arrayLikesAreEqual(
+    [ ...left ],
+    [ ...right ]
+  )
+}
 
-  if (typeof a[Symbol.iterator] === 'function' &&
-      typeof b[Symbol.iterator] === 'function')
-    return arraysEqual([ ...a ], [ ...b ])
+function equalArray (right) {
+  const left = this
 
-  const akeys = namesAndSymbols(a)
-  const bkeys = namesAndSymbols(b)
+  if (!isArrayLike(right))
+    return false
+
+  return arrayLikesAreEqual(left, right)
+}
+
+function equalObject (right) {
+
+  if (typeof right !== 'object' || right === null)
+    return false
+
+  const left = this
+
+  const akeys = namesAndSymbols(left)
+  const bkeys = namesAndSymbols(right)
 
   if (akeys.length !== bkeys.length)
     return false
 
   for (const key of akeys)
-    if (!equals(a[key], b[key]))
+    if (!compareUsingImplementers(left[key], right[key]))
       return false
 
   return true
+
+}
+
+function equalDate (right) {
+  const left = this
+
+  return right !== null &&
+    typeof right === 'object' &&
+    typeof right.getTime === 'function' &&
+    left.getTime() === right.getTime()
+}
+
+function equalRegexp (right) {
+  const left = this
+
+  return right !== null &&
+    right instanceof RegExp &&
+    String(left) === String(right)
+}
+
+/******************************************************************************/
+// Apply Implementations
+/******************************************************************************/
+
+for (const Primitive of [ String, Boolean ])
+  Primitive::addToPrototype(identical)
+
+for (const Immutable of [ Symbol, Function ])
+  Immutable::addToPrototype(identical)
+
+for (const Iterable of [ Map, Set ])
+  Iterable::addToPrototype(equalIterable)
+
+Number::addToPrototype(identicalOrBothNaN)
+Object::addToPrototype(equalObject)
+RegExp::addToPrototype(equalRegexp)
+Array::addToPrototype(equalArray)
+Date::addToPrototype(equalDate)
+
+// fun fact: equalObject would work on all of these, but the equalArray
+// implementation is faster
+for (const ArrayType of [
+  Array,
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Int32Array,
+  Uint32Array,
+  Float32Array,
+  Float64Array
+])
+  ArrayType::addToPrototype(equalArray)
+
+/******************************************************************************/
+// Main
+/******************************************************************************/
+
+function equals (...args) {
+
+  const left = this !== undefined && args.length < 2
+    ? this
+    : args.shift()
+
+  const right = args.shift()
+
+  return compareUsingImplementers(left, right)
 }
 
 /******************************************************************************/
@@ -128,3 +181,5 @@ function equals (a, b) {
 /******************************************************************************/
 
 export default equals
+
+export { namesAndSymbols }

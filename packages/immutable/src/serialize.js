@@ -37,13 +37,13 @@ function copyConsideringRefs (value, refs) {
   refs.push(value)
 
   if (isIterable(value)) {
-    const json = []
+    const array = []
     for (const item of value) {
       const result = copyConsideringRefs(item, refs)
       if (result !== $$excluded && result !== $$circular)
-        json.push(result)
+        array.push(result)
     }
-    return json
+    return array
   }
 
   const json = {}
@@ -60,7 +60,7 @@ function copyConsideringRefs (value, refs) {
 // Main
 /******************************************************************************/
 
-function copyJson (...args) {
+function serialize (...args) {
 
   const value = args.length > 0
     ? args[0]
@@ -76,4 +76,4 @@ function copyJson (...args) {
 // Exports
 /******************************************************************************/
 
-export default copyJson
+export default serialize

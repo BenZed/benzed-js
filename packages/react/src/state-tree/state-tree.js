@@ -1,6 +1,6 @@
 import is from 'is-explicit'
 
-import { equals, copy, get, set, reverse } from '@benzed/immutable'
+import { equals, serialize, get, set, reverse } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 import { inspect } from 'util'
 
@@ -298,7 +298,7 @@ function stateTreeToJSON () {
   const tree = this
   const state = tree[$$state]
 
-  return copy.json(state)
+  return serialize(state)
 }
 
 function stateTreeToString () {

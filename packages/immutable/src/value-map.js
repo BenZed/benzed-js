@@ -8,9 +8,9 @@ import { $$copy, $$equals } from './symbols'
 // Symbols
 /******************************************************************************/
 
-const KEYS = Symbol('map-keys')
+const $$keys = Symbol('map-keys')
 
-const VALUES = Symbol('map-values')
+const $$values = Symbol('map-values')
 
 /******************************************************************************/
 // Types
@@ -18,19 +18,11 @@ const VALUES = Symbol('map-values')
 
 class ValueMap {
 
-  static get [Symbol.species] () {
-    return ValueMap
-  }
+  constructor (keyValues) {
 
-  constructor (...keyValues) {
+    if (keyValues) for (const keyValue of keyValues) {
 
-    if (keyValues.length % 2 !== 0)
-      throw new Error('Must be an even number of arguments.')
-
-    for (let i = 0; i < keyValues.length; i += 2) {
-
-      const key = keyValues[i]
-      const value = keyValues[i + 1]
+      const [ key, value ] = keyValue
 
       this.set(key, value)
     }
@@ -38,21 +30,21 @@ class ValueMap {
 
   get (key) {
 
-    const index = indexOf(this[KEYS], key)
+    const index = indexOf(this[$$keys], key)
     if (index === -1)
       throw new Error(`Does not have item with id ${key}`)
 
-    return this[VALUES][index]
+    return this[$$values][index]
   }
 
   set (key, value) {
 
-    let index = indexOf(this[KEYS], key)
+    let index = indexOf(this[$$keys], key)
     if (index === -1)
-      index = this[KEYS].length
+      index = this[$$keys].length
 
-    this[KEYS][index] = key
-    this[VALUES][index] = value
+    this[$$keys][index] = key
+    this[$$values][index] = value
 
     return this
   }
@@ -62,26 +54,26 @@ class ValueMap {
     if (key === undefined)
       throw new Error('undefined is not a valid id.')
 
-    const index = indexOf(this[KEYS], key)
+    const index = indexOf(this[$$keys], key)
     return index > -1
   }
 
   delete (key) {
 
-    const index = indexOf(this[KEYS], key)
+    const index = indexOf(this[$$keys], key)
 
     const exists = index > -1
     if (exists) {
-      this[KEYS].splice(index, 1)
-      this[VALUES].splice(index, 1)
+      this[$$keys].splice(index, 1)
+      this[$$values].splice(index, 1)
     }
 
     return exists
   }
 
   clear () {
-    this[KEYS].length = 0
-    this[VALUES].length = 0
+    this[$$keys].length = 0
+    this[$$values].length = 0
   }
 
   forEach (func) {
@@ -90,29 +82,29 @@ class ValueMap {
   }
 
   get size () {
-    return this[KEYS].length
+    return this[$$keys].length
   }
 
   * keys () {
     for (let i = 0; i < this.size; i++) {
-      const id = this[KEYS][i]
+      const id = this[$$keys][i]
       yield id
     }
   }
 
   * values () {
     for (let i = 0; i < this.size; i++) {
-      const value = this[VALUES][i]
+      const value = this[$$values][i]
       yield value
     }
   }
 
   * [Symbol.iterator] () {
     for (let i = 0; i < this.size; i++) {
-      const id = this[KEYS][i]
-      const value = this[VALUES][i]
+      const key = this[$$keys][i]
+      const value = this[$$values][i]
 
-      yield [id, value]
+      yield [key, value]
     }
   }
 
@@ -121,33 +113,31 @@ class ValueMap {
   }
 
   [$$copy] () {
+    const Type = this.constructor
 
-    const map = new ValueMap()
+    const args = []
+    for (const keyValue of this)
+      args.push(copy(keyValue))
 
-    for (const [key, value] of this)
-      map.set(copy(key), copy(value))
-
-    return map
+    return new Type(args)
   }
 
-  [$$equals] (to) {
+  [$$equals] (right) {
+    const Type = this.constructor
+    const left = this
 
-    if (typeof to !== 'object' || to instanceof ValueMap === false)
+    if (typeof right !== 'object' || right instanceof Type === false)
       return false
 
-    if (to.size !== this.size)
+    if (left.size !== right.size)
       return false
 
-    for (const [ key, value ] of to)
-      if (!equals(value, this.get(key)))
-        return false
-
-    return true
+    return equals([ ...left ], [ ...right ])
   }
 
-  [KEYS] = [];
+  [$$keys] = [];
 
-  [VALUES] = []
+  [$$values] = []
 
 }
 

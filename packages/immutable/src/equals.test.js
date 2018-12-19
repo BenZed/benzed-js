@@ -1,5 +1,6 @@
 import { expect } from 'chai'
-import { equals, $$equals } from '../src'
+import { $$equals } from './symbols'
+import equals from './equals'
 
 import { Test, inspect } from '@benzed/dev'
 // eslint-disable-next-line no-unused-vars
@@ -48,6 +49,34 @@ Test.optionallyBindableMethod(equals, equals => {
       it('[1,2] not equal [1,2,3]', () =>
         expect(equals([1, 2], [1, 2, 3])).to.not.be.true
       )
+      describe('typed arrays', () => {
+        const typedArrays = [
+          Int8Array,
+          Uint8Array,
+          Uint8ClampedArray,
+          Int16Array,
+          Uint16Array,
+          Int32Array,
+          Uint32Array,
+          Float32Array,
+          Float64Array
+        ]
+
+        for (const TypedArray of typedArrays) {
+          it(`${TypedArray.name} [ 1, 2, 4 ] equals [ 1, 2, 4 ]`, () => {
+            const opt1 = new TypedArray([ 1, 2, 4 ])
+            const opt2 = new TypedArray([ 1, 2, 4 ])
+            expect(equals(opt1, opt2)).to.be.equal(true)
+          })
+
+          it(`${TypedArray.name} [ 1, 2, 4 ] not equal [ 1, 2 ]`, () => {
+            const opt1 = new TypedArray([ 1, 2, 4 ])
+            const opt2 = new TypedArray([ 1, 2 ])
+            expect(equals(opt1, opt2)).to.be.equal(false)
+          })
+
+        }
+      })
     })
 
     describe('works on objects', () => {
@@ -171,57 +200,6 @@ Test.optionallyBindableMethod(equals, equals => {
 
       })
 
-      it('implementing string equals', () => {
-
-        let calls = 0
-
-        class Foo {
-
-          constructor (bar = 'bar') {
-            this.bar = bar
-          }
-
-          equals (b) {
-            calls++
-            return b instanceof Foo && b.bar === this.bar
-          }
-
-        }
-
-        const foo1 = new Foo()
-        const foo2 = new Foo()
-        const foo3 = new Foo('baz')
-
-        expect(equals(foo1, foo2)).to.be.equal(true)
-        expect(equals(foo1, foo3)).to.be.equal(false)
-
-        // calls should not increment, because values are reference identical
-        expect(equals(foo1, foo1)).to.be.equal(true)
-        expect(calls).to.equal(2)
-
-      })
-
-      it('symbolic $$equals takes precedence', () => {
-
-        class Foo {
-          constructor (bar = 'bar') {
-            this.bar = bar
-          }
-
-          equals (b) {
-            throw new Error('don\'t use this method')
-          }
-
-          [$$equals] (b) {
-            return b instanceof Foo && b.bar === this.bar
-          }
-        }
-
-        const foo1 = new Foo()
-
-        expect(() => equals(foo1, foo1)).to.not.throw('don\'t use this method')
-      })
-
       it('handles circular references', () => {
 
         const circle = {
@@ -277,36 +255,39 @@ Test.optionallyBindableMethod(equals, equals => {
 
   })
 
+  it('works on regex', () => {
+    const onlya = /a/g
+    const onlyb = /b/i
+
+    expect(equals(onlya, onlyb)).to.be.equal(false)
+    expect(equals(onlya, /a/g)).to.be.equal(true)
+    expect(equals(onlya, /a/)).to.be.equal(false)
+  })
+
   describe('allows primitives to be compared in overridden equality methods', () => {
 
-    function accountEquals (b) {
+    describe('works on $$equals method', () => {
 
-      const a = this.amount
-      b = b instanceof AccountStringEquals ? b.amount : b
+      class Account {
+        constructor (amount) {
+          if (amount instanceof Account)
+            amount = amount.amount
+          this.amount = amount
+        }
 
-      return a === b || (Number.isNaN(a) && Number.isNaN(b))
-    }
+        toString () {
+          return `$${this.amount}`
+        }
 
-    class AccountStringEquals {
-      constructor (amount) {
-        if (amount instanceof AccountStringEquals)
-          amount = amount.amount
-        this.amount = amount
+        [$$equals] (right) {
+          const left = this.amount
+          right = right instanceof Account
+            ? right.amount
+            : right
+
+          return left === right || (Number.isNaN(left) && Number.isNaN(right))
+        }
       }
-
-      toString () {
-        return `$${this.amount}`
-      }
-
-      equals = accountEquals
-
-    }
-
-    class AccountSymbolEquals extends AccountStringEquals {
-      [$$equals] = accountEquals
-    }
-
-    const testAccount = Account => () => {
 
       const blingin = new Account(10000)
       const poor = new Account(-5)
@@ -323,21 +304,13 @@ Test.optionallyBindableMethod(equals, equals => {
             (Number.isNaN(a) && Number.isNaN(b)) ||
             (a === null && b === null) ||
             (a !== null && b !== null &&
-              new Account(a)::accountEquals(new Account(b))
+              new Account(a)[$$equals](new Account(b))
             )
-
           it(inspect`equals(${a}, ${b}) === ${result}`, () => {
             expect(equals(a, b)).to.equal(result)
           })
-
         }
-
-    }
-
-    describe('works on $$equals method', testAccount(AccountStringEquals))
-
-    describe('works on \'equals\' method', testAccount(AccountSymbolEquals))
-
+    })
   })
 
 })

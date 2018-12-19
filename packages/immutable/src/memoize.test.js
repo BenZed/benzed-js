@@ -1,4 +1,4 @@
-import { expect } from 'chai'
+import { assert, expect } from 'chai'
 import { Test } from '@benzed/dev'
 import memoize from './memoize'
 import { primes } from '@benzed/math'
@@ -6,7 +6,7 @@ import { primes } from '@benzed/math'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod.only(memoize, memoize => {
+Test.optionallyBindableMethod(memoize, memoize => {
 
   let add
   let memoizedAdd
@@ -35,34 +35,25 @@ Test.optionallyBindableMethod.only(memoize, memoize => {
     expect(addCalls).to.be.equal(2)
   })
 
-  // it('memoized isPrime', () => {
-  //   const nonGenPrimes = (min, max) => [ ...primes(min, max) ]
-  //   const memoizedNonGenPrimes = memoize(nonGenPrimes)
-  //
-  //   memoizedNonGenPrimes(2, 100000)
-  //   memoizedNonGenPrimes(2, 100000)
-  // })
+  it('memoized isPrime', () => {
+    const nonGenPrimes = (min, max) => [ ...primes(min, max) ]
+    const memoizedNonGenPrimes = memoize(nonGenPrimes)
 
-  it('addSubtract', () => {
-    function addSubtract (input) {
-
-      const state = this
-
-      const sign = state
-        ? state.sign * -1
-        : -1
-
-      const value = state
-        ? state.value + (input * sign)
-        : input
-
-      const nextAddSubtract = addSubtract.bind({ sign, value })
-
-      nextAddSubtract.valueOf = () => value
-
-      return nextAddSubtract
+    function time (...args) {
+      const func = this
+      const start = Date.now()
+      func(...args)
+      return Date.now() - start
     }
-    expect(+addSubtract(1)(2)(3)).to.be.equal(0)
+
+    const timedMemoizedNonGenPrimes = memoizedNonGenPrimes::time
+
+    /* eslint-disable no-self-compare */
+    assert(
+      timedMemoizedNonGenPrimes(2, 50000) >
+      timedMemoizedNonGenPrimes(2, 50000),
+      'memoizing did not speed up execution'
+    )
   })
 
 })

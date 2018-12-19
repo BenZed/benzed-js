@@ -39,17 +39,17 @@ class CustomId {
 
 /* eslint-disable no-multi-spaces */
 const pairs = [
-  0,              'zero',
-  1,              'one',
-  -1,             'minus-one',
-  Infinity,       'infinity',
-  -Infinity,      'minus-infinity',
-  '0',            'zero-string',
-  '1',            'one-string',
-  Symbol('id-1'), 'symbol-1',
-  Symbol('id-2'), 'symbol-2',
-  new CustomId(), 'custom-id-1',
-  new CustomId(), 'custom-id-2'
+  [0,              'zero'],
+  [1,              'one'],
+  [-1,             'minus-one'],
+  [Infinity,       'infinity'],
+  [-Infinity,      'minus-infinity'],
+  ['0',            'zero-string'],
+  ['1',            'one-string'],
+  [Symbol('id-1'), 'symbol-1'],
+  [Symbol('id-2'), 'symbol-2'],
+  [new CustomId(), 'custom-id-1'],
+  [new CustomId(), 'custom-id-2']
 ]
 /* eslint-enable */
 
@@ -58,11 +58,8 @@ const pairs = [
 /******************************************************************************/
 
 function forEachPair (func) {
-  for (let i = 0; i < pairs.length; i += 2) {
-    const key = pairs[i]
-    const value = pairs[i + 1]
-    func(key, value, i)
-  }
+  for (const [ key, value ] of pairs)
+    func(key, value)
 }
 
 /******************************************************************************/
@@ -78,52 +75,21 @@ describe('ValueMap', () => {
   let map
 
   beforeEach(() => {
-    map = new ValueMap(...pairs)
+    map = new ValueMap([ ...pairs ])
   })
 
   describe('initializes with key-value pairs paremeters', () => {
 
-    it('must be an even number of params', () => {
-      expect(() => new ValueMap('some-id'))
-        .to.throw('Must be an even number of arguments.')
-
-      expect(() => new ValueMap(
-        'string-id',
-        { thing: 'Boo' }
-      )).to.not.throw()
-
-    })
-
-    it('even properties must Ids', () => {
-
-      expect(() => new ValueMap(
-        'string-id', true
-      )).to.not.throw()
-
-      expect(() => new ValueMap(
-        'this-counts-as-an-id', true
-      )).to.not.throw()
-
-      expect(() => new ValueMap(
-        504129.11, true
-      )).to.not.throw()
-
-      expect(() => new ValueMap(
-        Symbol('so does this'), true
-      )).to.not.throw()
-
-    })
-
     it('Constructed values are added to data', () => {
-      const map = new ValueMap(
-        '1', 1000,
-        '2', 2000,
-        '3', 3000,
-        1, 4000,
-        2, 5000,
-        3, 6000,
-        'oy-wtf-mate', 7000
-      )
+      const map = new ValueMap([
+        ['1', 1000],
+        ['2', 2000],
+        ['3', 3000],
+        [1, 4000],
+        [2, 5000],
+        [3, 6000],
+        ['oy-wtf-mate', 7000]
+      ])
 
       const [ DATA ] = Object.getOwnPropertySymbols(map)
 
@@ -140,50 +106,50 @@ describe('ValueMap', () => {
 
     describe('Strings', () => {
       it('any', () => {
-        expect(() => new ValueMap(
-          'any ol string', true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          ['any ol string', true]
+        ])).to.not.throw()
       })
     })
 
     describe('Symbols', () => {
       it('any', () => {
-        expect(() => new ValueMap(
-          Symbol('symbols'), true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          [Symbol('symbols'), true]
+        ])).to.not.throw()
       })
     })
 
     describe('Custom Ids', () => {
       it('any', () => {
-        expect(() => new ValueMap(
-          new CustomId(), true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          [new CustomId(), true]
+        ])).to.not.throw()
       })
     })
 
     describe('Numbers', () => {
 
       it('finite numbers pass', () => {
-        expect(() => new ValueMap(
-          504129.11, true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          [ 504129.11, true ]
+        ])).to.not.throw()
       })
 
       it('infinite numbers pass', () => {
-        expect(() => new ValueMap(
-          Infinity, true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          [Infinity, true]
+        ])).to.not.throw()
 
-        expect(() => new ValueMap(
-          -Infinity, true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          [-Infinity, true]
+        ])).to.not.throw()
       })
 
       it('NaN passes', () => {
-        expect(() => new ValueMap(
-          NaN, true
-        )).to.not.throw()
+        expect(() => new ValueMap([
+          [NaN, true]
+        ])).to.not.throw()
       })
     })
   })
@@ -194,22 +160,22 @@ describe('ValueMap', () => {
 
       describe('gets key values', () => {
         forEachPair((k, v) =>
-          it(`gets ${k.toString()}: ${v}`, () => {
+          it(`gets ${k.toString()}: ${String(v)}`, () => {
             expect(map.get(k)).to.equal(v)
           })
         )
       })
 
-      // describe('equivalent object ids pass', () => {
-      //   forEachPair((k, v) => {
-      //     if (typeof k !== 'object')
-      //       return
-      //     it(`gets copy of ${k.toString()}: ${v}`, () => {
-      //       const ki = new k.constructor(k.id)
-      //       expect(map.get(ki)).to.equal(v)
-      //     })
-      //   })
-      // })
+      describe('equivalent object ids pass', () => {
+        forEachPair((k, v) => {
+          if (typeof k !== 'object')
+            return
+          it(`gets copy of ${k.toString()}: ${v}`, () => {
+            const ki = new k.constructor(k.id)
+            expect(map.get(ki)).to.equal(v)
+          })
+        })
+      })
 
     })
 
@@ -345,13 +311,6 @@ describe('ValueMap', () => {
         expect(length).to.equal(map.size)
       })
 
-      it('values arnt mutated from last set', () => {
-        map.forEach((v, k) => {
-          expect(pairs.includes(k)).to.equal(true)
-          expect(pairs.includes(v)).to.equal(true)
-        })
-      })
-
       it('map as third argument', () => {
         map.forEach((v, k, m) =>
           expect(m).to.equal(map)
@@ -369,16 +328,16 @@ describe('ValueMap', () => {
     describe('#keys', () => {
 
       it('returns an iterable for all keys', () => {
-        const keys = pairs.reduce((a, v, i) => i % 2 === 0 ? a.push(v) && a : a, [])
-        expect(keys).to.deep.equal([...map.keys()])
+        const keys = pairs.map(pair => pair[0])
+        expect(keys).to.deep.equal([ ...map.keys() ])
       })
 
     })
 
     describe('#values', () => {
       it('returns an iterable for all values', () => {
-        const keys = pairs.reduce((a, v, i) => i % 2 === 1 ? a.push(v) && a : a, [])
-        expect(keys).to.deep.equal([...map.values()])
+        const values = pairs.map(pair => pair[1])
+        expect(values).to.deep.equal([...map.values()])
       })
     })
 
@@ -408,19 +367,18 @@ describe('ValueMap', () => {
   describe('Properties', () => {
     describe('@size', () => {
       it('returns number of keys', () => {
-        expect(map.size).to.equal(pairs.length * 0.5)
+        expect(map.size).to.equal(pairs.length)
       })
     })
   })
 
-  describe.skip('immutable symbols', () => {
+  describe('immutable symbols', () => {
 
     let map1, map2
 
     before(() => {
-      map1 = new ValueMap('one', 1)
+      map1 = new ValueMap([['one', 1]])
       map2 = copy(map1)
-
     })
 
     it('implements $$copy', () => {

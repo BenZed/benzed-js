@@ -145,7 +145,10 @@ async function connectRest () {
 
   let newHost = null
   for (const host of hosts) {
-    const res = await feathers.rest(host).catch(err => err)
+    const res = await feathers
+      .rest(host)
+      .catch(err => err)
+
     const status = res.code || res.status
     if (is.number(status) && status < 500) {
       newHost = host
@@ -345,11 +348,11 @@ const ACTIONS = {
         ? this::connectRest
         : this::connectSocketIO
 
-      await until({
-        condition: connect,
-        interval: CONNECTION_TIMEOUT
-      })
+      await connect()
     }
+
+    if (!this.host)
+      throw new Error('Host could not be resolved.')
 
     return this.host
   },

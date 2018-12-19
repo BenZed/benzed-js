@@ -82,13 +82,11 @@ describe('until', () => {
 
       it('time taken resolving condition is subtracted from interval', async () => {
 
-        let _i = 0
-        const interval = 5
+        const interval = 50
 
         const asyncCondition = async () => {
-          _i++
-          await milliseconds(interval - 1)
-          return _i >= 10
+          await milliseconds(25)
+          return true
         }
 
         const ms = await until({
@@ -97,9 +95,20 @@ describe('until', () => {
         })
 
         expect(
-          ms >= _i * interval &&
-          ms < (_i + 1) * interval
+          ms >= 25 && ms < interval
         ).to.be.equal(true)
+      })
+
+      it('throws if takes longer than interval to resolve', async function () {
+
+        this.timeout(200)
+
+        const forever = () => new Promise(resolve => {})
+
+        await until({
+          condition: forever,
+          interval: 80
+        })::expectReject('could not resolve async condition in 80ms')
       })
     })
 

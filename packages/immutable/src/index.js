@@ -1,14 +1,13 @@
 import copy from './copy'
-import copyJson from './copy-json'
+import serialize from './serialize'
 
 import equals from './equals'
 
 import get from './get'
 import set from './set'
 
-import change from './change'
-
 import merge from './merge'
+import memoize from './memoize'
 
 import {
   push, pop, shift, unshift, splice, reverse, sort, shuffle, unique,
@@ -23,7 +22,6 @@ import { $$equals, $$copy } from './symbols'
 // Exports
 /******************************************************************************/
 
-copy.json = copyJson
 copy.$$ = $$copy
 
 equals.$$ = $$equals
@@ -36,9 +34,9 @@ export {
 
   copy, equals,
 
-  get, set,
+  serialize, memoize,
 
-  change,
+  get, set,
 
   merge,
 
