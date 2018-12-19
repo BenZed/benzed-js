@@ -16,7 +16,10 @@ const Z = 1000
 
 const Backdrop = styled.div.attrs(props => {
   return {
-    style: { zIndex: props.z }
+    style: {
+      zIndex: props.z,
+      backgroundColor: `rgba(0,0,0,${props.opacity})`
+    }
   }
 })`
   position: ${props => props.position};
@@ -36,7 +39,6 @@ const Backdrop = styled.div.attrs(props => {
   align-items: center;
   justify-content: center;
 
-  background-color: rgba(0,0,0,0.5);
 `
 
 /******************************************************************************/
@@ -59,13 +61,15 @@ const Modal = ({ visible, children, ...rest }) =>
 
 Modal.defaultProps = {
   position: 'fixed',
-  z: Z
+  z: Z,
+  opacity: 0.5
 }
 
 Modal.propTypes = createPropTypesFor(React =>
   <proptypes>
     <value key='position'>fixed absolute sticky</value>
     <bool key='visible' />
+    <number key='opacity' range={[0, 1]} />
   </proptypes>
 )
 

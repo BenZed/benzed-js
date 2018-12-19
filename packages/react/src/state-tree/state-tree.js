@@ -173,16 +173,14 @@ const applyInitialState = (tree, initial) => {
       throw new Error(`'${key}' cannot be used as a state key.`)
 
     Object.defineProperty(tree, key, {
-      get () {
-        return this[$$state][key]
-      },
+      get () { return this[$$state][key] },
       enumerable: true
     })
 
   }
 
   Object.defineProperties(tree, {
-    [$$state]: { value: copy(initial) },
+    [$$state]: { value: serialize(initial) },
     [$$setters]: { value: new Map() }
   })
 

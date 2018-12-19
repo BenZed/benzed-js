@@ -109,6 +109,8 @@ function observe (VisibleEffect, renderHidden) {
       }
     </VisibleContext.Consumer>
 
+  ObservedVisibleEffect.Wrapped = VisibleEffect
+
   return ObservedVisibleEffect
 }
 
