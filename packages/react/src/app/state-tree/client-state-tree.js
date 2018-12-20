@@ -136,6 +136,15 @@ function getFetchService (name) {
   return services[name]
 }
 
+const timeout = (time = CONNECTION_TIMEOUT) =>
+  new Promise(
+    (resolve, reject) =>
+      setTimeout(
+        () => reject(new Error('Timeout.')),
+        time
+      )
+  )
+
 async function connectRest () {
 
   const tree = this
@@ -145,9 +154,10 @@ async function connectRest () {
 
   let newHost = null
   for (const host of hosts) {
-    const res = await feathers
-      .rest(host)
-      .catch(err => err)
+    const res = await Promise.race([
+      feathers.rest(host),
+      timeout()
+    ]).catch(err => err)
 
     const status = res.code || res.status
     if (is.number(status) && status < 500) {

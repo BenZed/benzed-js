@@ -1,15 +1,15 @@
 
-const SKIP = Symbol('skip')
-const ONLY = Symbol('only')
+const $$skip = Symbol('skip')
+const $$only = Symbol('only')
 
 function getDescriber (operator, name = 'describe') {
 
   const func = global[name]
 
-  if (operator === SKIP)
+  if (operator === $$skip)
     return (...args) => func.skip(...args)
 
-  if (operator === ONLY)
+  if (operator === $$only)
     return (...args) => func.only(...args)
 
   return func
@@ -20,8 +20,8 @@ function getDescriber (operator, name = 'describe') {
 /******************************************************************************/
 
 getDescriber.wrap = func => {
-  func.skip = SKIP::func
-  func.only = ONLY::func
+  func.skip = $$skip::func
+  func.only = $$only::func
   return func
 }
 

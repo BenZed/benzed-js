@@ -9,9 +9,9 @@ const { defineProperty } = Object
 // Symbols
 /******************************************************************************/
 
-const STRICT = Symbol('return-(-1)-if-missing')
-const COMPARER = Symbol('compare-function')
-const UNSORTED = Symbol('is-not-sorted')
+const $$strict = Symbol('return-(-1)-if-missing')
+const $$comparer = Symbol('compare-function')
+const $$unsorted = Symbol('is-not-sorted')
 
 /******************************************************************************/
 // Helper
@@ -54,7 +54,7 @@ function binarySearch (arr, value, strict) {
       max = mid
   }
 
-  return strict === STRICT ? -1 : min
+  return strict === $$strict ? -1 : min
 }
 
 function testUnsorted (arr, startIndex = 0, endIndex = arr.length - 1) {
@@ -75,7 +75,7 @@ function testUnsorted (arr, startIndex = 0, endIndex = arr.length - 1) {
     }
   }
 
-  arr[UNSORTED] = unsorted
+  arr[$$unsorted] = unsorted
 }
 
 /******************************************************************************/
@@ -114,13 +114,13 @@ const PROXY_CONFIGURATION = {
       const next = array[i + 1]
       const prev = array[i - 1]
       if (i < lastIndex && (ascending ? value > next : value < next))
-        array[UNSORTED] = true
+        array[$$unsorted] = true
 
       else if (i > 0 && (ascending ? value < prev : value > prev))
-        array[UNSORTED] = true
+        array[$$unsorted] = true
 
       else if (i > length || i < 0)
-        array[UNSORTED] = true
+        array[$$unsorted] = true
     }
 
     array[index] = value
@@ -139,8 +139,8 @@ class SortedArray extends Array {
 
     super(...args)
 
-    defineProperty(this, UNSORTED, { writable: true, value: false })
-    defineProperty(this, COMPARER, { writable: true, value: ascending })
+    defineProperty(this, $$unsorted, { writable: true, value: false })
+    defineProperty(this, $$comparer, { writable: true, value: ascending })
 
     this.sort()
 
@@ -159,7 +159,7 @@ class SortedArray extends Array {
     const { length } = this
 
     // prevent extra proxy overhead when setting indexes
-    this[UNSORTED] = true
+    this[$$unsorted] = true
 
     for (let i = 1; i < length; i++) {
       const item = this[i]
@@ -171,7 +171,7 @@ class SortedArray extends Array {
       this[ii + 1] = item
     }
 
-    this[UNSORTED] = false
+    this[$$unsorted] = false
 
     return this
   }
@@ -224,19 +224,19 @@ class SortedArray extends Array {
 
   lastIndexOf (value) {
 
-    if (this[UNSORTED])
+    if (this[$$unsorted])
       throw new UnsortedArrayError('lastIndexOf')
 
-    const index = binarySearch(this, value, STRICT)
+    const index = binarySearch(this, value, $$strict)
     return index
   }
 
   indexOf (value) {
 
-    if (this[UNSORTED])
+    if (this[$$unsorted])
       throw new UnsortedArrayError('indexOf')
 
-    let index = binarySearch(this, value, STRICT)
+    let index = binarySearch(this, value, $$strict)
 
     // Search returns the last index of a given value, where indexOf should
     // return the first
@@ -250,7 +250,7 @@ class SortedArray extends Array {
 
   insert (value) {
 
-    if (this[UNSORTED])
+    if (this[$$unsorted])
       throw new UnsortedArrayError('insert')
 
     const index = binarySearch(this, value, null)
@@ -264,10 +264,10 @@ class SortedArray extends Array {
 
   remove (value) {
 
-    if (this[UNSORTED])
+    if (this[$$unsorted])
       throw new UnsortedArrayError('remove')
 
-    const index = binarySearch(this, value, STRICT)
+    const index = binarySearch(this, value, $$strict)
     if (index > -1)
     // super.splice because this.splice will set unsorted, which is unecessary
     // because this function cannot pollute the order
@@ -279,18 +279,18 @@ class SortedArray extends Array {
   // NEW PROPERTIES
 
   get comparer () {
-    return this[COMPARER]
+    return this[$$comparer]
   }
 
   set comparer (compareFunc) {
     if (typeof compareFunc !== 'function')
       compareFunc = ascending
 
-    this[COMPARER] = compareFunc
+    this[$$comparer] = compareFunc
   }
 
   get unsorted () {
-    return this[UNSORTED]
+    return this[$$unsorted]
   }
 
   get ascending () {
@@ -309,7 +309,7 @@ export default SortedArray
 
 export {
 
-  SortedArray, UnsortedArrayError, UNSORTED,
+  SortedArray, UnsortedArrayError, $$unsorted,
 
   ascending, descending
 
