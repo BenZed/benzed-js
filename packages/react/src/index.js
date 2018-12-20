@@ -21,7 +21,7 @@ import {
 import { } from './data-form'
 
 import {
-  Visible, Slide, Fade, ScrollVisible
+  Visible, Slide, Fade, ScrollVisible, Write
 } from './effect'
 
 import {
@@ -66,7 +66,7 @@ export {
   Table, Grid, Virtual,
 
   // Effect
-  Visible, Slide, Fade, ScrollVisible,
+  Visible, Slide, Fade, ScrollVisible, Write,
 
   // Theming
   GlobalStyle, Color, CssUnit, themes,
