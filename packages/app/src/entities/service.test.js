@@ -29,6 +29,10 @@ describe('<service/>', () => {
       expect(app.services).to.have.property('users')
     })
 
+    it('multi option can be specififed to allow service methods multi-functionality')
+
+    it('whitelist option can be specified for whitelisted query props')
+
     it('defaults to feathers-memory if no adapter given', () => {
       const app = (<app>
         <service name='users' />

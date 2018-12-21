@@ -6,7 +6,7 @@ import { $$copy } from './symbols'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod(copy, copier => {
+Test.optionallyBindableMethod.only(copy, copier => {
 
   describe('adds $$copy symbol to standard types', () => {
     for (const Type of [ String, Number, Boolean, Object, Array ])
@@ -158,6 +158,11 @@ Test.optionallyBindableMethod(copy, copier => {
       expect(arr2[0]).to.deep.equal(arr[0])
       expect(arr2[0]).to.not.equal(arr[0])
 
+    })
+
+    it('objects where $$copy is not implemented are returned as is', () => {
+      const hash = Object.create(null)
+      expect(copier(hash)).to.be.equal(hash)
     })
 
     describe('typed arrays', () => {

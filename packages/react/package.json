@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.9.0",
+  "version": "0.10.2",
   "publishConfig": {
     "access": "public"
   },
@@ -23,24 +23,24 @@
   "license": "ISC",
   "description": "React components, classes, helpers",
   "dependencies": {
-    "@benzed/array": "^1.5.1",
+    "@benzed/array": "^1.6.0",
     "@benzed/async": "^0.12.1",
-    "@benzed/immutable": "^1.5.1",
+    "@benzed/immutable": "^2.0.1",
     "@benzed/schema": "^0.11.4",
-    "@feathersjs/authentication-client": "^1.0.8",
-    "@feathersjs/feathers": "^3.2.3",
-    "@feathersjs/rest-client": "^1.4.5",
-    "@feathersjs/transport-commons": "^4.1.6",
+    "@feathersjs/authentication-client": "^1.0.9",
+    "@feathersjs/feathers": "^3.3.0",
+    "@feathersjs/rest-client": "^1.4.6",
+    "@feathersjs/transport-commons": "^4.2.0",
     "color": "^3.1.0",
     "is-explicit": "^2.1.0",
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.1",
-    "socket.io-client": "^2.1.1"
+    "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
-    "@benzed/app": "^0.8.1",
-    "@benzed/dev": "^0.11.1",
-    "react-test-renderer": "^16.6.3"
+    "@benzed/app": "^0.11.3",
+    "@benzed/dev": "^0.12.2",
+    "react-test-renderer": "^16.7.0"
   },
   "peerDependencies": {
     "styled-components": "^4.0.2",

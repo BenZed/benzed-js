@@ -62,11 +62,21 @@ describe('<paginate/>', () => {
         </service>
       </app>)()
 
-      expect(app.services.users).to
+      expect(app.services.users.options).to
         .have.deep.property('paginate', { default: 10, max: 100 })
     })
 
-    it('order irrelevent')
+    it('order irrelevent', () => {
+      const app = (<app>
+        <service name='articles'>
+          <nedb />
+          <paginate default={10} max={100} />
+        </service>
+      </app>)()
+
+      expect(app.services.articles.options).to
+        .have.deep.property('paginate', { default: 10, max: 100 })
+    })
 
     it('throws if given children')
   })

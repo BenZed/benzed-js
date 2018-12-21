@@ -4,7 +4,7 @@ import { $$feathers } from './client-state-tree'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
-import { copy, equals, change, $$equals, indexOf } from '@benzed/immutable'
+import { copy, equals, $$equals, indexOf } from '@benzed/immutable'
 
 import is from 'is-explicit'
 
@@ -147,7 +147,7 @@ async function executeQueryWithData () {
 
   const [ records, setRecords ] = tree('records')
 
-  setRecords(records::change(records => {
+  setRecords(records::copy(records => {
 
     ensureRecords(records, ids)
 

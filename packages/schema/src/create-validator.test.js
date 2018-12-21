@@ -44,6 +44,7 @@ describe('createValidator', () => {
   })
 
   it('can nest existing validators', () => {
+    // eslint-disable-next-line no-unused-vars
     const Code = <string uppercase length={['>', 0]}/>
     const id = <Code length={9} />
 
@@ -54,7 +55,7 @@ describe('createValidator', () => {
   })
 
   it('nesting validators doesn\'t overwrite children', () => {
-
+    // eslint-disable-next-line no-unused-vars
     const Vector = <object strict>
       <number key='x' required />
       <number key='y' required />
@@ -78,7 +79,7 @@ describe('createValidator', () => {
   })
 
   it('can use custom compilers', () => {
-
+    // eslint-disable-next-line no-unused-vars
     const Multiply = props =>
       value => is.number(value)
         ? value * props.by

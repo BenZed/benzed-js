@@ -1,5 +1,6 @@
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { copy, set } from '@benzed/immutable'
+import { isService } from '../util'
 
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
@@ -21,10 +22,17 @@ const paginate = props => {
 
   const { children, ...options } = props
 
-  const paginate = validateOptions(options)
+  const paginate = validateOptions(copy(options))
 
-  // order irrelevent. this works with a service or a service config
-  return context => set.mut(context, 'paginate', copy(paginate))
+  return context => {
+
+    if (isService(context))
+      context.options.paginate = paginate
+    else
+      context.paginate = paginate
+
+    return context
+  }
 
 }
 

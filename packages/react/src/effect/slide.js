@@ -60,9 +60,9 @@ const translateInOut = props => {
 // Effect
 /******************************************************************************/
 
-const Slide = styled(CssCloner).attrs({
-  style: translateInOut
-})`
+const Slide = styled(CssCloner).attrs(props => ({
+  style: translateInOut(props)
+}))`
   transition: transform 250ms;
 `::observe()
 

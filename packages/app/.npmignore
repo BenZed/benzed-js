@@ -1,14 +1,14 @@
-.babelrc
 .eslintignore
-.eslintrc.yml
+.eslintrc.js
+babel.config.js
 .gitignore
 .mocha.opts
 
-test
-test-util
 temp
-src
+test*
+src*
 jsx
 *.tgz
 *.test.js
 *.doc.js
+*.doc.md

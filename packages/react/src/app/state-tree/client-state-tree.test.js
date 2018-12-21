@@ -36,7 +36,7 @@ function expectNewClient (config, call = false) {
 // Tests
 /******************************************************************************/
 
-describe.only('Client State Tree', () => {
+describe('Client State Tree', () => {
 
   let restClient, restClientNoAuth, socketIoClient
   before(() => {
@@ -253,7 +253,7 @@ describe.only('Client State Tree', () => {
         }
         {
           auth
-            ? <service name='users' >
+            ? <service name='users' multi >
               <hooks before all >
                 <authenticate />
                 <password-hash />

@@ -11,6 +11,18 @@ import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 const validateOptions = <object key='config' plain>
   <string key='name' length={['>', 0]} required />
+
+  <multi key='multi' default={false} >
+    <bool />
+    <array cast>
+      <value>create patch remove update</value>
+    </array>
+  </multi>
+
+  <array key='whitelist'>
+    <string required />
+  </array>
+
   <string key='path' default={ctx => `/${ctx.value?.name}`} />
   <string key='id' default='_id' />
 </object>
@@ -84,7 +96,7 @@ const service = props => {
 
   const { children, ...options } = props
 
-  const { path, name, id } = validateOptions(options)
+  const { path, name, id, multi, whitelist } = validateOptions(options)
 
   return app => {
 
@@ -94,7 +106,7 @@ const service = props => {
       applyHooks
     ]
 
-    return applyMutators(mutators, { name, id })
+    return applyMutators(mutators, { name, id, multi, whitelist })
 
   }
 

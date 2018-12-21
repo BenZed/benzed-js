@@ -29,7 +29,12 @@ class StateTreeObserver extends React.Component {
   })(this.props)
 
   static propTypes = createPropTypesFor(React => <proptypes>
-    <array key='path' />
+    <array key='root' cast >
+      <string required />
+    </array>
+    <array key='path' cast >
+      <string required />
+    </array>
     <func key='tree' required validate={isStateTree} />
     <func key='mapState' />
   </proptypes>)

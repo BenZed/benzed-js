@@ -36,10 +36,9 @@ describe('Observer component', () => {
 
       const MessageList = () => <Observer
         tree={messages}
-        path={['all']}
       >
-        { all => <ul>
-          { all.map((msg, i) =>
+        { messages => <ul>
+          { messages.all.map((msg, i) =>
             <li key={i}>{msg}</li>
           ) }
         </ul>}

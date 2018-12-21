@@ -118,9 +118,12 @@ describe('Service StateTree', () => {
 
   for (const provider of [ 'express', 'socketio' ])
     Test.Api(App.declareEntity('app', {},
-      App.declareEntity(provider, {})
-      // App.declareEntity('service', { name: 'messages' }, [
-      // ])
+      App.declareEntity(provider, {}, [
+        provider === 'socketio'
+          ? App.declareEntity('channels', {}, [])
+          : null
+      ]),
+      App.declareEntity('service', { name: 'messages' }, [])
     ), state => {
 
       let client, messages, queue
@@ -149,7 +152,10 @@ describe('Service StateTree', () => {
           const service = state.api.service('messages')
           docs = await service.find({})
           while (docs.length < 10) {
-            await service.create({ body: `Message number ${docs.length + 1}!` })
+            await service.create({
+              _id: `${docs.length}`,
+              body: `Message number ${docs.length + 1}!`
+            })
             docs = await service.find({})
           }
         })
@@ -180,26 +186,26 @@ describe('Service StateTree', () => {
           it('syncronously returns a record', async () => {
             messages('records').set({ count: 0 })
 
-            let record = messages.get(0)
-            expect(record._id).to.be.equal(0)
+            let record = messages.get('0')
+            expect(record._id).to.be.equal('0')
             expect(record.status).to.be.equal('unfetched')
 
             await messages.untilFetchingComplete()
 
-            record = messages.get(0)
+            record = messages.get('0')
             expect(record.status).to.be.equal('scoped')
             expect(record.body).to.be.equal(`Message number 1!`)
           })
           it('returns an array of records if provided an array of ids', async () => {
             messages('records').set({ count: 0 })
 
-            let msgs = messages.get([ 0, 1 ])
+            let msgs = messages.get([ '0', '1' ])
 
             expect(msgs.map(msg => msg.status))
               .to.deep.equal([ 'unfetched', 'unfetched' ])
 
             await messages.untilFetchingComplete()
-            msgs = messages.get([ 0, 1 ])
+            msgs = messages.get([ '0', '1' ])
 
             expect(msgs.map(msg => msg.status))
               .to.deep.equal([ 'scoped', 'scoped' ])
@@ -208,14 +214,14 @@ describe('Service StateTree', () => {
             await messages.find({})
             expect(queue.items).to.have.length(0)
 
-            messages.get([0, 1, 2])
+            messages.get(['0', '1', '2'])
             expect(queue.items).to.have.length(0)
           })
           it('unscoped records receive \'unscoped\' status', async () => {
-            let record = messages.get(-1)
+            let record = messages.get('-1')
             await messages.untilFetchingComplete()
 
-            record = messages.get(-1)
+            record = messages.get('-1')
             expect(record.status).to.be.equal('unscoped')
           })
         })

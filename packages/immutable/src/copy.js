@@ -44,9 +44,12 @@ const copyObjectConsideringCircularRefs = (value, refs = [ value ]) => {
   return clone
 }
 
-const copyUsingImplementer = value => value != null
-  ? value[$$copy]()
-  : value
+const copyUsingImplementer = value => {
+
+  return value != null && typeof value[$$copy] === 'function'
+    ? value[$$copy]()
+    : value
+}
 
 /******************************************************************************/
 // Implementations

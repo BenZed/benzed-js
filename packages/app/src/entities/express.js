@@ -20,8 +20,8 @@ import { isApp } from '../util'
 
 const deregister = app => {
 
-  const settings = copy(app.settings)
-  const events = copy(app._events)
+  const settings = { ...app.settings }
+  const events = { ...app._events }
 
   for (const key in app._events || {})
     app.removeAllListeners(key)

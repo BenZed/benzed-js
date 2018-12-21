@@ -24,6 +24,7 @@ describe('runValidators', () => {
   before(() => {
     Code = <string key='code' length={['<=', 10]} required uppercase />
 
+    // eslint-disable-next-line no-unused-vars
     const Score = <number range={[0, 5]} />
 
     Async = <string

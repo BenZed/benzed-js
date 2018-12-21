@@ -35,9 +35,8 @@ Test.optionallyBindableMethod(memoize, memoize => {
     expect(addCalls).to.be.equal(2)
   })
 
-  it('memoized isPrime', () => {
-    const nonGenPrimes = (min, max) => [ ...primes(min, max) ]
-    const memoizedNonGenPrimes = memoize(nonGenPrimes)
+  it('no arguments is also considered value-equal', () => {
+    const memoizedPrimes = memoize(() => [ ...primes(2, 50000) ])
 
     function time (...args) {
       const func = this
@@ -46,14 +45,36 @@ Test.optionallyBindableMethod(memoize, memoize => {
       return Date.now() - start
     }
 
-    const timedMemoizedNonGenPrimes = memoizedNonGenPrimes::time
+    const timedMemoizedPrimes = memoizedPrimes::time
 
     /* eslint-disable no-self-compare */
     assert(
-      timedMemoizedNonGenPrimes(2, 50000) >
-      timedMemoizedNonGenPrimes(2, 50000),
+      timedMemoizedPrimes() >
+      timedMemoizedPrimes(),
       'memoizing did not speed up execution'
     )
+  })
+
+  it('works asyncronously', async () => {
+    const getWaitTime = time => new Promise(resolve => setTimeout(() => resolve(time), time))
+
+    const memoizedGetWaitTime = memoize(getWaitTime)
+
+    let start = Date.now()
+    let wait = await memoizedGetWaitTime(10)
+    let time = Date.now() - start
+
+    expect(wait).to.be.equal(10)
+    expect(time).to.be.above(9)
+
+    start = Date.now()
+    wait = await memoizedGetWaitTime(10)
+    time = Date.now() - start
+
+    expect(wait).to.be.equal(10)
+    // proves that awaiting didn't happen twice
+    expect(time).to.be.below(9)
+
   })
 
 })

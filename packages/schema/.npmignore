@@ -1,5 +1,15 @@
+.eslintignore
+.eslintrc.js
+babel.config.js
+.gitignore
+.mocha.opts
+webpack.config.js
 
-*
-!lib/**/*
+temp
+test*
+src*
+jsx
+*.tgz
 *.test.js
 *.doc.js
+*.doc.md

@@ -11,7 +11,7 @@ import { StateTree } from '../../state-tree'
 import { isClient } from '../../util'
 
 import { copy } from '@benzed/immutable'
-import { until } from '@benzed/async'
+// import { until } from '@benzed/async'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 // @jsx Schema.createValidator

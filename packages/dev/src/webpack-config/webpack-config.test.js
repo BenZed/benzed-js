@@ -29,7 +29,7 @@ fs.ensureFileSync(SRC_HTML)
 // Tests
 /******************************************************************************/
 
-describe.only('WebpackConfig', () => {
+describe('WebpackConfig', () => {
 
   it('is a class', () => {
     expect(WebpackConfig).to.throw('cannot be invoked without \'new\'')
