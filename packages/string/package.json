@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "Series of string utility methods.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.6"
+    "@benzed/dev": "^0.12.7"
   }
 }

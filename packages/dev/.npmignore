@@ -6,7 +6,7 @@ babel.config.js
 webpack.config.js
 
 temp
-test*
+/test
 src*
 jsx
 *.tgz

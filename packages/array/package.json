@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "A series of array utilities.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.6"
+    "@benzed/dev": "^0.12.7"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@benzed/app",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,7 @@
   "license": "ISC",
   "description": "API architecture on top of feathers.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.6",
+    "@benzed/dev": "^0.12.7",
     "@feathersjs/client": "^3.7.6",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "^13.1.0",
@@ -30,11 +30,11 @@
     "socket.io-stream": "^0.9.1"
   },
   "dependencies": {
-    "@benzed/array": "^1.6.0",
-    "@benzed/async": "^0.12.1",
-    "@benzed/immutable": "^2.0.1",
-    "@benzed/schema": "^0.11.4",
-    "@benzed/string": "^0.8.1",
+    "@benzed/array": "^1.6.1",
+    "@benzed/async": "^0.12.3",
+    "@benzed/immutable": "^2.0.4",
+    "@benzed/schema": "^0.11.5",
+    "@benzed/string": "^0.8.2",
     "@feathersjs/authentication": "^2.1.14",
     "@feathersjs/authentication-jwt": "^2.0.8",
     "@feathersjs/authentication-local": "^1.2.8",
