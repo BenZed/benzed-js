@@ -10,7 +10,7 @@ const expressError = ({ logger = false, html }) => {
     const express = require('@feathersjs/express')
 
     if (!app.rest)
-      throw new Error('cant use express error handling without express enabled')
+      throw new Error('cannot use express error handling without express enabled')
 
     app.use(express.errorHandler({
       html,

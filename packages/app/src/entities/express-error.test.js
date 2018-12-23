@@ -17,6 +17,16 @@ describe('<express-error/>', () => {
 
   describe('entity function', () => {
 
+    it('requires express', () => {
+      expect(<app><express-error/></app>)
+        .to
+        .throw('cannot use express error handling without express enabled')
+
+      expect(<app><express/><express-error/></app>)
+        .to
+        .not
+        .throw('cannot use express error handling without express enabled')
+    })
     it('adds rest error handling to an app')
 
     it('throws is provided children')

@@ -12,6 +12,8 @@ import * as adapters from './adapters'
 import { fromCamelCase } from '@benzed/string'
 import { set } from '@benzed/immutable'
 
+import expressUi from './express-ui'
+
 import * as quickhooks from '../hooks'
 
 /******************************************************************************/
@@ -23,6 +25,8 @@ const ENTITIES = {
   mongod,
   express,
   'express-error': expressError,
+  'express-ui': expressUi,
+
   authentication,
 
   socketio,
