@@ -35,8 +35,7 @@ function TestApi (...args) {
 
       state.address = `http://localhost:${state.api.get('port')}`
 
-      if (state?.client.connect)
-        await state.client.connect()
+      await state.client?.connect?.()
     })
 
     func(state)

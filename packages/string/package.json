@@ -1,6 +1,6 @@
 {
   "name": "@benzed/string",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "Series of string utility methods.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.7"
+    "@benzed/dev": "^0.12.8"
   }
 }

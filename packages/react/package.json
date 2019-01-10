@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "publishConfig": {
     "access": "public"
   },
@@ -27,10 +27,10 @@
     "@benzed/async": "^0.12.3",
     "@benzed/immutable": "^2.0.4",
     "@benzed/schema": "^0.11.5",
-    "@feathersjs/authentication-client": "^1.0.9",
-    "@feathersjs/feathers": "^3.3.0",
-    "@feathersjs/rest-client": "^1.4.6",
-    "@feathersjs/transport-commons": "^4.2.0",
+    "@feathersjs/authentication-client": "^1.0.10",
+    "@feathersjs/feathers": "^3.3.1",
+    "@feathersjs/rest-client": "^1.4.7",
+    "@feathersjs/transport-commons": "^4.2.1",
     "color": "^3.1.0",
     "is-explicit": "^2.1.0",
     "isomorphic-fetch": "^2.2.1",
@@ -38,8 +38,8 @@
     "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
-    "@benzed/app": "^0.12.3",
-    "@benzed/dev": "^0.12.7",
+    "@benzed/app": "^0.13.0",
+    "@benzed/dev": "^0.12.8",
     "react-test-renderer": "^16.7.0"
   },
   "peerDependencies": {

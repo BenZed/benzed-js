@@ -1,6 +1,6 @@
 {
   "name": "@benzed/array",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "A series of array utilities.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.7"
+    "@benzed/dev": "^0.12.8"
   }
 }

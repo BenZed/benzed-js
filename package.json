@@ -3,7 +3,6 @@
   "scripts": {
     "babel:dev": "node scripts/babel-dev.js",
     "update": "bash scripts/update.sh",
-    "build": "bash scripts/build.sh",
     "bootstrap": "node scripts/boot-strap.js",
     "bootstrap:hard": "node scripts/boot-strap-hard.js"
   },

@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "Documentation for all BenZed components. Exports components for extending.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.7"
+    "@benzed/dev": "^0.12.8"
   }
 }
