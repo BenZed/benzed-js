@@ -59,7 +59,11 @@ describe('getConfig', () => {
 
     process.env.NODE_ENV = 'development'
     expect(getConfig(CONFIG)).to.be.deep.equal({ ...def, ...dev })
-    process.env.NODE_ENV = 'test'
+  })
+
+  it('succeeds if no config exists for env', () => {
+    process.env.NODE_ENV = 'exotic'
+    expect(getConfig(CONFIG)).to.be.deep.equal(def)
   })
 
   for (const description of [
@@ -81,7 +85,9 @@ describe('getConfig', () => {
         array: [ 'value', 0, 'NOT_CONVERTED', { port: PORT } ],
         nested: { port: PORT }
       })
-      process.env.NODE_ENV = 'test'
     })
 
+  after(() => {
+    process.env.NODE_ENV = 'test'
+  })
 })

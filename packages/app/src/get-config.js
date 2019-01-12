@@ -53,7 +53,9 @@ const tryReadJson = url => {
 
   let json
   try {
-    json = fs.readJsonSync(url)
+    json = url
+      ? fs.readJsonSync(url)
+      : {}
   } catch (err) {
 
     // we want to throw syntax errors and the like
@@ -79,7 +81,7 @@ const getConfig = (config = path.join(process.cwd(), 'config')) => {
   const defJson = path.join(config, 'default.json')
   const envJson = NODE_ENV
     ? path.join(config, `${NODE_ENV}.json`)
-    : { }
+    : null
 
   const merged = {
     ...tryReadJson(defJson),
