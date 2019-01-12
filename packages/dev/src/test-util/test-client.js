@@ -53,15 +53,17 @@ function connect () {
   })
 }
 
-async function upload (url, meta, fields = null) {
+async function upload (url, meta, fields = null, target = {}) {
 
   const app = this
 
   const read = fs.createReadStream(url)
 
+  const { serviceName = 'meta', uploadSuffix = '' } = target
+
   if (meta === undefined)
     meta = await app
-      .service('meta')
+      .service(serviceName)
       .create({})
 
   if (fields === null)
@@ -78,7 +80,7 @@ async function upload (url, meta, fields = null) {
     body: form
   }
 
-  const res = await fetch(app.address, data)
+  const res = await fetch(app.address + uploadSuffix, data)
 
   const text = await res.text()
 
@@ -95,11 +97,12 @@ async function upload (url, meta, fields = null) {
   return json
 }
 
-async function download (id, to, preview = '') {
+async function download (id, to, preview = '', suffix = '') {
 
   const app = this
 
-  const res = await fetch(`${app.address}/${id}${preview && '?preview=' + preview}`)
+  const res = await fetch(`${app.address + suffix}/${id}${preview && '?preview=' + preview}`)
+
   if (res.status >= 400) {
     const json = await res.json()
     throw new Error(json.message)

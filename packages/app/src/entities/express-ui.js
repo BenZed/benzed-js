@@ -120,7 +120,6 @@ class HtmlTemplate {
       const hasAtLeastOneTag = !tags.includes('></style')
       if (hasAtLeastOneTag)
         styles = tags
-
     }
 
     const open = this.openTagWithStyleAndProps(styles, props)

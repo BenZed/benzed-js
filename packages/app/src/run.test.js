@@ -40,7 +40,8 @@ describe('run', () => {
   })
 
   it('applications require a provider', async () => {
-    await run(<app/>)::expectReject('no providers setup')
+    const app = <app/>
+    await run(app)::expectReject('no providers setup')
   })
 
 })
