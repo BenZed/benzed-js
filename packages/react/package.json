@@ -23,23 +23,23 @@
   "license": "ISC",
   "description": "React components, classes, helpers",
   "dependencies": {
-    "@benzed/array": "^1.6.1",
-    "@benzed/async": "^0.12.3",
-    "@benzed/immutable": "^2.0.4",
-    "@benzed/schema": "^0.11.5",
+    "@benzed/array": "^1.6.3",
+    "@benzed/async": "^0.12.5",
+    "@benzed/immutable": "^2.0.7",
+    "@benzed/schema": "^0.11.7",
     "@feathersjs/authentication-client": "^1.0.10",
     "@feathersjs/feathers": "^3.3.1",
     "@feathersjs/rest-client": "^1.4.7",
     "@feathersjs/transport-commons": "^4.2.1",
     "color": "^3.1.0",
-    "is-explicit": "^2.1.0",
+    "is-explicit": "^3.0.0",
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.1",
     "socket.io-client": "^2.2.0"
   },
   "devDependencies": {
-    "@benzed/app": "^0.13.0",
-    "@benzed/dev": "^0.12.8",
+    "@benzed/app": "^0.14.3",
+    "@benzed/dev": "^0.12.11",
     "react-test-renderer": "^16.7.0"
   },
   "peerDependencies": {

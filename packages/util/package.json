@@ -21,6 +21,6 @@
   "license": "ISC",
   "description": "Utility methods, such as type checkers, decorators and Object shortcuts",
   "devDependencies": {
-    "@benzed/dev": "^0.12.8"
+    "@benzed/dev": "^0.12.11"
   }
 }

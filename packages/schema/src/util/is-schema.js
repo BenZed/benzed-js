@@ -14,7 +14,7 @@ function isSchema (input) {
   if (this !== undefined)
     input = this
 
-  return is.object(input) && is.plainObject(input[$$schema])
+  return is.func(input) && is.plainObject(input[$$schema])
 }
 
 /******************************************************************************/
