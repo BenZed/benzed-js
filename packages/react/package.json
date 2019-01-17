@@ -1,6 +1,6 @@
 {
   "name": "@benzed/react",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "publishConfig": {
     "access": "public"
   },
@@ -35,7 +35,8 @@
     "is-explicit": "^3.0.0",
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.1",
-    "socket.io-client": "^2.2.0"
+    "socket.io-client": "^2.2.0",
+    "react-virtualized": "9.21.0"
   },
   "devDependencies": {
     "@benzed/app": "^0.14.3",

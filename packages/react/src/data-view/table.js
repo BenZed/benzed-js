@@ -2,15 +2,15 @@ import styled from 'styled-components'
 
 import TableColumn from './table-column'
 import TableCell from './table-cell'
-import Virtual from './virtual'
+
+import { Flex } from '../layout'
 
 /******************************************************************************/
 // Main Components
 /******************************************************************************/
 
-const Table = styled(Virtual)`
-  overflow-y: scroll;
-  position: relative;
+const Table = styled(Flex.Row)`
+
 `
 
 /******************************************************************************/

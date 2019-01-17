@@ -2,8 +2,10 @@
 
 import React, { Children, createElement, cloneElement } from 'react'
 
-import { Modal } from '../layout'
-import { Visible, Fade, Slide } from '../effect'
+import styled from 'styled-components'
+
+import { Modal, Flex } from '../layout'
+import { Slide, Write } from '../effect'
 
 import { createPropTypesFor } from '@benzed/schema'
 import { equals } from '@benzed/immutable'
@@ -11,12 +13,14 @@ import { equals } from '@benzed/immutable'
 import { isEvent } from '../util'
 import is from 'is-explicit'
 
+import { StateTreeConsumer } from '../state-tree'
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
 
 const mustHaveAuth = value =>
-  value && value.config && value.config.auth
+  value && is.func(value.login)
     ? value
     : throw new Error('must have authentication enabled.')
 
@@ -24,54 +28,75 @@ const mustHaveAuth = value =>
 // Layout Components
 /******************************************************************************/
 
+const LoginPanel = styled(Flex.Column)`
+  padding: 1em;
+`
+
+const Title = styled.strong`
+  margin-bottom: 1em;
+`
+
+const ErrorMessage = styled(({ status, ...props }) =>
+  <span {...props}><Write>{status?.message || ''}</Write></span>
+)`
+  color: ${props => `${props.theme?.error || '#ff5c33'}`};
+  margin-left: auto;
+  height: 1em;
+`
+
+const Form = styled.form`
+
+  input {
+    margin-bottom: 0.5em;
+  }
+
+  button {
+    margin-left: auto;
+  }
+
+`
+
 // TODO this needs to be refactored with @benzed inputs, panels, form elements and transition effects
 const LoginModal = ({
   email, password, setEmail, setPassword, submit, visible, status, ...props
 }) =>
-  <Visible visible={visible}>
-    <Fade {...props}>
-      <Modal>
+  <Modal visible={visible}>
 
-        <Slide from='top'>
+    <LoginPanel className={props.className}>
 
-          <div>
-            <strong>Login</strong>
+      <Slide from='top'>
+        <Title>{props.title || 'Login'}</Title>
+      </Slide>
 
-            <span style={{ color: 'red' }}>
-              {is(status, Error) ? ' ' + status.message : ''}
-            </span>
-          </div>
+      <Form onSubmit={submit}>
 
+        <Slide from='left' to='right'>
+          <input
+            value={email}
+            onChange={setEmail}
+            placeholder='Email'
+          />
         </Slide>
 
-        <form onSubmit={submit}>
+        <Slide from='right' to='left'>
+          <input
+            value={password}
+            onChange={setPassword}
+            placeholder='Password'
+            type='password'
+          />
+        </Slide>
 
-          <Slide from='left' to='right'>
-            <input
-              value={email}
-              onChange={setEmail}
-              placeholder='Email'
-            />
-          </Slide>
+        <Slide from='bottom'>
+          <button type='submit'>Submit</button>
+        </Slide>
 
-          <Slide from='right' to='left'>
-            <input
-              value={password}
-              onChange={setPassword}
-              placeholder='Password'
-              type='password'
-            />
-          </Slide>
+      </Form>
 
-          <Slide from='bottom'>
-            <button type='submit'>Submit</button>
-          </Slide>
+      <ErrorMessage status={status} />
 
-        </form>
-
-      </Modal>
-    </Fade>
-  </Visible>
+    </LoginPanel>
+  </Modal>
 
 /******************************************************************************/
 // Main Component
@@ -80,9 +105,10 @@ const LoginModal = ({
 class LoginLogic extends React.Component {
 
   static propTypes = createPropTypesFor(React => <proptypes>
-    {/* <ClientStore key='client'
+    <object key='client'
       required
-      validate={mustHaveAuth} /> */}
+      validate={mustHaveAuth}
+    />
   </proptypes>)
 
   static defaultProps = {
@@ -98,12 +124,12 @@ class LoginLogic extends React.Component {
 
   // EVENT HANDLING
 
-  onClientStoreUpdate = state => {
-    const { host, userId } = state
-    const { status } = state.login
+  onClientStoreUpdate = client => {
+    const { host, auth } = client
+    const { status, userId } = auth
 
     this.setState({
-      status: status,
+      status,
       visible: !!host && !userId
     })
   }
@@ -143,7 +169,9 @@ class LoginLogic extends React.Component {
     const { client } = this.props
     const { onClientStoreUpdate } = this
 
-    client.subscribe(onClientStoreUpdate, 'userId', 'host', 'login')
+    client.subscribe(onClientStoreUpdate, 'auth', 'host')
+
+    onClientStoreUpdate(client)
   }
 
   componentWillUnmount () {
@@ -179,9 +207,9 @@ class LoginLogic extends React.Component {
 /******************************************************************************/
 
 const Login = props =>
-  <StoreConsumer store='client'>
-    {client => <LoginLogic client={client} {...props} />}
-  </StoreConsumer>
+  <StateTreeConsumer>
+    {tree => <LoginLogic client={tree.client} {...props} />}
+  </StateTreeConsumer>
 
 /******************************************************************************/
 // Exports

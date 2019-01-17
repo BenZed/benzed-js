@@ -11,7 +11,7 @@ import { StateTree } from '../../state-tree'
 import { isClient } from '../../util'
 
 import { copy } from '@benzed/immutable'
-// import { until } from '@benzed/async'
+import { milliseconds } from '@benzed/async'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 // @jsx Schema.createValidator
@@ -23,7 +23,7 @@ import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 const $$feathers = Symbol('feathers-client-instance')
 
-const CONNECTION_TIMEOUT = 500
+const CONNECTION_TIMEOUT = 1000
 
 // The initial host doesn't matter, because we change it. However, you seem
 // to NEED to supply a valid host string or it throws cryptic errors.
@@ -262,10 +262,18 @@ function trySocketHost (host) {
 async function connectSocketIO () {
 
   const tree = this
-  const feathers = tree[$$feathers]
-
   const { hosts } = tree.config
+  const { set: setHost } = tree('host')
+
+  const feathers = tree[$$feathers]
   const { io } = feathers
+
+  if (io._initialConnectAttempted)
+    await milliseconds(CONNECTION_TIMEOUT)
+
+  io._initialConnectAttempted = true
+
+  setHost(null)
 
   for (const host of hosts) {
     await io::trySocketHost(host)
@@ -273,7 +281,7 @@ async function connectSocketIO () {
       break
   }
 
-  tree('host').set(io.connected ? io.io.uri : null)
+  setHost(io.connected ? io.io.uri : null)
 
   return io.connected
 }
@@ -289,12 +297,19 @@ const createFeathersClient = tree => {
   const { provider, auth } = tree.config
   const client = feathers()
 
-  if (provider === 'rest') {
-    client.rest = fetch
-    client.defaultService = tree::getFetchService
-  } else {
+  const isSocketIo = provider === 'socketio'
+
+  if (isSocketIo) {
+
     client.io = io(...IO_OPT)
     client.defaultService = tree::getSocketIOService
+    client.io.on('disconnect', tree.connect)
+    client.io.on('connect_error', tree.connect)
+    client.io.on('connect_timeout', tree.connect)
+
+  } else {
+    client.rest = fetch
+    client.defaultService = tree::getFetchService
   }
 
   if (auth) client.configure(
@@ -325,7 +340,9 @@ async function authenticate (data) {
     userId = payload.userId
 
   } catch ({ name, message, code, errors }) {
-    status = { name, message, code, errors }
+    // only fill errors if authentication wasn;t automatic
+    if (data.strategy === 'local')
+      status = { name, message, code, errors }
   }
 
   setAuth({ userId, status })
@@ -353,16 +370,21 @@ const ACTIONS = {
     const { provider } = this.config
     const isRest = provider === 'rest'
 
-    if (!this.host) {
-      const connect = isRest
-        ? this::connectRest
-        : this::connectSocketIO
+    const connecter = isRest
+      ? this::connectRest
+      : this::connectSocketIO
 
-      await connect()
-    }
+    await connecter()
 
     if (!this.host)
       throw new Error('Host could not be resolved.')
+
+    if (this.config.auth) {
+      const { storageKey, storage } = this.config.auth
+      const token = storage.getItem(storageKey)
+
+      token && this::authenticate({ stategy: 'jwt', token })
+    }
 
     return this.host
   },

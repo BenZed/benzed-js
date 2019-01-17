@@ -6,7 +6,8 @@ import {
 
   Login,
 
-  ServiceView
+  ServiceView,
+  ServiceTable
 
 } from './app'
 
@@ -37,7 +38,7 @@ import {
 } from './state-tree'
 
 import {
-  isClient, isMobile, isEvent,
+  isClient, isMobile, isEvent, emToPixels,
   storage,
   Cloner, CssCloner, Portal,
   Styler, $,
@@ -72,12 +73,14 @@ export {
   GlobalStyle, Color, CssUnit, themes,
 
   // State Tree
-  StateTree, StateTreeObserver, StateTreeProvider, StateTreeConsumer, StateTreeListener,
+  StateTree, StateTreeObserver, StateTreeProvider, StateTreeConsumer,
+  StateTreeListener,
 
   // App
-  Login, ServiceView, ClientStateTree, ServiceStateTree, UiStateTree,
+  Login, ServiceView, ServiceTable, ClientStateTree, ServiceStateTree,
+  UiStateTree,
 
   // Util
-  isClient, isEvent, isMobile, storage, Cloner, CssCloner, Portal, Styler, $,
-  addEventListener, on, removeEventListener, off
+  isClient, isEvent, isMobile, emToPixels, storage, Cloner, CssCloner, Portal,
+  Styler, $, addEventListener, on, removeEventListener, off
 }

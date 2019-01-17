@@ -6,7 +6,7 @@ import {
 
 } from './state-tree'
 
-import ServiceView from './service-view'
+import { ServiceView, ServiceTable } from './service-view'
 
 import Login from './login'
 
@@ -21,6 +21,7 @@ export {
   UiStateTree,
 
   Login,
-  ServiceView
+  ServiceView,
+  ServiceTable
 
 }

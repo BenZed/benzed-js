@@ -48,8 +48,8 @@ describe('Client State Tree', () => {
   it('creates an instance of feathers client', () => {
 
     const feathers = restClient[$$feathers]
-    expect(feathers)
-      .to.be.instanceof(Object)
+    expect(is.object(feathers))
+      .to.be.equal(true)
 
     expect(feathers.methods)
       .to.be

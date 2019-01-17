@@ -1,4 +1,4 @@
-import ServiceView from './service-view'
+import ServiceView, { ServiceTable } from './service-view'
 
 /******************************************************************************/
 // Exports
@@ -7,5 +7,6 @@ import ServiceView from './service-view'
 export default ServiceView
 
 export {
-  ServiceView
+  ServiceView,
+  ServiceTable
 }

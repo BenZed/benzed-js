@@ -13,6 +13,11 @@ const wrap = ({ wrapped }) =>
       ? 'wrap'
       : 'nowrap'
 
+const direction = ({ direction }) =>
+  direction === 'row'
+    ? 'row'
+    : 'column'
+
 /******************************************************************************/
 // Main Components
 /******************************************************************************/
@@ -35,6 +40,7 @@ const Flex = styled.div.attrs(props => {
 })`
   display: flex;
   flex-wrap: ${wrap};
+  flex-direction: ${direction};
 `
 
 Flex.propTypes = createPropTypesFor(React => <proptypes>

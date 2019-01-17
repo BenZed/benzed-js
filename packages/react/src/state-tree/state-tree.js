@@ -189,7 +189,7 @@ const applyInitialState = (tree, initial) => {
   // hoist subscribers
   for (const key of keys) {
     const value = tree[$$state][key]
-    const isNestedState = is.object(value) && $$state in value
+    const isNestedState = is.func(value) && $$state in value
     if (isNestedState)
       hoistSubscribers(tree, value, key)
   }

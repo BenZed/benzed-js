@@ -1,44 +1,13 @@
-import React from 'react'
+import React, { createElement, cloneElement, Children } from 'react'
 import { createPropTypesFor } from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { until } from '@benzed/async'
-import { first } from '@benzed/array'
-import { get } from '@benzed/immutable'
-import { capitalize } from '@benzed/string'
-
-import { Table } from '../../data-view'
+import is from 'is-explicit'
 
 /******************************************************************************/
-// Helper
+//
 /******************************************************************************/
 
-const ServiceTable = props => {
-
-  const { records } = props
-
-  const columns = Object
-    .keys(first(records) || {})
-    .filter(key => key !== '_id' && key !== 'status')
-
-  return <Table>
-
-    {columns.map(column =>
-      <Table.Column key={column}>
-
-        <Table.Cell>
-          <strong>{capitalize(column)}</strong>
-        </Table.Cell>
-
-        {records.map(record =>
-          <Table.Cell key={record._id}>
-            {String(get.mut(record, [column]))}
-          </Table.Cell>
-        )}
-
-      </Table.Column>
-    )}
-
-  </Table>
-}
+const ServiceTable = props => 'ServiceTable component not yet implemented'
 
 /******************************************************************************/
 // Main Component
@@ -50,6 +19,7 @@ class ServiceView extends React.Component {
     <proptypes>
       <function key='tree' required />
       <object key='query' />
+      <any key='children' required />
     </proptypes>
   )
 
@@ -62,18 +32,18 @@ class ServiceView extends React.Component {
     fetching: false
   }
 
-  async fetch () {
-    const { tree, query = {} } = this.props
+  fetch = async (query = { }) => {
+
+    const { tree } = this.props
 
     const { client } = tree.config
     if (client && !client.host)
       await until(() => client.host)
 
-    console.log(query)
-
     this.setState({ fetching: true })
 
     const { data, ...stats } = await tree.find(query)
+
     const ids = data.map(r => r._id)
 
     this.setState({ ids, fetching: false, ...stats })
@@ -105,16 +75,34 @@ class ServiceView extends React.Component {
   render () {
 
     const {
-      ViewComponent = ServiceTable,
+      children = ServiceTable,
       tree,
       query,
       ...props
     } = this.props
 
-    return <ViewComponent {...props} {...this.state} />
+    const { fetch } = this
+
+    const Component = children
+
+    const view = {
+      ...props,
+      ...this.state,
+      fetch
+    }
+
+    return is.func(Component)
+      ? createElement(Component, view)
+      : cloneElement(Children.only(Component), view)
   }
 
 }
+
+/******************************************************************************/
+// EXtend
+/******************************************************************************/
+
+ServiceView.Table = ServiceTable
 
 /******************************************************************************/
 // Exports
