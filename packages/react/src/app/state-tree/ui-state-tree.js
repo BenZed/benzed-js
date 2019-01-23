@@ -4,6 +4,8 @@ import storage from '../../util/storage'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { copy } from '@benzed/immutable'
 
+import querystring from 'query-string'
+
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
 
@@ -110,6 +112,25 @@ function StorageStateTree (store, config) {
 }
 
 /******************************************************************************/
+// State and Actions
+/******************************************************************************/
+
+const UI_ACTIONS = {
+
+  navigate (to, query = {}) {
+
+    const { history } = this.config
+
+    let suffix = querystring.stringify(query)
+    suffix = suffix && '?' + suffix
+
+    history.push(to + suffix)
+
+  }
+
+}
+
+/******************************************************************************/
 // UiStateTree
 /******************************************************************************/
 
@@ -122,6 +143,7 @@ function UiStateTree (config = {}, state = {}, actions = {}) {
     session: new StorageStateTree('session', config),
     ...state
   }, {
+    ...UI_ACTIONS,
     ...actions
   })
 

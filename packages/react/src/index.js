@@ -16,10 +16,16 @@ import {
 } from './layout'
 
 import {
+  Label
+} from './text'
+
+import {
   Table, Grid, Virtual
 } from './data-view'
 
-import { } from './data-form'
+import Form from './data-form'
+
+console.log(Form)
 
 import {
   Visible, Slide, Fade, ScrollVisible, Write
@@ -62,6 +68,12 @@ export {
 
   // Layout
   Modal, Flex, Scroll,
+
+  // Input
+  Form,
+
+  // Text
+  Label,
 
   // DataView
   Table, Grid, Virtual,

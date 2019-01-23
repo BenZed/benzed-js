@@ -36,7 +36,8 @@
     "isomorphic-fetch": "^2.2.1",
     "normalize.css": "^8.0.1",
     "socket.io-client": "^2.2.0",
-    "react-virtualized": "9.21.0"
+    "react-virtualized": "9.21.0",
+    "query-string": "^6.2.0"
   },
   "devDependencies": {
     "@benzed/app": "^0.14.3",

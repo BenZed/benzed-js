@@ -19,11 +19,12 @@ describe('ValueType', () => {
       .equal(true)
   })
 
-  it('has null as root type', () => {
+  it('has { name: "ValueType" } as root type', () => {
     expect(new ValueType()[Type.$$root])
       .to
       .be
-      .equal(null)
+      .deep
+      .equal({ name: 'ValueType' })
   })
 
   describe('type validation', () => {

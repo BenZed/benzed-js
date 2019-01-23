@@ -8,7 +8,7 @@ import fetch from 'isomorphic-fetch'
 import io from 'socket.io-client'
 
 import { StateTree } from '../../state-tree'
-import { isClient } from '../../util'
+import { storage } from '../../util'
 
 import { copy } from '@benzed/immutable'
 import { milliseconds } from '@benzed/async'
@@ -55,8 +55,8 @@ const authAutoFill = auth => {
 
   const authEnabled = is.object(auth)
 
-  if (isClient() && authEnabled && !auth.storage)
-    auth.storage = window.localStorage
+  if (authEnabled && !auth.storage)
+    auth.storage = storage.local
 
   if (authEnabled && !auth.storageKey)
     auth.storageKey = DEFAULT_JWT_KEY
@@ -88,6 +88,8 @@ const validateConfig = <object required='ClientStore configuration is required.'
   <oneOf key='provider' required>
     {'rest'}{'socketio'}
   </oneOf>
+
+  <bool key='reconnect' default={false} />
 
   <object key='auth' cast={boolOrStringToToken} validate={authAutoFill} />
 
@@ -294,22 +296,22 @@ const { defineProperty, freeze } = Object
 
 const createFeathersClient = tree => {
 
-  const { provider, auth } = tree.config
+  const { provider, auth, reconnect } = tree.config
   const client = feathers()
 
   const isSocketIo = provider === 'socketio'
-
   if (isSocketIo) {
-
     client.io = io(...IO_OPT)
     client.defaultService = tree::getSocketIOService
-    client.io.on('disconnect', tree.connect)
-    client.io.on('connect_error', tree.connect)
-    client.io.on('connect_timeout', tree.connect)
-
   } else {
     client.rest = fetch
     client.defaultService = tree::getFetchService
+  }
+
+  if (isSocketIo && reconnect) {
+    client.io.on('disconnect', tree.connect)
+    client.io.on('connect_error', tree.connect)
+    client.io.on('connect_timeout', tree.connect)
   }
 
   if (auth) client.configure(

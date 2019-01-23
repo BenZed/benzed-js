@@ -8,6 +8,14 @@ import { inspect } from 'util'
 import { define, propIsEnabled, propsPluck, mergeResults } from '../util'
 
 /******************************************************************************/
+// Data
+/******************************************************************************/
+
+const VALUE_TYPE = Object.freeze({
+  name: 'ValueType'
+})
+
+/******************************************************************************/
 // Equality Checks
 /******************************************************************************/
 
@@ -80,7 +88,7 @@ function valueValidators (props, name) {
 class ValueType extends Type {
 
   constructor () {
-    super(null)
+    super(VALUE_TYPE)
   }
 
   compile (props) {

@@ -4,6 +4,14 @@ import is from 'is-explicit'
 import { isSchema, runValidators, define, $$schema } from '../util'
 
 /******************************************************************************/
+// Data
+/******************************************************************************/
+
+const MULTI_ROOT = Object.freeze({
+  name: 'MultiType'
+})
+
+/******************************************************************************/
 // Validators
 /******************************************************************************/
 
@@ -47,7 +55,7 @@ function mustBeOneOf (value, context, index = 0, pass = !is.defined(value), erro
 class MultiType extends Type {
 
   constructor () {
-    super(null)
+    super(MULTI_ROOT)
   }
 
   children (children) {

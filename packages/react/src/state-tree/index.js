@@ -6,6 +6,8 @@ import { StateTreeProvider, StateTreeConsumer, StateTreeListener } from './conte
 // Exports
 /******************************************************************************/
 
+export default StateTree
+
 export {
   StateTree,
   StateTreeObserver,

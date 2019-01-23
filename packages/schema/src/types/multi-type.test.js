@@ -19,11 +19,12 @@ describe('MultiType', () => {
       .equal(true)
   })
 
-  it('has null as root type', () => {
+  it('has { name: "multi-type" } as root type', () => {
     expect(new MultiType()[Type.$$root])
       .to
       .be
-      .equal(null)
+      .deep
+      .equal({ name: 'MultiType' })
   })
 
   describe('type validation', () => {

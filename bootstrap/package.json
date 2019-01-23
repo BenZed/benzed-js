@@ -83,6 +83,7 @@
     "nodemon": "^1.18.9",
     "normalize.css": "^8.0.1",
     "objectid": "^3.2.1",
+    "query-string": "^6.2.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-highlight": "^0.12.0",

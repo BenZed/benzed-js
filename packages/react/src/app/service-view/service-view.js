@@ -2,12 +2,15 @@ import React, { createElement, cloneElement, Children } from 'react'
 import { createPropTypesFor } from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { until } from '@benzed/async'
 import is from 'is-explicit'
+import { max } from '@benzed/math'
 
 /******************************************************************************/
 //
 /******************************************************************************/
 
 const ServiceTable = props => 'ServiceTable component not yet implemented'
+
+// database cant use infinity
 
 /******************************************************************************/
 // Main Component
@@ -26,12 +29,16 @@ class ServiceView extends React.Component {
   state = {
     ids: [],
     records: [],
+
     limit: 0,
+    maxLimit: 0,
+
     skip: 0,
-    total: 0,
+    total: undefined,
     fetching: false
   }
 
+  // database cant use infinity
   fetch = async (query = { }) => {
 
     const { tree } = this.props
@@ -46,7 +53,13 @@ class ServiceView extends React.Component {
 
     const ids = data.map(r => r._id)
 
-    this.setState({ ids, fetching: false, ...stats })
+    this.setState({
+      ids,
+      fetching: false,
+      ...stats,
+      maxLimit: max(this.state.maxLimit, stats.limit)
+    })
+
     this.updateRecords(tree)
   }
 
@@ -63,7 +76,6 @@ class ServiceView extends React.Component {
     const { tree } = this.props
 
     tree.subscribe(this.updateRecords, [ 'records' ])
-    this.fetch()
   }
 
   componentWillUnmount () {
@@ -88,7 +100,8 @@ class ServiceView extends React.Component {
     const view = {
       ...props,
       ...this.state,
-      fetch
+      fetch,
+      serviceName: tree?.config?.serviceName
     }
 
     return is.func(Component)

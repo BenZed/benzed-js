@@ -137,7 +137,11 @@ function Validator (input, props = {}) {
     ? input[$$schema].type
     : isType
       ? input
-      : null
+      : {
+        [$$root]: {
+          name: input?.name || '(anonymous)'
+        }
+      }
 
   const schema = { compiler, props, validators, type, key }
 

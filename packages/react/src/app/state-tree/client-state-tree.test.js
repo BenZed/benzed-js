@@ -20,6 +20,7 @@ import App from '@benzed/app' // eslint-disable-line no-unused-vars
 const CONFIG = {
   hosts: [ 'http://localhost:3200' ],
   provider: 'rest',
+  reconnect: false,
   auth: true
 }
 
@@ -60,8 +61,10 @@ describe('Client State Tree', () => {
     expect(restClient.config).to.be.deep.equal({
       hosts: ['http://localhost:3200'],
       provider: 'rest',
+      reconnect: false,
       auth: {
         storageKey: 'benzed-jwt',
+        storage: {},
         cookie: 'benzed-jwt'
       }
     })
@@ -123,8 +126,11 @@ describe('Client State Tree', () => {
         expectNewClient(CONFIG::set('auth', true), true)
           .to.have.deep.property('config', {
             ...CONFIG,
+            reconnect: false,
+
             auth: {
               storageKey: 'benzed-jwt',
+              storage: {},
               cookie: 'benzed-jwt'
             }
           })
@@ -143,6 +149,7 @@ describe('Client State Tree', () => {
             ...CONFIG,
             auth: {
               storageKey: 'whatever-jwt',
+              storage: {},
               cookie: 'whatever-jwt'
             }
           })
@@ -192,9 +199,9 @@ describe('Client State Tree', () => {
           expect(feathers.io.io._reconnection).to.be.equal(false)
         })
 
-        it('500 ms timeout', () => {
+        it('1000 ms timeout', () => {
           const feathers = socketIoClient[$$feathers]
-          expect(feathers.io.io._timeout).to.be.equal(500)
+          expect(feathers.io.io._timeout).to.be.equal(1000)
         })
       })
 

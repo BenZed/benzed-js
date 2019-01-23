@@ -1,24 +1,16 @@
-import Color from './color'
+import React from 'react'
 
 /******************************************************************************/
-// Doc
+// Main Component
 /******************************************************************************/
 
-const fontStack = `'Helvetica Neue', 'Lucida Grande', sans-serif`
+const Number = ({ children, ...props }) =>
+  <div {...props}>
+    number-editor: {props.value}
+  </div>
 
 /******************************************************************************/
-// Data
+// Exports
 /******************************************************************************/
 
-export default {
-
-  bg: Color('black'),
-  fg: Color('white'),
-
-  fonts: {
-    title: fontStack,
-    body: fontStack,
-    mono: 'monospace'
-  }
-
-}
+export default Number

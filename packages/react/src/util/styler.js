@@ -29,8 +29,9 @@ function applyMutator (mutator, value, props) {
 }
 
 function getBrandedValue (_param, value, props) {
-  const { brand, theme } = props
-  return brand && theme.brand && theme.brand[brand]
+
+  const { brand, theme } = props || value
+  return brand && theme?.brand?.[brand]
 }
 
 function setValue (value) {

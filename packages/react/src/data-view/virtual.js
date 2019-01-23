@@ -1,11 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
-import { Flex } from '../layout'
 import { createPropTypesFor } from '@benzed/schema'
-
-/******************************************************************************/
-//
-/******************************************************************************/
 
 /******************************************************************************/
 // Main Component
@@ -30,7 +24,6 @@ class Virtual extends React.Component {
   }
 
   ref = dom => {
-    console.log(dom)
     this.dom = dom
   }
 
@@ -51,6 +44,14 @@ class Virtual extends React.Component {
     </div>
 
   }
+
+}
+
+class VirtualTable extends React.Component {
+
+}
+
+class VirtualIcons extends React.Component {
 
 }
 

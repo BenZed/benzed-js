@@ -14,6 +14,10 @@ import { copy } from '@benzed/immutable'
 
 const $$root = Symbol('root-type')
 
+const ANY_TYPE = Object.freeze({
+  name: 'AnyType'
+})
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -55,7 +59,7 @@ class Type {
 
   static $$root = $$root
 
-  constructor (type = null) {
+  constructor (type = ANY_TYPE) {
     this[$$root] = type
   }
 
