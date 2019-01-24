@@ -160,11 +160,6 @@ Test.optionallyBindableMethod(copy, copier => {
 
     })
 
-    it('objects where $$copy is not implemented are returned as is', () => {
-      const hash = Object.create(null)
-      expect(copier(hash)).to.be.equal(hash)
-    })
-
     describe('typed arrays', () => {
       for (const TypedArray of [
         Int8Array,
@@ -258,6 +253,16 @@ Test.optionallyBindableMethod(copy, copier => {
       const set2 = copier(set)
       expect(set2).to.equal(set)
 
+    })
+  })
+
+  describe('handles objects created outside the prototype chain', () => {
+    it('Object.create(null)', () => {
+      const hash = Object.create(null)
+      hash.one = 1
+
+      expect(copier(hash)).to.not.be.equal(hash)
+      expect(copier(hash)).to.be.deep.equal(hash)
     })
   })
 

@@ -1,4 +1,4 @@
-import ValueMap from './value-map'
+import ValueMap, { $$keys, $$values } from './value-map'
 
 /******************************************************************************/
 // Helper
@@ -6,7 +6,7 @@ import ValueMap from './value-map'
 
 function getCachedOrCall (...args) {
 
-  const [ cache, method ] = this
+  const [ cache, method, maxCacheSize = Infinity ] = this
 
   const exists = cache.has(args)
   const result = exists
@@ -16,6 +16,11 @@ function getCachedOrCall (...args) {
   if (!exists)
     cache.set(args, result)
 
+  if (!exists) while (cache[$$keys].length > maxCacheSize) {
+    cache[$$keys].shift()
+    cache[$$values].shift()
+  }
+
   return result
 }
 
@@ -23,15 +28,22 @@ function getCachedOrCall (...args) {
 // Main
 /******************************************************************************/
 
-function memoize (method) {
+function memoize (method, maxCacheSize) {
 
-  if (typeof this === 'function')
+  if (typeof this === 'function') {
+    maxCacheSize = method
     method = this
+  }
 
   const cache = new ValueMap()
 
-  return [ cache, method ]::getCachedOrCall
+  const memoized = [ cache, method, maxCacheSize ]::getCachedOrCall
 
+  return Object.defineProperty(
+    memoized,
+    'name',
+    { value: (method.name || '(anonymous)') + ' memoized' }
+  )
 }
 
 /******************************************************************************/

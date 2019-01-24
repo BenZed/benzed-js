@@ -20,9 +20,13 @@ function addToPrototype (copier) {
 
 const copyObjectConsideringCircularRefs = (value, refs = [ value ]) => {
 
-  const Type = value.constructor
-
-  const clone = new Type()
+  let clone
+  try {
+    const Type = value.constructor
+    clone = new Type()
+  } catch (err) {
+    clone = {}
+  }
 
   const keys = namesAndSymbols(value)
   for (const key of keys) {
@@ -46,9 +50,16 @@ const copyObjectConsideringCircularRefs = (value, refs = [ value ]) => {
 
 const copyUsingImplementer = value => {
 
-  return value != null && typeof value[$$copy] === 'function'
+  const isNullOrUndefined = value == null
+
+  return !isNullOrUndefined && typeof value[$$copy] === 'function'
     ? value[$$copy]()
-    : value
+    : isNullOrUndefined
+      ? value
+
+      // handles case where an object was created outside of the
+      // prototype chain: Object.create(null)
+      : copyObjectConsideringCircularRefs(value)
 }
 
 /******************************************************************************/

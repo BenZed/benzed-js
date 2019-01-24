@@ -1,14 +1,14 @@
 import lerp from './lerp'
 import { cos, sin, sqrt, atan2 } from './overrides'
 import { PI } from './constants'
+import { equals, $$copy, $$equals } from '@benzed/immutable'
 
 /******************************************************************************/
-// Helper
+// Deprecation
 /******************************************************************************/
 
-function equalOrNaN (a, b) {
-  return a === b || (Number.isNaN(a) && Number.isNaN(b))
-}
+let copyWarned = false
+let equalsWarned = false
 
 /******************************************************************************/
 // Main
@@ -236,15 +236,32 @@ class Vector {
   }
 
   copy () {
-    return new Vector(this.x, this.y)
+    if (!copyWarned) {
+      copyWarned = true
+      console.warn('Vector.copy is deprecated. Use @benzed/immutable/copy instead')
+    }
+
+    return this[$$copy]()
   }
 
-  equals (vector) {
+  equals (other) {
+    if (!equalsWarned) {
+      equalsWarned = true
+      console.warn('Vector.equals is deprecated. Use @benzed/immutable/equals instead')
+    }
 
-    return vector instanceof Vector &&
-        equalOrNaN(this.x, vector.x) &&
-        equalOrNaN(this.y, vector.y)
+    return this[$$equals](other)
+  }
 
+  [$$copy] () {
+    return new Vector(...this)
+  }
+
+  [$$equals] (vector) {
+    return vector != null &&
+      vector instanceof Vector &&
+      equals(this.x, vector.x) &&
+      equals(this.y, vector.y)
   }
 
   toString () {

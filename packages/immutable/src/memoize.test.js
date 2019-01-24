@@ -77,4 +77,39 @@ Test.optionallyBindableMethod(memoize, memoize => {
 
   })
 
+  it('optionally takes a maxCacheSize argument', () => {
+    let sideEffects = 0
+    const returnOne = memoize(() => {
+      sideEffects++
+      return 1
+    }, 1)
+
+    expect(returnOne(0)).to.be.equal(1)
+    expect(sideEffects).to.be.equal(1)
+
+    // proves that function is using cached result, since no side sideEffect
+    // is not being touched
+    expect(returnOne(0)).to.be.equal(1)
+    expect(sideEffects).to.be.equal(1)
+
+    expect(returnOne(1)).to.be.equal(1)
+    expect(sideEffects).to.be.equal(2)
+
+    // even though 0 was once cached, it's result has been discarded, because the
+    // max cache size is 1
+    expect(returnOne(0)).to.be.equal(1)
+    expect(sideEffects).to.be.equal(3)
+
+  })
+
+  it('returned function gets input function name + memoized', () => {
+
+    function calculateResult () {}
+
+    const memoized = memoize(calculateResult)
+
+    expect(memoized).to.have.property('name', 'calculateResult memoized')
+    expect(memoize(() => {})).to.have.property('name', '(anonymous) memoized')
+  })
+
 })

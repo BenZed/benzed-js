@@ -146,3 +146,7 @@ class ValueMap {
 /******************************************************************************/
 
 export default ValueMap
+
+export {
+  $$keys, $$values
+}
