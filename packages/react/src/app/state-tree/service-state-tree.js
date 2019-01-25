@@ -6,6 +6,8 @@ import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
 import { copy, equals, $$equals, indexOf } from '@benzed/immutable'
 
+import FormStateTree from '../../data-form/state-tree'
+
 import is from 'is-explicit'
 
 // @jsx Schema.createValidator
@@ -236,8 +238,7 @@ const validateState = <object plain key='state' default={{}} />
 const STATE = {
 
   records: { count: 0 },
-  drafts: { count: 0 },
-  errors: { count: 0 },
+  forms: { count: 0 },
 
   timestamp: new Date()
 }
@@ -284,6 +285,38 @@ const ACTIONS = {
       .map(item => item.complete)
 
     return Promise.all(completes)
+  },
+
+  getForm (id) {
+
+    let form = this.forms[id]
+    if (!is.func(form)) {
+
+      const record = this.get(id)
+
+      form = new FormStateTree({
+        ui: this.root.ui,
+        data: record,
+        historyStorageKey: `form-${this.config.serviceName}-${id}`
+      })
+
+      this.subscribe(service => {
+        const shouldAutoRevert = !form.hasChangesToCurrent
+
+        form.setUpstream(service.records[id])
+        if (shouldAutoRevert)
+          form.revertToUpstream()
+      },
+      [ 'records', id ])
+
+      this([ 'forms', id ]).set(form)
+    }
+
+    return form
+  },
+
+  clearForm (id) {
+
   }
 
 }

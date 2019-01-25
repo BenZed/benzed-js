@@ -1,6 +1,9 @@
 import { expect } from 'chai'
 import FormStateTree from './state-tree'
+import UiStateTree from '../app/state-tree/ui-state-tree'
+
 import { last, first } from '@benzed/array'
+import { serialize } from '@benzed/immutable'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -9,7 +12,7 @@ describe.only('FormStateTree', () => {
 
   it('is a state tree', () => {
     const form = new FormStateTree({
-      original: {}
+      data: {}
     })
 
     expect(Object
@@ -25,7 +28,7 @@ describe.only('FormStateTree', () => {
     before(() => {
 
       form = new FormStateTree({
-        original: {
+        data: {
           name: 'Wolf',
           age: 0
         }
@@ -79,13 +82,13 @@ describe.only('FormStateTree', () => {
 
     it('applies current changes to form history', () => {
 
-      const original = {
+      const data = {
         name: 'Solemn Bob',
         age: 33,
         gender: 'male'
       }
 
-      const form = new FormStateTree({ original })
+      const form = new FormStateTree({ data })
 
       form.editCurrent('age', 44)
       form.editCurrent('name', 'Robert')
@@ -102,7 +105,7 @@ describe.only('FormStateTree', () => {
     it('history is only updated if pushing actually change something', () => {
 
       const form = new FormStateTree({
-        original: {
+        data: {
           room: '1a',
           floor: 1
         }
@@ -126,7 +129,7 @@ describe.only('FormStateTree', () => {
 
       const form = new FormStateTree({
         historyMaxCount: 5,
-        original: {
+        data: {
           thisIsTotallyACake: true,
           slices: 1
         }
@@ -143,7 +146,7 @@ describe.only('FormStateTree', () => {
     it('truncates history if pushed while history.index is not final', () => {
 
       const form = new FormStateTree({
-        original: {
+        data: {
           bottlesOfBeerOnTheWall: 1000000
         }
       })
@@ -170,7 +173,7 @@ describe.only('FormStateTree', () => {
 
   const makeAFormWithHistory = () => {
     const form = new FormStateTree({
-      original: {
+      data: {
         ghostsBusted: 0,
         ghostsBusters: 4,
         budget: 1200
@@ -196,7 +199,7 @@ describe.only('FormStateTree', () => {
     return form
   }
 
-  describe('applyHistoryToCurrent', () => {
+  describe('applyHistoryToCurrent()', () => {
 
     it('changes current to a value in history with a given index', () => {
       const form = makeAFormWithHistory()
@@ -235,40 +238,48 @@ describe.only('FormStateTree', () => {
       const form = makeAFormWithHistory()
       expect(form.undoEditCurrent().current).to.be.deep.equal(form.history[form.history.length - 2])
     })
-    it('undoing at historyIndex === 0 will revert current to original', () => {
+    it('undoing at historyIndex === 0 will revert current to data', () => {
       const form = makeAFormWithHistory()
+      expect(form.canUndoEditCurrent).to.be.equal(true)
+
       form.applyHistoryToCurrent(-form.history.length)
       expect(form.current).to.be.deep.equal(first(form.history))
       expect(form.historyIndex).to.be.equal(0)
+      expect(form.canUndoEditCurrent).to.be.equal(true)
 
       expect(form.undoEditCurrent().current).to.be.deep.equal(form.original)
+      expect(form.canUndoEditCurrent).to.be.equal(false)
     })
   })
 
   describe('redoEditCurrent()', () => {
     it('alias for applyHistoryToCurrent(1)', () => {
       const form = makeAFormWithHistory()
+      expect(form.canRedoEditCurrent).to.be.equal(false)
 
       form.undoEditCurrent()
       expect(form.current).to.be.deep.equal(form.history[form.history.length - 2])
+      expect(form.canRedoEditCurrent).to.be.equal(true)
 
       form.redoEditCurrent()
       expect(form.current).to.be.deep.equal(last(form.history))
     })
   })
 
-  describe('revertContentToOriginal', () => {
-    it('reverts content to original', () => {
+  describe('revertContentToOriginal()', () => {
+    it('reverts content to data', () => {
       const form = makeAFormWithHistory()
       expect(form.hasChangesToCurrent)
         .to.be.equal(true)
 
       expect(form.revertCurrentToOriginal().current)
         .to.be.deep.equal(form.original)
+      expect(form.hasChangesToCurrent)
+        .to.be.equal(false)
     })
   })
 
-  describe('using upstream functionality', () => {
+  describe('using setUpstream()', () => {
 
     class Client {
 
@@ -287,33 +298,135 @@ describe.only('FormStateTree', () => {
 
     }
 
-    const prepare = () => ({
+    const prepare = () => {
 
-      client: new Client('Bruce Wayne', 2500000),
+      const client = new Client('Bruce Wayne', 2500000)
 
-      form: new FormStateTree({
-        original: this.client.toJSON()
-      }),
+      return {
 
-      revert () {
-        this.form.revertOriginalToUpstream()
-      },
+        client,
 
-      async fetch (name = this.client.name, investment = this.client.investment) {
-        const update = await Promise.resolve({ name, investment })
+        form: new FormStateTree({
+          data: client.toJSON()
+        }),
 
-        this.client.name = update.name
-        this.client.investment = update.investment
+        async fetch (name = this.client.name, investment = this.client.investment) {
+          const update = await Promise.resolve({ name, investment })
 
-        this.form.setUpstream(this.client)
+          this.client.name = update.name
+          this.client.investment = update.investment
+
+          this.form.setUpstream(this.client)
+        },
+
+        async save () {
+          const { name, investment } = this.form.current
+          await this.fetch(name, investment)
+        }
       }
+    }
+
+    it('use setUpstream to match upstream data to remote objects', async () => {
+      const ui = prepare()
+      expect(ui.form.current).to.be.deep.equal(serialize(ui.client))
+
+      await ui.fetch('Batman')
+      expect(ui.form.current.name).to.not.be.deep.equal(ui.client.name)
+      expect(ui.form.upstream.name).to.be.equal(ui.client.name)
+      expect(ui.form.hasChangesToUpstream).to.be.equal(true)
+      expect(ui.form.hasChangesToCurrent).to.be.equal(false)
+    })
+
+    it('use revertToUpstream to sync data and current to upstream', async () => {
+      const ui = prepare()
+      expect(ui.form.current).to.be.deep.equal(serialize(ui.client))
+
+      await ui.fetch('Batman')
+      ui.form.revertToUpstream()
+      expect(ui.form.current).to.be.deep.equal(ui.form.upstream)
+      expect(ui.form.original).to.be.deep.equal(ui.form.upstream)
+    })
+
+    it('also use setUpstream when overwriting remote objects', async () => {
+      const ui = prepare()
+      expect(ui.form.current).to.be.deep.equal(serialize(ui.client))
+
+      await ui.fetch('Batman')
+      expect(ui.form.hasChangesToUpstream).to.be.equal(true)
+      await ui.save()
+      expect(ui.form.hasChangesToUpstream).to.be.equal(false)
+    })
+  })
+
+  describe('providing ui and historyStorageKey', () => {
+
+    it('saves history to session storage', () => {
+      const ui = new UiStateTree()
+      const form = new FormStateTree({
+        ui,
+        historyStorageKey: 'foo-bar',
+        data: { foo: 'foo' }
+      })
+
+      form.editCurrent('foo', 'bar')
+      expect(ui.session.getItem('foo-bar')).to.be.deep.equal({
+        current: { foo: 'bar' },
+        history: [],
+        historyIndex: 0
+      })
+
+      form.pushCurrent()
+      expect(ui.session.getItem('foo-bar')).to.be.deep.equal({
+        current: { foo: 'bar' },
+        history: [{ foo: 'bar' }],
+        historyIndex: 0
+      })
 
     })
 
-    it('use setUpstream to match data to remote objects', async () => {
-      const ui = prepare()
+    it('auto populates with stored value', () => {
+      const ui = new UiStateTree()
+
+      ui.session.setItem('test-history', {
+        current: { cake: 'wheeze' },
+        historyIndex: 0,
+        history: [ { cake: 'town' } ]
+      })
+
+      const form = new FormStateTree({
+        historyStorageKey: 'test-history',
+        data: { cake: 'bake' },
+        ui
+      })
+
+      expect(form.current).to.be.deep.equal({ cake: 'wheeze' })
+      expect(form.history).to.be.deep.equal([ { cake: 'town' } ])
+
+    })
+
+    it('ui is required if provided historyStorageKey', () => {
+      expect(() => new FormStateTree({
+        historyStorageKey: 'foo-bar',
+        data: { cake: 'town' }
+      }))
+        .to.throw('requires ui to be provided')
+    })
+
+    it('history is applied on all forms using the same storage key', () => {
+
+      const config = {
+        data: { name: 'Jerry', age: 22 },
+        historyStorageKey: 'jerry',
+        ui: new UiStateTree()
+      }
+
+      const form1 = FormStateTree(config)
+      const form2 = FormStateTree(config)
+
+      form1.editCurrent('age', 23)
+      expect(form2.current).to.be.deep.equal(form1.current)
+
     })
 
   })
-
 })

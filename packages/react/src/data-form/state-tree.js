@@ -15,13 +15,55 @@ import is from 'is-explicit'
 
 const { defineProperties, freeze } = Object
 
+function pushToSessionStorage (state = this) {
+
+  const form = this
+  const { historyStorageKey, ui } = form.config
+
+  const { history, historyIndex, current } = state
+
+  ui.session.setItem(historyStorageKey, { history, historyIndex, current })
+
+}
+
+function applyFromSessionStorage () {
+
+  const form = this
+  const { historyStorageKey, ui } = form.config
+
+  const { history, historyIndex, current } = ui.session.getItem(historyStorageKey) || {}
+  if (![history, historyIndex, current].every(is.defined))
+    return
+
+  const [ state, setState ] = form()
+  setState(state::copy(state => {
+    state.history = history
+    state.current = current
+    state.historyIndex = historyIndex
+  }))
+}
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
 
+const mustBeUiStateTree = value =>
+  is.defined(value)
+    ? is.func(value.navigate)
+      ? value
+      : throw new Error('must be a ui state tree')
+    : value
+
+const alsoNeedsUiStateTree = (value, ctx) =>
+  is.defined(value)
+    ? ctx.value?.ui
+      ? value
+      : throw new Error('requires ui to be provided, if defined')
+    : value
+
 const validate = <object key='form' plain strict >
 
-  <object key='original' plain required />
+  <object key='data' plain required />
 
   <object key='state' plain default={{}} />
 
@@ -29,11 +71,9 @@ const validate = <object key='form' plain strict >
 
   <number key='historyMaxCount' default={256} />
 
-  <string key='historyStorageKey' />
+  <string key='historyStorageKey' validate={alsoNeedsUiStateTree} />
 
-  <object key='ui'
-    /* TODO validate={mustBeUiStateTree} */
-  />
+  <func key='ui' validate={mustBeUiStateTree} />
 
 </object>
 
@@ -67,6 +107,10 @@ const ACTIONS = {
       value = value(current::get(path))
 
     setCurrent(current::set(path, value))
+
+    if (this.config.historyStorageKey)
+      this::pushToSessionStorage()
+
     return this
   },
 
@@ -100,7 +144,11 @@ const ACTIONS = {
       // after pushing, history index should always be at the end
       state.historyIndex = state.history.length - 1
 
+      if (this.config.historyStorageKey)
+        this::pushToSessionStorage(state)
+
     }))
+
     return this
 
   },
@@ -112,22 +160,22 @@ const ACTIONS = {
     const { set: setCurrent } = this('current')
 
     setCurrent(this.original::copy())
-    return this.pushCurrent()
-  },
-
-  revertOriginalToUpstream () {
-    if (!this.hasChangesToUpstream)
-      return this
-
-    const { set: setOriginal } = this('original')
-
-    setOriginal(this.upstream::copy())
     return this
   },
 
-  // pushUpstream () {
-  //
-  // },
+  revertToUpstream () {
+    if (!this.hasChangesToUpstream)
+      return this
+
+    const [ state, setState ] = this()
+
+    setState(state::copy(state => {
+      state.original = state.upstream::copy()
+      state.current = state.original::copy()
+    }))
+
+    return this
+  },
 
   setUpstream (object) {
 
@@ -168,9 +216,9 @@ const ACTIONS = {
 
   redoEditCurrent () {
     this.applyHistoryToCurrent(this.historyIndex + 1)
+
     return this
   }
-
 }
 
 /******************************************************************************/
@@ -179,20 +227,21 @@ const ACTIONS = {
 
 function FormStateTree (config = {}) {
 
-  const { original, state, actions, ...rest } = validate(config)
+  const { data, state, actions, ...rest } = validate(config)
 
   const tree = new StateTree({
     ...state,
     ...STATE,
-    original: serialize(original),
-    current: serialize(original),
-    upstream: serialize(original)
+    original: serialize(data),
+    current: serialize(data),
+    upstream: serialize(data)
   }, {
     ...actions,
     ...ACTIONS
   })
 
   defineProperties(tree, {
+
     hasUnpushedHistory: {
       get () {
         const { history, historyIndex } = this
@@ -204,6 +253,7 @@ function FormStateTree (config = {}) {
     hasChangesToCurrent: {
       get () {
         const { current, original } = this
+
         return !equals(current, original)
       }
     },
@@ -230,7 +280,20 @@ function FormStateTree (config = {}) {
     config: {
       value: freeze(rest)
     }
+
   })
+
+  const usingStorage = tree.config.ui && tree.config.historyStorageKey
+  if (usingStorage) {
+    const applyStorageToTree = tree::applyFromSessionStorage
+
+    tree.config.ui.subscribe(
+      applyStorageToTree,
+      [ 'session', 'data', tree.config.historyStorageKey ]
+    )
+
+    applyStorageToTree()
+  }
 
   return tree
 

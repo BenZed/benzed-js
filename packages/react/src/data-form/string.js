@@ -17,11 +17,12 @@ const Input = styled.input`
 // Main Component
 /******************************************************************************/
 
-const String = ({ children, label, value, ...props }) =>
+const String = ({ children, path, ...props }) =>
 
-  <InputBase label={label} >
-    <Input {...props} value={value}/>
-  </InputBase>
+  <InputBase path={path} >{
+    ({ value = '', ...rest }) =>
+      <Input value={value} {...rest} {...props} />
+  }</InputBase>
 
 /******************************************************************************/
 // Exports

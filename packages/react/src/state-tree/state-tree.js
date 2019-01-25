@@ -179,8 +179,10 @@ const applyInitialState = (tree, initial) => {
 
   }
 
+  const initialStateWithValidStateKeys = serialize(initial)
+
   Object.defineProperties(tree, {
-    [$$state]: { value: serialize(initial) },
+    [$$state]: { value: initialStateWithValidStateKeys },
     [$$setters]: { value: new Map() }
   })
 
