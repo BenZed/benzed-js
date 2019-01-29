@@ -270,8 +270,8 @@ function subscribe (callback, ...paths) {
       path = wrap(path)
 
     // validated path
-    if (path.length > 0 && !is.arrayOf(path, [String, Symbol]))
-      throw new Error('paths must be arrays of strings or symbols')
+    if (path.length > 0 && !is.arrayOf(path, [String, Number, Symbol]))
+      throw new Error('paths must be arrays of strings, numbers or symbols')
 
     if (this.parent)
       hoistSubscriber(this, callback, path)
