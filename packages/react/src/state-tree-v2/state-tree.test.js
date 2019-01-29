@@ -2,7 +2,9 @@ import { expect } from 'chai'
 import StateTree from './state-tree'
 
 import { push, set, get, copy } from '@benzed/immutable'
-import { milliseconds } from '@benzed/async'
+import { first } from '@benzed/array'
+// import { milliseconds } from '@benzed/async'
+
 import { memoize, state, action } from './decorators'
 
 /******************************************************************************/
@@ -40,19 +42,23 @@ class ScoreCard extends StateTree {
   //   state => state::set('fetching', true)
   // ]
 
-  // @memoize('scores')
-  // get average () {
-  //   return this
-  //     .scores
-  //     .reduce((sum, value) => sum + value) / this.scores.length
-  // }
+  @memoize('scores')
+  get average () {
+    const scores = [ ...this.scores ]
+
+    while (scores.length < 2)
+      scores.push(first(scores) || 0)
+
+    return scores
+      .reduce((sum, value) => sum + value) / scores.length
+  }
 
 }
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('StateTree', () => {
+describe('StateTree', () => {
 
   it('is a class', () => {
     expect(StateTree).to.be.instanceof(Function)
@@ -120,6 +126,7 @@ describe.only('StateTree', () => {
         scores.addScore(10)
         scores.addScore(15)
         scores.toggleRaised()
+        expect(scores.average).to.be.equal(10)
       })
 
       it('restricts state changes to ones matching path', () => {
