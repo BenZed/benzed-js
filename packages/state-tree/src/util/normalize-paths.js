@@ -1,20 +1,17 @@
+import { wrap } from '@benzed/array'
 
-// TODO move me to util
+import isArrayOfPaths from './is-array-of-paths'
 
 /******************************************************************************/
-// Data
+// Main
 /******************************************************************************/
 
-const $$tree = Symbol('tree-static-internal')
-const $$state = Symbol('tree-instance-state')
-const $$subscribers = Symbol('tree-subscribers')
+const normalizePaths = input => input.length > 0 && isArrayOfPaths(input)
+  ? input.map(wrap)
+  : [[]]
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export {
-  $$tree,
-  $$state,
-  $$subscribers
-}
+export default normalizePaths

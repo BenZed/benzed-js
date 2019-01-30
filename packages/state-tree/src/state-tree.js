@@ -1,16 +1,16 @@
-import { copy, equals, push, serialize, ValueMap } from '@benzed/immutable'
+import { copy, equals, push, serialize, set, ValueMap } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
 
-import { $$tree, $$state, $$subscribers } from './symbols'
+import { applyState, $$tree, $$state, $$subscribers } from './util'
 
 import * as decorators from './decorators'
 import is from 'is-explicit'
 
-import applyState from './apply-state'
-
 /******************************************************************************/
 // Helpers
 /******************************************************************************/
+
+const { freeze } = Object
 
 const applyInitialState = tree => {
 
@@ -32,7 +32,7 @@ const subscribeMemoizers = tree => {
 
       const value = getter()
 
-      tree[$$state].memoized[key] = value
+      tree[$$state].memoized = freeze(set(tree.memoized, key, value))
 
     }, 'name', { value: `memoized get ${key}` })
 
@@ -63,8 +63,11 @@ class StateTree {
   };
 
   [$$state] = {
-    state: {},
-    memoized: {}
+    state: freeze({ }),
+    memoized: freeze({ }),
+    children: [],
+    parent: null,
+    pathInParent: null
   };
 
   [$$subscribers] = new ValueMap()
@@ -72,6 +75,14 @@ class StateTree {
   constructor () {
     subscribeMemoizers(this)
     applyInitialState(this)
+  }
+
+  get state () {
+    return this[$$state].state
+  }
+
+  get memoized () {
+    return this[$$state].memoized
   }
 
   subscribe (callback, ...paths) {
@@ -118,13 +129,15 @@ class StateTree {
         subs.delete(path)
       else
         subs.set(path, callbacks)
-
     }
 
   }
 
   toJSON () {
-    return serialize(this[$$state])
+
+    const { memoized, state } = this
+
+    return serialize({ ...state, ...memoized })
   }
 
   [equals.$$] (other) {
@@ -133,8 +146,26 @@ class StateTree {
 
   [copy.$$] () {
     const clone = new this.constructor()
+    const { state } = this[$$state]
 
-    return applyState(clone, [], copy(this[$$state]), 'setClonedState')
+    return applyState(clone, [], state, 'setClonedState')
+  }
+
+  get root () {
+    let _root = this.parent
+
+    while (_root && _root.parent)
+      _root = _root.parent
+
+    return _root
+  }
+
+  get parent () {
+    return this[$$state].parent
+  }
+
+  get children () {
+    return this[$$state].children
   }
 
 }

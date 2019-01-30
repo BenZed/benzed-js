@@ -1,8 +1,12 @@
 import is from 'is-explicit'
 import StateTree from '../state-tree'
 
-import { isArrayOfPaths, normalizePaths } from '../path-util'
-import { $$state, $$tree } from '../symbols'
+import {
+  $$tree,
+  $$state,
+  isArrayOfPaths,
+  normalizePaths
+} from '../util'
 
 import { copy } from '@benzed/immutable'
 

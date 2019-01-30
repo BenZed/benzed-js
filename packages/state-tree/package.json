@@ -1,6 +1,6 @@
 {
-  "name": "@benzed/async",
-  "version": "0.12.5",
+  "name": "@benzed/state-tree",
+  "version": "0.1.0",
   "main": "lib",
   "publishConfig": {
     "access": "public"
@@ -19,11 +19,12 @@
   "keywords": [],
   "author": "BenZed",
   "license": "ISC",
-  "description": "My own async utilities.",
+  "description": "BenZed's own application state container.",
   "devDependencies": {
     "@benzed/dev": "^0.12.11"
   },
   "dependencies": {
-    "is-explicit": "^3.0.1"
+    "@benzed/immutable": "^2.1.0",
+    "@benzed/array": "^1.6.3"
   }
 }

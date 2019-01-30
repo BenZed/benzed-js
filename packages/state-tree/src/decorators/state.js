@@ -2,7 +2,11 @@ import is from 'is-explicit'
 import StateTree from '../state-tree'
 
 import { copy, get } from '@benzed/immutable'
-import { $$tree, $$state } from '../symbols'
+
+import {
+  $$tree,
+  $$state
+} from '../util'
 
 /******************************************************************************/
 // Helper

@@ -243,6 +243,12 @@ class Styler {
     return this
   }
 
+  desaturate (amount) {
+
+    this[$$stack].push(alterColor, ['desaturate', amount])
+    return this
+  }
+
   get branded () {
 
     this[$$stack].push(getBrandedValue)

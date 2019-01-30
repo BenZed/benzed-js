@@ -7,7 +7,7 @@ import StateTree from '../state-tree'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('@memoize decorator', () => {
+describe('@memoize decorator', () => {
 
   it('is a function', () => {
     expect(typeof memoize).to.be.equal('function')

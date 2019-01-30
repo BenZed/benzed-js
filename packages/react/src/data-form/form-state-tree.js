@@ -64,16 +64,12 @@ const alsoNeedsUiStateTree = (value, ctx) =>
 const validate = <object key='form' plain strict >
 
   <object key='data' plain required />
-
   <object key='state' plain default={{}} />
-
   <object key='actions' plain default={{}} />
-
   <number key='historyMaxCount' default={256} />
-
   <string key='historyStorageKey' validate={alsoNeedsUiStateTree} />
-
   <func key='ui' validate={mustBeUiStateTree} />
+  <func key='submit' required />
 
 </object>
 
@@ -153,9 +149,36 @@ const ACTIONS = {
 
   },
 
+  setUpstream (object) {
+
+    const serialized = serialize(object)
+
+    this('upstream').set(serialized)
+
+    return this
+  },
+
+  async pushUpstream () {
+
+    const { current } = this
+
+    const { submit } = this.config
+
+    const upstream = await this::submit(current)
+
+    if (is.defined(upstream)) {
+      this.setUpstream(upstream)
+      this.revertToUpstream()
+    }
+
+    return this
+  },
+
   revertCurrentToOriginal () {
     if (!this.hasChangesToCurrent)
       return this
+
+    this.pushCurrent()
 
     const { set: setCurrent } = this('current')
 
@@ -167,21 +190,14 @@ const ACTIONS = {
     if (!this.hasChangesToUpstream)
       return this
 
+    this.pushCurrent()
+
     const [ state, setState ] = this()
 
     setState(state::copy(state => {
       state.original = state.upstream::copy()
-      state.current = state.original::copy()
+      state.current = state.upstream::copy()
     }))
-
-    return this
-  },
-
-  setUpstream (object) {
-
-    const serialized = serialize(object)
-
-    this('upstream').set(serialized)
 
     return this
   },

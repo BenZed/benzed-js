@@ -2,6 +2,7 @@ import is from 'is-explicit'
 
 import { equals, serialize, get, set, reverse } from '@benzed/immutable'
 import { wrap } from '@benzed/array'
+
 import { inspect } from 'util'
 
 /******************************************************************************/
@@ -24,7 +25,7 @@ const applyState = (tree, value, path = []) => {
 
   // TODO allow @benzed/immutable set to work on functions then fix this
 
-  const state = tree[$$state]
+  let state = tree[$$state]
 
   const hasPath = path && path.length > 0
   const stateAtPath = hasPath
@@ -35,12 +36,15 @@ const applyState = (tree, value, path = []) => {
   if (stateIsNotChanging)
     return false
 
+  state = tree[$$state] = { ...tree[$$state] }
+
   if (hasPath) {
 
     checkStateKey(tree, path[0])
     set.mut(state, path, value)
 
   } else for (const key in value) {
+
     checkStateKey(tree, key)
     state[key] = value[key]
   }
@@ -81,7 +85,7 @@ const getState = (tree, path = []) => {
 const notify = (tree, path, sourceTree = tree) => {
 
   if (tree.parent)
-    notify(tree.root, [ ...getPathToChild(tree), ...path ], tree)
+    return notify(tree.root, [ ...getPathToChild(tree), ...path ], tree)
 
   // reversed so subscribers can be removed without complicating the loop
   const subs = reverse(tree[$$subscribers])
@@ -90,7 +94,14 @@ const notify = (tree, path, sourceTree = tree) => {
 
   const { length: pathLength } = path
 
-  for (let i = 0; i < pathLength; i++) {
+  // If the state is hard overwritten, every sub is called
+  if (pathLength === 0) for (let j = subs.length - 1; j >= 0; j--) {
+    const sub = subs[j]
+    sub.callback(sourceTree, sub.path)
+
+  // otherwise, we use a more optimized approach
+  } else for (let i = 0; i < pathLength; i++) {
+
     const stateKey = path[i]
     const atMaxPathIndex = i === pathLength - 1
 
@@ -182,7 +193,7 @@ const applyInitialState = (tree, initial) => {
   const initialStateWithValidStateKeys = serialize(initial)
 
   Object.defineProperties(tree, {
-    [$$state]: { value: initialStateWithValidStateKeys },
+    [$$state]: { value: initialStateWithValidStateKeys, writable: true },
     [$$setters]: { value: new Map() }
   })
 
@@ -270,8 +281,8 @@ function subscribe (callback, ...paths) {
       path = wrap(path)
 
     // validated path
-    if (path.length > 0 && !is.arrayOf(path, [String, Number, Symbol]))
-      throw new Error('paths must be arrays of strings, numbers or symbols')
+    if (path.length > 0 && !is.arrayOf(path, [Number, String, Symbol]))
+      throw new Error('paths must be arrays of strings or symbols')
 
     if (this.parent)
       hoistSubscriber(this, callback, path)

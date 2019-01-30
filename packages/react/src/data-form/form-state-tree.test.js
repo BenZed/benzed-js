@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import FormStateTree from './state-tree'
+import FormStateTree from './form-state-tree'
 import UiStateTree from '../app/state-tree/ui-state-tree'
 
 import { last, first } from '@benzed/array'
@@ -8,11 +8,12 @@ import { serialize } from '@benzed/immutable'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('FormStateTree', () => {
+describe('FormStateTree', () => {
 
   it('is a state tree', () => {
     const form = new FormStateTree({
-      data: {}
+      data: {},
+      submit () {}
     })
 
     expect(Object
@@ -31,7 +32,8 @@ describe.only('FormStateTree', () => {
         data: {
           name: 'Wolf',
           age: 0
-        }
+        },
+        submit () {}
       })
 
       form.editCurrent('age', 40)
@@ -88,7 +90,10 @@ describe.only('FormStateTree', () => {
         gender: 'male'
       }
 
-      const form = new FormStateTree({ data })
+      const form = new FormStateTree({
+        data,
+        submit () {}
+      })
 
       form.editCurrent('age', 44)
       form.editCurrent('name', 'Robert')
@@ -108,7 +113,8 @@ describe.only('FormStateTree', () => {
         data: {
           room: '1a',
           floor: 1
-        }
+        },
+        submit () {}
       })
 
       form.pushCurrent()
@@ -132,7 +138,8 @@ describe.only('FormStateTree', () => {
         data: {
           thisIsTotallyACake: true,
           slices: 1
-        }
+        },
+        submit () {}
       })
 
       for (let i = 0; i < 10; i++) {
@@ -148,7 +155,8 @@ describe.only('FormStateTree', () => {
       const form = new FormStateTree({
         data: {
           bottlesOfBeerOnTheWall: 1000000
-        }
+        },
+        submit () {}
       })
 
       const drinkOneDownPassItAround = () => {
@@ -177,7 +185,8 @@ describe.only('FormStateTree', () => {
         ghostsBusted: 0,
         ghostsBusters: 4,
         budget: 1200
-      }
+      },
+      submit () {}
     })
 
     form.editCurrent('ghostsBusted', busted => busted + 1)
@@ -302,13 +311,21 @@ describe.only('FormStateTree', () => {
 
       const client = new Client('Bruce Wayne', 2500000)
 
-      return {
+      async function save (current) {
+        const { name, investment } = current
+        await ui.fetch(name, investment)
+      }
+
+      const form = new FormStateTree({
+        data: client.toJSON(),
+        submit: save
+      })
+
+      const ui = {
 
         client,
 
-        form: new FormStateTree({
-          data: client.toJSON()
-        }),
+        form,
 
         async fetch (name = this.client.name, investment = this.client.investment) {
           const update = await Promise.resolve({ name, investment })
@@ -317,13 +334,10 @@ describe.only('FormStateTree', () => {
           this.client.investment = update.investment
 
           this.form.setUpstream(this.client)
-        },
-
-        async save () {
-          const { name, investment } = this.form.current
-          await this.fetch(name, investment)
         }
       }
+
+      return ui
     }
 
     it('use setUpstream to match upstream data to remote objects', async () => {
@@ -347,13 +361,13 @@ describe.only('FormStateTree', () => {
       expect(ui.form.original).to.be.deep.equal(ui.form.upstream)
     })
 
-    it('also use setUpstream when overwriting remote objects', async () => {
+    it('use pushUpstream when overwriting remote objects', async () => {
       const ui = prepare()
       expect(ui.form.current).to.be.deep.equal(serialize(ui.client))
 
       await ui.fetch('Batman')
       expect(ui.form.hasChangesToUpstream).to.be.equal(true)
-      await ui.save()
+      await ui.form.pushUpstream()
       expect(ui.form.hasChangesToUpstream).to.be.equal(false)
     })
   })
@@ -365,7 +379,8 @@ describe.only('FormStateTree', () => {
       const form = new FormStateTree({
         ui,
         historyStorageKey: 'foo-bar',
-        data: { foo: 'foo' }
+        data: { foo: 'foo' },
+        submit () {}
       })
 
       form.editCurrent('foo', 'bar')
@@ -396,7 +411,8 @@ describe.only('FormStateTree', () => {
       const form = new FormStateTree({
         historyStorageKey: 'test-history',
         data: { cake: 'bake' },
-        ui
+        ui,
+        submit () {}
       })
 
       expect(form.current).to.be.deep.equal({ cake: 'wheeze' })
@@ -417,7 +433,8 @@ describe.only('FormStateTree', () => {
       const config = {
         data: { name: 'Jerry', age: 22 },
         historyStorageKey: 'jerry',
-        ui: new UiStateTree()
+        ui: new UiStateTree(),
+        submit () {}
       }
 
       const form1 = FormStateTree(config)

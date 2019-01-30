@@ -2,11 +2,13 @@ import { expect } from 'chai'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import ServiceStateTree, { $$queue } from './service-state-tree'
 import ClientStateTree, { $$feathers } from './client-state-tree'
-import { milliseconds } from '@benzed/async'
+import { milliseconds, until } from '@benzed/async'
 import is from 'is-explicit'
 import { $$state } from '../../state-tree/state-tree'
 import App from '@benzed/app'
 import { Test } from '@benzed/dev'
+
+import { EventEmitter } from 'events'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -19,7 +21,7 @@ import { Test } from '@benzed/dev'
 
 const fakeClientStateTree = () => {}
 fakeClientStateTree[$$state] = {}
-fakeClientStateTree[$$feathers] = {}
+fakeClientStateTree[$$feathers] = { service () { return new EventEmitter() } }
 fakeClientStateTree.connect = () => {}
 
 /******************************************************************************/
@@ -62,8 +64,8 @@ describe('Service StateTree', () => {
       })
       keys = Object.keys(comments[$$state])
     })
-    it('has keys: records, drafts, errors, timestamp', () => {
-      expect(keys).to.be.deep.equal([ 'records', 'drafts', 'errors', 'timestamp' ])
+    it('has keys: records, forms, timestamp', () => {
+      expect(keys).to.be.deep.equal([ 'records', 'forms', 'timestamp' ])
     })
     it('client.timestamp to be a date', () => {
       expect(comments.timestamp).to.be.instanceof(Date)
@@ -80,7 +82,7 @@ describe('Service StateTree', () => {
       })
 
       expect(Object.keys(articles[$$state])).to.be.deep.equal([
-        'records', 'drafts', 'errors', 'timestamp', 'bestAuthor'
+        'records', 'forms', 'timestamp', 'bestAuthor'
       ])
     })
   })
@@ -123,7 +125,7 @@ describe('Service StateTree', () => {
           ? App.declareEntity('channels', {}, [])
           : null
       ]),
-      App.declareEntity('service', { name: 'messages' }, [])
+      App.declareEntity('service', { name: 'messages', multi: true }, [])
     ), state => {
 
       let client, messages, queue
@@ -135,6 +137,7 @@ describe('Service StateTree', () => {
           provider: provider === 'express' ? 'rest' : 'socketio',
           hosts: state.address
         })
+
         messages = new ServiceStateTree({
           serviceName: 'messages',
           client
@@ -294,5 +297,65 @@ describe('Service StateTree', () => {
             return messages.find({})
           })
         })
+
+      describe(`editing records in a non-auth ${provider} app`, () => {
+
+        before(async () => {
+
+          await state.api.service('messages').remove(null)
+
+          const apiMessages = await state.api.service('messages').find({ })
+          if (apiMessages.length < 10) {
+            const data = Array
+              .from({ length: 10 - apiMessages.length })
+              .map((undef, index) => ({
+                body: 'Message-' + (index + apiMessages.length),
+                author: 'Me :)'
+              }))
+
+            await state.api.service('messages').create(data)
+          }
+
+          await messages.find({})
+
+        })
+
+        it('form state trees are instanced for each record on .getForm', async () => {
+
+          const { _id: id } = messages.all[0]
+          const form = messages.getForm(id)
+          expect(messages.forms[id])
+            .to.be.equal(form)
+
+          form.editCurrent('author', 'Ol Fackin Jerry')
+          await form.pushUpstream()
+          await milliseconds(10)
+
+          expect(form.upstream.author).to.be.equal(messages.get(id).author)
+          expect(form.hasChangesToCurrent).to.be.equal(false)
+          expect(form.hasChangesToUpstream).to.be.equal(false)
+        })
+
+        if (provider === 'socketio')
+          it('external changes arn\'t automatically folded into form.original', async () => {
+            const { _id: id } = messages.all[1]
+
+            const form = messages.getForm(id)
+
+            form.editCurrent('author', 'Jerry again, I\'m pretty sure')
+            form.pushCurrent()
+            expect(form.hasChangesToCurrent).to.be.equal(true)
+            expect(form.hasChangesToUpstream).to.be.equal(false)
+
+            await state.api.service('messages').patch(id, { author: 'Stephen Hawking' })
+            await milliseconds(10)
+
+            expect(form.hasChangesToUpstream).to.be.equal(true)
+            form.revertToUpstream()
+            expect(form.current).to.be.deep.equal(form.original)
+            expect(form.upstream).to.be.deep.equal(form.original)
+
+          })
+      })
     })
 })

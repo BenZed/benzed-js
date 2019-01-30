@@ -1,24 +1,18 @@
-import is from 'is-explicit'
+import { $$subscribers } from './symbols'
 
-import { $$state, $$tree, $$subscribers } from './symbols'
-
-import { get, set, equals, ValueMap } from '@benzed/immutable'
-
-// TODO move me to util
+import { get, equals, ValueMap } from '@benzed/immutable'
 
 /******************************************************************************/
-// Helper
+// Data
 /******************************************************************************/
-
-const { freeze } = Object
 
 const $$any = Symbol('update-on-any-path')
 
 /******************************************************************************/
-// Notify
+// Main
 /******************************************************************************/
 
-const notifySubscribers = (tree, path, previous, next) => {
+const notifySubscribers = (tree, path, previousState) => {
 
   // if (tree.parent)
   //   notify(tree.root, [ ...getPathToChild(tree), ...path ], tree)
@@ -32,6 +26,8 @@ const notifySubscribers = (tree, path, previous, next) => {
   const applyGlobal = pathLength === 0
 
   const finishedPaths = []
+
+  const currentState = tree.state
 
   for (let i = 0; applyGlobal ? i === 0 : i < pathLength; i++) {
     const propertyName = applyGlobal ? $$any : path[i]
@@ -66,7 +62,10 @@ const notifySubscribers = (tree, path, previous, next) => {
           subPathLength <= pathLength ||
 
           // otherwise we do a value-equal check at the endpoint of the path
-          !equals(get.mut(previous, subPath), get.mut(next, subPath))
+          !equals(
+            get.mut(previousState, subPath),
+            get.mut(currentState, subPath)
+          )
 
         if (stateAtSubPathHasChanged) for (const callback of callbacks)
           callback(tree, subPath)
@@ -85,41 +84,8 @@ const notifySubscribers = (tree, path, previous, next) => {
   }
 
 }
-
-/******************************************************************************/
-// Apply
-/******************************************************************************/
-
-const applyState = (tree, path, value, actionName) => {
-
-  if (path.length === 0 && !is.plainObject(value))
-    throw new Error(
-      `action ${actionName} is not scoped to a state key and must ` +
-      `return a full state in the form of a plain object.`)
-
-  if (path.length === 0)
-    for (const key of Object.keys(value))
-      if (!tree.constructor[$$tree].state.keys.includes(key))
-        throw new Error(
-          `action ${actionName} returned state with invalid key: '${key}'`
-        )
-
-  const stateChanged = !equals(get.mut(tree[$$state].state, path), value)
-  if (stateChanged) {
-
-    const previous = tree[$$state].state
-    const next = freeze(previous::set(path, value))
-
-    tree[$$state].state = next
-
-    notifySubscribers(tree, path, previous, next)
-  }
-
-  return tree
-}
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default applyState
+export default notifySubscribers

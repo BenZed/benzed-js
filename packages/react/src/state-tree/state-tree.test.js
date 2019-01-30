@@ -24,7 +24,8 @@ const CounterStateTree = () =>
 const ScoreStateTree = () =>
   new StateTree({
     scores: [],
-    average: 0
+    average: 0,
+    _internal: null
   }, {
 
     addScore (amount) {
@@ -165,6 +166,7 @@ describe('StateTree', () => {
         let scores
         let thing1
         let thing2
+        let thing3
         before(() => {
           scores = ScoreStateTree()
           thing1 = {
@@ -176,20 +178,30 @@ describe('StateTree', () => {
 
           thing2 = copy(thing1)
 
+          thing3 = copy(thing1)
+
           scores.subscribe(::thing1.notifier, 'average')
           scores.subscribe(::thing2.notifier, 'average', 'scores')
+          scores.subscribe(::thing3.notifier)
           scores.addScore(5)
           scores.addScore(10)
           scores.addScore(15)
+          scores().set({
+            _internal: 'checked'
+          })
         })
 
         it('restricts state changes to ones matching path', () => {
-          expect(thing1.notifies).to.be.equal(3)
+          expect(thing1.notifies).to.be.equal(4)
           expect(scores.average).to.be.equal(10)
         })
 
         it('can listen to multiple paths', () => {
-          expect(thing2.notifies).to.be.equal(6)
+          expect(thing2.notifies).to.be.equal(8)
+        })
+
+        it('notifications are triggerd on state updates with path length 0', () => {
+          expect(thing3.notifies).to.be.equal(7)
         })
       })
     })

@@ -25,8 +25,6 @@ import {
 
 import Form from './data-form'
 
-console.log(Form)
-
 import {
   Visible, Slide, Fade, ScrollVisible, Write
 } from './effect'

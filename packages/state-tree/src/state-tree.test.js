@@ -3,9 +3,11 @@ import StateTree from './state-tree'
 
 import { push, set, get, copy } from '@benzed/immutable'
 import { first } from '@benzed/array'
-// import { milliseconds } from '@benzed/async'
+import { clamp } from '@benzed/math'
 
 import { memoize, state, action } from './decorators'
+
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Data
@@ -44,6 +46,7 @@ class ScoreCard extends StateTree {
 
   @memoize('scores')
   get average () {
+
     const scores = [ ...this.scores ]
 
     while (scores.length < 2)
@@ -51,6 +54,7 @@ class ScoreCard extends StateTree {
 
     return scores
       .reduce((sum, value) => sum + value) / scores.length
+
   }
 
 }
@@ -62,6 +66,7 @@ describe('StateTree', () => {
 
   it('is a class', () => {
     expect(StateTree).to.be.instanceof(Function)
+    expect(StateTree).to.throw('invoked without \'new\'')
   })
 
   describe('subscribe()', () => {
@@ -121,12 +126,15 @@ describe('StateTree', () => {
 
         scores.subscribe(::thing1.notifier, 'scores')
         scores.subscribe(::thing2.notifier, 'scores', 'raised')
+
         scores.toggleRaised()
         scores.addScore(5)
         scores.addScore(10)
         scores.addScore(15)
         scores.toggleRaised()
+
         expect(scores.average).to.be.equal(10)
+
       })
 
       it('restricts state changes to ones matching path', () => {
@@ -210,8 +218,154 @@ describe('StateTree', () => {
 
   })
 
+  describe('nesting', () => {
+
+    let Game
+    before(() => {
+
+      class Bar extends StateTree {
+
+        @state
+        amount = 100
+
+        @state
+        max = 100
+
+        @action('amount')
+        setAmount = value => clamp(value, 0, this.max)
+
+        @action('max')
+        setMax = value => value
+
+        changeAmount = delta => this.setAmount(this.amount + delta)
+
+        constructor (starting) {
+          super()
+          if (is.defined(starting))
+            this.setAmount(starting)
+        }
+
+      }
+
+      class Unit extends StateTree {
+
+        @state
+        health = new Bar()
+
+        @state
+        mana = new Bar()
+
+        @state
+        controller = 'ai'
+
+        @action('controller')
+        setController = value => value
+
+        constructor (controller) {
+          super()
+          if (controller)
+            this.setController(controller)
+        }
+
+      }
+
+      Game = class Game extends StateTree {
+
+        @state
+        scores = []
+
+        @state
+        units = []
+
+        @action('units')
+        addUnit = controller => this.units::push(new Unit(controller))
+
+        @memoize('units')
+        get player () {
+          return this
+            .units
+            .filter(unit => unit.controller === 'player')
+            ::first() || null
+        }
+      }
+    })
+
+    it('trees can be nested as states in other trees', () => {
+      const game = new Game()
+
+      game.addUnit('ai')
+      game.addUnit('player')
+
+      expect(
+        game.units.every(unit => game.children.includes(unit))
+      ).to.be.equal(true, 'StateTrees placed in state do not exist in rootState.children')
+
+    })
+
+  })
+
   describe('toJSON', () => {
-    it('is a method')
+
+    let counter
+    let state
+    before(() => {
+      counter = new ScoreCard()
+      state = counter.toJSON()
+    })
+
+    it('returns an object that mixes state and cached memoization', () => {
+      expect(state).to.be.deep.equal({ scores: [], raised: false, average: 0 })
+    })
+
+  })
+
+  describe('get state()', () => {
+
+    let card
+    before(() => {
+      card = new ScoreCard()
+    })
+
+    it('returns the tree\'s state as an object', () => {
+      const card = new ScoreCard()
+      expect(card.state).to.be.deep.equal({ raised: false, scores: [ ] })
+    })
+
+    it('subsequent state updates result in immutable copies', () => {
+      const state = card.state
+      card.addScore(10)
+      card.addScore(15)
+      expect(state).to.not.be.equal(card.state)
+    })
+
+    it('state is frozen', () => {
+      expect(() => { card.state.raised = false }).to.throw('read only')
+    })
+  })
+
+  describe('get memoized()', () => {
+    let card
+    before(() => {
+      card = new ScoreCard()
+    })
+
+    it('returns the tree\'s memoized cache as an object', () => {
+      const card = new ScoreCard()
+      expect(card.memoized).to.be.deep.equal({ average: 0 })
+    })
+
+    it('subsequent memoization caches result in immutable copies', () => {
+      const memoized = card.memoized
+
+      card.addScore(10)
+      card.addScore(15)
+
+      expect(memoized).to.not.be.equal(card.memoized)
+    })
+
+    it('state is frozen', () => {
+      expect(() => { card.memoized.average = 10 }).to.throw('read only')
+    })
   })
 
   describe('$$copy', () => {

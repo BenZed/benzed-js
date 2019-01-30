@@ -1,11 +1,15 @@
 import { first, wrap } from '@benzed/array'
 
-import is from 'is-explicit'
 import StateTree from '../state-tree'
-import { $$tree } from '../symbols'
 
-import applyState from '../apply-state'
-import { isArrayOfPaths, normalizePaths } from '../path-util'
+import {
+  $$tree,
+  applyState,
+  isArrayOfPaths,
+  normalizePaths
+} from '../util'
+
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Helper

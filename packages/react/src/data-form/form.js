@@ -17,19 +17,20 @@ class FormLogic extends React.Component {
 
   state = {
     current: {},
+    errors: {},
     history: [],
     onChange: () => {}
   }
 
   // Form Event Handlers
 
-  onSubmit = e => {
+  onSubmit = async e => {
 
     e.preventDefault()
 
     const { form } = this.props
 
-    console.log('SUBMITTING', form.current)
+    await form.pushUpstream()
 
   }
 
@@ -39,7 +40,10 @@ class FormLogic extends React.Component {
 
     const path = (e.target.dataset.path || '').split(',')
 
-    form.editCurrent(path, e.target.value)
+    if (path && path.length > 0)
+      form.editCurrent(path, e.target.value)
+    else
+      throw new Error('path not specified in event.target.dataset')
   }
 
   // State Setters
@@ -52,13 +56,14 @@ class FormLogic extends React.Component {
 
     const { onChange } = this
 
-    const formWithEventHandlers = {
+    const formDataWithEventHandlers = {
       current,
+      errors: {},
       history,
       onChange
     }
 
-    this.setState(formWithEventHandlers)
+    this.setState(formDataWithEventHandlers)
   }
 
   componentDidMount () {
@@ -70,20 +75,29 @@ class FormLogic extends React.Component {
     this.createFormWithEventHandlers()
   }
 
+  componentWillUnmount () {
+    const { form } = this.props
+    form.unsubscribe(this.createFormWithEventHandlers)
+  }
+
   componentDidUpdate (prev) {
 
-    if (prev.form !== this.props.form) {
-      prev.form.unsubscribe(this.createFormWithEventHandlers)
-      this.props.form.subscribe(this.createFormWithEventHandlers)
+    const { form: oldForm } = prev
+    const { form: newForm } = this.props
+
+    if (oldForm !== newForm) {
+      oldForm.unsubscribe(this.createFormWithEventHandlers)
+
+      newForm.subscribe(this.createFormWithEventHandlers)
       this.createFormWithEventHandlers()
     }
   }
 
   render () {
-    const { children } = this.props
+    const { children, className, style } = this.props
 
     return <FormStateContext.Provider value={this.state}>
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit} className={className} style={style}>
         {children}
       </form>
     </FormStateContext.Provider>
@@ -96,7 +110,7 @@ class FormLogic extends React.Component {
 /******************************************************************************/
 
 const Form = styled(FormLogic)`
-
+  flex-grow: 1;
 `
 
 /******************************************************************************/

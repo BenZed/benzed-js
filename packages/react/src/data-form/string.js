@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import InputBase from './input-base'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Styles
@@ -20,8 +21,12 @@ const Input = styled.input`
 const String = ({ children, path, ...props }) =>
 
   <InputBase path={path} >{
-    ({ value = '', ...rest }) =>
-      <Input value={value} {...rest} {...props} />
+    ({ value, ...rest }) =>
+      <Input
+        value={is.defined(value) ? value : ''}
+        {...rest}
+        {...props}
+      />
   }</InputBase>
 
 /******************************************************************************/

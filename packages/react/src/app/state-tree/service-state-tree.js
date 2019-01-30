@@ -6,7 +6,7 @@ import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
 import { copy, equals, $$equals, indexOf } from '@benzed/immutable'
 
-import FormStateTree from '../../data-form/state-tree'
+import { FormStateTree } from '../../data-form'
 
 import is from 'is-explicit'
 
@@ -18,6 +18,8 @@ import is from 'is-explicit'
 /******************************************************************************/
 
 const $$queue = Symbol('query-queue')
+const $$prunable = Symbol('data-is-prunable')
+
 const PARALLEL_QUERIES = 10
 
 const STATUSES = {
@@ -212,6 +214,27 @@ const getIdsFromQuery = query => {
     : null
 }
 
+const getDataDifferences = (edit, original) => {
+
+  const editIsObj = is.plainObject(edit)
+  const origIsObj = is.plainObject(edit)
+
+  let differences
+  if (editIsObj && origIsObj) {
+    differences = {}
+    for (const key in edit) {
+      const result = getDataDifferences(edit[key], original[key])
+      if (result !== $$prunable)
+        differences[key] = result
+    }
+  } else
+    differences = equals(edit, original)
+      ? $$prunable
+      : edit
+
+  return differences
+}
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
@@ -274,9 +297,23 @@ const ACTIONS = {
 
   },
 
+  patch (id, data) {
+
+    if (!is.defined(id))
+      throw new Error(`id is required`)
+
+    const differences = getDataDifferences(data, this.get(id))
+
+    const { client, serviceName: service } = this.config
+
+    return client[$$feathers]
+      .service(service)
+      .patch(id, differences)
+
+  },
+
   find (query = {}) {
-    const tree = this
-    return tree::ensureFetching(query)
+    return this::ensureFetching(query)
   },
 
   untilFetchingComplete () {
@@ -294,10 +331,13 @@ const ACTIONS = {
 
       const record = this.get(id)
 
+      const ui = this.root?.ui
+
       form = new FormStateTree({
-        ui: this.root.ui,
         data: record,
-        historyStorageKey: `form-${this.config.serviceName}-${id}`
+        submit: data => this.patch(id, data),
+        ui,
+        historyStorageKey: ui && `form-${this.config.serviceName}-${id}`
       })
 
       this.subscribe(service => {
@@ -306,6 +346,7 @@ const ACTIONS = {
         form.setUpstream(service.records[id])
         if (shouldAutoRevert)
           form.revertToUpstream()
+
       },
       [ 'records', id ])
 
@@ -323,8 +364,9 @@ const ACTIONS = {
 
 function handleEvents ({ client, serviceName }) {
 
-  if (client?.config?.provider !== 'socketio')
-    return
+  // Will catch self-induced events in rest
+  // if (client?.config?.provider !== 'socketio')
+  //   return
 
   const tree = this
   const service = client[$$feathers].service(serviceName)

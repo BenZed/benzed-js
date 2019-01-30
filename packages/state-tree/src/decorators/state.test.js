@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import state from './state'
 import StateTree from '../state-tree'
 
-import { $$tree, $$state } from '../symbols'
+import { $$tree, $$state } from '../util'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -113,19 +113,16 @@ describe('@state decorator', () => {
 
   })
 
-  describe('exceptions', () => {
-    it('can\'t have a state key with the name \'subscribe\'', () => {
-      expect(() => class extends StateTree {
-        @state
-        subscribe = 0
-      }).to.throw('can not use \'subscribe\' as a state key')
-    })
-    it('can\'t have a state key with the name \'unsubscribe\'', () => {
-      expect(() => class extends StateTree {
-        @state
-        unsubscribe = 0
-      }).to.throw('can not use \'unsubscribe\' as a state key')
-    })
-  })
+  describe('can\'t use names that already exist in State', () => {
+    for (const invalidName of Object.getOwnPropertyNames(StateTree.prototype))
+      it(`can't use: '${invalidName}'`, () => {
+        expect(() => {
+          class Example extends StateTree {}
 
+          const initializer = () => 0
+          state(Example.prototype, invalidName, { initializer })
+
+        }).to.throw(`can not use '${invalidName}' as a state key`)
+      })
+  })
 })
