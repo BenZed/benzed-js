@@ -21,19 +21,13 @@ class ValueMap {
   constructor (keyValues) {
 
     if (keyValues) for (const keyValue of keyValues) {
-
       const [ key, value ] = keyValue
-
       this.set(key, value)
     }
   }
 
   get (key) {
-
     const index = indexOf(this[$$keys], key)
-    if (index === -1)
-      throw new Error(`Does not have item with id ${key}`)
-
     return this[$$values][index]
   }
 
@@ -50,10 +44,6 @@ class ValueMap {
   }
 
   has (key) {
-
-    if (key === undefined)
-      throw new Error('undefined is not a valid id.')
-
     const index = indexOf(this[$$keys], key)
     return index > -1
   }
