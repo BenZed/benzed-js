@@ -1,85 +1,146 @@
-import { $$subscribers } from './symbols'
+import { $$internal, $$any } from './symbols'
 
 import { get, equals, ValueMap } from '@benzed/immutable'
+import { min } from '@benzed/math'
 
 /******************************************************************************/
-// Data
+// Helper
 /******************************************************************************/
 
-const $$any = Symbol('update-on-any-path')
+// TODO this function runs at any state change triggered by any state tree in the
+// application ANYWHERE. It will likely need to be optimized.
+const normalizeSubscribers = (parent, prunePath) => {
+
+  const parentInternal = parent[$$internal]
+  const normalizedSubs = new ValueMap([ ...parentInternal.subscribers ])
+
+  for (const child of parentInternal.children) {
+
+    const { pathInParent } = child[$$internal]
+
+/******************************************************************************/
+// FIXME MAKE THIS LESS UGLY \/\/\/
+/******************************************************************************/
+      let childUpdatePath = null
+      let shouldBePruned = false
+      if (prunePath && prunePath.length > 0) {
+
+        for (let i = 0; i < min(prunePath.length, pathInParent.length); i++) {
+          const parentKey = prunePath[i]
+          const childKey = pathInParent[i]
+          if (parentKey !== childKey) {
+            shouldBePruned = true
+            break
+          }
+        }
+
+        if (!shouldBePruned && pathInParent.length < prunePath.length)
+          childUpdatePath = prunePath.slice(pathInParent.length)
+      }
+
+      if (shouldBePruned)
+        continue
+/******************************************************************************/
+// FIXME MAKE THIS LESS UGLY /\/\/\
+/******************************************************************************/
+
+    const childSubscribers = normalizeSubscribers(child, childUpdatePath)
+    for (const [ originalPath, childSubscriptions ] of childSubscribers) {
+
+      const normalizedPath = [
+        ...pathInParent,
+        ...originalPath
+      ]
+
+      const subscriptions = normalizedSubs.get(normalizedPath) || []
+      normalizedSubs.set(normalizedPath, [ ...subscriptions, ...childSubscriptions ])
+    }
+  }
+
+  return normalizedSubs
+}
+
+const stateAtSubPathHasChanged = (
+  normalizedSubPath, updatePath, pathFromRoot, prevState, nextState
+) => {
+
+  // optimization: if the listen path is equal or shorter than the
+  // change path then the state must have changed or we wouldn't be here
+  if (normalizedSubPath.length < updatePath.length)
+    return true
+
+  const subPathRelativeToState = normalizedSubPath.slice(pathFromRoot.length)
+
+  // otherwise we do a value-equal check at the endpoint of the path
+  return !equals(
+    get.mut(prevState, subPathRelativeToState),
+    get.mut(nextState, subPathRelativeToState)
+  )
+
+}
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const notifySubscribers = (tree, path, previousState) => {
+const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevState, nextState) => {
 
-  // if (tree.parent)
-  //   notify(tree.root, [ ...getPathToChild(tree), ...path ], tree)
+  const updatePath = [ ...pathFromRoot, ...actionPath ]
 
-  // only need a shallow copy
-  const subs = new ValueMap([ ...tree[$$subscribers] ])
-  if (subs.size === 0)
+  const normalizedSubs = normalizeSubscribers(rootTree, updatePath)
+  if (normalizedSubs.size === 0)
     return
 
-  const { length: pathLength } = path
-  const applyGlobal = pathLength === 0
-
+  const applyGlobal = updatePath.length === 0
   const finishedPaths = []
 
-  const currentState = tree.state
+  for (let i = 0; applyGlobal ? i === 0 : i < updatePath.length; i++) {
+    const propertyName = applyGlobal ? $$any : updatePath[i]
+    const atMaxPathIndex = applyGlobal || i === updatePath.length - 1
 
-  for (let i = 0; applyGlobal ? i === 0 : i < pathLength; i++) {
-    const propertyName = applyGlobal ? $$any : path[i]
-    const atMaxPathIndex = applyGlobal || i === pathLength - 1
+    for (const [ normalizedSubPath, subscriptions ] of normalizedSubs) {
 
-    for (const [ subPath, callbacks ] of subs) {
-      const subPathLength = subPath.length
-
-      const atMaxSubPathIndex = atMaxPathIndex || i === subPathLength - 1
+      const atMaxSubPathIndex = atMaxPathIndex || i === normalizedSubPath.length - 1
       // if the subscription path ands at an object, it will receive a state
       // update on alteration of any property in that nested path
-      const subPropertyName = subPathLength > i
-        ? subPath[i]
+      const subPropertyName = normalizedSubPath.length > i
+        ? normalizedSubPath[i]
         : $$any
 
-      let finished = false
-
-      // subscription path mismatch, this state change is not for this subscriber
-      if (subPropertyName !== $$any &&
+      // State Change Mismatch
+      const skipSubscriptions =
+        subPropertyName !== $$any &&
         propertyName !== $$any &&
-        subPropertyName !== propertyName)
-        finished = true
+        subPropertyName !== propertyName
 
-      // at final key, send state to subscriber
-      if (!finished && atMaxSubPathIndex) {
-        finished = true
+      const invokeSubscriptions =
+        !skipSubscriptions &&
+        atMaxSubPathIndex &&
+        stateAtSubPathHasChanged(
+          normalizedSubPath,
+          updatePath,
+          pathFromRoot,
+          prevState,
+          nextState
+        )
 
-        const stateAtSubPathHasChanged =
-
-          // optimization: if the listen path is equal or shorter than the
-          // change path then the state must have changed or we wouldn't be here
-          subPathLength <= pathLength ||
-
-          // otherwise we do a value-equal check at the endpoint of the path
-          !equals(
-            get.mut(previousState, subPath),
-            get.mut(currentState, subPath)
-          )
-
-        if (stateAtSubPathHasChanged) for (const callback of callbacks)
-          callback(tree, subPath)
-      }
+      if (invokeSubscriptions) for (const subscription of subscriptions)
+        subscription.callback(
+          subscription.tree,
+          subscription.path,
+          updatePath
+        )
 
       // subscriber will not be considered for further state calls
-      if (finished)
-        finishedPaths.push(subPath)
+      if (invokeSubscriptions || skipSubscriptions)
+        finishedPaths.push(normalizedSubPath)
     }
 
+    // optimization: Prune subs as we go up the path
     while (finishedPaths.length > 0)
-      subs.delete(finishedPaths.pop())
+      normalizedSubs.delete(finishedPaths.pop())
 
-    if (subs.size === 0)
+    if (normalizedSubs.size === 0)
       break
   }
 

@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import state from './state'
 import StateTree from '../state-tree'
 
-import { $$tree, $$state } from '../util'
+import { $$internal } from '../util'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
@@ -51,12 +51,12 @@ describe('@state decorator', () => {
       }
     })
 
-    it('mutates static $$tree property on extended class to define initial state', () => {
-      expect(Counter[$$tree].state.initial).to.have.property('count', 0)
+    it('mutates static $$internal property on extended class to define initial state', () => {
+      expect(Counter[$$internal].state.initial).to.have.property('count', 0)
     })
 
-    it('extended class $$tree mutations do not effect base class', () => {
-      expect(StateTree[$$tree].state.initial).to.not.have.property('count')
+    it('extended class $$internal mutations do not effect base class', () => {
+      expect(StateTree[$$internal].state.initial).to.not.have.property('count')
     })
 
     it('objects placed in initial states should be immutable copies', () => {
@@ -71,12 +71,12 @@ describe('@state decorator', () => {
         position = VectorZero
       }
 
-      expect(Coords[$$tree].state.initial).to.have.deep.property('scale', VectorOne)
-      expect(Coords[$$tree].state.initial.scale).to.not.be.equal(VectorOne)
+      expect(Coords[$$internal].state.initial).to.have.deep.property('scale', VectorOne)
+      expect(Coords[$$internal].state.initial.scale).to.not.be.equal(VectorOne)
     })
 
     it('property name added to state.keys', () => {
-      expect(Counter[$$tree].state.keys).to.be.deep.equal(['count'])
+      expect(Counter[$$internal].state.keys).to.be.deep.equal(['count'])
     })
 
   })
@@ -108,7 +108,7 @@ describe('@state decorator', () => {
 
     it('property is read only', () => {
       expect(() => (light.color = 'red')).to.throw('has only a getter')
-      expect(() => (light[$$state].state.color = 'red')).to.throw('read only')
+      expect(() => (light[$$internal].state.color = 'red')).to.throw('read only')
     })
 
   })

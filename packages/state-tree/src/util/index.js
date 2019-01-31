@@ -3,9 +3,7 @@ import isArrayOfPaths from './is-array-of-paths'
 import normalizePaths from './normalize-paths'
 
 import {
-  $$state,
-  $$subscribers,
-  $$tree
+  $$internal
 } from './symbols'
 
 /******************************************************************************/
@@ -18,8 +16,6 @@ export {
   isArrayOfPaths,
   normalizePaths,
 
-  $$state,
-  $$subscribers,
-  $$tree
+  $$internal
 
 }

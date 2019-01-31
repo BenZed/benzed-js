@@ -33,17 +33,6 @@ class ScoreCard extends StateTree {
   @action('raised')
   toggleRaised = () => !this.raised
 
-  // @action.compound
-  // fetchScores = address => [
-  //
-  //   state => state::set('fetching', true),
-  //
-  //   state => fetch(address)
-  //     .then(scores => state::set('scores', scores)),
-  //
-  //   state => state::set('fetching', true)
-  // ]
-
   @memoize('scores')
   get average () {
 
@@ -54,7 +43,6 @@ class ScoreCard extends StateTree {
 
     return scores
       .reduce((sum, value) => sum + value) / scores.length
-
   }
 
 }
@@ -117,7 +105,7 @@ describe('StateTree', () => {
         scores = new ScoreCard()
         thing1 = {
           notifies: 0,
-          notifier (tree) {
+          notifier (tree, subPath, updatePath) {
             this.notifies++
           }
         }
@@ -237,6 +225,9 @@ describe('StateTree', () => {
         @action('max')
         setMax = value => value
 
+        @action
+        set = (amount, max) => ({ amount, max })
+
         changeAmount = delta => this.setAmount(this.amount + delta)
 
         constructor (starting) {
@@ -278,7 +269,8 @@ describe('StateTree', () => {
         units = []
 
         @action('units')
-        addUnit = controller => this.units::push(new Unit(controller))
+        addUnit = controller =>
+          this.units::push(new Unit(controller))
 
         @memoize('units')
         get player () {
@@ -299,6 +291,73 @@ describe('StateTree', () => {
       expect(
         game.units.every(unit => game.children.includes(unit))
       ).to.be.equal(true, 'StateTrees placed in state do not exist in rootState.children')
+    })
+
+    it('parents are notified of changes to child state trees', () => {
+      const game = new Game()
+
+      let called = false
+      const func = (...args) => { called = true }
+
+      game.addUnit('player')
+
+      game.subscribe(func)
+      game.player.health.setAmount(50)
+
+      expect(called).to.be.equal(true)
+    })
+
+    it('subscriber gets correct base tree, subscription path and change path', () => {
+      const game = new Game()
+
+      const args = {
+        game: [],
+        player: []
+      }
+
+      game.addUnit('player')
+      game.subscribe((..._args) => { args.game = _args }, [ 'units', 0, 'health' ])
+      game.player.subscribe((..._args) => { args.player = _args }, [ 'health' ])
+
+      game.player.health.setAmount(50)
+
+      // Game Subscriber
+      expect(args.game.length).to.be.above(0, 'Game subscriber callback was missed')
+
+      let [ baseTree, subscriptionPath ] = args.game
+      expect(baseTree).to.be.equal(game)
+      expect(subscriptionPath).to.be.deep.equal([ 'units', 0, 'health' ])
+
+      // Player Subscriber
+      expect(args.player.length).to.be.above(0, 'Player subscriber callback was missed');
+
+      ([ baseTree, subscriptionPath ] = args.player)
+      expect(baseTree).to.be.equal(game.player)
+      expect(subscriptionPath).to.be.deep.equal([ 'health' ])
+
+    })
+
+    it('nested trees get proper deep path equality check', () => {
+
+      const game = new Game()
+      game.addUnit('player')
+
+      const notifications = { amount: 0, max: 0, either: 0 }
+
+      game.player.subscribe(function either () { notifications.either++ })
+      game.player.subscribe(function health () {
+        notifications.amount++
+      }, [ 'health', 'amount' ])
+      game.player.subscribe(function mana () {
+        notifications.max++
+      }, [ 'health', 'max' ])
+
+      game.player.health.set(75, 100)
+      game.player.health.set(75, 75)
+
+      expect(notifications.either).to.be.equal(2)
+      expect(notifications.amount).to.be.equal(1)
+      expect(notifications.max).to.be.equal(1)
 
     })
 
@@ -340,31 +399,6 @@ describe('StateTree', () => {
 
     it('state is frozen', () => {
       expect(() => { card.state.raised = false }).to.throw('read only')
-    })
-  })
-
-  describe('get memoized()', () => {
-    let card
-    before(() => {
-      card = new ScoreCard()
-    })
-
-    it('returns the tree\'s memoized cache as an object', () => {
-      const card = new ScoreCard()
-      expect(card.memoized).to.be.deep.equal({ average: 0 })
-    })
-
-    it('subsequent memoization caches result in immutable copies', () => {
-      const memoized = card.memoized
-
-      card.addScore(10)
-      card.addScore(15)
-
-      expect(memoized).to.not.be.equal(card.memoized)
-    })
-
-    it('state is frozen', () => {
-      expect(() => { card.memoized.average = 10 }).to.throw('read only')
     })
   })
 

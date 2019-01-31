@@ -2,8 +2,7 @@ import is from 'is-explicit'
 import StateTree from '../state-tree'
 
 import {
-  $$tree,
-  $$state,
+  $$internal,
   isArrayOfPaths,
   normalizePaths
 } from '../util'
@@ -34,11 +33,11 @@ function createMemoizedGetter (prototype, key, description) {
       `@memoize decorator can only decorate getters`
     )
 
-  // base classes should not have their $$tree property mutated
-  if (!hasOwn(Type, $$tree))
-    Type[$$tree] = copy(Type[$$tree])
+  // base classes should not have their $$internal property mutated
+  if (!hasOwn(Type, $$internal))
+    Type[$$internal] = copy(Type[$$internal])
 
-  const { memoizers } = Type[$$tree]
+  const { memoizers } = Type[$$internal]
 
   memoizers.push({ paths, get, key })
 
@@ -47,7 +46,7 @@ function createMemoizedGetter (prototype, key, description) {
     configurable: false,
     get () {
       const tree = this
-      return tree[$$state].memoized[key]
+      return tree[$$internal].memoized[key]
     }
   }
 

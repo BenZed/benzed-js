@@ -3,7 +3,7 @@ import { first, wrap } from '@benzed/array'
 import StateTree from '../state-tree'
 
 import {
-  $$tree,
+  $$internal,
   applyState,
   isArrayOfPaths,
   normalizePaths
@@ -31,7 +31,7 @@ const validateDecorator = (prototype, key, description, path) => {
       `@action decorator can only decorate methods`
     )
 
-  if (path.length > 0 && !Type[$$tree].state.keys.includes(first(path)))
+  if (path.length > 0 && !Type[$$internal].state.keys.includes(first(path)))
     throw new Error(
       `action ${key} cannot scope itself to '${path}', ` +
       `'${first(path)}' is an invalid state key.`

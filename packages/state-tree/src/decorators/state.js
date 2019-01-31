@@ -3,10 +3,7 @@ import StateTree from '../state-tree'
 
 import { copy, get } from '@benzed/immutable'
 
-import {
-  $$tree,
-  $$state
-} from '../util'
+import { $$internal } from '../util'
 
 /******************************************************************************/
 // Helper
@@ -18,7 +15,7 @@ const hasOwn = (Type, symbol) => {
   const basePrototype = Object.getPrototypeOf(Type.prototype)
   const BaseType = basePrototype.constructor
 
-  const isReferenceEqual = BaseType[$$tree] === Type[$$tree]
+  const isReferenceEqual = BaseType[$$internal] === Type[$$internal]
   return !isReferenceEqual
 
 }
@@ -48,11 +45,11 @@ const state = (prototype, key, description) => {
       `@state decorator can not use '${key}' as a state key`
     )
 
-  // base classes should not have their $$tree property mutated
-  if (!hasOwn(Type, $$tree))
-    Type[$$tree] = copy(Type[$$tree])
+  // base classes should not have their $$internal property mutated
+  if (!hasOwn(Type, $$internal))
+    Type[$$internal] = copy(Type[$$internal])
 
-  const { state } = Type[$$tree]
+  const { state } = Type[$$internal]
 
   state.initial[key] = copy(value)
 
@@ -61,7 +58,7 @@ const state = (prototype, key, description) => {
   if (!state.keys.includes(key)) {
     state.keys.push(key)
 
-    const path = [ $$state, 'state', key ]
+    const path = [ $$internal, 'state', key ]
 
     return {
       configurable: false,

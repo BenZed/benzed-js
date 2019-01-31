@@ -138,6 +138,34 @@ describe('@memoize decorator', () => {
 
     })
 
+    it('memoized properties properly show up in tree in subscription callbacks', () => {
+
+      class ScoreCard extends StateTree {
+        @state
+        scores = [0, 0]
+
+        @action('scores')
+        setScores = value => value
+
+        @memoize('scores')
+        get average () {
+          return this.scores.reduce((total, value) => total + value) / this.scores.length
+        }
+      }
+
+      const card = new ScoreCard()
+
+      let averageInCallback
+      card.subscribe(card => {
+        averageInCallback = card.average
+      })
+      expect(card.average).to.be.equal(0)
+
+      card.setScores([3, 6, 9])
+      expect(averageInCallback).to.be.equal(6)
+
+    })
+
   })
 
 })

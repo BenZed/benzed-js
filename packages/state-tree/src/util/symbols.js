@@ -3,16 +3,14 @@
 // Data
 /******************************************************************************/
 
-const $$tree = Symbol('tree-static-internal')
-const $$state = Symbol('tree-instance-state')
-const $$subscribers = Symbol('tree-subscribers')
+const $$internal = Symbol('state-tree-internal')
+const $$any = Symbol('notify-subscriber-on-any-path')
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
-  $$tree,
-  $$state,
-  $$subscribers
+  $$internal,
+  $$any
 }

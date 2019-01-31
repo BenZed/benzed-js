@@ -1,7 +1,6 @@
-import { copy, equals, push, serialize, set, ValueMap } from '@benzed/immutable'
-import { wrap } from '@benzed/array'
+import { copy, equals, serialize, ValueMap } from '@benzed/immutable'
 
-import { applyState, $$tree, $$state, $$subscribers } from './util'
+import { isArrayOfPaths, normalizePaths, applyState, $$internal } from './util'
 
 import * as decorators from './decorators'
 import is from 'is-explicit'
@@ -14,32 +13,26 @@ const { freeze } = Object
 
 const applyInitialState = tree => {
 
-  const { initial } = tree.constructor[$$tree].state
+  const { initial } = tree.constructor[$$internal].state
 
-  applyState(tree, [], initial, 'setInitialState')
+  applyState(tree, [], copy(initial), 'setInitialState')
 
 }
 
 const subscribeMemoizers = tree => {
 
-  const { memoizers } = tree.constructor[$$tree]
+  const { memoizers } = tree.constructor[$$internal]
 
   for (const { paths, get, key } of memoizers) {
 
     const getter = tree::get
+    const memoizer = () => {
+      tree[$$internal].memoized[key] = getter()
+    }
 
-    const memoizer = Object.defineProperty(() => {
-
-      const value = getter()
-
-      tree[$$state].memoized = freeze(set(tree.memoized, key, value))
-
-    }, 'name', { value: `memoized get ${key}` })
-
+    Object.defineProperty(memoizer, 'name', { value: `memoized get ${key}` })
     tree.subscribe(memoizer, ...paths)
-
   }
-
 }
 
 /******************************************************************************/
@@ -54,7 +47,7 @@ class StateTree {
 
   static decorators = decorators
 
-  static [$$tree] = {
+  static [$$internal] = {
     state: {
       initial: {},
       keys: []
@@ -62,15 +55,14 @@ class StateTree {
     memoizers: []
   };
 
-  [$$state] = {
+  [$$internal] = {
     state: freeze({ }),
-    memoized: freeze({ }),
+    memoized: { },
     children: [],
     parent: null,
-    pathInParent: null
+    pathInParent: null,
+    subscribers: new ValueMap()
   };
-
-  [$$subscribers] = new ValueMap()
 
   constructor () {
     subscribeMemoizers(this)
@@ -78,66 +70,59 @@ class StateTree {
   }
 
   get state () {
-    return this[$$state].state
-  }
-
-  get memoized () {
-    return this[$$state].memoized
+    return this[$$internal].state
   }
 
   subscribe (callback, ...paths) {
 
-    const subs = this[$$subscribers]
+    const { subscribers } = this[$$internal]
 
     if (!is.func(callback))
       throw new Error('callback argument must be a function')
 
-    if (paths.length === 0)
-      paths.push([])
+    // validated path
+    if (!isArrayOfPaths(paths))
+      throw new Error('paths must be arrays of numbers, strings or symbols')
 
-    for (let path of paths) {
+    for (const path of normalizePaths(paths)) {
 
-      // cast path
-      if (!is.defined(path))
-        path = []
-      else
-        path = wrap(path)
+      const subscription = { callback, tree: this, path }
+      const subscriptions = subscribers.get(path) || []
 
-      // validated path
-      if (path.length > 0 && !is.arrayOf(path, [String, Symbol]))
-        throw new Error('paths must be arrays of strings or symbols')
+      subscribers.set(path, [ ...subscriptions, subscription ])
 
-      const callbacks = subs.has(path) ? subs.get(path) : []
-
-      subs.set(path, callbacks::push(callback))
+      // if (this.parent)
+      //   hoistSubscriber(this, subscription, path)
     }
 
+    return this
   }
 
   unsubscribe (callback) {
-    const subs = this[$$subscribers]
+    const { subscribers } = this[$$internal]
 
-    const paths = [ ...subs.keys() ]
+    const paths = [ ...subscribers.keys() ]
 
     for (const path of paths) {
 
-      const callbacks = subs
+      const subscriptions = subscribers
         .get(path)
-        .filter(existingCallback => !equals(existingCallback, callback))
+        .filter(subscription => !equals(subscription.callback, callback))
 
-      if (callbacks.length === 0)
-        subs.delete(path)
+      if (subscriptions.length === 0)
+        subscribers.delete(path)
       else
-        subs.set(path, callbacks)
+        subscribers.set(path, subscriptions)
     }
 
+    return this
   }
 
   toJSON () {
 
-    const { memoized, state } = this
+    const { state } = this
 
-    return serialize({ ...state, ...memoized })
+    return serialize({ ...state, ...this[$$internal].memoized })
   }
 
   [equals.$$] (other) {
@@ -146,13 +131,21 @@ class StateTree {
 
   [copy.$$] () {
     const clone = new this.constructor()
-    const { state } = this[$$state]
+    const { state } = this[$$internal]
 
-    return applyState(clone, [], state, 'setClonedState')
+    // TODO Should I be copying subscribers as well?
+    // If so, it means that if I copy a state tree, the subscriber
+    // will receive updates from state changes from either the original
+    // or the copy. That seems bad. But then, would I only be copying a state
+    // tree if the previous was being discarded? I don't know man.
+
+    applyState(clone, [], state, 'setClonedState')
+
+    return clone
   }
 
   get root () {
-    let _root = this.parent
+    let _root = this.parent || this
 
     while (_root && _root.parent)
       _root = _root.parent
@@ -161,11 +154,11 @@ class StateTree {
   }
 
   get parent () {
-    return this[$$state].parent
+    return this[$$internal].parent
   }
 
   get children () {
-    return this[$$state].children
+    return this[$$internal].children
   }
 
 }
