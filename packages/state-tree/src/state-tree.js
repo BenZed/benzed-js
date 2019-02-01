@@ -52,7 +52,7 @@ const applyInitialState = (tree, dynamicStateInitial = {}) => {
   applyState(
     tree,
     [],
-    copy({ ...stateInitial, ...dynamicStateInitial }),
+    { ...copy(stateInitial), ...dynamicStateInitial },
     'setInitialState'
   )
 

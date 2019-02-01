@@ -38,8 +38,8 @@ import {
 // } from './store'
 
 import {
-  StateTree, StateTreeObserver, StateTreeProvider, StateTreeListener, StateTreeConsumer
-} from './state-tree'
+  StateTreeObserver, StateTreeProvider, StateTreeListener, StateTreeConsumer
+} from './state-tree-observer'
 
 import {
   isClient, isMobile, isEvent, emToPixels,
@@ -83,7 +83,7 @@ export {
   GlobalStyle, Color, CssUnit, themes,
 
   // State Tree
-  StateTree, StateTreeObserver, StateTreeProvider, StateTreeConsumer,
+  StateTreeObserver, StateTreeProvider, StateTreeConsumer,
   StateTreeListener,
 
   // App

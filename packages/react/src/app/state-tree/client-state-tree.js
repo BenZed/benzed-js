@@ -367,10 +367,7 @@ class ClientStateTree extends StateTree {
   setHost = host => host
 
   @action('auth')
-  setAuth = ({
-    status = this.auth?.status,
-    userId = this.auth?.userId
-  }) => {
+  setAuth = ({ status = this.auth?.status, userId = this.auth?.userId }) => {
 
     if (!this.config.auth)
       throw new Error('config.auth is not enabled, cannot alter auth state.')
@@ -386,7 +383,9 @@ class ClientStateTree extends StateTree {
     if (!this.config.auth)
       return null
 
-    return this.root.users?.get(this.auth.userId)
+    return this.auth.userId
+      ? this.root.users?.get(this.auth.userId)
+      : null
   }
 
   [$$feathers] = null
