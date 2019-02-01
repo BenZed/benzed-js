@@ -23,18 +23,19 @@ const hasOwn = (Type, symbol) => {
 /******************************************************************************/
 // Main
 /******************************************************************************/
-
+//
 const state = (prototype, key, description) => {
 
   // Validate
-
   const Type = prototype.constructor
   if (!is.subclassOf(Type, StateTree))
     throw new Error(
       `@state decorator can only decorate properties on classes extended ` +
       `from StateTree`)
 
-  const value = description.initializer()
+  const value = 'initializer' in description
+    ? description.initializer()
+    : description.value
   if (is.func(value))
     throw new Error(
       `@state decorator can not decorate methods`
@@ -49,26 +50,34 @@ const state = (prototype, key, description) => {
   if (!hasOwn(Type, $$internal))
     Type[$$internal] = copy(Type[$$internal])
 
-  const { state } = Type[$$internal]
+  const { stateInitial, stateKeys } = Type[$$internal]
 
-  state.initial[key] = copy(value)
+  stateInitial[key] = copy(value)
 
-  // if the key already exists in the state definition, we must be changing
-  // the state keys on an extended class
-  if (!state.keys.includes(key)) {
-    state.keys.push(key)
+  if (stateKeys.includes(key))
+    throw new Error(`stateKey ${key.toString()} already registered.`)
 
-    const path = [ $$internal, 'state', key ]
+  stateKeys.push(key)
 
-    return {
-      configurable: false,
-      enumerable: true,
-      get () {
-        return get.mut(this, path)
-      }
+  const path = [ $$internal, 'state', key ]
+
+  return {
+    configurable: false,
+    enumerable: true,
+    get () {
+      return get.mut(this, path)
     }
   }
 }
+
+const stateSymbol = symbol =>
+  (prototype, key, description) => state(prototype, symbol, description)
+
+/******************************************************************************/
+// Extends
+/******************************************************************************/
+
+state.symbol = stateSymbol
 
 /******************************************************************************/
 // Exports

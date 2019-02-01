@@ -2,9 +2,8 @@ import { expect } from 'chai'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import ServiceStateTree, { $$queue } from './service-state-tree'
 import ClientStateTree, { $$feathers } from './client-state-tree'
-import { milliseconds, until } from '@benzed/async'
+import { milliseconds } from '@benzed/async'
 import is from 'is-explicit'
-import { $$state } from '../../state-tree/state-tree'
 import App from '@benzed/app'
 import { Test } from '@benzed/dev'
 
@@ -19,38 +18,37 @@ import { EventEmitter } from 'events'
 // Helper
 /******************************************************************************/
 
-const fakeClientStateTree = () => {}
-fakeClientStateTree[$$state] = {}
-fakeClientStateTree[$$feathers] = { service () { return new EventEmitter() } }
-fakeClientStateTree.connect = () => {}
+const CLIENT_CONFIG = {
+  hosts: 'http://localhost:6000',
+  provider: 'rest'
+}
 
 /******************************************************************************/
 // Tests
 /******************************************************************************/
 
-describe('Service StateTree', () => {
+describe.skip('Service StateTree', () => {
 
   describe('config', () => {
     it('requires a client state tree', () => {
       expect(() => new ServiceStateTree({ client: () => {} }))
-        .to.throw('config.client must be a ClientStateTree')
+        .to.throw('config.client must be of type: ClientStateTree')
     })
     it('requires a service name', () => {
       expect(() => new ServiceStateTree({
-        client: fakeClientStateTree,
+        client: new ClientStateTree(CLIENT_CONFIG),
         serviceName: null })
       ).to.throw('config.serviceName is required')
     })
     it('config gets placed on tree', () => {
       const tree = new ServiceStateTree({
-        client: fakeClientStateTree,
+        client: new ClientStateTree(CLIENT_CONFIG),
         serviceName: 'users'
       })
 
-      expect(tree).to.have.deep.property('config', {
-        client: fakeClientStateTree,
-        serviceName: 'users'
-      })
+      expect(tree).to.have.property('config')
+      expect(tree.config).to.have.property('client')
+      expect(tree.config).to.have.property('serviceName', 'users')
     })
   })
 
@@ -59,63 +57,26 @@ describe('Service StateTree', () => {
     let comments, keys
     before(() => {
       comments = new ServiceStateTree({
-        client: fakeClientStateTree,
+        client: new ClientStateTree(CLIENT_CONFIG),
         serviceName: 'comments'
       })
-      keys = Object.keys(comments[$$state])
+      keys = Object.keys(comments.state)
     })
-    it('has keys: records, forms, timestamp', () => {
-      expect(keys).to.be.deep.equal([ 'records', 'forms', 'timestamp' ])
+    it('has keys: timestamp, fetching', () => {
+      expect(keys).to.be.deep.equal([ 'timestamp', 'fetching' ])
+    })
+    it('has $$records symbol', () => {
+      const symbols = Object.getOwnPropertySymbols(comments.state)
+      expect(symbols.filter(sym => sym.toString().includes('hash-by-id'))).to.have.length(1)
     })
     it('client.timestamp to be a date', () => {
       expect(comments.timestamp).to.be.instanceof(Date)
     })
-    it('client.records is a plain object with a count property', () => {
-      expect(comments.records).to.be.have.property('count', 0)
+    it('client.records is an array', () => {
+      expect(comments.records).to.be.instanceof(Array)
+      expect(comments.records).to.have.length(0)
     })
-    it('state can be extended', () => {
-      const articles = new ServiceStateTree({
-        client: fakeClientStateTree,
-        serviceName: 'articles'
-      }, {
-        bestAuthor: null
-      })
 
-      expect(Object.keys(articles[$$state])).to.be.deep.equal([
-        'records', 'forms', 'timestamp', 'bestAuthor'
-      ])
-    })
-  })
-
-  describe('actions', () => {
-    it('can be extended', () => {
-
-      const thingsWithState = new ServiceStateTree({
-        serviceName: 'things',
-        client: fakeClientStateTree
-      }, {
-        bestThing: null
-      }, {
-        setBestThing (value) {
-          this('bestThing').set(value)
-        }
-      })
-
-      expect(thingsWithState.bestThing).to.be.equal(null)
-      expect(thingsWithState.setBestThing).to.be.instanceof(Function)
-
-    })
-    it('actions argument is intelligent', () => {
-      const thingsWithActionsAndNoState = new ServiceStateTree({
-        serviceName: 'things',
-        client: fakeClientStateTree
-      }, {
-        doThing () {}
-      })
-
-      expect(thingsWithActionsAndNoState[$$state]).to.not.have.property('doThing')
-      expect(thingsWithActionsAndNoState.doThing).to.be.instanceof(Function)
-    })
   })
 
   for (const provider of [ 'express', 'socketio' ])
@@ -165,12 +126,12 @@ describe('Service StateTree', () => {
 
         describe('find()', () => {
           it('asyncronously fills query requests', async () => {
-            messages('records').set({ count: 0 })
+            messages.setRecords([])
             await messages.find()
-            expect(messages.records).to.have.property('count', docs.length)
+            expect(messages.records).to.have.property('length', docs.length)
           })
           it('only queues fetch if query is unique', async () => {
-            messages('records').set({ count: 0 })
+            messages.setRecords([])
 
             messages.find({ _id: { $lt: 5 } })
             expect(queue.items).to.have.length(1)
@@ -187,30 +148,30 @@ describe('Service StateTree', () => {
 
         describe('get()', () => {
           it('syncronously returns a record', async () => {
-            messages('records').set({ count: 0 })
+            messages.setRecords([])
 
             let record = messages.get('0')
             expect(record._id).to.be.equal('0')
-            expect(record.status).to.be.equal('unfetched')
+            expect(record._status).to.be.equal('unfetched')
 
             await messages.untilFetchingComplete()
 
             record = messages.get('0')
-            expect(record.status).to.be.equal('scoped')
+            expect(record._status).to.be.equal('scoped')
             expect(record.body).to.be.equal(`Message number 1!`)
           })
           it('returns an array of records if provided an array of ids', async () => {
-            messages('records').set({ count: 0 })
+            messages.setRecords([])
 
             let msgs = messages.get([ '0', '1' ])
 
-            expect(msgs.map(msg => msg.status))
+            expect(msgs.map(msg => msg._status))
               .to.deep.equal([ 'unfetched', 'unfetched' ])
 
             await messages.untilFetchingComplete()
             msgs = messages.get([ '0', '1' ])
 
-            expect(msgs.map(msg => msg.status))
+            expect(msgs.map(msg => msg._status))
               .to.deep.equal([ 'scoped', 'scoped' ])
           })
           it('only queues a fetch if records haven\'t been fetched yet', async () => {
@@ -225,7 +186,7 @@ describe('Service StateTree', () => {
             await messages.untilFetchingComplete()
 
             record = messages.get('-1')
-            expect(record.status).to.be.equal('unscoped')
+            expect(record._status).to.be.equal('unscoped')
           })
         })
 
@@ -237,7 +198,7 @@ describe('Service StateTree', () => {
           const docs = []
           before(async () => {
             const service = state.api.service('messages')
-            messages('records').set({ count: 0 })
+            messages.setRecords([])
 
             docs.push(
               await service.create({ body: 'New Message!' }),

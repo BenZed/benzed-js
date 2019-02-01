@@ -11,11 +11,50 @@ import is from 'is-explicit'
 
 const { freeze } = Object
 
-const applyInitialState = tree => {
+function runAction (...args) {
 
-  const { initial } = tree.constructor[$$internal].state
+  const [ tree, action, path ] = this
 
-  applyState(tree, [], copy(initial), 'setInitialState')
+  const result = action(...args)
+
+  return is(result, Promise)
+    ? result.then(resolved => applyState(tree, path, resolved, action.name))
+    : applyState(tree, path, result, action.name)
+}
+
+const bindActions = tree => {
+
+  const { actions } = tree.constructor[$$internal]
+
+  for (const { key, func, call, path } of actions) {
+
+    const action = call ? tree::func() : tree::func
+    Object.defineProperty(action, 'name', {
+      value: key.toString()
+    })
+
+    tree[$$internal].actions[key] = [ tree, action, path ]::runAction
+
+    Object.defineProperty(tree[$$internal].actions[key], 'name', {
+      value: 'action bound ' + key.toString()
+    })
+  }
+
+}
+
+const applyInitialState = (tree, dynamicStateInitial = {}) => {
+
+  if (!is.plainObject(dynamicStateInitial))
+    throw new Error('initial state must be a plain object')
+
+  const { stateInitial } = tree.constructor[$$internal]
+
+  applyState(
+    tree,
+    [],
+    copy({ ...stateInitial, ...dynamicStateInitial }),
+    'setInitialState'
+  )
 
 }
 
@@ -33,6 +72,7 @@ const subscribeMemoizers = tree => {
     Object.defineProperty(memoizer, 'name', { value: `memoized get ${key}` })
     tree.subscribe(memoizer, ...paths)
   }
+
 }
 
 /******************************************************************************/
@@ -48,25 +88,26 @@ class StateTree {
   static decorators = decorators
 
   static [$$internal] = {
-    state: {
-      initial: {},
-      keys: []
-    },
+    stateInitial: {},
+    stateKeys: [],
+    actions: [],
     memoizers: []
   };
 
   [$$internal] = {
     state: freeze({ }),
     memoized: { },
+    actions: { },
     children: [],
     parent: null,
     pathInParent: null,
     subscribers: new ValueMap()
   };
 
-  constructor () {
+  constructor (dynamicInitial) {
+    bindActions(this)
     subscribeMemoizers(this)
-    applyInitialState(this)
+    applyInitialState(this, dynamicInitial)
   }
 
   get state () {
@@ -80,7 +121,6 @@ class StateTree {
     if (!is.func(callback))
       throw new Error('callback argument must be a function')
 
-    // validated path
     if (!isArrayOfPaths(paths))
       throw new Error('paths must be arrays of numbers, strings or symbols')
 
@@ -90,9 +130,6 @@ class StateTree {
       const subscriptions = subscribers.get(path) || []
 
       subscribers.set(path, [ ...subscriptions, subscription ])
-
-      // if (this.parent)
-      //   hoistSubscriber(this, subscription, path)
     }
 
     return this

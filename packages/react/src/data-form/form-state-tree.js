@@ -1,5 +1,7 @@
-import StateTree from '../state-tree'
+import StateTree, { state, action, memoize } from '@benzed/state-tree'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
+
+import UiStateTree from '../app/state-tree/ui-state-tree'
 
 import { equals, set, get, copy, serialize } from '@benzed/immutable'
 import { last } from '@benzed/array'
@@ -13,9 +15,9 @@ import is from 'is-explicit'
 // Helper
 /******************************************************************************/
 
-const { defineProperties, freeze } = Object
+const { defineProperty, freeze } = Object
 
-function pushToSessionStorage (state = this) {
+function pushToSessionStorage (state) {
 
   const form = this
   const { historyStorageKey, ui } = form.config
@@ -26,33 +28,9 @@ function pushToSessionStorage (state = this) {
 
 }
 
-function applyFromSessionStorage () {
-
-  const form = this
-  const { historyStorageKey, ui } = form.config
-
-  const { history, historyIndex, current } = ui.session.getItem(historyStorageKey) || {}
-  if (![history, historyIndex, current].every(is.defined))
-    return
-
-  const [ state, setState ] = form()
-  setState(state::copy(state => {
-    state.history = history
-    state.current = current
-    state.historyIndex = historyIndex
-  }))
-}
-
 /******************************************************************************/
 // Validation
 /******************************************************************************/
-
-const mustBeUiStateTree = value =>
-  is.defined(value)
-    ? is.func(value.navigate)
-      ? value
-      : throw new Error('must be a ui state tree')
-    : value
 
 const alsoNeedsUiStateTree = (value, ctx) =>
   is.defined(value)
@@ -68,27 +46,33 @@ const validate = <object key='form' plain strict >
   <object key='actions' plain default={{}} />
   <number key='historyMaxCount' default={256} />
   <string key='historyStorageKey' validate={alsoNeedsUiStateTree} />
-  <func key='ui' validate={mustBeUiStateTree} />
+  <UiStateTree key='ui' />
   <func key='submit' required />
 
 </object>
 
 /******************************************************************************/
-// Actions and State
+// Main
 /******************************************************************************/
 
-const STATE = {
+class FormStateTree extends StateTree {
 
-  current: null,
-  original: null,
-  upstream: null,
+  @state
+  current = {}
 
-  history: [],
-  historyIndex: 0
-}
+  @state
+  original = {}
 
-const ACTIONS = {
+  @state
+  upstream = {}
 
+  @state
+  history = []
+
+  @state
+  historyIndex = 0
+
+  @action
   editCurrent (path, value) {
 
     if (!is.defined(path))
@@ -97,19 +81,20 @@ const ACTIONS = {
     if (!is.defined(value))
       throw new Error('value is required')
 
-    const [ current, setCurrent ] = this('current')
-
     if (is.func(value))
-      value = value(current::get(path))
+      value = value(this.current::get(path))
 
-    setCurrent(current::set(path, value))
+    const current = this.current::set(path, value)
+
+    const state = { ...this.state, current }
 
     if (this.config.historyStorageKey)
-      this::pushToSessionStorage()
+      this::pushToSessionStorage(state)
 
-    return this
-  },
+    return state
+  }
 
+  @action
   pushCurrent () {
 
     const {
@@ -118,45 +103,35 @@ const ACTIONS = {
 
     const requiresPush = hasUnpushedHistory || hasChangesToCurrent
     if (!requiresPush)
-      return this
+      return this.state
 
-    const [ state, setState ] = this()
     const { historyMaxCount } = this.config
 
-    setState(state::copy(state => {
+    const state = copy(this.state)
 
-      // remove any future states that might exist as a result of undoing
-      state.history.length = min(state.history.length, state.historyIndex + 1)
+    // remove any future states that might exist as a result of undoing
+    state.history.length = min(state.history.length, state.historyIndex + 1)
 
-      // don't repeat history
-      const currentMatchesLast = last(state.history)::equals(state.current)
-      if (!currentMatchesLast)
-        state.history.push(state.current::copy())
+    // don't repeat history
+    const currentMatchesLast = last(state.history)::equals(state.current)
+    if (!currentMatchesLast)
+      state.history.push(state.current::copy())
 
-      // ensure we don't have too many states
-      while (state.history.length > historyMaxCount)
-        state.history.shift()
+    // ensure we don't have too many states
+    while (state.history.length > historyMaxCount)
+      state.history.shift()
 
-      // after pushing, history index should always be at the end
-      state.historyIndex = state.history.length - 1
+    // after pushing, history index should always be at the end
+    state.historyIndex = state.history.length - 1
 
-      if (this.config.historyStorageKey)
-        this::pushToSessionStorage(state)
+    if (this.config.historyStorageKey)
+      this::pushToSessionStorage(state)
 
-    }))
+    return state
+  }
 
-    return this
-
-  },
-
-  setUpstream (object) {
-
-    const serialized = serialize(object)
-
-    this('upstream').set(serialized)
-
-    return this
-  },
+  @action('upstream')
+  setUpstream = object => serialize(object)
 
   async pushUpstream () {
 
@@ -170,149 +145,130 @@ const ACTIONS = {
       this.setUpstream(upstream)
       this.revertToUpstream()
     }
+  }
 
-    return this
-  },
-
+  @action('current')
   revertCurrentToOriginal () {
     if (!this.hasChangesToCurrent)
-      return this
+      return this.current
 
     this.pushCurrent()
 
-    const { set: setCurrent } = this('current')
+    return this.original::copy()
+  }
 
-    setCurrent(this.original::copy())
-    return this
-  },
-
+  @action
   revertToUpstream () {
     if (!this.hasChangesToUpstream)
       return this
 
     this.pushCurrent()
 
-    const [ state, setState ] = this()
-
-    setState(state::copy(state => {
+    return this.state::copy(state => {
       state.original = state.upstream::copy()
       state.current = state.upstream::copy()
-    }))
+    })
 
-    return this
-  },
+  }
 
+  @action
   applyHistoryToCurrent (index) {
 
-    const [ state, setState ] = this()
+    if (this.state.history.length === 0)
+      return this.state
 
-    if (state.history.length === 0)
-      return this
+    index = clamp(index, 0, this.state.history.length - 1)
+    if (this.state.historyIndex === index)
+      return this.state
 
-    index = clamp(index, 0, state.history.length - 1)
-    if (state.historyIndex === index)
-      return this
-
-    setState(state::copy(state => {
+    return this.state::copy(state => {
       state.current = state.history[index]::copy()
       state.historyIndex = index
-    }))
-
-    return this
-  },
+    })
+  }
 
   undoEditCurrent () {
     if (this.historyIndex === 0)
       this.revertCurrentToOriginal()
     else
       this.applyHistoryToCurrent(this.historyIndex - 1)
-
-    return this
-  },
+  }
 
   redoEditCurrent () {
     this.applyHistoryToCurrent(this.historyIndex + 1)
-
-    return this
   }
-}
 
-/******************************************************************************/
-// Main
-/******************************************************************************/
+  @action
+  applyFromSessionStorage = () => {
 
-function FormStateTree (config = {}) {
+    const { historyStorageKey, ui } = this.config
 
-  const { data, state, actions, ...rest } = validate(config)
+    const { history, historyIndex, current } = ui.session.getItem(historyStorageKey) || {}
 
-  const tree = new StateTree({
-    ...state,
-    ...STATE,
-    original: serialize(data),
-    current: serialize(data),
-    upstream: serialize(data)
-  }, {
-    ...actions,
-    ...ACTIONS
-  })
+    return [history, historyIndex, current].every(is.defined)
+      ? this.state::copy(state => {
+        state.history = history
+        state.current = current
+        state.historyIndex = historyIndex
+      })
+      : this.state
+  }
 
-  defineProperties(tree, {
+  @memoize('current', 'original')
+  get hasChangesToCurrent () {
+    const { current, original } = this
 
-    hasUnpushedHistory: {
-      get () {
-        const { history, historyIndex } = this
-        return history.length > 0 &&
-          historyIndex < (history.length - 1)
-      }
-    },
+    return !equals(current, original)
+  }
 
-    hasChangesToCurrent: {
-      get () {
-        const { current, original } = this
+  @memoize('upstream', 'original')
+  get hasChangesToUpstream () {
+    const { upstream, original } = this
+    return !equals(upstream, original)
+  }
 
-        return !equals(current, original)
-      }
-    },
+  get hasUnpushedHistory () {
+    const { history, historyIndex } = this
+    return history.length > 0 &&
+      historyIndex < (history.length - 1)
+  }
 
-    hasChangesToUpstream: {
-      get () {
-        const { upstream, original } = this
-        return !equals(upstream, original)
-      }
-    },
+  get canRedoEditCurrent () {
+    return this.historyIndex < this.history.length - 1
+  }
 
-    canUndoEditCurrent: {
-      get () {
-        return this.historyIndex > 0 || this.hasChangesToCurrent
-      }
-    },
+  get canUndoEditCurrent () {
+    return this.historyIndex > 0 || this.hasChangesToCurrent
+  }
 
-    canRedoEditCurrent: {
-      get () {
-        return this.historyIndex < this.history.length - 1
-      }
-    },
+  constructor (config = {}) {
 
-    config: {
-      value: freeze(rest)
+    const { data, state, actions, ...rest } = validate(config)
+
+    super({
+      original: serialize(data),
+      upstream: serialize(data),
+      current: serialize(data)
+    })
+
+    defineProperty(this, 'config', { value: freeze(rest) })
+
+    const usingStorage = this.config.ui && this.config.historyStorageKey
+    if (usingStorage) {
+
+      this.config.ui.subscribe(
+        this.applyFromSessionStorage,
+        [ 'session', 'data', this.config.historyStorageKey ]
+      )
+
+      this.applyFromSessionStorage()
     }
-
-  })
-
-  const usingStorage = tree.config.ui && tree.config.historyStorageKey
-  if (usingStorage) {
-    const applyStorageToTree = tree::applyFromSessionStorage
-
-    tree.config.ui.subscribe(
-      applyStorageToTree,
-      [ 'session', 'data', tree.config.historyStorageKey ]
-    )
-
-    applyStorageToTree()
   }
 
-  return tree
-
+  [copy.$$] () {
+    const FormStateTree = this.constructor
+    return new FormStateTree(this.config)
+  }
 }
 
 /******************************************************************************/

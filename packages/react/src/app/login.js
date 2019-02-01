@@ -13,7 +13,7 @@ import { equals } from '@benzed/immutable'
 import { isEvent } from '../util'
 import is from 'is-explicit'
 
-import { StateTreeConsumer } from '../state-tree'
+import { StateTreeConsumer } from '../state-tree-observer'
 
 /******************************************************************************/
 // Validation

@@ -124,7 +124,6 @@ class PromiseQueue {
     this[$$next]()
 
     return item.complete
-
   }
 
   clear (err = 'Cancelled') {

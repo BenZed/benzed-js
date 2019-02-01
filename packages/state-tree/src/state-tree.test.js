@@ -6,6 +6,7 @@ import { first } from '@benzed/array'
 import { clamp } from '@benzed/math'
 
 import { memoize, state, action } from './decorators'
+import { $$internal } from './util'
 
 import is from 'is-explicit'
 
@@ -44,7 +45,6 @@ class ScoreCard extends StateTree {
     return scores
       .reduce((sum, value) => sum + value) / scores.length
   }
-
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -55,6 +55,52 @@ describe('StateTree', () => {
   it('is a class', () => {
     expect(StateTree).to.be.instanceof(Function)
     expect(StateTree).to.throw('invoked without \'new\'')
+  })
+
+  describe('construct', () => {
+
+    class Flag extends StateTree {
+
+      @state colors = [ 'red', 'white', 'blue' ]
+
+      @state country = 'murica'
+
+      @state waving = false
+
+      @memoize('waving')
+      get isTraitor () {
+        return !this.waving
+      }
+
+    }
+
+    it('initializes tree with static initial state', () => {
+      const flag = new Flag()
+
+      expect(flag.waving).to.be.equal(false)
+      expect(flag.colors).to.be.deep.equal(['red', 'white', 'blue'])
+      expect(flag.country).to.be.equal('murica')
+      expect(flag.isTraitor).to.be.equal(true, 'wave that flag soldier')
+    })
+
+    it('state can be provided to constructor to override static', () => {
+      const flag = new Flag({
+        colors: [ 'red', 'white' ],
+        country: 'canada',
+        waving: true
+      })
+
+      expect(flag.waving).to.be.equal(true, 'why aintcha wavin that flag bud')
+      expect(flag.colors).to.be.deep.equal([ 'red', 'white' ], 'no maple leaf buds')
+      expect(flag.country).to.be.equal('canada')
+      expect(flag.isTraitor).to.be.equal(!flag.waving, 'yer a fuckin traitor bud')
+    })
+
+    it('throws if provided initial state is not a plain object', () => {
+      expect(() => new Flag('franceh doesn\'t know to construct objects'))
+        .to.throw('initial state must be a plain object')
+    })
+
   })
 
   describe('subscribe()', () => {
@@ -127,6 +173,10 @@ describe('StateTree', () => {
 
       it('restricts state changes to ones matching path', () => {
         expect(thing1.notifies).to.be.equal(3)
+      })
+
+      it('can listen to blank paths', () => {
+        expect(() => scores.subscribe(() => {}, [])).to.not.throw(Error)
       })
 
       it('can listen to multiple paths', () => {
@@ -408,6 +458,28 @@ describe('StateTree', () => {
 
   describe('$$equals', () => {
     it('is a method')
+  })
+
+  describe('bug fixes', () => {
+    it('state trees should work with dates in state', () => {
+
+      class Clock extends StateTree {
+
+        @state
+        time = new Date()
+
+        @action('time')
+        setTime = input => (is.date(input)
+          ? input
+          : new Date(input))
+
+      }
+
+      const clock = new Clock()
+
+      expect(clock.time).to.be.instanceof(Date, 'clock.time is not a Date')
+
+    })
   })
 
 })

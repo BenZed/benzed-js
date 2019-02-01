@@ -1,13 +1,11 @@
 import React from 'react'
 import { expect } from 'chai'
 
-import StateTree, { $$state } from './state-tree'
 import Observer from './observer'
 
 import renderer from 'react-test-renderer'
 
-import { push, get } from '@benzed/immutable'
-import { milliseconds } from '@benzed/async'
+import StateTree, { state, action } from '@benzed/state-tree'
 /* eslint-disable react/prop-types */
 
 /******************************************************************************/
@@ -18,16 +16,20 @@ import { milliseconds } from '@benzed/async'
 /* global describe it before after beforeEach afterEach */
 
 describe('Observer component', () => {
+
+  class Messages extends StateTree {
+
+    @state
+    all = []
+
+    @action('all')
+    addMessage = value => [ ...this.all, value ]
+
+  }
+
   let messages
   before(() => {
-    messages = new StateTree({
-      all: []
-    }, {
-      addMessage (value) {
-        const [ all, setAll ] = this('all')
-        setAll(all::push(value))
-      }
-    })
+    messages = new Messages()
   })
 
   describe('basic usage', () => {

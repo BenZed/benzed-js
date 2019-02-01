@@ -3,11 +3,12 @@ import FetchService from '@feathersjs/rest-client/lib/fetch'
 import SocketIOService from '@feathersjs/transport-commons/client'
 import authentication from '@feathersjs/authentication-client'
 
+import StateTree, { action, memoize, state } from '@benzed/state-tree'
+
 import is from 'is-explicit'
 import fetch from 'isomorphic-fetch'
 import io from 'socket.io-client'
 
-import { StateTree } from '../../state-tree'
 import { storage } from '../../util'
 
 import { copy } from '@benzed/immutable'
@@ -72,7 +73,7 @@ const mustIncludeProtocol = host =>
     ? host
     : throw new Error('Host must include http(s) protocol.')
 
-const validateConfig = <object required='ClientStore configuration is required.'>
+const validateConfig = <object required='ClientStateTree configuration is required.'>
 
   <array key='hosts'
     cast
@@ -169,7 +170,7 @@ async function connectRest () {
   }
 
   if (newHost)
-    tree('host').set(newHost)
+    tree.setHost(newHost)
 
   const hostWasFound = !!newHost
   return hostWasFound
@@ -265,7 +266,6 @@ async function connectSocketIO () {
 
   const tree = this
   const { hosts } = tree.config
-  const { set: setHost } = tree('host')
 
   const feathers = tree[$$feathers]
   const { io } = feathers
@@ -275,7 +275,7 @@ async function connectSocketIO () {
 
   io._initialConnectAttempted = true
 
-  setHost(null)
+  tree.setHost(null)
 
   for (const host of hosts) {
     await io::trySocketHost(host)
@@ -283,7 +283,7 @@ async function connectSocketIO () {
       break
   }
 
-  setHost(io.connected ? io.io.uri : null)
+  tree.setHost(io.connected ? io.io.uri : null)
 
   return io.connected
 }
@@ -326,12 +326,10 @@ async function authenticate (data) {
   const tree = this
   const feathers = tree[$$feathers]
 
-  const { set: setAuth } = tree('auth')
-
-  setAuth({ userId: null, status: 'authenticating' })
-
-  if (tree.userId)
+  if (tree.auth?.userId)
     await tree.logout()
+
+  tree.setAuth({ userId: null, status: 'authenticating' })
 
   let userId = null
   let status = null
@@ -347,25 +345,52 @@ async function authenticate (data) {
       status = { name, message, code, errors }
   }
 
-  setAuth({ userId, status })
+  tree.setAuth({ userId, status })
 
   return userId
 
 }
 
 /******************************************************************************/
-// Setup
+// Main
 /******************************************************************************/
 
-const STATE = {
-  host: null,
-  auth: {
-    status: null,
-    userId: null
-  }
-}
+class ClientStateTree extends StateTree {
 
-const ACTIONS = {
+  @state
+  host = null
+
+  @state
+  auth = null;
+
+  @action('host')
+  setHost = host => host
+
+  @action('auth')
+  setAuth = ({
+    status = this.auth?.status,
+    userId = this.auth?.userId
+  }) => {
+
+    if (!this.config.auth)
+      throw new Error('config.auth is not enabled, cannot alter auth state.')
+
+    return {
+      status,
+      userId
+    }
+  }
+
+  @memoize(['auth', 'userId'])
+  get user () {
+    if (!this.config.auth)
+      return null
+
+    return this.root.users?.get(this.auth.userId)
+  }
+
+  [$$feathers] = null
+  config = null
 
   async connect () {
 
@@ -389,11 +414,13 @@ const ACTIONS = {
     }
 
     return this.host
-  },
+  }
 
   login (email, password) {
 
-    const { provider } = this.config
+    const { provider, auth } = this.config
+    if (!auth)
+      throw new Error('config.auth is not enabled, cannot login')
 
     if (!this.host)
       throw new Error(provider === 'rest'
@@ -405,11 +432,13 @@ const ACTIONS = {
 
     return this::authenticate(data)
 
-  },
+  }
 
   logout () {
 
-    const { provider } = this.config
+    const { provider, auth } = this.config
+    if (!auth)
+      throw new Error('config.auth is not enabled, cannot logout')
 
     if (!this.host)
       throw new Error(provider === 'rest'
@@ -417,40 +446,29 @@ const ACTIONS = {
         : 'Not connected to host.'
       )
 
-    this('auth').set({ userId: null, status: null })
+    this.setAuth({ userId: null, status: null })
 
     return this[$$feathers].logout()
   }
 
-}
+  constructor (config) {
 
-/******************************************************************************/
-// Main
-/******************************************************************************/
+    super()
 
-function ClientStateTree (config) {
+    defineProperty(this, 'config', {
+      value: freeze(validateConfig(config::copy())),
+      enumerable: true,
+      writable: false
+    })
 
-  // config = config |> copy |> validateConfig |> freeze
-  config = freeze(validateConfig(copy(config)))
+    defineProperty(this, $$feathers, {
+      value: createFeathersClient(this),
+      writable: false
+    })
 
-  const state = { ...STATE }
-  const actions = { ...ACTIONS }
-
-  if (!config.auth) {
-    delete state.auth
-    delete actions.login
-    delete actions.logout
+    if (this.config.auth)
+      this.setAuth({ userId: null, status: null })
   }
-
-  const tree = new StateTree(
-    state,
-    actions
-  )
-
-  defineProperty(tree, 'config', { value: config, enumerable: true })
-  defineProperty(tree, $$feathers, { value: createFeathersClient(tree) })
-
-  return tree
 
 }
 

@@ -1,8 +1,8 @@
-import { StateTree } from '../../state-tree'
+import StateTree, { state, action } from '@benzed/state-tree'
 import storage from '../../util/storage'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { copy } from '@benzed/immutable'
+import { copy, set } from '@benzed/immutable'
 
 import querystring from 'query-string'
 
@@ -27,44 +27,49 @@ const { defineProperty } = Object
 // StorageStateTree
 /******************************************************************************/
 
-const STORAGE_ACTIONS = {
+class StorageStateTree extends StateTree {
 
+  @state
+  data = {}
+
+  @action('data')
   setItem (key, value) {
-    const tree = this
 
-    const { store } = tree
-    const { prefix } = tree.config
+    const { store } = this
+    const { prefix } = this.config
 
     storage[store].setItem(`${prefix}-${key}`, value)
-    tree(['data', key]).set(value)
-  },
+
+    return this.data::set(key, value)
+  }
 
   getItem (key) {
     return this.data[key]
-  },
+  }
 
+  @action('data')
   removeItem (key) {
-    const tree = this
-    const { store } = tree
-    const { prefix } = tree.config
 
-    const [ data, setData ] = tree('data')
+    const { store } = this
+    const { prefix } = this.config
+    const { data } = this.state
 
     if (key in data === false)
-      return
+      return this.state
 
     storage[store].removeKey(`${prefix}-${key}`)
 
     const newData = copy(data)
     delete newData[key]
 
-    setData(newData)
-  },
+    return newData
+  }
 
+  @action('data')
   clear () {
-    const tree = this
-    const { store } = tree
-    const { prefix } = tree.config
+
+    const { store } = this
+    const { prefix } = this.config
 
     // only remove keys with prefix
     for (let i = 0; i < storage[store].length; i++) {
@@ -75,47 +80,53 @@ const STORAGE_ACTIONS = {
       storage[store].removeItem(key)
     }
 
-    tree('data').set({})
-  },
+    return {}
+  }
 
   key (i) {
-    const tree = this
-    const { data } = tree
+    const { data } = this
 
     return Object.keys(data)[i]
   }
 
-}
+  constructor (store, config) {
 
-function StorageStateTree (store, config) {
+    const data = {}
 
-  const data = {}
+    // populate data
+    for (let i = 0; i < storage[store].length; i++) {
+      const key = storage[store].key(i)
+      if (key.indexOf(config.prefix) !== 0)
+        continue
 
-  // populate data
-  for (let i = 0; i < storage[store].length; i++) {
-    const key = storage[store].key(i)
-    if (key.indexOf(config.prefix) !== 0)
-      continue
+      data[key.replace(config.prefix + '-', '')] = storage[store].getItem(key)
+    }
 
-    data[key.replace(config.prefix + '-', '')] = storage[store].getItem(key)
+    super({ data })
+
+    defineProperty(this, 'config', { value: config, enumerable: true })
+    defineProperty(this, 'store', { value: store, enumerable: true })
+
   }
 
-  const stateTree = new StateTree({
-    data
-  },
-  STORAGE_ACTIONS)
+  [copy.$$] () {
+    const StorageStateTree = this.constructor
+    return new StorageStateTree(this.store, this.config)
+  }
 
-  defineProperty(stateTree, 'config', { value: config, enumerable: true })
-  defineProperty(stateTree, 'store', { value: store, enumerable: true })
-
-  return stateTree
 }
 
 /******************************************************************************/
-// State and Actions
+// UiStateTree
 /******************************************************************************/
 
-const UI_ACTIONS = {
+class UiStateTree extends StateTree {
+
+  @state
+  local = null
+
+  @state
+  session = null
 
   navigate (to, query = {}) {
 
@@ -128,28 +139,17 @@ const UI_ACTIONS = {
 
   }
 
-}
+  constructor (config) {
 
-/******************************************************************************/
-// UiStateTree
-/******************************************************************************/
+    config = validateConfig(config)
 
-function UiStateTree (config = {}, state = {}, actions = {}) {
+    super({
+      local: new StorageStateTree('local', config),
+      session: new StorageStateTree('session', config)
+    })
 
-  config = validateConfig(config)
-
-  const stateTree = new StateTree({
-    local: new StorageStateTree('local', config),
-    session: new StorageStateTree('session', config),
-    ...state
-  }, {
-    ...UI_ACTIONS,
-    ...actions
-  })
-
-  defineProperty(stateTree, 'config', { value: config, enumerable: true })
-
-  return stateTree
+    defineProperty(this, 'config', { value: config, enumerable: true })
+  }
 
 }
 

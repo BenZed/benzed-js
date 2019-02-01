@@ -150,6 +150,55 @@ describe('@action decorator', () => {
         .to.throw('must return a full state')
     })
 
+    it('actions are bound to tree', () => {
+
+      let arrowThis
+      let funcThis
+
+      class Compass extends StateTree {
+
+        @state direction = 0
+
+        @action('direction')
+        changeDirArrow = sun => {
+          arrowThis = this
+          return sun.angleInSky
+        }
+
+        @action('direction')
+        changeDirFunc (sun) {
+          funcThis = this
+          return sun.angleInSky
+        }
+
+      }
+
+      class Sun extends StateTree {
+
+        @state angleInSky = 0
+
+        @action('angleInSky')
+        setAngleInSky = angle => angle
+
+      }
+
+      const sun = new Sun()
+      const compass = new Compass()
+
+      sun.subscribe(compass.changeDirArrow)
+      sun.setAngleInSky(50)
+
+      expect(arrowThis).to.be.equal(compass)
+      expect(compass.direction).to.be.equal(50)
+
+      sun.subscribe(compass.changeDirFunc)
+      sun.setAngleInSky(35)
+
+      expect(funcThis).to.be.equal(compass)
+      expect(compass.direction).to.be.equal(35)
+
+    })
+
   })
 
 })

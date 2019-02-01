@@ -1,5 +1,6 @@
-import StateTree, { $$state } from '../../state-tree/state-tree'
-import { $$feathers } from './client-state-tree'
+import StateTree, { state, action, memoize } from '@benzed/state-tree'
+
+import ClientStateTree, { $$feathers } from './client-state-tree'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap, unwrap } from '@benzed/array'
@@ -19,6 +20,7 @@ import is from 'is-explicit'
 
 const $$queue = Symbol('query-queue')
 const $$prunable = Symbol('data-is-prunable')
+const $$records = Symbol('records-as-hash-by-id')
 
 const PARALLEL_QUERIES = 10
 
@@ -34,19 +36,6 @@ const STATUSES = {
 
 const { defineProperty } = Object
 
-const getRecordsCount = records => {
-
-  let count = 0
-  let _ // eslint-disable-line no-unused-vars
-  for (_ in records)
-    count += 1
-
-  if ('count' in records)
-    count--
-
-  return count
-}
-
 const idsMissing = (records, ids) => {
   for (const id of ids)
     if (id in records === false)
@@ -57,15 +46,15 @@ const idsMissing = (records, ids) => {
 
 const ensureRecords = (records, ids) => {
 
+  records = { ...records }
+
   let ensured = null
 
   for (const id of ids)
     if (id in records === false) {
       ensured = ensured || []
-      records[id] = { status: STATUSES.Unfetched, _id: id }
+      records[id] = { _status: STATUSES.Unfetched, _id: id }
     }
-
-  records.count = getRecordsCount(records)
 
   return records
 
@@ -98,9 +87,18 @@ class QueryQueue extends PromiseQueue {
 
   static Item = QueryQueueItem
 
-  constructor () {
+  tree = null
+
+  constructor (tree) {
     super(PARALLEL_QUERIES)
+    this.tree = tree
   }
+
+  onNext () {
+    this.tree.setFetching(this.count > 0)
+  }
+
+  onDone = this.onNext
 
 }
 
@@ -108,19 +106,16 @@ async function executeQueryWithData () {
 
   const item = this
   const { data } = item
-
   const { method, arg, tree } = data
-
   const { client, serviceName: service } = tree.config
 
   const explicitIds = getIdsFromQuery(arg.query)
   if (explicitIds && idsMissing(tree.records, explicitIds)) {
 
-    const [ records, setRecords ] = tree('records')
+    const records = tree.state[$$records]
 
-    const ensured = ensureRecords(records::copy(), explicitIds)
-    setRecords(ensured)
-
+    const ensured = ensureRecords(records, explicitIds)
+    tree.setRecords(ensured)
   }
 
   let results
@@ -149,30 +144,25 @@ async function executeQueryWithData () {
     changes.push(data)
   }
 
-  const [ records, setRecords ] = tree('records')
+  const records = ensureRecords(tree.state[$$records], ids)
 
-  setRecords(records::copy(records => {
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i]
+    const data = changes[i]
 
-    ensureRecords(records, ids)
-
-    for (let i = 0; i < ids.length; i++) {
-      const id = ids[i]
-      const data = changes[i]
-
-      records[id] = {
-        ...records[id],
-        ...data,
-        status: STATUSES.Scoped
-      }
+    records[id] = {
+      ...records[id],
+      ...data,
+      _status: STATUSES.Scoped
     }
+  }
 
-    if (explicitIds) for (const explicitId of explicitIds)
-      if (!ids.includes(explicitId))
-        records[explicitId].status = STATUSES.Unscoped
+  if (explicitIds) for (const explicitId of explicitIds)
+    if (!ids.includes(explicitId))
+      records[explicitId]._status = STATUSES.Unscoped
 
-  }))
-
-  tree('timestamp').set(new Date())
+  tree.setRecords(records)
+  tree.updateTimestamp()
 
   return results
 }
@@ -199,9 +189,9 @@ function ensureFetching (query) {
 function requiresFetch (id) {
 
   const tree = this
-  const record = tree.records[id]
+  const record = tree.state[$$records][id]
 
-  return !record || record.status === STATUSES.Unfetched
+  return !record || record._status === STATUSES.Unfetched
 }
 
 const getIdsFromQuery = query => {
@@ -239,63 +229,16 @@ const getDataDifferences = (edit, original) => {
 // Validation
 /******************************************************************************/
 
-const isClientStateTree = value =>
-  !is.defined(value)
-    ? value
-    : $$feathers in value && $$state in value && is.func(value.connect)
-      ? value
-      : throw new Error('must be a ClientStateTree.')
-
 const validateConfig = <object key='config' plain strict >
-  <func key='client' required validate={isClientStateTree} />
+  <ClientStateTree key='client' required />
   <string key='serviceName' required />
 </object>
-
-const validateActions = <object plain key='actions' default={{}} />
-const validateState = <object plain key='state' default={{}} />
 
 /******************************************************************************/
 // Setup
 /******************************************************************************/
 
-const STATE = {
-
-  records: { count: 0 },
-  forms: { count: 0 },
-
-  timestamp: new Date()
-}
-
 const ACTIONS = {
-
-  get (id) {
-    const tree = this
-    const ids = wrap(id)
-    if (!ids.every(is.defined))
-      throw new Error('ids cannot be null or undefined')
-
-    const fetchIds = ids
-      .filter(tree::requiresFetch)
-
-    if (fetchIds.length > 0) {
-      const _id = fetchIds.length > 1
-        ? { $in: fetchIds }
-        : unwrap(fetchIds)
-
-      tree::ensureFetching({ _id })
-    }
-
-    if (fetchIds.length > 0) {
-      const [ records, setRecords ] = tree('records')
-      const ensured = ensureRecords(copy(records), fetchIds)
-      setRecords(ensured)
-    }
-
-    return is.array(id)
-      ? ids.map(id => tree.records[id])
-      : tree.records[id]
-
-  },
 
   patch (id, data) {
 
@@ -310,10 +253,6 @@ const ACTIONS = {
       .service(service)
       .patch(id, differences)
 
-  },
-
-  find (query = {}) {
-    return this::ensureFetching(query)
   },
 
   untilFetchingComplete () {
@@ -382,8 +321,6 @@ function handleEvents ({ client, serviceName }) {
       status: STATUSES.Scoped
     }
 
-    records.count = getRecordsCount(records)
-
     setRecords(records)
     setTimestamp(new Date())
   }
@@ -418,35 +355,114 @@ function handleEvents ({ client, serviceName }) {
 // Main
 /******************************************************************************/
 
-function ServiceStateTree (config, state, actions) {
+class ServiceStateTree extends StateTree {
 
-  if (!actions && is.objectOf.func(state)) {
-    actions = state
-    state = null
+  config = null
+
+  @state.symbol($$records)
+  $$records = {}
+
+  @state
+  timestamp = null
+
+  @state
+  fetching = false
+
+  @action('timestamp')
+  updateTimestamp = () => new Date()
+
+  @action('fetching')
+  setFetching = value => !!value
+
+  @action($$records)
+  setRecords = records => {
+
+    if (is.array(records)) {
+      const hash = {}
+      for (const record of records)
+        hash[record.id || record._id] = record
+      records = hash
+    }
+
+    return records
   }
 
-  config = validateConfig(config)
-  state = validateState(state)
-  actions = validateActions(actions)
+  @memoize($$records)
+  get records () {
+    return Object.values(this.state[$$records])
+  }
 
-  const tree = new StateTree(
-    { ...STATE, ...state },
-    { ...ACTIONS, ...actions }
-  )
+  @memoize($$records)
+  get forms () {
+    return Object
+      .values(this.state[$$records])
+      .map(record => record._form)
+      .filter(is.defined)
+  }
 
-  tree::handleEvents(config)
+  /* Feathers Interface */
 
-  defineProperty(tree, 'config', { value: config, enumerable: true })
-  defineProperty(tree, $$queue, { value: new QueryQueue(), enumerable: true })
-  defineProperty(tree, 'all', {
-    get () {
-      const { count, ...records } = this.records
-      return Object.values(records)
-    },
-    enumerable: true
-  })
+  find (query = {}) {
+    return this::ensureFetching(query)
+  }
 
-  return tree
+  get (id) {
+
+    const ids = wrap(id)
+    if (!ids.every(is.defined))
+      throw new Error('ids cannot be null or undefined')
+
+    const fetchIds = ids
+      .filter(this::requiresFetch)
+
+    if (fetchIds.length > 0) {
+      const _id = fetchIds.length > 1
+        ? { $in: fetchIds }
+        : unwrap(fetchIds)
+
+      this::ensureFetching({ _id })
+    }
+
+    if (fetchIds.length > 0) {
+      const records = this.state[$$records]
+      const ensured = ensureRecords(records, fetchIds)
+      this.setRecords(ensured)
+    }
+
+    return is.array(id)
+      ? ids.map(id => this.state[$$records][id])
+      : this.state[$$records][id]
+
+  }
+
+  /* Convenience */
+
+  untilFetchingComplete () {
+    const completes = this[$$queue]
+      .items
+      .map(item => item.complete)
+
+    return Promise.all(completes)
+  }
+
+  constructor (config) {
+    super()
+
+    defineProperty(this, 'config', {
+      value: validateConfig(config),
+      enumerable: true,
+      writable: false
+    })
+
+    defineProperty(this, $$queue, {
+      value: new QueryQueue(this),
+      enumerable: true
+    })
+
+    this.updateTimestamp()
+
+  }
+
 }
 
 /******************************************************************************/

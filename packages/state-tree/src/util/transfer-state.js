@@ -1,7 +1,7 @@
 import { $$internal } from './symbols'
 import StateTree from '../state-tree'
 
-import { get, push, equals, serialize } from '@benzed/immutable'
+import { copy, get, push, equals } from '@benzed/immutable'
 import { last } from '@benzed/array'
 
 import is from 'is-explicit'
@@ -89,6 +89,13 @@ const clearParent = child => {
   child[$$internal].pathInParent = null
 }
 
+const namesAndSymbols = object =>
+  Object
+    .keys(object)
+    .concat(
+      Object.getOwnPropertySymbols(object)
+    )
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -110,10 +117,10 @@ const createNextState = (tree, context) => {
       )
     )
 
-  if (is.object(current)) {
+  if (is.plainObject(current)) {
     const output = {}
 
-    for (const key in current)
+    for (const key of namesAndSymbols(current))
       output[key] = createNextState(
         tree,
         context.push(key, current[key])
@@ -122,7 +129,12 @@ const createNextState = (tree, context) => {
     return output
   }
 
-  return current
+  // TODO
+  // MAJOR GOTCHA: If a StateTree is going to have nested StateTrees, those
+  // nested state trees CANNOT be in a Set or Map or as properties of a custom
+  // Object. They need to be in plain objects or arrays.
+
+  return copy(current)
 }
 
 const reconsileChildren = (tree, context, nextState) => {
@@ -193,8 +205,8 @@ const transferState = (tree, path, value) => {
   tree[$$internal].state = freeze(nextState)
 
   return [
-    serialize(currentState),
-    serialize(nextState)
+    currentState,
+    nextState
   ]
 
 }

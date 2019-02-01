@@ -245,7 +245,8 @@ describe('FormStateTree', () => {
   describe('undoEditCurrent()', () => {
     it('alias for applyHistoryToCurrent(-1)', () => {
       const form = makeAFormWithHistory()
-      expect(form.undoEditCurrent().current).to.be.deep.equal(form.history[form.history.length - 2])
+      form.undoEditCurrent()
+      expect(form.current).to.be.deep.equal(form.history[form.history.length - 2])
     })
     it('undoing at historyIndex === 0 will revert current to data', () => {
       const form = makeAFormWithHistory()
@@ -256,7 +257,8 @@ describe('FormStateTree', () => {
       expect(form.historyIndex).to.be.equal(0)
       expect(form.canUndoEditCurrent).to.be.equal(true)
 
-      expect(form.undoEditCurrent().current).to.be.deep.equal(form.original)
+      form.undoEditCurrent()
+      expect(form.current).to.be.deep.equal(form.original)
       expect(form.canUndoEditCurrent).to.be.equal(false)
     })
   })
@@ -437,8 +439,8 @@ describe('FormStateTree', () => {
         submit () {}
       }
 
-      const form1 = FormStateTree(config)
-      const form2 = FormStateTree(config)
+      const form1 = new FormStateTree(config)
+      const form2 = new FormStateTree(config)
 
       form1.editCurrent('age', 23)
       expect(form2.current).to.be.deep.equal(form1.current)

@@ -1,13 +1,15 @@
 import { first, wrap } from '@benzed/array'
+import { copy } from '@benzed/immutable'
 
 import StateTree from '../state-tree'
 
 import {
   $$internal,
-  applyState,
   isArrayOfPaths,
   normalizePaths
 } from '../util'
+
+import { hasOwn } from './state'
 
 import is from 'is-explicit'
 
@@ -31,58 +33,49 @@ const validateDecorator = (prototype, key, description, path) => {
       `@action decorator can only decorate methods`
     )
 
-  if (path.length > 0 && !Type[$$internal].state.keys.includes(first(path)))
+  if (path.length > 0 && !Type[$$internal].stateKeys.includes(first(path)))
     throw new Error(
-      `action ${key} cannot scope itself to '${path}', ` +
-      `'${first(path)}' is an invalid state key.`
+      `action ${key.toString()} cannot scope itself to ` +
+      `'${path.map(key => key.toString())}', ` +
+      `'${first(path).toString()}' is an invalid state key.`
     )
 
-  return isPropertyInitializer
 }
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-function createAction (prototype, key, description) {
+function addActionName (prototype, key, description) {
 
   const path = wrap(this)
 
-  const isPropertyInitializer = validateDecorator(prototype, key, description, path)
+  validateDecorator(prototype, key, description, path)
 
-  const { value, initializer } = description
+  const Type = prototype.constructor
+
+  // base classes should not have their $$internal property mutated
+  if (!hasOwn(Type, $$internal))
+    Type[$$internal] = copy(Type[$$internal])
+
+  const { actions } = Type[$$internal]
+
+  if (actions.some(action => action.key === key))
+    throw new Error(`action ${key} already registered`)
+
+  actions.push({
+    key,
+    func: description.value || description.initializer,
+    call: !!description.initializer,
+    path
+  })
 
   return {
-    writable: false,
     enumerable: true,
-    initializer () {
-
-      let method
-
-      const action = function (...args) {
-
-        const tree = this
-
-        // HACK this has to be done here, because for reasons I don't understand
-        // this (this) scope in the above initializer() function gets set to
-        // the description object rather than the class instance, desipte the fact
-        // that logging (this) results in the class instance
-        if (!method)
-          method = isPropertyInitializer
-            ? tree::initializer()
-            : tree::value
-
-        const result = method(...args)
-        return is(result, Promise)
-          ? result.then(resolved => applyState(tree, path, resolved, action.name))
-          : applyState(tree, path, result, action.name)
-
-      }
-
-      return Object.defineProperty(action, 'name', { value: key })
-
+    configurable: false,
+    get () {
+      return this[$$internal].actions[key]
     }
-
   }
 
 }
@@ -104,8 +97,8 @@ const action = (...args) => {
   const path = first(paths)
 
   return decoratedWithoutPath
-    ? path::createAction(...args)
-    : path::createAction
+    ? path::addActionName(...args)
+    : path::addActionName
 
 }
 

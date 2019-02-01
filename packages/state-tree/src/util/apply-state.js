@@ -42,7 +42,7 @@ const applyState = (tree, actionPath, value, actionName) => {
     )
 
   if (actionPath.length === 0) for (const key of Object.keys(value))
-    if (!tree.constructor[$$internal].state.keys.includes(key))
+    if (!tree.constructor[$$internal].stateKeys.includes(key))
       throw new Error(
         `action ${actionName} returned state with invalid key: '${key}'`
       )

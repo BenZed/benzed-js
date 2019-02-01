@@ -7,8 +7,21 @@ import { min } from '@benzed/math'
 // Helper
 /******************************************************************************/
 
-// TODO this function runs at any state change triggered by any state tree in the
-// application ANYWHERE. It will likely need to be optimized.
+const shouldChildSubscribersBePruned = (prunePath, pathInParent) => {
+
+  if (!prunePath || prunePath.length === 0)
+    return false
+
+  const length = min(prunePath.length, pathInParent.length)
+  for (let i = 0; i < length; i++) {
+    const parentKey = prunePath[i]
+    const childKey = pathInParent[i]
+    if (parentKey !== childKey)
+      return true
+  }
+
+  return false
+}
 const normalizeSubscribers = (parent, prunePath) => {
 
   const parentInternal = parent[$$internal]
@@ -18,33 +31,23 @@ const normalizeSubscribers = (parent, prunePath) => {
 
     const { pathInParent } = child[$$internal]
 
-/******************************************************************************/
-// FIXME MAKE THIS LESS UGLY \/\/\/
-/******************************************************************************/
-      let childUpdatePath = null
-      let shouldBePruned = false
-      if (prunePath && prunePath.length > 0) {
+    // Optimization: We collect all subscribers everywhere in the tree at EVERY
+    // state change. For a very large tree with many SubStateTrees, this could
+    // potentially be very heavy. To mitigate this, we check to see if the update
+    // path relative to the parent state tree could potentially include the child
+    // and it's subscribers. If not, we don't add their subscribers to the list.
+    // TODO: We could also cache the normalized subscribers, and only re-fetch them
+    // if a subscriber has changed, somewher.e
+    const shouldBePruned = shouldChildSubscribersBePruned(prunePath, pathInParent)
+    if (shouldBePruned)
+      continue
 
-        for (let i = 0; i < min(prunePath.length, pathInParent.length); i++) {
-          const parentKey = prunePath[i]
-          const childKey = pathInParent[i]
-          if (parentKey !== childKey) {
-            shouldBePruned = true
-            break
-          }
-        }
+    const childPrunePath = prunePath &&
+    pathInParent.length < prunePath.length
+      ? prunePath.slice(pathInParent.length)
+      : null
 
-        if (!shouldBePruned && pathInParent.length < prunePath.length)
-          childUpdatePath = prunePath.slice(pathInParent.length)
-      }
-
-      if (shouldBePruned)
-        continue
-/******************************************************************************/
-// FIXME MAKE THIS LESS UGLY /\/\/\
-/******************************************************************************/
-
-    const childSubscribers = normalizeSubscribers(child, childUpdatePath)
+    const childSubscribers = normalizeSubscribers(child, childPrunePath)
     for (const [ originalPath, childSubscriptions ] of childSubscribers) {
 
       const normalizedPath = [
@@ -60,11 +63,22 @@ const normalizeSubscribers = (parent, prunePath) => {
   return normalizedSubs
 }
 
+// Even if it's a valid path, we have to check to see if the statd
+// has actually changed at the subscribers sub path:
+//    If the state is:
+//      { dessert: 'cake', slices: 8 }
+//    And the entire state was replaced with:
+//      { dessert: 'cake', slices: 7 }
+//    And the subscriber path is:
+//      [ 'dessert' ]
+//    We don't want to invoke the subscriber at that path, because
+//    Even though the entire state object has changed, the value of the
+//    state at the subscriber path has not.
 const stateAtSubPathHasChanged = (
   normalizedSubPath, updatePath, pathFromRoot, prevState, nextState
 ) => {
 
-  // optimization: if the listen path is equal or shorter than the
+  // Optimization: if the listen path is equal or shorter than the
   // change path then the state must have changed or we wouldn't be here
   if (normalizedSubPath.length < updatePath.length)
     return true
@@ -83,6 +97,7 @@ const stateAtSubPathHasChanged = (
 // Main
 /******************************************************************************/
 
+// FIXME code-smelly argument count. Hide them in an object like a coward?
 const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevState, nextState) => {
 
   const updatePath = [ ...pathFromRoot, ...actionPath ]
@@ -113,33 +128,32 @@ const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevState, nextSt
         propertyName !== $$any &&
         subPropertyName !== propertyName
 
-      const invokeSubscriptions =
-        !skipSubscriptions &&
-        atMaxSubPathIndex &&
-        stateAtSubPathHasChanged(
-          normalizedSubPath,
-          updatePath,
-          pathFromRoot,
-          prevState,
-          nextState
-        )
+      // Should we call subscribers for this path
+      const invokeSubscriptions = !skipSubscriptions && atMaxSubPathIndex
+      if (invokeSubscriptions && stateAtSubPathHasChanged(
+        normalizedSubPath,
+        updatePath,
+        pathFromRoot,
+        prevState,
+        nextState
+      ))
+        for (const subscription of subscriptions)
+          subscription.callback(
+            subscription.tree,
+            subscription.path,
+            updatePath
+          )
 
-      if (invokeSubscriptions) for (const subscription of subscriptions)
-        subscription.callback(
-          subscription.tree,
-          subscription.path,
-          updatePath
-        )
-
-      // subscriber will not be considered for further state calls
       if (invokeSubscriptions || skipSubscriptions)
         finishedPaths.push(normalizedSubPath)
     }
 
-    // optimization: Prune subs as we go up the path
+    // Optimization: As subscribers are called/ignored, we no longer need to
+    // consider them for future updates
     while (finishedPaths.length > 0)
       normalizedSubs.delete(finishedPaths.pop())
 
+    // No more subscribers? Notification complete.
     if (normalizedSubs.size === 0)
       break
   }

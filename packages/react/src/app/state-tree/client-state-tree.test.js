@@ -3,7 +3,6 @@ import ClientStateTree, { $$feathers } from './client-state-tree'
 import { copy, get, set } from '@benzed/immutable'
 import io from 'socket.io-client'
 import is from 'is-explicit'
-import { $$state } from '../../state-tree/state-tree'
 import { Test, expectReject } from '@benzed/dev'
 import App from '@benzed/app' // eslint-disable-line no-unused-vars
 
@@ -85,7 +84,7 @@ describe('Client State Tree', () => {
   describe('configuration', () => {
 
     it('is required', () => {
-      expectNewClient().to.throw('ClientStore configuration is required.')
+      expectNewClient().to.throw('ClientStateTree configuration is required.')
     })
 
     describe('config.hosts', () => {
@@ -172,10 +171,10 @@ describe('Client State Tree', () => {
 
       it('retreived services base url comes from client', () => {
 
-        restClient('host').set('nowhere')
+        restClient.setHost('nowhere')
         expect(someService).to.have.property('base', 'nowhere/some-service')
 
-        restClient('host').set('somewhere')
+        restClient.setHost('somewhere')
         expect(someService).to.have.property('base', 'somewhere/some-service')
       })
 
@@ -308,8 +307,8 @@ describe('Client State Tree', () => {
             const { email } = users[0]
 
             authStateHistory.push(copy(client.auth))
-            client.subscribe((state, path) => {
-              authStateHistory.push(get(state, path))
+            client.subscribe((tree, path) => {
+              authStateHistory.push(get(tree, path))
             }, 'auth')
 
             await client.login(email, 'bad-password')
@@ -319,21 +318,13 @@ describe('Client State Tree', () => {
           })
 
           describe('initial state', () => {
-
-            let keys
-            before(() => {
-              keys = Object.keys(client[$$state])
+            it(`state auth should be ${auth ? 'an object' : 'null'}`, () => {
+              const expecter = expect(client.auth)
+              if (auth)
+                expecter.to.be.instanceof(Object)
+              else
+                expecter.to.be.equal(null)
             })
-
-            it(`has ${auth ? '2 keys' : '1 key'}: ${auth ? 'host, auth' : 'host'}`,
-              () => {
-                expect(keys).to.be.deep.equal(
-                  auth
-                    ? [ 'host', 'auth' ]
-                    : [ 'host' ]
-                )
-              })
-
           })
 
           describe('connect action', () => {
@@ -368,10 +359,9 @@ describe('Client State Tree', () => {
           describe('login action', () => {
 
             if (!auth)
-              it('should not exist', () => {
-                expect(client.login).to.not.be.instanceof(Function)
-                expect(client.auth).to.be.equal(undefined)
-              })
+              it('should throw error', () =>
+                expect(::client.login).to.throw('auth is not enabled')
+              )
 
             if (auth) it('sets auth.userId if successful', () => {
               expect(authStateHistory.some(auth => is.defined(auth.userId)))
@@ -415,9 +405,10 @@ describe('Client State Tree', () => {
           })
 
           describe('logout action', () => {
-            if (!auth) it('should not exist', () => {
-              expect(client.logout).to.be.equal(undefined)
-            })
+            if (!auth)
+              it('should throw error', () =>
+                expect(::client.logout).to.throw('auth is not enabled')
+              )
 
             if (auth) it('sets auth.userId to null', () => {
               expect(client.auth.userId).to.be.equal(null)

@@ -1,5 +1,7 @@
 import { expect } from 'chai'
 import state from './state'
+import memoize from './memoize'
+import action from './action'
 import StateTree from '../state-tree'
 
 import { $$internal } from '../util'
@@ -52,11 +54,11 @@ describe('@state decorator', () => {
     })
 
     it('mutates static $$internal property on extended class to define initial state', () => {
-      expect(Counter[$$internal].state.initial).to.have.property('count', 0)
+      expect(Counter[$$internal].stateInitial).to.have.property('count', 0)
     })
 
     it('extended class $$internal mutations do not effect base class', () => {
-      expect(StateTree[$$internal].state.initial).to.not.have.property('count')
+      expect(StateTree[$$internal].stateInitial).to.not.have.property('count')
     })
 
     it('objects placed in initial states should be immutable copies', () => {
@@ -71,12 +73,12 @@ describe('@state decorator', () => {
         position = VectorZero
       }
 
-      expect(Coords[$$internal].state.initial).to.have.deep.property('scale', VectorOne)
-      expect(Coords[$$internal].state.initial.scale).to.not.be.equal(VectorOne)
+      expect(Coords[$$internal].stateInitial).to.have.deep.property('scale', VectorOne)
+      expect(Coords[$$internal].stateInitial.scale).to.not.be.equal(VectorOne)
     })
 
-    it('property name added to state.keys', () => {
-      expect(Counter[$$internal].state.keys).to.be.deep.equal(['count'])
+    it('property name added to stateKeys', () => {
+      expect(Counter[$$internal].stateKeys).to.be.deep.equal(['count'])
     })
 
   })
@@ -125,4 +127,57 @@ describe('@state decorator', () => {
         }).to.throw(`can not use '${invalidName}' as a state key`)
       })
   })
+
+  describe(`state.symbol for symbolic state ` +
+    `propeties (because you can't decorate computed property initializers)`, () => {
+
+    const $$hash = Symbol('items-by-id')
+
+    let Collection
+    before(() => {
+      Collection = class Collection extends StateTree {
+
+        @state.symbol($$hash)
+        $$hash = {}
+
+        @memoize($$hash)
+        get items () {
+          return Object.values(this.state[$$hash])
+        }
+
+        @action($$hash)
+        setItems = items => items
+      }
+    })
+
+    it('state can contain symbols', () => {
+      expect(Collection[$$internal].stateKeys).to.include($$hash)
+      const collection = new Collection()
+      expect(collection.state[$$hash]).to.be.deep.equal({})
+    })
+
+    it('no convenience getter placed on instance', () => {
+      const collection = new Collection()
+      expect(collection).to.not.have.property($$hash)
+      expect(collection.state).to.have.property($$hash)
+    })
+
+    it('memoization and actions operate normallu', () => {
+
+      const collection = new Collection()
+      const theSmiths = {
+        'id-1': { name: 'jerry' },
+        'id-2': { name: 'beth' },
+        'id-3': { name: 'rick' },
+        'id-4': { name: 'morty' }
+      }
+      collection.setItems(theSmiths)
+
+      expect(collection.state).to.have.deep.property($$hash, theSmiths)
+      expect(collection.items).to.be.deep.equal(Object.values(theSmiths))
+
+    })
+
+  })
+
 })

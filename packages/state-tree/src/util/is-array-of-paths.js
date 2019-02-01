@@ -12,13 +12,16 @@ const PATH_TYPES = [ String, Number, Symbol ]
 // IsPathType
 /******************************************************************************/
 
-const isPathType = value => is(value, PATH_TYPES) || is.arrayOf(value, PATH_TYPES)
+const isPathType = value =>
+  is(value, PATH_TYPES) ||
+  is.arrayOf(value, PATH_TYPES) ||
+  (is.array(value) && value.length === 0)
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const isArrayOfPaths = input => input.length === 0 || input.every(isPathType)
+const isArrayOfPaths = input => input.every(isPathType)
 
 /******************************************************************************/
 // Exports
