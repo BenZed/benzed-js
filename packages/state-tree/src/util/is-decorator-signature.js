@@ -1,30 +1,31 @@
 import is from 'is-explicit'
 
-// TODO move me to util
-
 /******************************************************************************/
-// Data
+// Helper
 /******************************************************************************/
 
-const PATH_TYPES = [ String, Number, Symbol ]
+const isDescription = obj =>
+  is.plainObject(obj)
 
-/******************************************************************************/
-// IsPathType
-/******************************************************************************/
+const isKey = [String, Symbol]::is
 
-const isPathType = value =>
-  is(value, PATH_TYPES) ||
-  is.arrayOf(value, PATH_TYPES) ||
-  (is.array(value) && value.length === 0)
+const isPrototype = obj => is.func(obj?.constructor)
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const isArrayOfPaths = input => input.every(isPathType)
+/* eslint-disable no-multi-spaces */
+
+const isDecoratorSignature = args =>
+
+  args.length === 3 &&
+  isPrototype(args[0]) &&
+  isKey(args[1]) &&
+  isDescription(args[2])
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default isArrayOfPaths
+export default isDecoratorSignature

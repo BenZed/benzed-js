@@ -1,8 +1,12 @@
 import React, { createElement, cloneElement, Children } from 'react'
+
+import ServiceStateTree from '../state-tree/service-state-tree'
+
 import { createPropTypesFor } from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { until } from '@benzed/async'
-import is from 'is-explicit'
 import { max } from '@benzed/math'
+
+import is from 'is-explicit'
 
 /******************************************************************************/
 //
@@ -20,7 +24,7 @@ class ServiceView extends React.Component {
 
   propTypes = createPropTypesFor(React =>
     <proptypes>
-      <function key='tree' required />
+      <ServiceStateTree key='tree' required />
       <object key='query' />
       <any key='children' required />
     </proptypes>
@@ -66,6 +70,7 @@ class ServiceView extends React.Component {
   updateRecords = tree => {
 
     const { ids } = this.state
+
     const records = ids.map(tree.get)
 
     this.setState({ records })

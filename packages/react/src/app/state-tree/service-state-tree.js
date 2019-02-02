@@ -5,7 +5,7 @@ import ClientStateTree, { $$feathers } from './client-state-tree'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
-import { copy, equals, $$equals, indexOf } from '@benzed/immutable'
+import { equals, $$equals, indexOf } from '@benzed/immutable'
 
 import { FormStateTree } from '../../data-form'
 
@@ -102,11 +102,23 @@ class QueryQueue extends PromiseQueue {
 
 }
 
+function executePatchWithData () {
+
+  const item = this
+  const { id, differences, tree } = item.data
+
+  const { client, serviceName: service } = tree.config
+
+  return client[$$feathers]
+    .service(service)
+    .patch(id, differences)
+
+}
+
 async function executeQueryWithData () {
 
   const item = this
-  const { data } = item
-  const { method, arg, tree } = data
+  const { method, arg, tree } = item.data
   const { client, serviceName: service } = tree.config
 
   const explicitIds = getIdsFromQuery(arg.query)
@@ -238,69 +250,6 @@ const validateConfig = <object key='config' plain strict >
 // Setup
 /******************************************************************************/
 
-const ACTIONS = {
-
-  patch (id, data) {
-
-    if (!is.defined(id))
-      throw new Error(`id is required`)
-
-    const differences = getDataDifferences(data, this.get(id))
-
-    const { client, serviceName: service } = this.config
-
-    return client[$$feathers]
-      .service(service)
-      .patch(id, differences)
-
-  },
-
-  untilFetchingComplete () {
-    const completes = this[$$queue]
-      .items
-      .map(item => item.complete)
-
-    return Promise.all(completes)
-  },
-
-  getForm (id) {
-
-    let form = this.forms[id]
-    if (!is.func(form)) {
-
-      const record = this.get(id)
-
-      const ui = this.root?.ui
-
-      form = new FormStateTree({
-        data: record,
-        submit: data => this.patch(id, data),
-        ui,
-        historyStorageKey: ui && `form-${this.config.serviceName}-${id}`
-      })
-
-      this.subscribe(service => {
-        const shouldAutoRevert = !form.hasChangesToCurrent
-
-        form.setUpstream(service.records[id])
-        if (shouldAutoRevert)
-          form.revertToUpstream()
-
-      },
-      [ 'records', id ])
-
-      this([ 'forms', id ]).set(form)
-    }
-
-    return form
-  },
-
-  clearForm (id) {
-
-  }
-
-}
-
 function handleEvents ({ client, serviceName }) {
 
   // Will catch self-induced events in rest
@@ -310,38 +259,43 @@ function handleEvents ({ client, serviceName }) {
   const tree = this
   const service = client[$$feathers].service(serviceName)
 
-  const { set: setRecords } = tree('records')
-  const { set: setTimestamp } = tree('timestamp')
-
   const onCreate = data => {
-    const records = copy(tree.records)
+    const records = { ...tree.state[$$records] }
 
     records[data._id] = {
       ...data,
-      status: STATUSES.Scoped
+      _form: null,
+      _status: STATUSES.Scoped
     }
 
-    setRecords(records)
-    setTimestamp(new Date())
+    tree.setRecords(records)
+    tree.updateTimestamp()
   }
 
   const onEdit = data => {
-    const [ record, setRecord ] = tree([ 'records', data._id ])
-    if (record) {
-      setRecord({ ...data, status: STATUSES.Scoped })
-      setTimestamp(new Date())
-    }
+
+    const record = tree.state[$$records][data._id]
+    if (!record)
+      return
+
+    tree.setState({
+      ...record.state,
+      ...data,
+      _status: STATUSES.Scoped
+    }, [ $$records, `${data._id}` ])
+
+    tree.updateTimestamp()
   }
 
   const onDelete = data => {
-    if (data._id in this.records === false)
+    if (data._id in this.state[$$records] === false)
       return
 
-    const records = copy(this.records)
+    const records = { ...this.state[$$records] }
     delete records[data._id]
 
-    setRecords(records)
-    setTimestamp(new Date())
+    tree.setRecords(records)
+    tree.updateTimestamp()
   }
 
   service
@@ -389,7 +343,8 @@ class ServiceStateTree extends StateTree {
 
   @memoize($$records)
   get records () {
-    return Object.values(this.state[$$records])
+    return Object
+      .values(this.state[$$records])
   }
 
   @memoize($$records)
@@ -400,13 +355,53 @@ class ServiceStateTree extends StateTree {
       .filter(is.defined)
   }
 
-  /* Feathers Interface */
+  /* Form Interface */
 
-  find (query = {}) {
-    return this::ensureFetching(query)
+  getForm = id => {
+
+    const record = this.get(id)
+
+    let form = record._form
+
+    // Create Form
+    if (!is(form, FormStateTree)) {
+
+      const ui = this.root?.ui
+
+      form = new FormStateTree({
+        data: record,
+        submit: data => this.patch(id, data),
+        ui,
+        historyStorageKey: ui && `form-${this.config.serviceName}-${id}`
+      })
+
+      const callback = service => {
+
+        const record = service.get(id)
+
+        const data = { ...record }
+        delete data._form
+
+        const shouldAutoRevert = !form.hasChangesToCurrent
+
+        form.setUpstream(data)
+        if (shouldAutoRevert)
+          form.revertToUpstream()
+      }
+
+      this.subscribe(callback, [ $$records, `${id}` ])
+
+      this.setState(form, [ $$records, `${id}`, '_form' ], 'setRecordForm')
+    }
+
+    return form
   }
 
-  get (id) {
+  /* Feathers Interface */
+
+  find = (query = {}) => this::ensureFetching(query)
+
+  get = id => {
 
     const ids = wrap(id)
     if (!ids.every(is.defined))
@@ -435,6 +430,18 @@ class ServiceStateTree extends StateTree {
 
   }
 
+  patch = (id, data) => {
+
+    if (!is.defined(id))
+      throw new Error(`id is required`)
+
+    const differences = getDataDifferences(data, this.get(id))
+
+    const item = { id, tree: this, differences }
+
+    return this[$$queue].add(executePatchWithData, item)
+  }
+
   /* Convenience */
 
   untilFetchingComplete () {
@@ -446,7 +453,7 @@ class ServiceStateTree extends StateTree {
   }
 
   constructor (config) {
-    super()
+    super({ timestamp: new Date() })
 
     defineProperty(this, 'config', {
       value: validateConfig(config),
@@ -459,7 +466,7 @@ class ServiceStateTree extends StateTree {
       enumerable: true
     })
 
-    this.updateTimestamp()
+    this::handleEvents(this.config)
 
   }
 

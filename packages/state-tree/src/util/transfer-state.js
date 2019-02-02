@@ -41,7 +41,8 @@ class StateTransferContext {
     this.references = references
   }
 
-  get current () {
+  getCurrentStateValue () {
+
     return equals(this.valuePath, this.inputPath)
       ? this.value
       : this.input
@@ -102,7 +103,7 @@ const namesAndSymbols = object =>
 
 const createNextState = (tree, context) => {
 
-  const current = context.current
+  const current = context.getCurrentStateValue()
 
   if (is(current, StateTree)) {
     context.addReference(current)
@@ -184,6 +185,46 @@ const reconsileChildren = (tree, context, nextState) => {
 
 }
 
+const ensurePathInState = (state, path) => {
+
+  let ref = state
+  // check first
+
+  for (let i = 0; i < path.length; i++) {
+
+    const key = path[i]
+    const atFinalKey = i === path.length - 1
+    const keyExists = key in ref
+    if (atFinalKey && keyExists)
+      break
+
+    if (keyExists && is(ref[key], StateTree))
+      throw new Error('Cannot set state inside nested State Trees.')
+
+    // if we're here, we'll need to change the state, and it should be frozen
+    if (i === 0) {
+      state = { ...state }
+      ref = state
+    }
+
+    const canIndexNextKey = keyExists && is.object(ref[key])
+    ref[key] = canIndexNextKey
+      ? is.array(ref[key])
+        ? [ ...ref[key] ]
+        : { ...ref[key] }
+
+      : is.number(path[i + 1])
+        ? []
+        : {}
+
+    ref = ref[key]
+
+  }
+
+  return state
+
+}
+
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -191,7 +232,8 @@ const reconsileChildren = (tree, context, nextState) => {
 const transferState = (tree, path, value) => {
 
   const currentState = tree.state
-  const context = new StateTransferContext(path, value, currentState)
+  const inputState = ensurePathInState(currentState, path)
+  const context = new StateTransferContext(path, value, inputState)
 
   const nextState = createNextState(tree, context)
 

@@ -6,7 +6,6 @@ import { first } from '@benzed/array'
 import { clamp } from '@benzed/math'
 
 import { memoize, state, action } from './decorators'
-import { $$internal } from './util'
 
 import is from 'is-explicit'
 
@@ -181,6 +180,70 @@ describe('StateTree', () => {
 
       it('can listen to multiple paths', () => {
         expect(thing2.notifies).to.be.equal(5)
+      })
+
+      it('multiple invocations of the same path don\'t result in multiple listeners', () => {
+        class Foo extends StateTree {
+          @state
+          data = {
+            switch: 'off'
+          }
+
+          @action(['data', 'switch'])
+          setDataSwitch = value => value ? 'on' : 'off'
+        }
+
+        let calls = 0
+
+        const foo = new Foo()
+        foo.subscribe(() => { calls++ }, [ 'data', 'switch' ], [ 'data', 'switch' ])
+        foo.setDataSwitch(true)
+
+        expect(foo.data.switch).to.be.equal('on')
+        expect(calls).to.be.equal(1)
+
+      })
+
+      it('subscribing to memoize keys results in conversion to memoize paths', () => {
+
+        class Foo extends StateTree {
+
+          @state
+          _hiddenHash = {}
+
+          @memoize('_hiddenHash')
+          get shownArray () {
+            return Object.values(this._hiddenHash)
+          }
+
+          @memoize(['_hiddenHash', 'main'])
+          get mainItem () {
+            return this._hiddenHash.main
+          }
+
+          @action('_hiddenHash')
+          setHiddenHash = hash => hash
+
+        }
+
+        const foo = new Foo()
+
+        let mainItemCalls = 0
+        let shownArrayCalls = 0
+        foo.subscribe(() => {
+          mainItemCalls++
+        }, 'mainItem')
+
+        foo.subscribe(() => {
+          shownArrayCalls++
+        }, 'shownArray')
+
+        foo.setHiddenHash({ main: 'main' })
+        foo.setHiddenHash({ ...foo._hiddenHash, aux: 'aux' })
+
+        expect(mainItemCalls).to.be.equal(1)
+        expect(shownArrayCalls).to.be.equal(2)
+
       })
 
       it('deep path equality check', () => {
@@ -409,6 +472,79 @@ describe('StateTree', () => {
       expect(notifications.amount).to.be.equal(1)
       expect(notifications.max).to.be.equal(1)
 
+    })
+
+  })
+
+  describe('setState', () => {
+
+    it('can be used as an escape hatch for anonymous actions', () => {
+
+      class Foo extends StateTree {
+        @state
+        bar = true
+      }
+
+      const foo = new Foo()
+
+      foo.setState(false, ['bar'], 'setBar')
+
+      expect(foo.bar).to.be.equal(false)
+
+    })
+
+    it('can set state at any path if no state keys are defined', () => {
+
+      const tree = new StateTree()
+
+      tree.setState({
+        cake: 'town',
+        foo: 'bar'
+      }, ['nested', 0], 'setArbitraryState')
+
+      expect(tree.state.nested[0]).to.be.deep.equal({
+        foo: 'bar',
+        cake: 'town'
+      })
+    })
+
+    it('can set state at any path beyond first key', () => {
+
+      class Foo extends StateTree {
+        @state
+        data = {}
+      }
+
+      const foo = new Foo()
+
+      foo.setState({ what: 'is-up' }, [ 'data', 'key', 'value' ])
+
+      expect(foo.state).to.be.deep.equal({
+        data: { key: { value: { what: 'is-up' } } }
+      })
+
+    })
+
+    it('non indexable state-keys are overwritten', () => {
+      const tree = new StateTree({
+        percent: { is: 'not-sure' }
+      })
+
+      tree.setState(100, ['percent', 'is', 'number', 0])
+      expect(tree.state).to.be.deep.equal({
+        percent: {
+          is: { number: [ 100 ] }
+        }
+      })
+    })
+
+    it('throws if trying to set state beyond a nested state tree', () => {
+      const tree = new StateTree({
+        nested: [ new StateTree() ]
+      })
+
+      expect(() => tree.setState('haHA', [ 'nested', 0, 'laughSoundsLike' ]))
+        .to.throw('Cannot set state inside nested State Trees')
     })
 
   })

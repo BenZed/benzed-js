@@ -283,7 +283,9 @@ describe('FormStateTree', () => {
       expect(form.hasChangesToCurrent)
         .to.be.equal(true)
 
-      expect(form.revertCurrentToOriginal().current)
+      form.revertCurrentToOriginal()
+
+      expect(form.current)
         .to.be.deep.equal(form.original)
       expect(form.hasChangesToCurrent)
         .to.be.equal(false)

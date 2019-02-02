@@ -7,8 +7,6 @@ import is from 'is-explicit'
 import App from '@benzed/app'
 import { Test } from '@benzed/dev'
 
-import { EventEmitter } from 'events'
-
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
 // eslint-disable-next-line no-unused-vars
@@ -27,7 +25,7 @@ const CLIENT_CONFIG = {
 // Tests
 /******************************************************************************/
 
-describe.skip('Service StateTree', () => {
+describe('Service StateTree', () => {
 
   describe('config', () => {
     it('requires a client state tree', () => {
@@ -218,7 +216,7 @@ describe.skip('Service StateTree', () => {
           it('listens to create events', () => {
             const [ doc ] = docs
 
-            const record = messages.records[doc._id]
+            const [ record ] = messages.records.filter(r => r._id === doc._id)
             expect(is.plainObject(record))
               .to.be.equal(true)
 
@@ -228,32 +226,37 @@ describe.skip('Service StateTree', () => {
 
           it('listens to patch events', () => {
             const doc = docs[1]
-            const record = messages.records[doc._id]
+            const [ record ] = messages.records.filter(r => r._id === doc._id)
             expect(record.body).to.be.equal('Patched Message.')
           })
 
           it('listens to update events', () => {
             const doc = docs[2]
-            const record = messages.records[doc._id]
+            const [ record ] = messages.records.filter(r => r._id === doc._id)
             expect(record.body).to.be.equal('Updated Message.')
           })
 
           it('listens to remove events', () => {
-            expect(docs[3]._id in messages.records).to.be.equal(false)
+            const id3 = docs[3]._id
+            expect(messages.records.filter(r => r._id === id3))
+              .to.be.deep.equal([])
           })
 
           it('only patches or updates records if they\'re scoped', async () => {
-            messages('records').set({ count: 0 })
+            messages.setRecords([])
 
             const service = state.api.service('messages')
 
-            await service.patch(docs[4]._id, { body: 'updated' })
-            await milliseconds(10)
-            expect(messages.records[docs[4]._id]).to.be.equal(undefined)
+            const id4 = docs[4]._id
+            const getRecord = id => messages.records.filter(r => r._id === id)[0]
 
-            await service.update(docs[4]._id, { body: 'updated' })
+            await service.patch(id4, { body: 'updated' })
             await milliseconds(10)
-            expect(messages.records[docs[4]._id]).to.be.equal(undefined)
+            expect(getRecord(id4)).to.be.equal(undefined)
+
+            await service.update(id4, { body: 'updated' })
+            await milliseconds(10)
+            expect(getRecord(id4)).to.be.equal(undefined)
 
             return messages.find({})
           })
@@ -283,9 +286,11 @@ describe.skip('Service StateTree', () => {
 
         it('form state trees are instanced for each record on .getForm', async () => {
 
-          const { _id: id } = messages.all[0]
+          const { _id: id } = messages.records[0]
           const form = messages.getForm(id)
-          expect(messages.forms[id])
+          const record = messages.get(id)
+
+          expect(record._form)
             .to.be.equal(form)
 
           form.editCurrent('author', 'Ol Fackin Jerry')
@@ -299,7 +304,7 @@ describe.skip('Service StateTree', () => {
 
         if (provider === 'socketio')
           it('external changes arn\'t automatically folded into form.original', async () => {
-            const { _id: id } = messages.all[1]
+            const { _id: id } = messages.records[1]
 
             const form = messages.getForm(id)
 
@@ -309,7 +314,7 @@ describe.skip('Service StateTree', () => {
             expect(form.hasChangesToUpstream).to.be.equal(false)
 
             await state.api.service('messages').patch(id, { author: 'Stephen Hawking' })
-            await milliseconds(10)
+            await milliseconds(25)
 
             expect(form.hasChangesToUpstream).to.be.equal(true)
             form.revertToUpstream()

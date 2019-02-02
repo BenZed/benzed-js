@@ -160,7 +160,7 @@ class FormStateTree extends StateTree {
   @action
   revertToUpstream () {
     if (!this.hasChangesToUpstream)
-      return this
+      return this.state
 
     this.pushCurrent()
 
@@ -267,6 +267,7 @@ class FormStateTree extends StateTree {
 
   [copy.$$] () {
     const FormStateTree = this.constructor
+    console.log('copying-form')
     return new FormStateTree(this.config)
   }
 }

@@ -1,6 +1,15 @@
-import { copy, equals, serialize, ValueMap } from '@benzed/immutable'
+import { get, copy, equals, serialize, ValueMap } from '@benzed/immutable'
 
-import { isArrayOfPaths, normalizePaths, applyState, $$internal } from './util'
+import {
+
+  getPathFromRoot,
+  validatePath,
+  validatePaths,
+  transferState,
+  notifySubscribers,
+
+  $$internal
+} from './util'
 
 import * as decorators from './decorators'
 import is from 'is-explicit'
@@ -18,8 +27,8 @@ function runAction (...args) {
   const result = action(...args)
 
   return is(result, Promise)
-    ? result.then(resolved => applyState(tree, path, resolved, action.name))
-    : applyState(tree, path, result, action.name)
+    ? result.then(resolved => tree.setState(resolved, path, action.name))
+    : tree.setState(result, path, action.name)
 }
 
 const bindActions = tree => {
@@ -49,10 +58,9 @@ const applyInitialState = (tree, dynamicStateInitial = {}) => {
 
   const { stateInitial } = tree.constructor[$$internal]
 
-  applyState(
-    tree,
-    [],
+  tree.setState(
     { ...copy(stateInitial), ...dynamicStateInitial },
+    [],
     'setInitialState'
   )
 
@@ -114,6 +122,42 @@ class StateTree {
     return this[$$internal].state
   }
 
+  setState (value, actionPath = [], actionName = 'setState') {
+
+    if (actionPath.length === 0 && !is.plainObject(value))
+      throw new Error(
+        `action ${actionName} is not scoped to a state key and must ` +
+        `return a full state in the form of a plain object.`
+      )
+
+    const { stateKeys } = this.constructor[$$internal]
+
+    actionPath = validatePath(actionPath, this)
+    if (actionPath.length === 0 && stateKeys.length > 0)
+      for (const key of Object.keys(value))
+        if (!stateKeys.includes(key))
+          throw new Error(
+            `action ${actionName} returned state with invalid key: '${key}'`
+          )
+
+    const stateChanged = !equals(get.mut(this.state, actionPath), value)
+    if (stateChanged) {
+
+      const [ previousState, nextState ] = transferState(this, actionPath, value)
+      const pathFromRoot = getPathFromRoot(this)
+
+      notifySubscribers(
+        this.root,
+        pathFromRoot,
+        actionPath,
+        previousState,
+        nextState
+      )
+    }
+
+    return stateChanged
+  }
+
   subscribe (callback, ...paths) {
 
     const { subscribers } = this[$$internal]
@@ -121,10 +165,7 @@ class StateTree {
     if (!is.func(callback))
       throw new Error('callback argument must be a function')
 
-    if (!isArrayOfPaths(paths))
-      throw new Error('paths must be arrays of numbers, strings or symbols')
-
-    for (const path of normalizePaths(paths)) {
+    for (const path of validatePaths(paths, this)) {
 
       const subscription = { callback, tree: this, path }
       const subscriptions = subscribers.get(path) || []
@@ -176,7 +217,7 @@ class StateTree {
     // or the copy. That seems bad. But then, would I only be copying a state
     // tree if the previous was being discarded? I don't know man.
 
-    applyState(clone, [], state, 'setClonedState')
+    clone.setState(state, [], 'setClonedState')
 
     return clone
   }

@@ -2,14 +2,13 @@ import is from 'is-explicit'
 import StateTree from '../state-tree'
 
 import {
+
   $$internal,
-  isArrayOfPaths,
-  normalizePaths
+  isDecoratorSignature,
+  validatePaths,
+  ensureOwnInternal
+
 } from '../util'
-
-import { copy } from '@benzed/immutable'
-
-import { hasOwn } from './state'
 
 /******************************************************************************/
 // Main
@@ -33,11 +32,7 @@ function createMemoizedGetter (prototype, key, description) {
       `@memoize decorator can only decorate getters`
     )
 
-  // base classes should not have their $$internal property mutated
-  if (!hasOwn(Type, $$internal))
-    Type[$$internal] = copy(Type[$$internal])
-
-  const { memoizers } = Type[$$internal]
+  const { memoizers } = ensureOwnInternal(prototype)
 
   memoizers.push({ paths, get, key })
 
@@ -58,10 +53,10 @@ function createMemoizedGetter (prototype, key, description) {
 
 const memoize = (...args) => {
 
-  const decoratedWithoutPath = args.length === 3 && !isArrayOfPaths(args)
+  const decoratedWithoutPath = isDecoratorSignature(args)
   const paths = decoratedWithoutPath
     ? [[]]
-    : normalizePaths(args)
+    : validatePaths(args)
 
   return decoratedWithoutPath
     ? paths::createMemoizedGetter(...args)

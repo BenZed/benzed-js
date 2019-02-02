@@ -47,11 +47,9 @@ class StateTreeObserver extends React.Component {
 
   update = (tree, path) => {
 
-    const { mapState, root: _root } = this.props
-
-    const sourceTree = get.mut(tree, _root)
-
-    const mapped = mapState(sourceTree, path)
+    const { mapState, root: _root, tree: sourceTree } = this.props
+    const rootTree = get.mut(sourceTree, _root)
+    const mapped = mapState(rootTree, path)
 
     this.setState({ value: mapped })
   }

@@ -1,15 +1,15 @@
-import { first, wrap } from '@benzed/array'
-import { copy } from '@benzed/immutable'
+import { first } from '@benzed/array'
 
 import StateTree from '../state-tree'
 
+import { inspect } from 'util'
+
 import {
   $$internal,
-  isArrayOfPaths,
-  normalizePaths
+  validatePaths,
+  ensureOwnInternal,
+  isDecoratorSignature
 } from '../util'
-
-import { hasOwn } from './state'
 
 import is from 'is-explicit'
 
@@ -17,7 +17,7 @@ import is from 'is-explicit'
 // Helper
 /******************************************************************************/
 
-const validateDecorator = (prototype, key, description, path) => {
+const validateDecorator = (prototype, key, description) => {
 
   const Type = prototype.constructor
   if (!is.subclassOf(Type, StateTree))
@@ -33,13 +33,31 @@ const validateDecorator = (prototype, key, description, path) => {
       `@action decorator can only decorate methods`
     )
 
-  if (path.length > 0 && !Type[$$internal].stateKeys.includes(first(path)))
-    throw new Error(
-      `action ${key.toString()} cannot scope itself to ` +
-      `'${path.map(key => key.toString())}', ` +
-      `'${first(path).toString()}' is an invalid state key.`
-    )
+}
 
+const validateActionPath = (paths, key, prototype) => {
+
+  try {
+    paths = validatePaths(
+      paths,
+      prototype
+    )
+  } catch (err) {
+
+    if (err.message.includes('is not a valid state key'))
+      throw new Error(
+        `action ${key.toString()} cannot scope itself to ` +
+        `'${paths.map(key => key.toString())}'`
+      )
+
+    else
+      throw err
+  }
+
+  if (paths.length > 1)
+    throw new Error(`@action decorator can only take one path`)
+
+  return first(paths)
 }
 
 /******************************************************************************/
@@ -48,20 +66,15 @@ const validateDecorator = (prototype, key, description, path) => {
 
 function addActionName (prototype, key, description) {
 
-  const path = wrap(this)
+  validateDecorator(prototype, key, description)
 
-  validateDecorator(prototype, key, description, path)
+  const { actions } = ensureOwnInternal(prototype)
 
-  const Type = prototype.constructor
-
-  // base classes should not have their $$internal property mutated
-  if (!hasOwn(Type, $$internal))
-    Type[$$internal] = copy(Type[$$internal])
-
-  const { actions } = Type[$$internal]
+  const paths = this || [[]]
+  const path = validateActionPath(paths, key, prototype)
 
   if (actions.some(action => action.key === key))
-    throw new Error(`action ${key} already registered`)
+    throw new Error(`action ${inspect(key)} already registered`)
 
   actions.push({
     key,
@@ -86,19 +99,14 @@ function addActionName (prototype, key, description) {
 
 const action = (...args) => {
 
-  const decoratedWithoutPath = args.length === 3 && !isArrayOfPaths(args)
-  const paths = decoratedWithoutPath
-    ? [[]]
-    : normalizePaths(args)
+  const decorateWithpath = !isDecoratorSignature(args)
+  const paths = decorateWithpath
+    ? validatePaths(args)
+    : null
 
-  if (paths.length > 1)
-    throw new Error(`@action decorator can only take one path`)
-
-  const path = first(paths)
-
-  return decoratedWithoutPath
-    ? path::addActionName(...args)
-    : path::addActionName
+  return decorateWithpath
+    ? paths::addActionName
+    : addActionName(...args)
 
 }
 
