@@ -18,9 +18,9 @@ const Input = styled.input`
 // Main Component
 /******************************************************************************/
 
-const String = ({ children, path, ...props }) =>
+const String = ({ children, path, label, ...props }) =>
 
-  <InputBase path={path} >{
+  <InputBase label={label} path={path} >{
     ({ value, ...rest }) =>
       <Input
         value={is.defined(value) ? value : ''}
