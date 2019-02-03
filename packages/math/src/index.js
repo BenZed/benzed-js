@@ -18,6 +18,8 @@ import lerp from './lerp'
 
 import clamp from './clamp'
 
+import toFraction from './to-fraction'
+
 import { primes, isPrime } from './prime'
 
 /******************************************************************************/
@@ -35,6 +37,8 @@ export {
   max, min,
 
   lerp, clamp, isPrime, primes,
+
+  toFraction,
 
   Vector
 
