@@ -22,11 +22,9 @@ const StateTreeConsumer = StateTreeContext.Consumer
 
 const StateTreeListener = ({ children, ...props }) =>
   <StateTreeContext.Consumer>{tree =>
-
     <StateTreeObserver {...props} tree={tree} >
       {children}
     </StateTreeObserver>
-
   }</StateTreeContext.Consumer>
 
 /******************************************************************************/

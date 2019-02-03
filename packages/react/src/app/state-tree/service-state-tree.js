@@ -279,7 +279,7 @@ function handleEvents ({ client, serviceName }) {
       return
 
     tree.setState({
-      ...record.state,
+      ...record,
       ...data,
       _status: STATUSES.Scoped
     }, [ $$records, `${data._id}` ])
@@ -467,7 +467,6 @@ class ServiceStateTree extends StateTree {
     })
 
     this::handleEvents(this.config)
-
   }
 
 }

@@ -2,9 +2,9 @@ import StateTree, { state, action } from '@benzed/state-tree'
 import storage from '../../util/storage'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { copy, set } from '@benzed/immutable'
+import { equals, copy, set } from '@benzed/immutable'
 
-import querystring from 'query-string'
+import querystring from 'querystring'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -13,8 +13,14 @@ import querystring from 'query-string'
 // Validate
 /******************************************************************************/
 
+const isHistoryObject = value =>
+  [ 'push', 'length', 'location' ].every(key => key in value)
+    ? value
+    : throw new Error('Must be a history object')
+
 const validateConfig = <object key='config' plain default={{}}>
   <string key='prefix' default='@benzed' />
+  <object key='history' required validate={isHistoryObject} />
 </object>
 
 /******************************************************************************/
@@ -22,6 +28,25 @@ const validateConfig = <object key='config' plain default={{}}>
 /******************************************************************************/
 
 const { defineProperty } = Object
+
+const syncHistoryLocationToState = tree => {
+  // Sync local location state to history
+
+  const { history } = tree.config
+
+  const setLocation = location => {
+    const nextLocation = {
+      ...copy(location),
+      query: querystring.parse(location.search.replace('?', ''))
+    }
+
+    return tree.setState(nextLocation, 'location', 'setLocation')
+  }
+
+  history.listen(setLocation)
+  setLocation(history.location)
+
+}
 
 /******************************************************************************/
 // StorageStateTree
@@ -128,14 +153,22 @@ class UiStateTree extends StateTree {
   @state
   session = null
 
-  navigate (to, query = {}) {
+  @state
+  location = null
+
+  navigate = (to, query = {}, state = {}) => {
+
+    if (to === this.location.pathname &&
+      equals(query, this.location.query) &&
+      equals(state, this.location.state)
+    )
+      return
 
     const { history } = this.config
 
-    let suffix = querystring.stringify(query)
-    suffix = suffix && '?' + suffix
+    const search = querystring.stringify(query)
 
-    history.push(to + suffix)
+    history.push(`${to}${search && '?' + search}`, state)
 
   }
 
@@ -149,6 +182,8 @@ class UiStateTree extends StateTree {
     })
 
     defineProperty(this, 'config', { value: config, enumerable: true })
+    syncHistoryLocationToState(this)
+
   }
 
 }

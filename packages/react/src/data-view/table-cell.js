@@ -11,7 +11,7 @@ const TableCell = styled.div`
   align-items: center;
 
   height: 1em;
-  padding: 0.25em 0.125em 0.25em 0.125em;
+  padding: 0.25em 0.75em 0.25em 0.75em;
 `
 
 /******************************************************************************/

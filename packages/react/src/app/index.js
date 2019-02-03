@@ -9,6 +9,7 @@ import {
 import { ServiceView, ServiceTable } from './service-view'
 
 import Login from './login'
+import Link from './link'
 
 /******************************************************************************/
 // Exports
@@ -22,6 +23,7 @@ export {
 
   Login,
   ServiceView,
-  ServiceTable
+  ServiceTable,
+  Link
 
 }

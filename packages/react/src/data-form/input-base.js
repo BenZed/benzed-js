@@ -39,6 +39,8 @@ const InputBase = styled(props => {
 
   display: flex;
   flex-direction: row;
+  flex-grow: 1;
+  flex-shrink: 1;
 
   align-items: baseline;
 

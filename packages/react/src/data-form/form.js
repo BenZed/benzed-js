@@ -111,6 +111,7 @@ class FormLogic extends React.Component {
 
 const Form = styled(FormLogic)`
   flex-grow: 1;
+  flex-direction: column;
 `
 
 /******************************************************************************/

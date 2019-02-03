@@ -23,6 +23,7 @@ class StateTreeObserver extends React.Component {
   state = (({ mapState, path, root: _root, tree }) => {
     const sourceTree = get.mut(tree, _root)
     const value = mapState(sourceTree, path)
+
     return { value }
   })(this.props)
 
@@ -43,20 +44,27 @@ class StateTreeObserver extends React.Component {
     mapState: getDefaultMappedState
   }
 
+  mounted = false
+
   // Handlers
 
-  update = (tree, path) => {
+  update = (_tree = this.props.tree, path = this.props.path) => {
 
     const { mapState, root: _root, tree: sourceTree } = this.props
     const rootTree = get.mut(sourceTree, _root)
     const mapped = mapState(rootTree, path)
 
-    this.setState({ value: mapped })
+    setTimeout(() => this.mounted && this.setState({ value: mapped }), 0)
   }
 
   // LifeCycle
 
   componentDidMount () {
+    this.mounted = true
+    this.subscribeToTree()
+  }
+
+  subscribeToTree () {
     const { tree, root: _root, path } = this.props
 
     const sourceTree = get.mut(tree, _root)
@@ -69,11 +77,25 @@ class StateTreeObserver extends React.Component {
   }
 
   componentWillUnmount () {
+    this.mounted = false
     const { tree, root: _root } = this.props
 
     const sourceTree = get.mut(tree, _root)
 
     sourceTree.unsubscribe(this.update)
+  }
+
+  componentDidUpdate (prev) {
+
+    const { tree: oldTree } = prev
+    const { tree: newTree } = this.props
+
+    if (oldTree !== newTree) {
+      oldTree.unsubscribe(this.update)
+
+      this.subscribeToTree()
+      setTimeout(this.update, 0)
+    }
   }
 
   render () {

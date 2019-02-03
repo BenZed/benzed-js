@@ -5,6 +5,7 @@ import {
   UiStateTree,
 
   Login,
+  Link,
 
   ServiceView,
   ServiceTable
@@ -88,7 +89,7 @@ export {
 
   // App
   Login, ServiceView, ServiceTable, ClientStateTree, ServiceStateTree,
-  UiStateTree,
+  UiStateTree, Link,
 
   // Util
   isClient, isEvent, isMobile, emToPixels, storage, Cloner, CssCloner, Portal,
