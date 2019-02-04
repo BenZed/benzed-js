@@ -28,8 +28,8 @@ const Flex = styled.div.attrs(props => {
 
   return {
     style: {
-      flexGrow: grow,
-      flexShrink: shrink,
+      flexGrow: grow === true ? 1 : grow,
+      flexShrink: shrink === true ? 1 : grow,
       flexBasis: is.number(basis) ? `${basis}em` : basis,
       justifyContent: justify,
       alignItems: items,
@@ -45,11 +45,13 @@ const Flex = styled.div.attrs(props => {
 
 Flex.propTypes = createPropTypesFor(React => <proptypes>
   <multi key='grow'>
+    <bool/>
     <string/>
     <number/>
   </multi>
 
   <multi key='shrink'>
+    <bool/>
     <string/>
     <number/>
   </multi>

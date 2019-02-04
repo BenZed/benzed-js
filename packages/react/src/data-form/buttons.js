@@ -9,13 +9,14 @@ import { $ } from '../util'
 
 const Button = styled.button`
 
-  background-color: ${$.branded.or.prop('theme', 'fg')};
+  background-color: ${$.branded.darken(0.125).or.prop('theme', 'fg')};
   color: ${$.ifBranded.set('white').else.prop('theme', 'bg')};
 
   &:disabled {
     background-color: ${$.prop('theme', 'fg').desaturate(1)};
     color: ${$.prop('theme', 'bg').desaturate(1)};
     opacity: 0.5;
+    cursor: not-allowed;
   }
 
 `
@@ -45,20 +46,49 @@ const ButtonsContainer = styled.div`
 
 const Buttons = ({ children, ...props }) =>
   <FormStateContext.Consumer>{
-    form => {
+    form =>
 
-      const canSave = form.hasChangesToCurrent
+      <ButtonsContainer {...props}>
+        <Button
+          brand='success'
+          type='submit'
+          disabled={!form.hasChangesToCurrent}>
+          Save
+        </Button>
 
-      return <ButtonsContainer {...props}>
-        <Button brand='success' type='submit' >Save</Button>
-        <Button >Cancel</Button>
-        <Button >Revert</Button>
-        <Button >Undo</Button>
-        <Button >Redo</Button>
+        <Button
+          brand='warn'
+          onClick={form.revertCurrentToOriginal}
+          disabled={!form.hasChangesToCurrent}>
+          Cancel
+        </Button>
+
+        <Button
+          brand='danger'
+          onClick={form.revertToUpstream}
+          disabled={!form.hasChangesToUpstream}>
+          Revert
+        </Button>
+
+        <Button
+          brand='secondary'
+          onClick={form.undoEditCurrent}
+          disabled={!form.canUndoEditCurrent}>
+          Undo
+        </Button>
+
+        <Button
+          brand='secondary'
+          onClick={form.redoEditCurrent}
+          disabled={!form.canRedoEditCurrent}>
+          Redo
+        </Button>
+
         { children }
+
       </ButtonsContainer>
-    }
-  }</FormStateContext.Consumer>
+  }
+  </FormStateContext.Consumer>
 
 /******************************************************************************/
 // Exports

@@ -1,7 +1,7 @@
 import React, { createContext } from 'react'
-import styled from 'styled-components'
 
 import { equals } from '@benzed/immutable'
+import { Flex } from '../layout'
 
 /******************************************************************************/
 // Context
@@ -13,7 +13,7 @@ const FormStateContext = createContext()
 // Logic
 /******************************************************************************/
 
-class FormLogic extends React.Component {
+class Form extends React.Component {
 
   state = {
     current: {},
@@ -40,9 +40,10 @@ class FormLogic extends React.Component {
 
     const path = (e.target.dataset.path || '').split(',')
 
-    if (path && path.length > 0)
+    if (path && path.length > 0) {
       form.editCurrent(path, e.target.value)
-    else
+      form.pushCurrent()
+    } else
       throw new Error('path not specified in event.target.dataset')
   }
 
@@ -50,9 +51,25 @@ class FormLogic extends React.Component {
 
   createFormWithEventHandlers = (form = this.props.form) => {
 
-    const { current, history } = form
+    const { current, history, historyIndex } = form
     if (equals(current, this.state.current))
       return
+
+    const {
+      hasChangesToCurrent,
+      revertCurrentToOriginal,
+
+      hasChangesToUpstream,
+      revertToUpstream,
+
+      hasUnpushedHistory,
+
+      canRedoEditCurrent,
+      redoEditCurrent,
+
+      canUndoEditCurrent,
+      undoEditCurrent
+    } = form
 
     const { onChange } = this
 
@@ -60,8 +77,25 @@ class FormLogic extends React.Component {
       current,
       errors: {},
       history,
-      onChange
+      historyIndex,
+
+      onChange,
+
+      hasChangesToCurrent,
+      revertCurrentToOriginal,
+
+      hasChangesToUpstream,
+      revertToUpstream,
+
+      hasUnpushedHistory,
+      canRedoEditCurrent,
+      redoEditCurrent,
+
+      canUndoEditCurrent,
+      undoEditCurrent
     }
+
+    console.log(formDataWithEventHandlers)
 
     this.setState(formDataWithEventHandlers)
   }
@@ -94,25 +128,16 @@ class FormLogic extends React.Component {
   }
 
   render () {
-    const { children, className, style } = this.props
+    const { children, ...props } = this.props
 
     return <FormStateContext.Provider value={this.state}>
-      <form onSubmit={this.onSubmit} className={className} style={style}>
+      <Flex as='form' onSubmit={this.onSubmit} {...props}>
         {children}
-      </form>
+      </Flex>
     </FormStateContext.Provider>
   }
 
 }
-
-/******************************************************************************/
-// Main
-/******************************************************************************/
-
-const Form = styled(FormLogic)`
-  flex-grow: 1;
-  flex-direction: column;
-`
 
 /******************************************************************************/
 // Extend

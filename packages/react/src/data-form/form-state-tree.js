@@ -234,7 +234,7 @@ class FormStateTree extends StateTree {
   }
 
   get canRedoEditCurrent () {
-    return this.historyIndex < this.history.length - 1
+    return this.historyIndex < (this.history.length - 1)
   }
 
   get canUndoEditCurrent () {
@@ -263,11 +263,14 @@ class FormStateTree extends StateTree {
 
       this.applyFromSessionStorage()
     }
+
+    // TODO write your own @bound decorator
+    this.redoEditCurrent = ::this.redoEditCurrent
+    this.undoEditCurrent = ::this.undoEditCurrent
   }
 
   [copy.$$] () {
     const FormStateTree = this.constructor
-    console.log('copying-form')
     return new FormStateTree(this.config)
   }
 }
