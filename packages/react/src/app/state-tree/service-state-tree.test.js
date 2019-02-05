@@ -1,11 +1,13 @@
 import { expect } from 'chai'
-import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import ServiceStateTree, { $$queue } from './service-state-tree'
 import ClientStateTree, { $$feathers } from './client-state-tree'
-import { milliseconds } from '@benzed/async'
 import is from 'is-explicit'
+
+import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
+import { milliseconds } from '@benzed/async'
 import App from '@benzed/app'
 import { Test } from '@benzed/dev'
+import { first, last } from '@benzed/array'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -25,19 +27,22 @@ const CLIENT_CONFIG = {
 // Tests
 /******************************************************************************/
 
-describe('Service StateTree', () => {
+describe.only('Service StateTree', () => {
 
   describe('config', () => {
+
     it('requires a client state tree', () => {
       expect(() => new ServiceStateTree({ client: () => {} }))
         .to.throw('config.client must be of type: ClientStateTree')
     })
+
     it('requires a service name', () => {
       expect(() => new ServiceStateTree({
         client: new ClientStateTree(CLIENT_CONFIG),
         serviceName: null })
       ).to.throw('config.serviceName is required')
     })
+
     it('config gets placed on tree', () => {
       const tree = new ServiceStateTree({
         client: new ClientStateTree(CLIENT_CONFIG),
@@ -48,6 +53,7 @@ describe('Service StateTree', () => {
       expect(tree.config).to.have.property('client')
       expect(tree.config).to.have.property('serviceName', 'users')
     })
+
   })
 
   describe('initial state', () => {
@@ -60,16 +66,20 @@ describe('Service StateTree', () => {
       })
       keys = Object.keys(comments.state)
     })
+
     it('has keys: timestamp, fetching', () => {
       expect(keys).to.be.deep.equal([ 'timestamp', 'fetching' ])
     })
+
     it('has $$records symbol', () => {
       const symbols = Object.getOwnPropertySymbols(comments.state)
       expect(symbols.filter(sym => sym.toString().includes('hash-by-id'))).to.have.length(1)
     })
+
     it('client.timestamp to be a date', () => {
       expect(comments.timestamp).to.be.instanceof(Date)
     })
+
     it('client.records is an array', () => {
       expect(comments.records).to.be.instanceof(Array)
       expect(comments.records).to.have.length(0)
@@ -187,7 +197,6 @@ describe('Service StateTree', () => {
             expect(record._status).to.be.equal('unscoped')
           })
         })
-
       })
 
       if (provider === 'socketio')
@@ -264,6 +273,7 @@ describe('Service StateTree', () => {
 
       describe(`editing records in a non-auth ${provider} app`, () => {
 
+        let $$forms
         before(async () => {
 
           await state.api.service('messages').remove(null)
@@ -280,6 +290,11 @@ describe('Service StateTree', () => {
             await state.api.service('messages').create(data)
           }
 
+          $$forms = Object
+            .getOwnPropertySymbols(messages.state)
+            .filter(sym => sym.toString().includes('form'))
+            ::first()
+
           await messages.find({})
 
         })
@@ -288,9 +303,8 @@ describe('Service StateTree', () => {
 
           const { _id: id } = messages.records[0]
           const form = messages.getForm(id)
-          const record = messages.get(id)
 
-          expect(record._form)
+          expect(messages.state[$$forms][id])
             .to.be.equal(form)
 
           form.editCurrent('author', 'Ol Fackin Jerry')
@@ -301,6 +315,26 @@ describe('Service StateTree', () => {
           expect(form.hasChangesToCurrent).to.be.equal(false)
           expect(form.hasChangesToUpstream).to.be.equal(false)
         })
+
+        it('.getForm throws error if record is not loaded', () => {
+          expect(() => messages.getForm('definetly-not-an-id')).to.throw(
+            `Record with id 'definetly-not-an-id' has not been queried`
+          )
+        })
+
+        if (provider === 'socketio')
+          it('deleting a record deletes its form', async () => {
+            const docs = await state.api.service('messages').find({})
+            const doc = last(docs)
+
+            await messages.find({})
+            const form = await messages.getForm(doc._id)
+
+            await state.api.service('messages').remove(doc._id)
+            await milliseconds(25)
+
+            expect(messages.forms.filter(f => f === form)).to.have.length(0)
+          })
 
         if (provider === 'socketio')
           it('external changes arn\'t automatically folded into form.original', async () => {

@@ -8,7 +8,7 @@ import { PromiseQueue } from '@benzed/async'
 import { equals, $$equals, indexOf } from '@benzed/immutable'
 
 import { FormStateTree } from '../../data-form'
-
+import { inspect } from 'util'
 import is from 'is-explicit'
 
 // @jsx Schema.createValidator
@@ -21,6 +21,7 @@ import is from 'is-explicit'
 const $$queue = Symbol('query-queue')
 const $$prunable = Symbol('data-is-prunable')
 const $$records = Symbol('records-as-hash-by-id')
+const $$forms = Symbol('forms-by-record-id')
 
 const PARALLEL_QUERIES = 10
 
@@ -179,7 +180,7 @@ async function executeQueryWithData () {
   return results
 }
 
-function ensureFetching (query) {
+function ensureFetching (query = {}) {
 
   const tree = this
 
@@ -250,6 +251,22 @@ const validateConfig = <object key='config' plain strict >
 // Setup
 /******************************************************************************/
 
+// const callback = service => {
+//
+//   const record = service.get(id)
+//
+//   const data = { ...record }
+//   delete data._form
+//
+//   const shouldAutoRevert = !form.hasChangesToCurrent
+//
+//   form.setUpstream(data)
+//   if (shouldAutoRevert)
+//     form.revertToUpstream()
+// }
+//
+// this.subscribe(callback, [ $$records, `${id}` ])
+
 function handleEvents ({ client, serviceName }) {
 
   // Will catch self-induced events in rest
@@ -264,7 +281,6 @@ function handleEvents ({ client, serviceName }) {
 
     records[data._id] = {
       ...data,
-      _form: null,
       _status: STATUSES.Scoped
     }
 
@@ -278,11 +294,16 @@ function handleEvents ({ client, serviceName }) {
     if (!record)
       return
 
-    tree.setState({
+    const newData = {
       ...record,
       ...data,
       _status: STATUSES.Scoped
-    }, [ $$records, `${data._id}` ])
+    }
+
+    tree.setState(newData, [ $$records, `${data._id}` ])
+    const form = tree.state[$$forms][data._id]
+    if (form)
+      form.setUpstream(newData)
 
     tree.updateTimestamp()
   }
@@ -294,8 +315,16 @@ function handleEvents ({ client, serviceName }) {
     const records = { ...this.state[$$records] }
     delete records[data._id]
 
+    let forms = this.state[$$forms]
+    if (data._id in forms) {
+      forms = { ...forms }
+      delete forms[data._id]
+      tree.setState(forms, [ $$forms ], 'deleteRecordForm')
+    }
+
     tree.setRecords(records)
     tree.updateTimestamp()
+
   }
 
   service
@@ -315,6 +344,9 @@ class ServiceStateTree extends StateTree {
 
   @state.symbol($$records)
   $$records = {}
+
+  @state.symbol($$forms)
+  $$forms = {}
 
   @state
   timestamp = null
@@ -347,59 +379,42 @@ class ServiceStateTree extends StateTree {
       .values(this.state[$$records])
   }
 
-  @memoize($$records)
+  @memoize($$forms)
   get forms () {
     return Object
-      .values(this.state[$$records])
-      .map(record => record._form)
+      .values(this.state[$$forms])
       .filter(is.defined)
   }
 
   /* Form Interface */
-
   getForm = id => {
 
-    const record = this.get(id)
-
-    let form = record._form
+    let form = this.state[$$forms]
 
     // Create Form
     if (!is(form, FormStateTree)) {
 
+      const record = this.state[$$records][id]
+      if (!record)
+        throw new Error(`Record with id ${inspect(id)} has not been queried.`)
+
       const ui = this.root?.ui
 
       form = new FormStateTree({
+        ui,
         data: record,
         submit: data => this.patch(id, data),
-        ui,
         historyStorageKey: ui && `form-${this.config.serviceName}-${id}`
       })
 
-      const callback = service => {
-
-        const record = service.get(id)
-
-        const data = { ...record }
-        delete data._form
-
-        const shouldAutoRevert = !form.hasChangesToCurrent
-
-        form.setUpstream(data)
-        if (shouldAutoRevert)
-          form.revertToUpstream()
-      }
-
-      this.subscribe(callback, [ $$records, `${id}` ])
-
-      this.setState(form, [ $$records, `${id}`, '_form' ], 'setRecordForm')
+      this.setState(form, [ $$forms, `${id}` ], 'createRecordForm')
     }
 
     return form
   }
 
   /* Feathers Interface */
-
-  find = (query = {}) => this::ensureFetching(query)
+  find = this::ensureFetching
 
   get = id => {
 
@@ -443,7 +458,6 @@ class ServiceStateTree extends StateTree {
   }
 
   /* Convenience */
-
   untilFetchingComplete () {
     const completes = this[$$queue]
       .items

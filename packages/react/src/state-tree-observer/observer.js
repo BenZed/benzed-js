@@ -27,16 +27,21 @@ class StateTreeObserver extends React.Component {
     return { value }
   })(this.props)
 
-  static propTypes = createPropTypesFor(React => <proptypes>
-    <array key='root' cast >
-      <string required />
-    </array>
-    <array key='path' cast >
-      <string required />
-    </array>
-    <StateTree key='tree' required />
-    <func key='mapState' />
-  </proptypes>)
+  static propTypes = createPropTypesFor(React =>
+    <proptypes>
+      <array key='root' cast >
+        <string required />
+      </array>
+
+      <array key='path' cast >
+        <string required />
+      </array>
+
+      <StateTree key='tree' required />
+
+      <func key='mapState' />
+    </proptypes>
+  )
 
   static defaultProps = {
     root: [],
@@ -48,9 +53,9 @@ class StateTreeObserver extends React.Component {
 
   // Handlers
 
-  update = (_tree = this.props.tree, path = this.props.path) => {
+  update = () => {
 
-    const { mapState, root: _root, tree: sourceTree } = this.props
+    const { mapState, root: _root, path, tree: sourceTree } = this.props
     const rootTree = get.mut(sourceTree, _root)
     const mapped = mapState(rootTree, path)
 

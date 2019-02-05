@@ -5,6 +5,8 @@ import UiStateTree from '../app/state-tree/ui-state-tree'
 import { last, first } from '@benzed/array'
 import { serialize } from '@benzed/immutable'
 
+import { createMemoryHistory } from 'history'
+
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
@@ -379,7 +381,9 @@ describe('FormStateTree', () => {
   describe('providing ui and historyStorageKey', () => {
 
     it('saves history to session storage', () => {
-      const ui = new UiStateTree()
+      const ui = new UiStateTree({
+        history: createMemoryHistory()
+      })
       const form = new FormStateTree({
         ui,
         historyStorageKey: 'foo-bar',
@@ -404,7 +408,9 @@ describe('FormStateTree', () => {
     })
 
     it('auto populates with stored value', () => {
-      const ui = new UiStateTree()
+      const ui = new UiStateTree({
+        history: createMemoryHistory()
+      })
 
       ui.session.setItem('test-history', {
         current: { cake: 'wheeze' },
@@ -437,7 +443,9 @@ describe('FormStateTree', () => {
       const config = {
         data: { name: 'Jerry', age: 22 },
         historyStorageKey: 'jerry',
-        ui: new UiStateTree(),
+        ui: new UiStateTree({
+          history: createMemoryHistory()
+        }),
         submit () {}
       }
 

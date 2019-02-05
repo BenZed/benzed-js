@@ -5,6 +5,8 @@ import Observer from './observer'
 
 import renderer from 'react-test-renderer'
 
+import { milliseconds } from '@benzed/async'
+
 import StateTree, { state, action } from '@benzed/state-tree'
 /* eslint-disable react/prop-types */
 
@@ -34,7 +36,7 @@ describe('Observer component', () => {
 
   describe('basic usage', () => {
 
-    it('is used to send state changes to child components', () => {
+    it('is used to send state changes to child components', async () => {
 
       const MessageList = () => <Observer
         tree={messages}
@@ -50,6 +52,7 @@ describe('Observer component', () => {
       expect(messageList.toJSON().children).to.be.equal(null)
 
       messages.addMessage('Hello World.')
+      await milliseconds(10)
       expect(messageList.toJSON().children).to.be.deep.equal([
         {
           children: [ 'Hello World.' ],
