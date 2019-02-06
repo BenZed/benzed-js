@@ -8,7 +8,6 @@ import { PromiseQueue } from '@benzed/async'
 import { equals, $$equals, indexOf } from '@benzed/immutable'
 
 import { FormStateTree } from '../../data-form'
-import { inspect } from 'util'
 import is from 'is-explicit'
 
 // @jsx Schema.createValidator
@@ -394,9 +393,7 @@ class ServiceStateTree extends StateTree {
     // Create Form
     if (!is(form, FormStateTree)) {
 
-      const record = this.state[$$records][id]
-      if (!record)
-        throw new Error(`Record with id ${inspect(id)} has not been queried.`)
+      const record = this.get(id)
 
       const ui = this.root?.ui
 

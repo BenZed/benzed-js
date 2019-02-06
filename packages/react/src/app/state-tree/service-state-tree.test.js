@@ -27,7 +27,7 @@ const CLIENT_CONFIG = {
 // Tests
 /******************************************************************************/
 
-describe.only('Service StateTree', () => {
+describe('Service StateTree', () => {
 
   describe('config', () => {
 
@@ -316,10 +316,8 @@ describe.only('Service StateTree', () => {
           expect(form.hasChangesToUpstream).to.be.equal(false)
         })
 
-        it('.getForm throws error if record is not loaded', () => {
-          expect(() => messages.getForm('definetly-not-an-id')).to.throw(
-            `Record with id 'definetly-not-an-id' has not been queried`
-          )
+        it('.getForm queries record is not loaded', () => {
+          expect(() => messages.getForm('123412')).to.not.throw(Error)
         })
 
         if (provider === 'socketio')

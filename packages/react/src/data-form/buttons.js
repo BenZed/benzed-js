@@ -52,35 +52,35 @@ const Buttons = ({ children, ...props }) =>
         <Button
           brand='success'
           type='submit'
-          disabled={!form.hasChangesToCurrent}>
+          disabled={!form.canSave}>
           Save
         </Button>
 
         <Button
           brand='warn'
-          onClick={form.revertCurrentToOriginal}
-          disabled={!form.hasChangesToCurrent}>
+          onClick={form.cancel}
+          disabled={!form.canSave}>
           Cancel
         </Button>
 
         <Button
           brand='danger'
-          onClick={form.revertToUpstream}
-          disabled={!form.hasChangesToUpstream}>
+          onClick={form.revert}
+          disabled={!form.canSave}>
           Revert
         </Button>
 
         <Button
           brand='secondary'
-          onClick={form.undoEditCurrent}
-          disabled={!form.canUndoEditCurrent}>
+          onClick={form.undo}
+          disabled={!form.canUndo}>
           Undo
         </Button>
 
         <Button
           brand='secondary'
-          onClick={form.redoEditCurrent}
-          disabled={!form.canRedoEditCurrent}>
+          onClick={form.redo}
+          disabled={!form.canRedo}>
           Redo
         </Button>
 

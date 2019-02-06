@@ -1,7 +1,8 @@
 import React, { createContext } from 'react'
 
-import { equals } from '@benzed/immutable'
 import { Flex } from '../layout'
+
+import { equals } from '@benzed/immutable'
 
 /******************************************************************************/
 // Context
@@ -47,31 +48,39 @@ class Form extends React.Component {
       throw new Error('path not specified in event.target.dataset')
   }
 
+  revert = e => {
+    e.preventDefault()
+    this.props.form.revertToUpstream()
+  }
+
+  cancel = e => {
+    e.preventDefault()
+    this.props.form.revertCurrentToOriginal()
+  }
+
+  undo = e => {
+    e.preventDefault()
+    this.props.form.undoEditCurrent()
+  }
+
+  redo = e => {
+    e.preventDefault()
+    this.props.form.redoEditCurrent()
+  }
+
   // State Setters
 
   createFormWithEventHandlers = (form = this.props.form) => {
 
     const { current, history, historyIndex } = form
-    if (equals(current, this.state.current))
-      return
 
     const {
-      hasChangesToCurrent,
-      revertCurrentToOriginal,
-
-      hasChangesToUpstream,
-      revertToUpstream,
-
-      hasUnpushedHistory,
-
-      canRedoEditCurrent,
-      redoEditCurrent,
-
-      canUndoEditCurrent,
-      undoEditCurrent
+      hasChangesToUpstream: canSave,
+      canRedoEditCurrent: canRedo,
+      canUndoEditCurrent: canUndo
     } = form
 
-    const { onChange } = this
+    const { onChange, cancel, revert, redo, undo } = this
 
     const formDataWithEventHandlers = {
       current,
@@ -81,21 +90,20 @@ class Form extends React.Component {
 
       onChange,
 
-      hasChangesToCurrent,
-      revertCurrentToOriginal,
+      canSave,
+      cancel,
 
-      hasChangesToUpstream,
-      revertToUpstream,
+      revert,
 
-      hasUnpushedHistory,
-      canRedoEditCurrent,
-      redoEditCurrent,
+      canRedo,
+      redo,
 
-      canUndoEditCurrent,
-      undoEditCurrent
+      canUndo,
+      undo
     }
 
-    console.log(formDataWithEventHandlers)
+    if (equals(formDataWithEventHandlers, this.state))
+      return
 
     this.setState(formDataWithEventHandlers)
   }

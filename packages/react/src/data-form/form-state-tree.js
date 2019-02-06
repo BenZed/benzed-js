@@ -4,7 +4,6 @@ import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import UiStateTree from '../app/state-tree/ui-state-tree'
 
 import { equals, set, get, copy, serialize } from '@benzed/immutable'
-import { last } from '@benzed/array'
 import { clamp, min } from '@benzed/math'
 import is from 'is-explicit'
 
@@ -22,7 +21,11 @@ function pushToSessionStorage (state) {
   const form = this
   const { historyStorageKey, ui } = form.config
 
-  const { history, historyIndex, current } = state
+  const {
+    history,
+    historyIndex,
+    current
+  } = state
 
   ui.session.setItem(historyStorageKey, { history, historyIndex, current })
 
@@ -61,9 +64,6 @@ class FormStateTree extends StateTree {
   current = {}
 
   @state
-  original = {}
-
-  @state
   upstream = {}
 
   @state
@@ -98,11 +98,11 @@ class FormStateTree extends StateTree {
   pushCurrent () {
 
     const {
-      hasUnpushedHistory, hasChangesToCurrent
+      canRedoEditCurrent, hasChangesToCurrent
     } = this
 
-    const requiresPush = hasUnpushedHistory || hasChangesToCurrent
-    if (!requiresPush)
+    const canPush = canRedoEditCurrent || hasChangesToCurrent
+    if (!canPush)
       return this.state
 
     const { historyMaxCount } = this.config
@@ -113,8 +113,7 @@ class FormStateTree extends StateTree {
     state.history.length = min(state.history.length, state.historyIndex + 1)
 
     // don't repeat history
-    const currentMatchesLast = last(state.history)::equals(state.current)
-    if (!currentMatchesLast)
+    if (hasChangesToCurrent)
       state.history.push(state.current::copy())
 
     // ensure we don't have too many states
@@ -147,25 +146,12 @@ class FormStateTree extends StateTree {
     }
   }
 
-  @action('current')
-  revertCurrentToOriginal () {
-    if (!this.hasChangesToCurrent)
-      return this.current
-
-    this.pushCurrent()
-
-    return this.original::copy()
-  }
-
   @action
   revertToUpstream () {
     if (!this.hasChangesToUpstream)
       return this.state
 
-    this.pushCurrent()
-
     return this.state::copy(state => {
-      state.original = state.upstream::copy()
       state.current = state.upstream::copy()
     })
 
@@ -174,24 +160,23 @@ class FormStateTree extends StateTree {
   @action
   applyHistoryToCurrent (index) {
 
-    if (this.state.history.length === 0)
-      return this.state
-
     index = clamp(index, 0, this.state.history.length - 1)
     if (this.state.historyIndex === index)
       return this.state
 
-    return this.state::copy(state => {
+    const state = this.state::copy(state => {
       state.current = state.history[index]::copy()
       state.historyIndex = index
     })
+
+    if (this.config.historyStorageKey)
+      this::pushToSessionStorage(state)
+
+    return state
   }
 
   undoEditCurrent () {
-    if (this.historyIndex === 0)
-      this.revertCurrentToOriginal()
-    else
-      this.applyHistoryToCurrent(this.historyIndex - 1)
+    this.applyHistoryToCurrent(this.historyIndex - 1)
   }
 
   redoEditCurrent () {
@@ -214,31 +199,25 @@ class FormStateTree extends StateTree {
       : this.state
   }
 
-  @memoize('current', 'original')
+  @memoize('current', 'history', 'historyIndex')
   get hasChangesToCurrent () {
-    const { current, original } = this
+    const { history, historyIndex, current } = this.state
 
-    return !equals(current, original)
+    return !current::equals(history[historyIndex])
   }
 
-  @memoize('upstream', 'original')
+  @memoize('upstream', 'current')
   get hasChangesToUpstream () {
-    const { upstream, original } = this
-    return !equals(upstream, original)
-  }
-
-  get hasUnpushedHistory () {
-    const { history, historyIndex } = this
-    return history.length > 0 &&
-      historyIndex < (history.length - 1)
+    const { upstream, current } = this
+    return !equals(upstream, current)
   }
 
   get canRedoEditCurrent () {
-    return this.historyIndex < (this.history.length - 1)
+    return this.historyIndex < this.history.length - 1
   }
 
   get canUndoEditCurrent () {
-    return this.historyIndex > 0 || this.hasChangesToCurrent
+    return this.historyIndex > 0
   }
 
   constructor (config = {}) {
@@ -246,9 +225,9 @@ class FormStateTree extends StateTree {
     const { data, state, actions, ...rest } = validate(config)
 
     super({
-      original: serialize(data),
       upstream: serialize(data),
-      current: serialize(data)
+      current: serialize(data),
+      history: [ serialize(data) ]
     })
 
     defineProperty(this, 'config', { value: freeze(rest) })
@@ -263,6 +242,8 @@ class FormStateTree extends StateTree {
 
       this.applyFromSessionStorage()
     }
+
+    this.subscribe(form => console.log(form.toJSON()))
 
     // TODO write your own @bound decorator
     this.redoEditCurrent = ::this.redoEditCurrent

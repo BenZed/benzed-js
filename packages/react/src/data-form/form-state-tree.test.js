@@ -10,7 +10,7 @@ import { createMemoryHistory } from 'history'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('FormStateTree', () => {
+describe.only('FormStateTree', () => {
 
   it('is a state tree', () => {
     const form = new FormStateTree({
@@ -100,36 +100,38 @@ describe('FormStateTree', () => {
       form.editCurrent('age', 44)
       form.editCurrent('name', 'Robert')
 
-      expect(form.history).to.have.length(0)
+      expect(form.history).to.be.deep.equal([ data ])
 
       const { current } = form
 
       form.pushCurrent()
-      expect(form.history).to.be.deep.equal([ current ])
+      expect(form.history).to.be.deep.equal([ data, current ])
 
     })
 
     it('history is only updated if pushing actually change something', () => {
 
+      const data = {
+        room: '1a',
+        floor: 1
+      }
+
       const form = new FormStateTree({
-        data: {
-          room: '1a',
-          floor: 1
-        },
+        data,
         submit () {}
       })
 
-      form.pushCurrent()
-      expect(form.history).to.be.deep.equal([])
+      expect(form.history).to.be.deep.equal([ data ])
 
       form.editCurrent('room', '1a')
       form.editCurrent('floor', 1)
-      expect(form.history).to.have.length(0)
+      form.pushCurrent()
+      expect(form.history).to.be.deep.equal([ data ])
 
       form.editCurrent('room', '1b')
-      form.pushCurrent()
       const { current } = form
-      expect(form.history).to.be.deep.equal([ current ])
+      form.pushCurrent()
+      expect(form.history).to.be.deep.equal([ data, current ])
 
     })
 
@@ -156,12 +158,12 @@ describe('FormStateTree', () => {
 
       const form = new FormStateTree({
         data: {
-          bottlesOfBeerOnTheWall: 1000000
+          bottlesOfBeerOnTheWall: 100
         },
         submit () {}
       })
 
-      const drinkOneDownPassItAround = () => {
+      const takeOneDownPassItAround = () => {
         form.editCurrent(
           'bottlesOfBeerOnTheWall',
           form.current.bottlesOfBeerOnTheWall - 1
@@ -169,13 +171,14 @@ describe('FormStateTree', () => {
         form.pushCurrent()
       }
 
-      while (form.current.bottlesOfBeerOnTheWall > 999990)
-        drinkOneDownPassItAround()
+      while (form.current.bottlesOfBeerOnTheWall > 0)
+        takeOneDownPassItAround()
 
-      form.applyHistoryToCurrent(form.history.length - 6)
+      const targetIndex = form.history.length - 5
+      form.applyHistoryToCurrent(targetIndex)
       form.pushCurrent()
 
-      expect(form.history).to.have.length(5)
+      expect(form.history).to.have.length(targetIndex + 1)
 
     })
 
@@ -218,7 +221,8 @@ describe('FormStateTree', () => {
       expect(form.current).to.be.deep.equal(last(form.history))
 
       form.applyHistoryToCurrent(2)
-      expect(form.current).to.be.deep.equal(form.history[form.history.length - 2])
+      expect(form.current).to.be.deep.equal(form.history[2])
+
     })
 
     it('clamps delta to first and last history', () => {
@@ -236,10 +240,10 @@ describe('FormStateTree', () => {
 
       form.applyHistoryToCurrent(2)
 
-      const secondTolast = form.history[form.history.length - 2]
+      const second = form.history[2]
 
-      expect(form.current).to.be.deep.equal(secondTolast)
-      expect(form.current).to.not.be.equal(secondTolast)
+      expect(form.current).to.be.deep.equal(second)
+      expect(form.current).to.not.be.equal(second)
     })
 
   })
@@ -250,17 +254,13 @@ describe('FormStateTree', () => {
       form.undoEditCurrent()
       expect(form.current).to.be.deep.equal(form.history[form.history.length - 2])
     })
-    it('undoing at historyIndex === 0 will revert current to data', () => {
+    it('undoing at historyIndex === 0 does nothing', () => {
       const form = makeAFormWithHistory()
       expect(form.canUndoEditCurrent).to.be.equal(true)
 
-      form.applyHistoryToCurrent(-form.history.length)
+      form.applyHistoryToCurrent(0)
       expect(form.current).to.be.deep.equal(first(form.history))
       expect(form.historyIndex).to.be.equal(0)
-      expect(form.canUndoEditCurrent).to.be.equal(true)
-
-      form.undoEditCurrent()
-      expect(form.current).to.be.deep.equal(form.original)
       expect(form.canUndoEditCurrent).to.be.equal(false)
     })
   })
@@ -276,21 +276,6 @@ describe('FormStateTree', () => {
 
       form.redoEditCurrent()
       expect(form.current).to.be.deep.equal(last(form.history))
-    })
-  })
-
-  describe('revertContentToOriginal()', () => {
-    it('reverts content to data', () => {
-      const form = makeAFormWithHistory()
-      expect(form.hasChangesToCurrent)
-        .to.be.equal(true)
-
-      form.revertCurrentToOriginal()
-
-      expect(form.current)
-        .to.be.deep.equal(form.original)
-      expect(form.hasChangesToCurrent)
-        .to.be.equal(false)
     })
   })
 
@@ -364,7 +349,6 @@ describe('FormStateTree', () => {
       await ui.fetch('Batman')
       ui.form.revertToUpstream()
       expect(ui.form.current).to.be.deep.equal(ui.form.upstream)
-      expect(ui.form.original).to.be.deep.equal(ui.form.upstream)
     })
 
     it('use pushUpstream when overwriting remote objects', async () => {
@@ -384,25 +368,28 @@ describe('FormStateTree', () => {
       const ui = new UiStateTree({
         history: createMemoryHistory()
       })
+
+      const data = { foo: 'foo' }
+
       const form = new FormStateTree({
         ui,
         historyStorageKey: 'foo-bar',
-        data: { foo: 'foo' },
+        data,
         submit () {}
       })
 
       form.editCurrent('foo', 'bar')
       expect(ui.session.getItem('foo-bar')).to.be.deep.equal({
         current: { foo: 'bar' },
-        history: [],
+        history: [ data ],
         historyIndex: 0
       })
 
       form.pushCurrent()
       expect(ui.session.getItem('foo-bar')).to.be.deep.equal({
         current: { foo: 'bar' },
-        history: [{ foo: 'bar' }],
-        historyIndex: 0
+        history: [ data, { foo: 'bar' } ],
+        historyIndex: 1
       })
 
     })
@@ -454,8 +441,6 @@ describe('FormStateTree', () => {
 
       form1.editCurrent('age', 23)
       expect(form2.current).to.be.deep.equal(form1.current)
-
     })
-
   })
 })
