@@ -1,23 +1,26 @@
 import React from 'react'
+import { branded, Color, GlobalStyle } from '../../themes'
 
-import { ThemeProvider } from 'styled-components'
+import Main from './main'
 
-import { GlobalStyle } from '../../themes'
+/******************************************************************************/
+// ReTheme
+/******************************************************************************/
+
+const exampleTheme = {
+  ...branded,
+  fg: new Color('#1b3147'),
+  bg: new Color('#e0e1e2')
+}
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
 const Example = ({ arr }) =>
-  <ThemeProvider theme={{
-    bg: 'white',
-    fg: 'black',
-    body: 'Helvetica',
-    title: 'Impact' }}>
-    <GlobalStyle>
-
-    </GlobalStyle>
-  </ThemeProvider>
+  <GlobalStyle theme={exampleTheme}>
+    <Main/>
+  </GlobalStyle>
 
 /******************************************************************************/
 // Exports

@@ -1,6 +1,14 @@
 import { $$copy } from './symbols'
 import { namesAndSymbols } from './equals'
 
+console.warn(
+  'TO BEN: Do not publish @benzed/immutable 3.0 yet.\n\n' +
+  '- circular reference resolution for all object types, not just plain objects.\n' +
+  '- default Object $$copy implementation: should it have one or not?\n',
+  '- should objects without prototypes also be copied without prototypes?\n',
+  '- if an input is frozen, sealed or not extendable, should the output be as well?'
+)
+
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -18,37 +26,46 @@ function addToPrototype (copier) {
 
 }
 
-const copyObjectConsideringCircularRefs = (value, refs = [ value ]) => {
+const prototypeIsBaseObjectOrMissing = object => {
+  const prototype = Object.getPrototypeOf(object)
+  return prototype === null || prototype.constructor === Object
+}
+
+const copyObjectConsideringCircularRefs = (value, refs) => {
 
   let clone
+
   try {
-    const Type = value.constructor
-    clone = new Type()
+    clone = value.constructor
+      ? new value.constructor()
+      : Object.create(null)
   } catch (err) {
     clone = {}
   }
 
+  if (refs instanceof Map === false)
+    refs = new Map([ [ value, clone ] ])
+
   const keys = namesAndSymbols(value)
   for (const key of keys) {
     const keyValue = value[key]
-    if (refs.includes(keyValue))
-      continue
 
     const isObject = keyValue !== null && typeof keyValue === 'object'
-    if (isObject)
-      refs.push(keyValue)
+    const hasCircularReference = isObject && refs.has(keyValue)
 
-    const implementsSameCopier = isObject && keyValue[$$copy] === copyObject
-    clone[key] = implementsSameCopier
-      ? copyObjectConsideringCircularRefs(keyValue, refs)
-      : copyUsingImplementer(keyValue)
+    clone[key] = hasCircularReference
+      ? refs.get(keyValue)
+      : copyWithImplementation(keyValue, refs)
+
+    if (isObject && !hasCircularReference)
+      refs.set(keyValue, clone[key])
 
   }
 
   return clone
 }
 
-const copyUsingImplementer = value => {
+const copyWithImplementation = value => {
 
   const isNullOrUndefined = value == null
 
@@ -56,10 +73,9 @@ const copyUsingImplementer = value => {
     ? value[$$copy]()
     : isNullOrUndefined
       ? value
-
-      // handles case where an object was created outside of the
-      // prototype chain: Object.create(null)
-      : copyObjectConsideringCircularRefs(value)
+      : prototypeIsBaseObjectOrMissing(value)
+        ? copyObjectConsideringCircularRefs(value)
+        : throw new Error(`${value.constructor?.name || 'value'} does not implement $$copy trait.`)
 }
 
 /******************************************************************************/
@@ -75,7 +91,7 @@ function copyObject () {
 }
 
 function copyArray () {
-  return this.map(copyUsingImplementer) // lol
+  return this.map(copyWithImplementation) // lol
 }
 
 function copyDate () {
@@ -89,10 +105,7 @@ function copyIterable () {
   const args = []
 
   for (const value of this)
-    args.push(value == null
-      ? value
-      : value[$$copy]()
-    )
+    args.push(copyWithImplementation(value))
 
   return new Type(args)
 }
@@ -107,13 +120,16 @@ for (const Primitive of [ String, Number, Boolean ])
 for (const Immutable of [ RegExp, Symbol, Function ])
   Immutable::addToPrototype(returnSelf)
 
-for (const WeakCollection of [ WeakSet, WeakMap ])
-  WeakCollection::addToPrototype(returnSelf)
+// TODO Should WeakCollections not implement $$copy?
+// for (const WeakCollection of [ WeakSet, WeakMap ])
+//   WeakCollection::addToPrototype(returnSelf)
 
 for (const Iterable of [ Set, Map ])
   Iterable::addToPrototype(copyIterable)
 
-Object::addToPrototype(copyObject)
+// On second thought, we don't want custom types to inherit $$copy functionality
+// unless we explicitly ask them to.
+// Object::addToPrototype(copyObject)
 
 Date::addToPrototype(copyDate)
 
@@ -150,7 +166,7 @@ function copy (...args) {
     ? args.shift()
     : null
 
-  value = copyUsingImplementer(value)
+  value = copyWithImplementation(value)
 
   if (typeof mutator === 'function')
     mutator(value)
@@ -163,3 +179,7 @@ function copy (...args) {
 /******************************************************************************/
 
 export default copy
+
+export {
+  copyObject
+}

@@ -18,6 +18,11 @@ const direction = ({ direction }) =>
     ? 'row'
     : 'column'
 
+const display = ({ inline }) =>
+  inline
+    ? 'inline-flex'
+    : 'flex'
+
 /******************************************************************************/
 // Main Components
 /******************************************************************************/
@@ -38,7 +43,7 @@ const Flex = styled.div.attrs(props => {
     }
   }
 })`
-  display: flex;
+  display: ${display};
   flex-wrap: ${wrap};
   flex-direction: ${direction};
 `
@@ -80,6 +85,8 @@ Flex.propTypes = createPropTypesFor(React => <proptypes>
   <value key='self'>
     auto stretch center flex-start flex-end baseline initial inherit
   </value>
+
+  <bool key='inline' />
 </proptypes>)
 
 Flex.Column = styled(Flex)`

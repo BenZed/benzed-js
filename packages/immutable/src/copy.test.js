@@ -6,10 +6,10 @@ import { $$copy } from './symbols'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-Test.optionallyBindableMethod(copy, copier => {
+Test.optionallyBindableMethod.only(copy, copier => {
 
   describe('adds $$copy symbol to standard types', () => {
-    for (const Type of [ String, Number, Boolean, Object, Array ])
+    for (const Type of [ String, Number, Boolean, Array ])
       it(`${Type.name}`, () => {
         assert(
           typeof Type.prototype[$$copy] === 'function',
@@ -103,16 +103,26 @@ Test.optionallyBindableMethod(copy, copier => {
 
     })
 
-    it('ignores circular references', () => {
+    it('resolves circular references', () => {
 
       const circle = {
         foo: 'bar'
       }
       circle.circle = circle
 
-      expect(copier(circle)).to.deep.equal({
-        foo: 'bar'
-      })
+      const circle2 = copier(circle)
+
+      expect(circle2.circle).to.be.equal(circle2)
+
+    })
+
+    it.skip('resolves circlular references in arrays', () => {
+      const array = []
+      array.push(array)
+
+      const array2 = copy(array)
+      expect(array2).to.be.deep.equal([[]])
+      expect(array2[0]).to.be.equal(array2)
     })
 
   })

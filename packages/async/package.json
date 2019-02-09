@@ -21,7 +21,7 @@
   "license": "ISC",
   "description": "My own async utilities.",
   "devDependencies": {
-    "@benzed/dev": "^0.12.11"
+    "@benzed/dev": "^0.12.12"
   },
   "dependencies": {
     "is-explicit": "^3.0.1"

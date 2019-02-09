@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import is from 'is-explicit'
 import { Label } from '../text'
@@ -26,21 +26,18 @@ const InputBase = props => {
     ? <Label>{_label}</Label>
     : _label
 
-  return <FormStateContext.Consumer>{
-    ({ onChange, current }) =>
+  const { onChange, current } = useContext(FormStateContext)
 
-      <Flex direction={direction} items={items} {...rest}>
-        { label }
-        {
-          children({
-            'value': get.mut(current, path),
-            'data-path': path,
-            onChange
-          })
-        }
-      </Flex>
-
-  }</FormStateContext.Consumer>
+  return <Flex direction={direction} items={items} {...rest}>
+    { label }
+    {
+      children({
+        'value': get.mut(current, path),
+        'data-path': path,
+        onChange
+      })
+    }
+  </Flex>
 }
 
 /******************************************************************************/

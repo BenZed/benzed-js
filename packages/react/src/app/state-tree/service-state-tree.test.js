@@ -305,13 +305,17 @@ describe('Service StateTree', () => {
           const form = messages.getForm(id)
 
           expect(messages.state[$$forms][id])
-            .to.be.equal(form)
+            .to
+            .be
+            .equal(form)
 
           form.editCurrent('author', 'Ol Fackin Jerry')
+          form.pushCurrent()
           await form.pushUpstream()
           await milliseconds(10)
 
           expect(form.upstream.author).to.be.equal(messages.get(id).author)
+
           expect(form.hasChangesToCurrent).to.be.equal(false)
           expect(form.hasChangesToUpstream).to.be.equal(false)
         })
@@ -334,26 +338,6 @@ describe('Service StateTree', () => {
             expect(messages.forms.filter(f => f === form)).to.have.length(0)
           })
 
-        if (provider === 'socketio')
-          it('external changes arn\'t automatically folded into form.original', async () => {
-            const { _id: id } = messages.records[1]
-
-            const form = messages.getForm(id)
-
-            form.editCurrent('author', 'Jerry again, I\'m pretty sure')
-            form.pushCurrent()
-            expect(form.hasChangesToCurrent).to.be.equal(true)
-            expect(form.hasChangesToUpstream).to.be.equal(false)
-
-            await state.api.service('messages').patch(id, { author: 'Stephen Hawking' })
-            await milliseconds(25)
-
-            expect(form.hasChangesToUpstream).to.be.equal(true)
-            form.revertToUpstream()
-            expect(form.current).to.be.deep.equal(form.original)
-            expect(form.upstream).to.be.deep.equal(form.original)
-
-          })
       })
     })
 })

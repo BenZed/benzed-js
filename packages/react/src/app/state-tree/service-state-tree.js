@@ -102,17 +102,18 @@ class QueryQueue extends PromiseQueue {
 
 }
 
-function executePatchWithData () {
+async function executePatchWithData () {
 
   const item = this
-  const { id, differences, tree } = item.data
+  const { id, data, tree } = item.data
 
   const { client, serviceName: service } = tree.config
 
-  return client[$$feathers]
+  const record = await client[$$feathers]
     .service(service)
-    .patch(id, differences)
+    .patch(id, data)
 
+  return filterDataBlacklist(record, tree.config.formDataBlacklist)
 }
 
 async function executeQueryWithData () {
@@ -216,19 +217,36 @@ const getIdsFromQuery = query => {
     : null
 }
 
-const getDataDifferences = (edit, original) => {
+const filterDataBlacklist = (data, blacklist) => {
+
+  data = { ...data }
+
+  for (const key in data)
+    if (blacklist.includes(key))
+      delete data[key]
+
+  return data
+}
+
+const filterDataDifferences = (edit, original) => {
 
   const editIsObj = is.plainObject(edit)
   const origIsObj = is.plainObject(edit)
 
   let differences
   if (editIsObj && origIsObj) {
+
     differences = {}
+
     for (const key in edit) {
-      const result = getDataDifferences(edit[key], original[key])
+      const result = filterDataDifferences(edit[key], original[key])
       if (result !== $$prunable)
         differences[key] = result
     }
+
+    if (Object.keys(differences).length === 0)
+      differences = $$prunable
+
   } else
     differences = equals(edit, original)
       ? $$prunable
@@ -244,6 +262,9 @@ const getDataDifferences = (edit, original) => {
 const validateConfig = <object key='config' plain strict >
   <ClientStateTree key='client' required />
   <string key='serviceName' required />
+  <array key='formDataBlacklist' default={[ 'updated', 'created', '_status', '_id' ]} >
+    <string required />
+  </array>
 </object>
 
 /******************************************************************************/
@@ -397,9 +418,11 @@ class ServiceStateTree extends StateTree {
 
       const ui = this.root?.ui
 
+      const data = filterDataBlacklist(record, this.config.formDataBlacklist)
+
       form = new FormStateTree({
         ui,
-        data: record,
+        data,
         submit: data => this.patch(id, data),
         historyStorageKey: ui && `form-${this.config.serviceName}-${id}`
       })
@@ -447,9 +470,12 @@ class ServiceStateTree extends StateTree {
     if (!is.defined(id))
       throw new Error(`id is required`)
 
-    const differences = getDataDifferences(data, this.get(id))
+    data = filterDataDifferences(data, this.get(id))
+    data = filterDataBlacklist(data, this.config.formDataBlacklist)
 
-    const item = { id, tree: this, differences }
+    console.log('PATCHING', this.config.serviceName, id, data)
+
+    const item = { id, tree: this, data }
 
     return this[$$queue].add(executePatchWithData, item)
   }

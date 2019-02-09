@@ -3,11 +3,17 @@ import styled from 'styled-components'
 import { FormStateContext } from './form'
 import { $ } from '../util'
 
+import { capitalize } from '@benzed/string'
+
 /******************************************************************************/
 // Sub Components
 /******************************************************************************/
 
 const Button = styled.button`
+
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
 
   background-color: ${$.branded.darken(0.125).or.prop('theme', 'fg')};
   color: ${$.ifBranded.set('white').else.prop('theme', 'bg')};
@@ -27,12 +33,6 @@ const ButtonsContainer = styled.div`
 
   display: flex;
   flex-direction: row;
-  align-content: stretch;
-
-  ${Button} {
-    display: flex;
-    flex-grow: 1;
-  }
 
   ${Button}:not(:last-child) {
     margin-right: 1px;
@@ -58,16 +58,9 @@ const Buttons = ({ children, ...props }) =>
 
         <Button
           brand='warn'
-          onClick={form.cancel}
-          disabled={!form.canSave}>
-          Cancel
-        </Button>
-
-        <Button
-          brand='danger'
           onClick={form.revert}
           disabled={!form.canSave}>
-          Revert
+          {capitalize(form.revertType || '')}
         </Button>
 
         <Button

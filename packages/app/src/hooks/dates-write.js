@@ -24,14 +24,14 @@ export default new QuickHook({
 
     const { createField, updateField } = config
 
-    const time = new Date()
-
     // Not applicable methods
     if (ctx.isRemove || ctx.isFind || ctx.isGet)
       return
 
     if (ctx.isBulk && ctx.isUpdate) // This will fail anyway
       return
+
+    const time = new Date()
 
     // In case this is a bulk create request
     const asBulk = wrap(data)

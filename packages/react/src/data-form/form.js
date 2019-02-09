@@ -53,11 +53,6 @@ class Form extends React.Component {
     this.props.form.revertToUpstream()
   }
 
-  cancel = e => {
-    e.preventDefault()
-    this.props.form.revertCurrentToOriginal()
-  }
-
   undo = e => {
     e.preventDefault()
     this.props.form.undoEditCurrent()
@@ -80,7 +75,10 @@ class Form extends React.Component {
       canUndoEditCurrent: canUndo
     } = form
 
-    const { onChange, cancel, revert, redo, undo } = this
+    const { onChange, revert, redo, undo } = this
+
+    const revertType = form.upstreamTimestamp > form.currentTimestamp
+      ? 'revert' : 'cancel'
 
     const formDataWithEventHandlers = {
       current,
@@ -91,9 +89,8 @@ class Form extends React.Component {
       onChange,
 
       canSave,
-      cancel,
-
       revert,
+      revertType,
 
       canRedo,
       redo,

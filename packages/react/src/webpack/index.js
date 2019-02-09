@@ -1,10 +1,13 @@
 import 'normalize.css'
 
+/******************************************************************************/
+// Dependencies
+/******************************************************************************/
+
 const dependencies = Promise.all([
-  import('@benzed/react'),
-  import('./example'),
-  import('../app'),
-  import('../store')
+  import('react'),
+  import('react-dom'),
+  import('./example')
 ])
 
 /******************************************************************************/
@@ -14,7 +17,7 @@ const dependencies = Promise.all([
 void async function load () { // eslint-disable-line wrap-iife
 
   const [
-    React,
+    { default: React },
     { render },
     { default: Example }
   ] = await dependencies

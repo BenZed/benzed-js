@@ -10,7 +10,7 @@ import { createMemoryHistory } from 'history'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('FormStateTree', () => {
+describe('FormStateTree', () => {
 
   it('is a state tree', () => {
     const form = new FormStateTree({
@@ -302,9 +302,9 @@ describe.only('FormStateTree', () => {
 
       const client = new Client('Bruce Wayne', 2500000)
 
-      async function save (current) {
+      function save (current) {
         const { name, investment } = current
-        await ui.fetch(name, investment)
+        return ui.fetch(name, investment)
       }
 
       const form = new FormStateTree({
@@ -325,6 +325,7 @@ describe.only('FormStateTree', () => {
           this.client.investment = update.investment
 
           this.form.setUpstream(this.client)
+          // return { name, investment }
         }
       }
 
@@ -359,6 +360,28 @@ describe.only('FormStateTree', () => {
       expect(ui.form.hasChangesToUpstream).to.be.equal(true)
       await ui.form.pushUpstream()
       expect(ui.form.hasChangesToUpstream).to.be.equal(false)
+    })
+
+    it('correctly sets timestamps', async () => {
+      const ui = prepare()
+      ui.form.setState({
+        ...ui.form.state,
+        upstreamTimestamp: null,
+        currentTimestamp: null
+      })
+      expect(ui.form.upstreamTimestamp).to.be.equal(null)
+      expect(ui.form.currentTimestamp).to.be.equal(null)
+
+      await ui.fetch('James', 1000000000)
+      expect(ui.form.upstreamTimestamp).to.be.instanceof(Date)
+      expect(ui.form.currentTimestamp).to.be.equal(null)
+
+      ui.form.editCurrent(['name'], 'Jimmy')
+      await ui.form.pushUpstream()
+
+      expect(ui.form.upstreamTimestamp.getTime())
+        .to.be.equal(ui.form.currentTimestamp.getTime())
+
     })
   })
 

@@ -85,7 +85,7 @@ export {
 
   // State Tree
   StateTreeObserver, StateTreeProvider, StateTreeConsumer,
-  StateTreeListener,
+  StateTreeConsumer as StateTreeContext, StateTreeListener,
 
   // App
   Login, ServiceView, ServiceTable, ClientStateTree, ServiceStateTree,

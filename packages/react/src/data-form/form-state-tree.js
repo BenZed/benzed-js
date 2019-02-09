@@ -67,6 +67,12 @@ class FormStateTree extends StateTree {
   upstream = {}
 
   @state
+  currentTimestamp = null
+
+  @state
+  upstreamTimestamp = null
+
+  @state
   history = []
 
   @state
@@ -129,8 +135,12 @@ class FormStateTree extends StateTree {
     return state
   }
 
-  @action('upstream')
-  setUpstream = object => serialize(object)
+  @action
+  setUpstream = object => ({
+    ...this.state,
+    upstream: serialize(object),
+    upstreamTimestamp: new Date()
+  })
 
   async pushUpstream () {
 
@@ -144,6 +154,11 @@ class FormStateTree extends StateTree {
       this.setUpstream(upstream)
       this.revertToUpstream()
     }
+
+    this.setState({
+      ...this.state,
+      currentTimestamp: this.state.upstreamTimestamp::copy()
+    })
   }
 
   @action
@@ -153,6 +168,7 @@ class FormStateTree extends StateTree {
 
     return this.state::copy(state => {
       state.current = state.upstream::copy()
+      state.currentTimestamp = state.upstreamTimestamp::copy()
     })
 
   }
@@ -225,9 +241,12 @@ class FormStateTree extends StateTree {
     const { data, state, actions, ...rest } = validate(config)
 
     super({
-      upstream: serialize(data),
       current: serialize(data),
-      history: [ serialize(data) ]
+      upstream: serialize(data),
+      history: [ serialize(data) ],
+
+      currentTimestamp: new Date(),
+      upstreamTimestamp: new Date()
     })
 
     defineProperty(this, 'config', { value: freeze(rest) })
@@ -242,8 +261,6 @@ class FormStateTree extends StateTree {
 
       this.applyFromSessionStorage()
     }
-
-    this.subscribe(form => console.log(form.toJSON()))
 
     // TODO write your own @bound decorator
     this.redoEditCurrent = ::this.redoEditCurrent
