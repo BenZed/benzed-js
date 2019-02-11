@@ -166,10 +166,11 @@ class FormStateTree extends StateTree {
     if (!this.hasChangesToUpstream)
       return this.state
 
-    return this.state::copy(state => {
-      state.current = state.upstream::copy()
-      state.currentTimestamp = state.upstreamTimestamp::copy()
-    })
+    return {
+      ...this.state,
+      current: this.state.upstream::copy(),
+      currentTimestamp: state.upstreamTimestamp::copy()
+    }
 
   }
 
@@ -224,7 +225,7 @@ class FormStateTree extends StateTree {
 
   @memoize('upstream', 'current')
   get hasChangesToUpstream () {
-    const { upstream, current } = this
+    const { upstream, current } = this.state
     return !equals(upstream, current)
   }
 

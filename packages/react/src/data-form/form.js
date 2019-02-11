@@ -25,26 +25,26 @@ class Form extends React.Component {
 
   // Form Event Handlers
 
-  onSubmit = async e => {
+  handleSubmit = async e => {
 
     e.preventDefault()
 
     const { form } = this.props
 
+    form.pushCurrent()
     await form.pushUpstream()
 
   }
 
-  onChange = e => {
+  handleChange = e => {
 
     const { form } = this.props
 
     const path = (e.target.dataset.path || '').split(',')
 
-    if (path && path.length > 0) {
+    if (path && path.length > 0)
       form.editCurrent(path, e.target.value)
-      form.pushCurrent()
-    } else
+    else
       throw new Error('path not specified in event.target.dataset')
   }
 
@@ -72,10 +72,12 @@ class Form extends React.Component {
     const {
       hasChangesToUpstream: canSave,
       canRedoEditCurrent: canRedo,
-      canUndoEditCurrent: canUndo
+      canUndoEditCurrent: canUndo,
+      pushCurrent,
+      editCurrent
     } = form
 
-    const { onChange, revert, redo, undo } = this
+    const { handleChange, revert, redo, undo } = this
 
     const revertType = form.upstreamTimestamp > form.currentTimestamp
       ? 'revert' : 'cancel'
@@ -86,7 +88,9 @@ class Form extends React.Component {
       history,
       historyIndex,
 
-      onChange,
+      handleChange,
+      pushCurrent,
+      editCurrent,
 
       canSave,
       revert,
@@ -136,7 +140,7 @@ class Form extends React.Component {
     const { children, ...props } = this.props
 
     return <FormStateContext.Provider value={this.state}>
-      <Flex as='form' onSubmit={this.onSubmit} {...props}>
+      <Flex as='form' onSubmit={this.handleSubmit} {...props}>
         {children}
       </Flex>
     </FormStateContext.Provider>

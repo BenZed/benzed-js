@@ -15,6 +15,7 @@ const StateTreeContext = createContext()
 
 // eslint-disable-next-line react/prop-types
 const StateTreeProvider = ({ children, tree }) =>
+
   <StateTreeContext.Provider value={tree} >
     { children }
   </StateTreeContext.Provider>

@@ -409,7 +409,7 @@ class ServiceStateTree extends StateTree {
   /* Form Interface */
   getForm = id => {
 
-    let form = this.state[$$forms]
+    let form = this.state[$$forms][id]
 
     // Create Form
     if (!is(form, FormStateTree)) {

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { cloneElement, useContext } from 'react'
 
 import is from 'is-explicit'
 import { Label } from '../text'
@@ -26,17 +26,13 @@ const InputBase = props => {
     ? <Label>{_label}</Label>
     : _label
 
-  const { onChange, current } = useContext(FormStateContext)
+  const form = useContext(FormStateContext)
+  const value = get.mut(form.current, path)
+  console.log({ form, path, value })
 
   return <Flex direction={direction} items={items} {...rest}>
     { label }
-    {
-      children({
-        'value': get.mut(current, path),
-        'data-path': path,
-        onChange
-      })
-    }
+    { cloneElement(children, { form, value, path }) }
   </Flex>
 }
 
