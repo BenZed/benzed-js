@@ -53,7 +53,9 @@ const useObserveStateTree = options => {
 
   const rootTree = get.mut(tree, _root)
 
-  const [ mapped, setMapped ] = useState(rootTree)
+  const [ mapped, setMapped ] = useState({
+    observed: mapToState(rootTree, path)
+  })
 
   useEffect(() => {
 
@@ -68,7 +70,7 @@ const useObserveStateTree = options => {
       const mapped = mapToState(rootTree, path)
 
       timerId = setTimeout(
-        () => setMapped(mapped),
+        () => setMapped({ observed: mapped }),
         0
       )
     }
@@ -82,7 +84,7 @@ const useObserveStateTree = options => {
 
   }, flatten([ tree, _root, path, mapToState ]))
 
-  return mapped
+  return mapped.observed
 
 }
 

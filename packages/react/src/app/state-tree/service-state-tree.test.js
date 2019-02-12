@@ -299,10 +299,10 @@ describe('Service StateTree', () => {
 
         })
 
-        it('form state trees are instanced for each record on .getForm', async () => {
+        it('form state trees are instanced for each record on .useForm', async () => {
 
           const { _id: id } = messages.records[0]
-          const form = messages.getForm(id)
+          const form = messages.useForm(id)
 
           expect(messages.state[$$forms][id])
             .to
@@ -320,8 +320,8 @@ describe('Service StateTree', () => {
           expect(form.hasChangesToUpstream).to.be.equal(false)
         })
 
-        it('.getForm queries record is not loaded', () => {
-          expect(() => messages.getForm('123412')).to.not.throw(Error)
+        it('.useForm queries record is not loaded', () => {
+          expect(() => messages.useForm('123412')).to.not.throw(Error)
         })
 
         if (provider === 'socketio')
@@ -330,7 +330,7 @@ describe('Service StateTree', () => {
             const doc = last(docs)
 
             await messages.find({})
-            const form = await messages.getForm(doc._id)
+            const form = await messages.useForm(doc._id)
 
             await state.api.service('messages').remove(doc._id)
             await milliseconds(25)

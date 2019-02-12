@@ -163,11 +163,28 @@ async function executeQueryWithData () {
     const id = ids[i]
     const data = changes[i]
 
-    records[id] = {
-      ...records[id],
+    const original = records[id]
+
+    const updated = records[id] = {
+      ...original,
       ...data,
       _status: STATUSES.Scoped
     }
+
+    const form = tree.state[$$forms][id]
+    if (!form)
+      continue
+
+    // Apply Changes to Form
+    const hasChanges = form.hasChangesToCurrent
+    form.setUpstream(updated)
+
+    // Reset form if it was unscoped and hasn't been touched
+    if (original._status !== STATUSES.Scoped &&
+      updated._status === STATUSES.Scoped &&
+      !hasChanges)
+      form.revertToUpstream()
+
   }
 
   if (explicitIds) for (const explicitId of explicitIds)
@@ -262,7 +279,7 @@ const filterDataDifferences = (edit, original) => {
 const validateConfig = <object key='config' plain strict >
   <ClientStateTree key='client' required />
   <string key='serviceName' required />
-  <array key='formDataBlacklist' default={[ 'updated', 'created', '_status', '_id' ]} >
+  <array key='formDataBlacklist' default={[ 'updated', 'created', '_id', '_status' ]} >
     <string required />
   </array>
 </object>
@@ -288,10 +305,6 @@ const validateConfig = <object key='config' plain strict >
 // this.subscribe(callback, [ $$records, `${id}` ])
 
 function handleEvents ({ client, serviceName }) {
-
-  // Will catch self-induced events in rest
-  // if (client?.config?.provider !== 'socketio')
-  //   return
 
   const tree = this
   const service = client[$$feathers].service(serviceName)
@@ -407,7 +420,7 @@ class ServiceStateTree extends StateTree {
   }
 
   /* Form Interface */
-  getForm = id => {
+  useForm = id => {
 
     let form = this.state[$$forms][id]
 
@@ -432,6 +445,8 @@ class ServiceStateTree extends StateTree {
 
     return form
   }
+
+  getForm = id => this.state[$$forms][id]
 
   /* Feathers Interface */
   find = this::ensureFetching

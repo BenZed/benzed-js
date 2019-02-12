@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import { $ } from '../util'
+
 /******************************************************************************/
 // Main Components
 /******************************************************************************/
@@ -7,6 +9,8 @@ import styled from 'styled-components'
 const InputBase = styled.input`
   display: flex;
   flex-direction: row;
+
+  border-color: ${$.ifProp('error').prop('theme', 'brand', 'danger')};
 
   padding: 0.25em;
 `

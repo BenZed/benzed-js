@@ -391,7 +391,7 @@ class ClientStateTree extends StateTree {
   [$$feathers] = null
   config = null
 
-  async connect () {
+  connect = async () => {
 
     const { provider } = this.config
     const isRest = provider === 'rest'
@@ -415,7 +415,7 @@ class ClientStateTree extends StateTree {
     return this.host
   }
 
-  login (email, password) {
+  login = (email, password) => {
 
     const { provider, auth } = this.config
     if (!auth)
@@ -433,7 +433,7 @@ class ClientStateTree extends StateTree {
 
   }
 
-  logout () {
+  logout = () => {
 
     const { provider, auth } = this.config
     if (!auth)

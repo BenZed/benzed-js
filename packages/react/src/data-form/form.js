@@ -1,14 +1,38 @@
 import React, { createContext } from 'react'
+import styled from 'styled-components'
 
 import { Flex } from '../layout'
 
 import { equals } from '@benzed/immutable'
+
+import { $ } from '../util'
 
 /******************************************************************************/
 // Context
 /******************************************************************************/
 
 const FormStateContext = createContext()
+
+const StyledForm = styled(Flex).attrs({ as: 'form' })`
+  outline: solid ${$.prop('theme', 'brand', 'danger')};
+  outline-width: ${$.ifProp('error').set(1).else.set(0)}px;
+  outline-offset: calc(0.5em - 1px);
+`
+
+const ErrorButton = styled.button.attrs(props => ({ children: props.error.message }))`
+  background-color: ${$.prop('theme', 'brand', 'danger').lighten(0.5).fade(0.3)};
+  color: ${$.prop('theme', 'brand', 'danger').darken(0.25)};
+
+  min-width: 100%;
+
+  position: absolute;
+  top: 0em;
+  left: 0em;
+
+  align-items: center;
+
+  padding: 0.5em;
+`
 
 /******************************************************************************/
 // Logic
@@ -18,7 +42,7 @@ class Form extends React.Component {
 
   state = {
     current: {},
-    errors: {},
+    error: null,
     history: [],
     onChange: () => {}
   }
@@ -48,6 +72,11 @@ class Form extends React.Component {
       throw new Error('path not specified in event.target.dataset')
   }
 
+  clearError = e => {
+    e.preventDefault()
+    this.props.form.clearError()
+  }
+
   revert = e => {
     e.preventDefault()
     this.props.form.revertToUpstream()
@@ -67,7 +96,7 @@ class Form extends React.Component {
 
   createFormWithEventHandlers = (form = this.props.form) => {
 
-    const { current, history, historyIndex } = form
+    const { current, error, history, historyIndex } = form
 
     const {
       hasChangesToUpstream: canSave,
@@ -77,14 +106,14 @@ class Form extends React.Component {
       editCurrent
     } = form
 
-    const { handleChange, revert, redo, undo } = this
+    const { handleChange, clearError, revert, redo, undo } = this
 
     const revertType = form.upstreamTimestamp > form.currentTimestamp
       ? 'revert' : 'cancel'
 
     const formDataWithEventHandlers = {
+      error,
       current,
-      errors: {},
       history,
       historyIndex,
 
@@ -100,7 +129,9 @@ class Form extends React.Component {
       redo,
 
       canUndo,
-      undo
+      undo,
+
+      clearError
     }
 
     if (equals(formDataWithEventHandlers, this.state))
@@ -138,11 +169,24 @@ class Form extends React.Component {
 
   render () {
     const { children, form, ...props } = this.props
+    const { error } = this.state
 
     return <FormStateContext.Provider value={this.state}>
-      <Flex as='form' onSubmit={this.handleSubmit} {...props}>
+      <StyledForm
+        error={!!error}
+        onSubmit={this.handleSubmit}
+        {...props}
+      >
+
+        {
+          error
+            ? <ErrorButton error={error} onClick={form.clearError} />
+            : null
+        }
+
         {children}
-      </Flex>
+
+      </StyledForm>
     </FormStateContext.Provider>
   }
 

@@ -16,10 +16,12 @@ const String = styled(props => {
     path, ...rest
   } = props
 
-  const { form, value } = useFormInput(path)
+  const { form, value, error } = useFormInput(path)
   const delay = useDelay(form.pushCurrent, 300)
 
   return <Input
+
+    error={!!error}
 
     onBlur={() => {
       form.pushCurrent()

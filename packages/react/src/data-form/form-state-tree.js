@@ -67,6 +67,9 @@ class FormStateTree extends StateTree {
   upstream = {}
 
   @state
+  error = null
+
+  @state
   currentTimestamp = null
 
   @state
@@ -148,7 +151,20 @@ class FormStateTree extends StateTree {
 
     const { submit } = this.config
 
-    const upstream = await this::submit(current)
+    if (this.hasError)
+      this.clearError()
+
+    let upstream
+    try {
+      upstream = await this::submit(current)
+    } catch (e) {
+      const { name, message, errors } = e
+      return this.setError({
+        name,
+        message,
+        errors
+      })
+    }
 
     if (is.defined(upstream)) {
       this.setUpstream(upstream)
@@ -157,19 +173,21 @@ class FormStateTree extends StateTree {
 
     this.setState({
       ...this.state,
-      currentTimestamp: this.state.upstreamTimestamp::copy()
+      currentTimestamp: this.state.upstreamTimestamp
     })
   }
 
   @action
   revertToUpstream () {
-    if (!this.hasChangesToUpstream)
+
+    if (!this.hasChangesToUpstream && !this.hasError)
       return this.state
 
     return {
       ...this.state,
-      current: this.state.upstream::copy(),
-      currentTimestamp: state.upstreamTimestamp::copy()
+      current: { ...this.state.upstream },
+      currentTimestamp: state.upstreamTimestamp,
+      error: null
     }
 
   }
@@ -181,10 +199,9 @@ class FormStateTree extends StateTree {
     if (this.state.historyIndex === index)
       return this.state
 
-    const state = this.state::copy(state => {
-      state.current = state.history[index]::copy()
-      state.historyIndex = index
-    })
+    const state = { ...this.state }
+    state.current = state.history[index]::copy()
+    state.historyIndex = index
 
     if (this.config.historyStorageKey)
       this::pushToSessionStorage(state)
@@ -214,6 +231,17 @@ class FormStateTree extends StateTree {
         state.historyIndex = historyIndex
       })
       : this.state
+  }
+
+  @action('error')
+  setError = error => error
+
+  @action('error')
+  clearError = () => null
+
+  @memoize('error')
+  get hasError () {
+    return !!this.error
   }
 
   @memoize('current', 'history', 'historyIndex')

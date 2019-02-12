@@ -43,6 +43,8 @@ StateTreeListener.propTypes = createPropTypesFor(React => <proptypes>
 // Exports
 /******************************************************************************/
 
+export default StateTreeContext
+
 export {
   StateTreeProvider,
   StateTreeConsumer,

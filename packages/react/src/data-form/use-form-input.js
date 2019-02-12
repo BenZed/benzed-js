@@ -10,9 +10,10 @@ import { get } from '@benzed/immutable'
 const useFormInput = path => {
 
   const form = useContext(FormStateContext)
-  const value = get.mut(form.current, path)
+  const value = path && get.mut(form.current, path)
+  const error = path && get.mut(form.error, [ 'errors', ...path ])
 
-  return { form, value }
+  return { form, value, error }
 
 }
 

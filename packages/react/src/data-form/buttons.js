@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+
 import { FormStateContext } from './form'
+import { Flex } from '../layout'
 import { $ } from '../util'
 
 import { capitalize } from '@benzed/string'
@@ -27,12 +29,10 @@ const Button = styled.button`
 
 `
 
-const ButtonsContainer = styled.div`
+const ButtonsContainer = styled(Flex.Column)`
 
   margin-top: auto;
 
-  display: flex;
-  flex-direction: row;
 
   ${Button}:not(:last-child) {
     margin-right: 1px;
@@ -49,35 +49,41 @@ const Buttons = ({ children, ...props }) =>
     form =>
 
       <ButtonsContainer {...props}>
-        <Button
-          brand='success'
-          type='submit'
-          disabled={!form.canSave}>
-          Save
-        </Button>
 
-        <Button
-          brand='warn'
-          onClick={form.revert}
-          disabled={!form.canSave}>
-          {capitalize(form.revertType || '')}
-        </Button>
+        { children != null
+          ? <Flex.Row>{ children }</Flex.Row>
+          : null
+        }
 
-        <Button
-          brand='secondary'
-          onClick={form.undo}
-          disabled={!form.canUndo}>
-          Undo
-        </Button>
+        <Flex.Row>
+          <Button
+            brand='success'
+            type='submit'
+            disabled={!form.canSave}>
+            Save
+          </Button>
 
-        <Button
-          brand='secondary'
-          onClick={form.redo}
-          disabled={!form.canRedo}>
-          Redo
-        </Button>
+          <Button
+            brand='warn'
+            onClick={form.revert}
+            disabled={!form.canSave}>
+            {capitalize(form.revertType || '')}
+          </Button>
 
-        { children }
+          <Button
+            brand='secondary'
+            onClick={form.undo}
+            disabled={!form.canUndo}>
+            Undo
+          </Button>
+
+          <Button
+            brand='secondary'
+            onClick={form.redo}
+            disabled={!form.canRedo}>
+            Redo
+          </Button>
+        </Flex.Row>
 
       </ButtonsContainer>
   }

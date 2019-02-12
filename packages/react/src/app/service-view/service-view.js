@@ -14,8 +14,6 @@ import is from 'is-explicit'
 
 const ServiceTable = props => 'ServiceTable component not yet implemented'
 
-// database cant use infinity
-
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
@@ -42,7 +40,6 @@ class ServiceView extends React.Component {
     fetching: false
   }
 
-  // database cant use infinity
   fetch = async (query = { }) => {
 
     const { tree } = this.props
@@ -80,7 +77,7 @@ class ServiceView extends React.Component {
 
     const { tree } = this.props
 
-    tree.subscribe(this.updateRecords, [ 'records' ])
+    tree.subscribe(this.updateRecords, 'records', 'forms')
   }
 
   componentWillUnmount () {
@@ -106,6 +103,7 @@ class ServiceView extends React.Component {
       ...props,
       ...this.state,
       fetch,
+      tree,
       serviceName: tree?.config?.serviceName
     }
 

@@ -6,11 +6,12 @@ import { last, first } from '@benzed/array'
 import { serialize } from '@benzed/immutable'
 
 import { createMemoryHistory } from 'history'
+import { BadRequest } from '@feathersjs/errors'
 
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('FormStateTree', () => {
+describe.only('FormStateTree', () => {
 
   it('is a state tree', () => {
     const form = new FormStateTree({
@@ -23,6 +24,67 @@ describe('FormStateTree', () => {
       .map(sym => sym.toString())
       .join(' ')
     ).to.include('state')
+  })
+
+  describe('setError()', () => {
+
+    let form
+    before(() => {
+
+      form = new FormStateTree({
+        data: {
+          name: null,
+          age: 0
+        },
+        submit () {}
+      })
+
+    })
+
+    it('sets errors on form', () => {
+      expect(form.error).to.be.equal(null)
+      expect(form.hasError).to.be.equal(false)
+
+      form.setError({ name: 'Cannot be null', age: 'Must be above zero.' })
+
+      expect(form.error).to.be.deep.equal({
+        name: 'Cannot be null',
+        age: 'Must be above zero.'
+      })
+
+      expect(form.hasError).to.be.equal(true)
+    })
+
+  })
+
+  describe('clearErrors()', () => {
+
+    let form
+    before(() => {
+
+      form = new FormStateTree({
+        data: {
+          name: null,
+          age: 0
+        },
+        submit () {}
+      })
+
+    })
+
+    it('clears errors on form', () => {
+      expect(form.error).to.be.equal(null)
+      form.setError({ name: 'Cannot be null', age: 'Must be above zero.' })
+
+      expect(form.error).to.be.deep.equal({
+        name: 'Cannot be null',
+        age: 'Must be above zero.'
+      })
+
+      form.clearError()
+      expect(form.error).to.be.deep.equal(null)
+    })
+
   })
 
   describe('editCurrent()', () => {
@@ -321,6 +383,11 @@ describe('FormStateTree', () => {
         async fetch (name = this.client.name, investment = this.client.investment) {
           const update = await Promise.resolve({ name, investment })
 
+          if (investment < 0)
+            throw new BadRequest('Invalid Form', {
+              errors: { investment: 'Must be above zero.' }
+            })
+
           this.client.name = update.name
           this.client.investment = update.investment
 
@@ -350,6 +417,63 @@ describe('FormStateTree', () => {
       await ui.fetch('Batman')
       ui.form.revertToUpstream()
       expect(ui.form.current).to.be.deep.equal(ui.form.upstream)
+    })
+
+    it('errors are set when setUpstream fails', async () => {
+      const ui = prepare()
+      ui.form.editCurrent('name', 'Hobo')
+      ui.form.editCurrent('investment', -1)
+
+      await ui.form.pushUpstream()
+
+      expect(ui.form.error).to.be.deep.equal({
+        name: 'BadRequest',
+        message: 'Invalid Form',
+        errors: {
+          investment: 'Must be above zero.'
+        }
+      })
+    })
+
+    it('pushUpstream clears errors', async () => {
+      const ui = prepare()
+      ui.form.editCurrent('name', 'Hobo')
+      ui.form.editCurrent('investment', -1)
+
+      await ui.form.pushUpstream()
+
+      expect(ui.form.error).to.be.deep.equal({
+        name: 'BadRequest',
+        message: 'Invalid Form',
+        errors: {
+          investment: 'Must be above zero.'
+        }
+      })
+
+      ui.form.editCurrent('investment', 1)
+      await ui.form.pushUpstream()
+
+      expect(ui.form.error).to.be.equal(null)
+    })
+
+    it('revertToUpstream clears errors', async () => {
+      const ui = prepare()
+      ui.form.editCurrent('name', 'Hobo')
+      ui.form.editCurrent('investment', -1)
+
+      await ui.form.pushUpstream()
+
+      expect(ui.form.error).to.be.deep.equal({
+        name: 'BadRequest',
+        message: 'Invalid Form',
+        errors: {
+          investment: 'Must be above zero.'
+        }
+      })
+
+      ui.form.revertToUpstream()
+
+      expect(ui.form.error).to.be.equal(null)
     })
 
     it('use pushUpstream when overwriting remote objects', async () => {
