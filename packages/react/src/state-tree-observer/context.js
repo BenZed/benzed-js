@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react'
-import StateTreeObserver from './observer'
+import StateTreeObserver from './state-tree-observer'
 
 import { createPropTypesFor } from '@benzed/schema'
 

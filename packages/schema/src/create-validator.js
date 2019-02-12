@@ -1,5 +1,6 @@
 import is from 'is-explicit'
 import { wrap, flatten } from '@benzed/array'
+import { toCamelCase } from '@benzed/string'
 
 import { Type } from './types'
 import { runValidators, Context, $$schema } from './util'
@@ -16,6 +17,7 @@ const SCHEMA_SHORTCUTS = {
   name:  { value: 'validate' },
   type:  { get () { return this[$$schema]?.type?.[$$root] }, enumerable: true },
   props: { get () { return this[$$schema].props }, enumerable: true },
+  data: { get () { return this[$$schema].data }, enumerable: true },
   key:   { get () { return this[$$schema].key }, enumerable: true }
 }
 
@@ -34,6 +36,22 @@ const addChildrenToProps = (props, children) => {
     : null
 
   return output
+}
+
+const getDataFromProps = props => {
+
+  const data = {}
+  for (const key in props)
+    if (key.indexOf('data-') === 0) {
+      const dataKey = key.replace('data-', '')::toCamelCase()
+      data[dataKey] = props[key]
+      delete props[key]
+    }
+
+  // if (Object.values(data).length > 0)
+  //   console.log(data)
+
+  return data
 }
 
 // Wrapped to prevent exposure of context and index arguments, and to wrap context
@@ -84,6 +102,8 @@ function Validator (input, props = {}) {
     delete props.key
   }
 
+  let data = getDataFromProps(props)
+
   // resolve compiler
   const isType = is(input, Type)
   const isSchema = !isType && $$schema in input
@@ -92,6 +112,7 @@ function Validator (input, props = {}) {
 
   if (isSchema) {
     props = { ...input[$$schema].props, ...props }
+    data = { ...input[$$schema].data, ...data }
     compiler = input[$$schema].compiler
 
   } else if (isType)
@@ -143,7 +164,14 @@ function Validator (input, props = {}) {
         }
       }
 
-  const schema = { compiler, props, validators, type, key }
+  const schema = {
+    validators,
+    compiler,
+    props,
+    data,
+    type,
+    key
+  }
 
   // decorate validator function with schema properties
   const validator = schema::runValidatorsPublic

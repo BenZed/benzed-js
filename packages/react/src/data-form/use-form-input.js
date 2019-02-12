@@ -1,18 +1,23 @@
-import styled from 'styled-components'
+import { useContext } from 'react'
+
+import { FormStateContext } from './form'
+import { get } from '@benzed/immutable'
 
 /******************************************************************************/
-// Main Components
+// useFormInput Hook TODO move me
 /******************************************************************************/
 
-const InputBase = styled.input`
-  display: flex;
-  flex-direction: row;
+const useFormInput = path => {
 
-  padding: 0.25em;
-`
+  const form = useContext(FormStateContext)
+  const value = get.mut(form.current, path)
+
+  return { form, value }
+
+}
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default InputBase
+export default useFormInput

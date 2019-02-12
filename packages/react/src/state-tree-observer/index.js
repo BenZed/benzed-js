@@ -1,5 +1,7 @@
-import StateTreeObserver from './observer'
+import StateTreeObserver from './state-tree-observer'
 import { StateTreeProvider, StateTreeConsumer, StateTreeListener } from './context'
+
+import useObserveStateTree from './use-observe-state-tree'
 
 /******************************************************************************/
 // Exports
@@ -10,5 +12,8 @@ export {
   StateTreeConsumer,
 
   StateTreeObserver,
-  StateTreeListener
+  StateTreeListener,
+
+  useObserveStateTree
+
 }

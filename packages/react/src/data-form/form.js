@@ -137,7 +137,7 @@ class Form extends React.Component {
   }
 
   render () {
-    const { children, ...props } = this.props
+    const { children, form, ...props } = this.props
 
     return <FormStateContext.Provider value={this.state}>
       <Flex as='form' onSubmit={this.handleSubmit} {...props}>
@@ -154,6 +154,7 @@ class Form extends React.Component {
 
 Form.StateProvider = FormStateContext.Provider
 Form.StateConsumer = FormStateContext.Consumer
+Form.StateContext = FormStateContext
 
 /******************************************************************************/
 // Exports

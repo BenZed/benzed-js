@@ -9,6 +9,12 @@ import { first } from '@benzed/array'
 import is from 'is-explicit'
 
 /******************************************************************************/
+// Data
+/******************************************************************************/
+
+let _deprecationWarned = false
+
+/******************************************************************************/
 // Helper
 /******************************************************************************/
 
@@ -67,6 +73,13 @@ class StateTreeObserver extends React.Component {
   componentDidMount () {
     this.mounted = true
     this.subscribeToTree()
+
+    if (!_deprecationWarned) {
+      _deprecationWarned = true
+      console.warn(
+        'StateTreeObserver is deprecated. Favour instead the useObserveStateTree hook'
+      )
+    }
   }
 
   subscribeToTree () {

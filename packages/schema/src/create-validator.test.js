@@ -43,6 +43,34 @@ describe('createValidator', () => {
     it('sorts validators by priority')
   })
 
+  describe('data- props', () => {
+
+    it('allows arbitrary data to be attached to validators', () => {
+
+      const string = <string uppercase data-name='Code'/>
+
+      expect(string.data.name).to.be.equal('Code')
+
+    })
+
+    it('camelCases data names', () => {
+      const fancy = <object plain data-ui-key='Panel' />
+      expect(fancy.data.uiKey).to.be.equal('Panel')
+    })
+
+    it('data is properly combined from merged validators', () => {
+
+      const Code = <string uppercase required data-ui-key='Primary' />
+      const RedCode = <Code data-ui-color='Red' />
+
+      expect(Code.data.uiKey).to.be.equal('Primary')
+      expect(RedCode.data.uiColor).to.be.equal('Red')
+      expect(RedCode.data.uiKey).to.be.equal('Primary')
+
+    })
+
+  })
+
   it('can nest existing validators', () => {
     // eslint-disable-next-line no-unused-vars
     const Code = <string uppercase length={['>', 0]}/>

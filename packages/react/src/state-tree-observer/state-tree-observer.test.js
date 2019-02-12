@@ -1,10 +1,8 @@
 import React from 'react'
 import { expect } from 'chai'
 
-import Observer from './observer'
-
+import Observer from './state-tree-observer'
 import renderer from 'react-test-renderer'
-
 import { milliseconds } from '@benzed/async'
 
 import StateTree, { state, action } from '@benzed/state-tree'

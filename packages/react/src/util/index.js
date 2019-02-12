@@ -15,6 +15,10 @@ import storage from './storage'
 
 import { addEventListener, on, removeEventListener, off } from './event-listener'
 
+import {
+  useDelay
+} from './hooks'
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
@@ -38,5 +42,7 @@ export {
   Portal,
 
   Styler,
-  $
+  $,
+
+  useDelay
 }
