@@ -8,7 +8,9 @@ import {
   Link,
 
   ServiceView,
-  ServiceTable
+  ServiceTable,
+
+  useServiceQuery
 
 } from './app'
 
@@ -35,12 +37,14 @@ import {
 } from './themes'
 
 import {
+  StateTreeContext,
   StateTreeObserver,
   StateTreeProvider,
   StateTreeListener,
   StateTreeConsumer,
 
-  useObserveStateTree
+  useObserveStateTree,
+  useStateTree
 
 } from './state-tree-observer'
 
@@ -90,7 +94,7 @@ export {
 
   // State Tree
   StateTreeObserver, StateTreeProvider, StateTreeConsumer,
-  StateTreeConsumer as StateTreeContext, StateTreeListener,
+  StateTreeContext, StateTreeListener,
 
   // App
   Login, ServiceView, ServiceTable, ClientStateTree, ServiceStateTree,
@@ -101,5 +105,9 @@ export {
   Styler, $, addEventListener, on, removeEventListener, off,
 
   // Hooks
-  useObserveStateTree, useDelay, useFormInput
+  useObserveStateTree,
+  useStateTree,
+  useDelay,
+  useFormInput,
+  useServiceQuery
 }

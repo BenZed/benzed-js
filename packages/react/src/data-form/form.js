@@ -44,7 +44,8 @@ class Form extends React.Component {
     current: {},
     error: null,
     history: [],
-    onChange: () => {}
+
+    saving: false
   }
 
   // Form Event Handlers
@@ -56,8 +57,9 @@ class Form extends React.Component {
     const { form } = this.props
 
     form.pushCurrent()
+    this.setState({ saving: true })
     await form.pushUpstream()
-
+    this.setState({ saving: false })
   }
 
   handleChange = e => {
@@ -65,7 +67,6 @@ class Form extends React.Component {
     const { form } = this.props
 
     const path = (e.target.dataset.path || '').split(',')
-
     if (path && path.length > 0)
       form.editCurrent(path, e.target.value)
     else
@@ -111,6 +112,8 @@ class Form extends React.Component {
     const revertType = form.upstreamTimestamp > form.currentTimestamp
       ? 'revert' : 'cancel'
 
+    const { saving } = this.state
+
     const formDataWithEventHandlers = {
       error,
       current,
@@ -131,7 +134,8 @@ class Form extends React.Component {
       canUndo,
       undo,
 
-      clearError
+      clearError,
+      saving
     }
 
     if (equals(formDataWithEventHandlers, this.state))

@@ -2,51 +2,19 @@ import React, { useRef, useState, useContext, createContext } from 'react'
 
 import styled from 'styled-components'
 
-import { Color } from '../../themes'
-
 import { first, adjacent } from '@benzed/array'
 
-/******************************************************************************/
-// Data
-/******************************************************************************/
+import { FormStateTree, Form, FormPresets } from '../../form'
 
-const COLORS = [
-  'red', 'blue', 'green'
-]
+import { Flex } from '../../layout'
+
+import { BadRequest } from '@feathersjs/errors'
 
 /******************************************************************************/
-// Context
+// Presets
 /******************************************************************************/
 
-const ColorContext = createContext()
-
-const ColorButton = styled(props => {
-
-  const { setColor, children, style, ...rest } = props
-  const color = useContext(ColorContext)
-
-  const onClick = e => setColor(adjacent(COLORS, color))
-
-  const dark = Color(color).darken(0.33)
-  const light = Color(color).lighten(0.33)
-
-  return <button
-    onClick={onClick}
-    color={color}
-    style={{
-      ...style,
-      color: dark,
-      borderColor: dark,
-      backgroundColor: light
-    }}
-    {...rest}>
-    {color}
-  </button>
-})`
-  border-radius: 0.4em;
-  border-width: 1px;
-  border-style: solid;
-`
+const BasicForm = FormPresets.Basic
 
 /******************************************************************************/
 // Main Component
@@ -54,21 +22,36 @@ const ColorButton = styled(props => {
 
 const Main = styled(props => {
 
-  const { children, ...rest } = props
+  const form = new FormStateTree({
+    data: {
+      name: 'Ben',
+      age: 34
+    },
+    async submit (...args) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      throw new BadRequest({
+        errors: { name: 'Fuck you' }
+      })
+    }
+  })
 
-  const someRef = useRef(null)
+  return <div {...props}>
 
-  const [ color, setColor ] = useState(first(COLORS))
+    <h1>Building a Modular Form Component</h1>
 
-  return <div {...rest} ref={someRef}>
+    <Form form={form}>
+      <Flex.Column >
+        <Form.String path='name' placeholder='name' />
+        <Form.String path='age' placeholder='age' />
+      </Flex.Column>
+    </Form>
 
-    <h2>Learning React Hooks</h2>
-
-    <ColorContext.Provider value={color} >
-      <ColorButton setColor={setColor}/>
-    </ColorContext.Provider>
-
-    {children}
+    <BasicForm form={form}>
+      <Flex.Column >
+        <BasicForm.String path='name' placeholder='name' />
+        <BasicForm.String path='age' placeholder='age' />
+      </Flex.Column>
+    </BasicForm>
 
   </div>
 })`

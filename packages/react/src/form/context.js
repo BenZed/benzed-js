@@ -1,22 +1,13 @@
-import styled from 'styled-components'
-
-import { $ } from '../util'
+import { createContext } from 'react'
 
 /******************************************************************************/
-// Main Components
+// Context
 /******************************************************************************/
 
-const InputBase = styled.input`
-  display: flex;
-  flex-direction: row;
-
-  border-color: ${$.ifProp('error').prop('theme', 'brand', 'danger')};
-
-  padding: 0.25em;
-`
+const FormCurrentContext = createContext()
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default InputBase
+export default FormCurrentContext

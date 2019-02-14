@@ -1,13 +1,13 @@
-import { useContext, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import StateTree from '@benzed/state-tree'
-
-import StateTreeContext from './context'
 
 import { get } from '@benzed/immutable'
 import { flatten, first } from '@benzed/array'
 
 import is from 'is-explicit'
+
+import useStateTree from './use-state-tree'
 
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
@@ -44,8 +44,13 @@ const validateOptions = <object plain strict>
 
 const useObserveStateTree = options => {
 
+  if (!useObserveStateTree.warn) {
+    useObserveStateTree.warn = true
+    console.warn('useObserveStateTree is deprecated already. favour useStateTree.observe instead')
+  }
+
   const {
-    tree = useContext(StateTreeContext),
+    tree = useStateTree(),
     root: _root,
     path,
     mapToState

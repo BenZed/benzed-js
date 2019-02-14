@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { FormStateContext } from './form'
 import { Flex } from '../layout'
 import { $ } from '../util'
+
+import useFormInput from './use-form-input'
 
 import { capitalize } from '@benzed/string'
 
@@ -11,7 +12,7 @@ import { capitalize } from '@benzed/string'
 // Sub Components
 /******************************************************************************/
 
-const Button = styled.button`
+const FormButton = styled.button`
 
   display: flex;
   flex-grow: 1;
@@ -34,7 +35,7 @@ const ButtonsContainer = styled(Flex.Column)`
   margin-top: auto;
 
 
-  ${Button}:not(:last-child) {
+  ${FormButton}:not(:last-child) {
     margin-right: 1px;
   }
 
@@ -44,50 +45,50 @@ const ButtonsContainer = styled(Flex.Column)`
 // Main Component
 /******************************************************************************/
 
-const Buttons = ({ children, ...props }) =>
-  <FormStateContext.Consumer>{
-    form =>
+const Buttons = ({ children, ...props }) => {
 
-      <ButtonsContainer {...props}>
+  const { form } = useFormInput()
 
-        { children != null
-          ? <Flex.Row>{ children }</Flex.Row>
-          : null
-        }
+  return <ButtonsContainer {...props}>
 
-        <Flex.Row>
-          <Button
-            brand='success'
-            type='submit'
-            disabled={!form.canSave}>
-            Save
-          </Button>
+    { children != null
+      ? <Flex.Row>{ children }</Flex.Row>
+      : null
+    }
 
-          <Button
-            brand='warn'
-            onClick={form.revert}
-            disabled={!form.canSave}>
-            {capitalize(form.revertType || '')}
-          </Button>
+    <Flex.Row>
+      <FormButton
+        brand='success'
+        type='submit'
+        disabled={form.saving || !form.canSave}>
+        {form.saving ? 'Saving' : 'Save'}
+      </FormButton>
 
-          <Button
-            brand='secondary'
-            onClick={form.undo}
-            disabled={!form.canUndo}>
-            Undo
-          </Button>
+      <FormButton
+        brand='warn'
+        onClick={form.revert}
+        disabled={!form.canSave}>
+        {capitalize(form.revertType || '')}
+      </FormButton>
 
-          <Button
-            brand='secondary'
-            onClick={form.redo}
-            disabled={!form.canRedo}>
-            Redo
-          </Button>
-        </Flex.Row>
+      <FormButton
+        brand='secondary'
+        onClick={form.undo}
+        disabled={!form.canUndo}>
+        Undo
+      </FormButton>
 
-      </ButtonsContainer>
-  }
-  </FormStateContext.Consumer>
+      <FormButton
+        brand='secondary'
+        onClick={form.redo}
+        disabled={!form.canRedo}>
+        Redo
+      </FormButton>
+
+    </Flex.Row>
+
+  </ButtonsContainer>
+}
 
 /******************************************************************************/
 // Exports

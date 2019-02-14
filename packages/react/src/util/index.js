@@ -2,6 +2,7 @@ import isClient from './is-client'
 import isMobile from './is-mobile'
 import isEvent from './is-event'
 import emToPixels from './em-to-pixels'
+import stripProps from './strip-props'
 
 import nestInComponent from './nest-in-component'
 
@@ -44,5 +45,6 @@ export {
   Styler,
   $,
 
-  useDelay
+  useDelay,
+  stripProps
 }

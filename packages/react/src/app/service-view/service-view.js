@@ -77,6 +77,11 @@ class ServiceView extends React.Component {
 
     const { tree } = this.props
 
+    if (!ServiceView.warned) {
+      ServiceView.warned = true
+      console.warn('stop using ServiceView. Favour useServiceQuery hook instead.')
+    }
+
     tree.subscribe(this.updateRecords, 'records', 'forms')
   }
 

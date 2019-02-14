@@ -11,17 +11,17 @@ const Label = styled.label`
 
   background-color: ${$
     .ifProp('filled')
-    .branded
-    .or
-    .prop('theme', 'fg')
+      .branded
+      .or
+      .prop('theme', 'fg')
     .else
     .set('transparent')};
 
   color: ${$.ifBranded
     .ifProp('filled')
-    .set('white')
-    .else
-    .prop('theme', 'bg')
+      .set('white')
+      .else
+      .branded
     .else
     .prop('theme', 'fg')
   };
@@ -33,7 +33,7 @@ const Label = styled.label`
 
   font-weight: ${$
     .ifProp('filled')
-    .set('normal')
+      .set('normal')
     .else
     .set('bold')};
 

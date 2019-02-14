@@ -378,15 +378,15 @@ class ClientStateTree extends StateTree {
     }
   }
 
-  @memoize(['auth', 'userId'])
-  get user () {
-    if (!this.config.auth)
-      return null
-
-    return this.auth.userId
-      ? this.root.users?.get(this.auth.userId)
-      : null
-  }
+  // @memoize(['auth', 'userId'])
+  // get user () {
+  //   if (!this.config.auth)
+  //     return null
+  //
+  //   return this.auth.userId
+  //     ? this.root.users?.get(this.auth.userId)
+  //     : null
+  // }
 
   [$$feathers] = null
   config = null

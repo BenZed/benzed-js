@@ -177,7 +177,8 @@ async function executeQueryWithData () {
 
     // Apply Changes to Form
     const hasChanges = form.hasChangesToCurrent
-    form.setUpstream(updated)
+    const upstream = filterDataBlacklist(updated, tree.config.formDataBlacklist)
+    form.setUpstream(upstream)
 
     // Reset form if it was unscoped and hasn't been touched
     if (original._status !== STATUSES.Scoped &&
@@ -279,7 +280,7 @@ const filterDataDifferences = (edit, original) => {
 const validateConfig = <object key='config' plain strict >
   <ClientStateTree key='client' required />
   <string key='serviceName' required />
-  <array key='formDataBlacklist' default={[ 'updated', 'created', '_id', '_status' ]} >
+  <array key='formDataBlacklist' default={[ '_id', '_status' ]} >
     <string required />
   </array>
 </object>
@@ -480,19 +481,31 @@ class ServiceStateTree extends StateTree {
 
   }
 
-  patch = (id, data) => {
+  patch = async (id, data) => {
 
     if (!is.defined(id))
       throw new Error(`id is required`)
 
     data = filterDataDifferences(data, this.get(id))
-    data = filterDataBlacklist(data, this.config.formDataBlacklist)
 
-    console.log('PATCHING', this.config.serviceName, id, data)
+    // No differences
+    if (data === $$prunable)
+      return null
 
     const item = { id, tree: this, data }
 
-    return this[$$queue].add(executePatchWithData, item)
+    const patched = await this[$$queue].add(executePatchWithData, item)
+
+    console.log('PATCHED',
+      this.config.serviceName,
+      id,
+      {
+        input: data,
+        ouput: filterDataBlacklist(patched, this.config.formDataBlacklist)
+      }
+    )
+
+    return filterDataBlacklist(patched, this.config.formDataBlacklist)
   }
 
   /* Convenience */

@@ -1,6 +1,6 @@
 import Form from './form'
 
-import InputBase from './input-base'
+import Input from './input'
 
 import FormString from './string'
 import FormNumber from './number'
@@ -17,7 +17,7 @@ import useFormInput from './use-form-input'
 // Extend
 /******************************************************************************/
 
-Form.InputBase = InputBase
+Form.Input = Input
 
 Form.String = FormString
 Form.Number = FormNumber
