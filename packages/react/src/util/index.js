@@ -9,7 +9,6 @@ import nestInComponent from './nest-in-component'
 import { Styler, $ } from './styler'
 
 import { Cloner, CssCloner } from './cloner'
-
 import Portal from './portal'
 
 import storage from './storage'
@@ -17,7 +16,12 @@ import storage from './storage'
 import { addEventListener, on, removeEventListener, off } from './event-listener'
 
 import {
-  useDelay
+
+  useDelay,
+  useStateTree,
+
+  StateTreeContext
+
 } from './hooks'
 
 /******************************************************************************/
@@ -28,23 +32,24 @@ export {
 
   addEventListener, on,
   removeEventListener, off,
+  emToPixels,
 
   isClient,
   isMobile,
   isEvent,
-  emToPixels,
-
-  storage,
 
   nestInComponent,
+  stripProps,
 
   Cloner,
   CssCloner,
   Portal,
+  StateTreeContext,
 
   Styler,
   $,
+  storage,
 
   useDelay,
-  stripProps
+  useStateTree
 }

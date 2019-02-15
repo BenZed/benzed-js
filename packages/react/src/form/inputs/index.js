@@ -3,6 +3,7 @@ import Buttons from './buttons'
 import Select from './select'
 import Values from './values'
 import Number from './number'
+import Boolean from './boolean'
 
 /******************************************************************************/
 // Exports
@@ -13,5 +14,6 @@ export {
   String,
   Select,
   Values,
+  Boolean,
   Number
 }

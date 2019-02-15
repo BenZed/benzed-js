@@ -2,14 +2,6 @@ import React from 'react'
 
 import useForm from '../use-form'
 
-import { useDelay } from '../../util'
-
-/******************************************************************************/
-// Data
-/******************************************************************************/
-
-const TYPE_DELAY = 300 // ms
-
 /******************************************************************************/
 // Main
 /******************************************************************************/
@@ -19,11 +11,7 @@ const Boolean = props => {
   const {
     path,
 
-    onBlur,
-    onChange,
-
-    typeDelay = TYPE_DELAY,
-    type,
+    onClick,
 
     ...rest
   } = props
@@ -31,36 +19,23 @@ const Boolean = props => {
   const form = useForm.context()
   const value = useForm.valueAtPath(form, path)
 
-  const delay = useDelay(form.pushCurrent, typeDelay)
+  return <button
 
-  return <input
+    onClick={e => {
 
-    onBlur={e => {
+      e.preventDefault()
+
+      form.editCurrent(path, !value)
       form.pushCurrent()
-      delay && delay.cancel()
-      if (onBlur)
-        onBlur(e)
+      if (onClick)
+        onClick(e)
     }}
 
-    onChange={e => {
-
-      const value = type === 'number'
-        ? parseFloat(e.target.value)
-        : e.target.value
-
-      form.editCurrent(path, value)
-      delay && delay.invoke()
-      if (onChange)
-        onChange(e)
-    }}
-
-    value={value || ''}
-
-    type={type}
+    value={value}
 
     {...rest}
 
-  />
+  >{value ? '√' : 'x'}</button>
 }
 
 /******************************************************************************/

@@ -1,12 +1,14 @@
 import React from 'react'
 
 import FormCurrentContext from './context'
+import FormStateTree from './form-state-tree'
+
 import * as inputs from './inputs'
 
 import is from 'is-explicit'
 
 /******************************************************************************/
-// Thing
+// Helper
 /******************************************************************************/
 
 const createFormPreset = (formComponent, mapOrMapper) => {
@@ -68,6 +70,7 @@ function Form (props) {
 /******************************************************************************/
 
 Form.Context = FormCurrentContext
+Form.StateTree = FormStateTree
 
 /******************************************************************************/
 // Exports

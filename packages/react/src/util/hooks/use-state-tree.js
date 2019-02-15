@@ -1,10 +1,7 @@
-import { useContext, useEffect, useState } from 'react'
-import StateTreeContext from './context'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 import { get } from '@benzed/immutable'
-import { first, flatten } from '@benzed/array'
-
-import is from 'is-explicit'
+import { flatten } from '@benzed/array'
 
 /******************************************************************************/
 // Data
@@ -13,21 +10,26 @@ import is from 'is-explicit'
 const OBSERVE_DELAY = 0
 
 /******************************************************************************/
+// State Tree Context
+/******************************************************************************/
+
+const StateTreeContext = createContext()
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
-const useObserveStateTree = (tree, path = []) => {
+const useObserveStateTree = (tree, ...paths) => {
 
   const [ observer, setObserver ] = useState({ observed: tree })
 
   useEffect(() => {
 
-    const paths = path.length > 0 && is.array(first(path))
-      ? path
-      : [ path ]
-
-    const updateObserverWithTree = () =>
+    const updateObserverWithTree = tree =>
       setObserver({ observed: tree })
+
+    if (observer.observed !== tree)
+      updateObserverWithTree(tree)
 
     const updateListener = () => {
       updateObserverWithTree.delayTimerId =
@@ -44,7 +46,7 @@ const useObserveStateTree = (tree, path = []) => {
       tree.unsubscribe(updateListener)
     }
 
-  }, flatten([ tree, path ]))
+  }, flatten([ tree, paths ]))
 
   return observer.observed
 
@@ -61,18 +63,23 @@ const useStateTree = (pathFromBase) => {
 
 const useStateTreeAtPath = (tree, path) => {
 
-  const [ state, setState ] = useState(get.mut(tree, path))
+  const getStateAtPath = get.mut.bind(tree, path)
+
+  const [ state, setState ] = useState(getStateAtPath())
 
   useEffect(() => {
 
-    const mapState = () =>
-      setState(get.mut(tree, path))
+    const mapState = () => setState(getStateAtPath())
+
+    // In case tree switched and state doesn't match
+    if (state !== getStateAtPath())
+      mapState()
 
     tree.subscribe(mapState, path)
 
-    return () => tree.unsubcribe(mapState)
+    return () => tree.unsubscribe(mapState)
 
-  }, [ tree, ...path ])
+  }, flatten([ tree, path ]))
 
   return state
 }
@@ -90,3 +97,7 @@ useStateTree.observe = useObserveStateTree
 /******************************************************************************/
 
 export default useStateTree
+
+export {
+  StateTreeContext
+}

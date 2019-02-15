@@ -1,6 +1,10 @@
 import React, { Children, createContext } from 'react'
 import { createPropTypesFor } from '@benzed/schema'
 
+// TODO
+
+// Convert this using hooks, add useVisible hook
+
 /******************************************************************************/
 // Context
 /******************************************************************************/

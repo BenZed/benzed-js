@@ -116,19 +116,23 @@ const createBasicButtons = Buttons =>
   styled(Buttons)`
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
 
     margin-top: auto;
 
     button {
 
-      background-color: ${$
-        .prop('theme', 'brand', 'primary').fade(0.75)
-          .or
-        .prop('theme', 'brand', 'bg').fade(0.75)};
+      flex-grow: 1;
+      align-items: center;
+
+      transition: color 150ms, background-color 150ms;
 
       background-color: ${$
-        .ifBranded
+        .prop('theme', 'brand', 'primary')
+          .or
+        .prop('theme', 'bg').fade(0.6)};
+
+      color: ${$
+        .ifProp('theme', 'brand', 'primary')
           .set('white')
         .else
           .set('inherit')
@@ -136,6 +140,16 @@ const createBasicButtons = Buttons =>
 
       &:not(:last-child) {
         margin-right: 1px;
+      }
+
+      &:disabled {
+        background-color: ${$
+          .prop('theme', 'fg').fade(0.75)};
+
+        color: ${$
+          .prop('theme', 'fg')};
+
+        };
       }
     }
   `
@@ -162,9 +176,62 @@ const createBasicComponent = Input =>
     </Container>
   }
 
-const BasicForm = styled.form`
-  max-width: 15em;
+const BasicErrorLabel = styled(({ error, ...props }) =>
+
+  <button {...props}>
+    <h3>{error.name}</h3>
+    <label>{error.message}</label>
+  </button>
+)`
+
+  background-color: ${$.prop('theme', 'brand', 'danger').lighten(0.5).fade(0.125)};
+  position: absolute;
+  top: 0em;
+  left: 0em;
+
+  width: 100%;
+  text-align: left;
+
+  padding: 0.5em;
+  font-family: ${$.prop('theme', 'font', 'mono').or.set('monospace')};
+
+  h3 {
+    color: ${$.prop('theme', 'brand', 'danger').darken(0.25)};
+    margin-bottom: 0.25em;
+  }
+
+  label {
+    color: ${$.prop('theme', 'brand', 'danger').darken(0.125)};
+  }
+
+`
+
+const BasicForm = styled(({ children, ...props }) => {
+
+  const form = useForm()
+  useForm.observe(form, 'error')
+
+  const error = form.error
+
+  return <form data-error={!!error} {...props}>
+    {error
+      ? <BasicErrorLabel onClick={e => {
+        e.preventDefault()
+        form.clearError()
+      }} error={error} />
+
+      : null
+    }
+    {children}
+  </form>
+})`
+  max-width: 20em;
   flex-grow: 1;
+
+  &[data-error=true] {
+    outline: 1px solid ${$.prop('theme', 'brand', 'danger').or.set('red')};
+    outline-offset: calc(0.5em - 1px);
+  }
 `
 
 /******************************************************************************/

@@ -166,6 +166,7 @@ class FormStateTree extends StateTree {
     try {
       upstream = await this::submit(current)
     } catch (e) {
+      console.error(e)
       const { name, message, errors } = e
       this.setError({
         name,

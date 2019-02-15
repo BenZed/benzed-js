@@ -1,7 +1,7 @@
 import React from 'react'
 
 import useForm from '../use-form'
-import useStateTree from '../../state-tree-observer/use-state-tree'
+import { useStateTree } from '../../util'
 
 /******************************************************************************/
 // Main
@@ -10,6 +10,7 @@ import useStateTree from '../../state-tree-observer/use-state-tree'
 const Buttons = props => {
 
   const form = useForm()
+
   useStateTree.observe(form)
 
   const canSave = form.hasChangesToUpstream && !form.isPushingUpstream

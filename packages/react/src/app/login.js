@@ -10,10 +10,8 @@ import { Slide, Write } from '../effect'
 import { createPropTypesFor } from '@benzed/schema'
 import { equals } from '@benzed/immutable'
 
-import { isEvent } from '../util'
+import { isEvent, useStateTree } from '../util'
 import is from 'is-explicit'
-
-import { StateTreeConsumer } from '../state-tree-observer'
 
 /******************************************************************************/
 // Validation
@@ -206,10 +204,12 @@ class LoginLogic extends React.Component {
 // Shortcuts
 /******************************************************************************/
 
-const Login = props =>
-  <StateTreeConsumer>
-    {tree => <LoginLogic client={tree.client} {...props} />}
-  </StateTreeConsumer>
+const Login = props => {
+
+  const client = useStateTree(['client'])
+
+  return <LoginLogic client={client} {...props} />
+}
 
 /******************************************************************************/
 // Exports

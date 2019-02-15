@@ -6,8 +6,6 @@ import {
 
 } from './state-tree'
 
-import { ServiceView, ServiceTable } from './service-view'
-
 import Login from './login'
 import Link from './link'
 
@@ -24,8 +22,6 @@ export {
   UiStateTree,
 
   Login,
-  ServiceView,
-  ServiceTable,
   Link,
 
   useServiceQuery

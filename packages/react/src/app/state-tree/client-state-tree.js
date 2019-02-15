@@ -3,7 +3,7 @@ import FetchService from '@feathersjs/rest-client/lib/fetch'
 import SocketIOService from '@feathersjs/transport-commons/client'
 import authentication from '@feathersjs/authentication-client'
 
-import StateTree, { action, memoize, state } from '@benzed/state-tree'
+import StateTree, { action, state } from '@benzed/state-tree'
 
 import is from 'is-explicit'
 import fetch from 'isomorphic-fetch'

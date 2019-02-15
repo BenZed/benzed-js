@@ -1,5 +1,5 @@
 import React from 'react'
-import { StateTreeListener } from '../state-tree-observer'
+import { useStateTree } from '../util'
 import is from 'is-explicit'
 import { copy } from '@benzed/immutable'
 
@@ -9,27 +9,30 @@ import { copy } from '@benzed/immutable'
 // Main Component
 /******************************************************************************/
 
-const UiLink = ({ children, to, query, ...props }) =>
-  <StateTreeListener root='ui' path='location'>{
-    ui => {
+const UiLink = ({ children, to, query, ...props }) => {
 
-      const onClick = e => {
-        e.preventDefault()
+  const ui = useStateTree.context(['ui'])
+  useStateTree.observe(ui, ['location'])
 
-        query = query === true
-          ? copy(ui.location.query)
-          : is.func(query)
-            ? query(e, ui.location.query)
-            : is.plainObject(query)
-              ? query
-              : undefined
+  const onClick = e => {
+    e.preventDefault()
 
-        ui.navigate(to, query)
-      }
+    query = query === true
 
-      return <a {...props} href={to} onClick={onClick} >{children}</a>
-    }
-  }</StateTreeListener>
+      ? copy(ui.location.query)
+      : is.func(query)
+
+        ? query(e, ui.location.query)
+        : is.plainObject(query)
+
+          ? query
+          : undefined
+
+    ui.navigate(to, query)
+  }
+
+  return <a {...props} href={to} onClick={onClick} >{children}</a>
+}
 
 /******************************************************************************/
 // Exports
