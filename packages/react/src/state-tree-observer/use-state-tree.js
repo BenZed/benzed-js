@@ -16,7 +16,7 @@ const OBSERVE_DELAY = 0
 // Main
 /******************************************************************************/
 
-const useObserveStateTree = (tree, path) => {
+const useObserveStateTree = (tree, path = []) => {
 
   const [ observer, setObserver ] = useState({ observed: tree })
 
@@ -65,7 +65,8 @@ const useStateTreeAtPath = (tree, path) => {
 
   useEffect(() => {
 
-    const mapState = () => setState(get.mut(tree, path))
+    const mapState = () =>
+      setState(get.mut(tree, path))
 
     tree.subscribe(mapState, path)
 

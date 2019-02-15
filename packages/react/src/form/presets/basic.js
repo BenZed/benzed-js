@@ -1,12 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import Form from '../form'
+import Form, { createFormPreset } from '../form'
 
 import { Label } from '../../text'
 
 import { last, wrap } from '@benzed/array'
 
 import useForm from '../use-form'
+import { $ } from '../../util'
 
 /******************************************************************************/
 // Helper
@@ -16,11 +17,46 @@ const InputColumn = styled.div`
   text-align: right;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  flex-shrink: 0;
+  margin-left: auto;
+  flex-shrink: 1;
 
-  *:first-child {
+  input {
+    width: 100%;
+  }
+
+  select {
+    direction: rtl;
+  }
+
+  option {
+    direction: rtl;
+  }
+
+  ul {
+
+    display: flex;
+    flex-direction: row;
+
+    margin: 0em;
+    padding: 0.25em;
+
+    li {
+      opacity: 0.5;
+
+      &[data-selected=true] {
+        text-decoration: none;
+        opacity: 1;
+      }
+
+      &:not(:last-child) {
+        margin-right: 0.4em;
+      }
+    }
+  }
+
+  input, select {
     text-align: inherit;
+    border-color: ${$.ifProp('error').prop('theme', 'brand', 'danger').or.set('red').else.set('inherit')};
   }
 
 `
@@ -28,12 +64,14 @@ const InputColumn = styled.div`
 const ContainerRow = styled.div`
   display: flex;
   flex-direction: row;
+  flex-shrink: 1;
   align-items: baseline;
 
   ${Label}:first-child {
     text-align: left;
     flex-basis: 4em;
     flex-shrink: 0;
+    padding-right: 1em;
   }
 `
 
@@ -57,11 +95,14 @@ const Container = props => {
     : null
 
   return <ContainerRow>
+
     {label}
-    <InputColumn>
+
+    <InputColumn error={!!_error}>
       {children}
       {error}
     </InputColumn>
+
   </ContainerRow>
 }
 
@@ -69,41 +110,70 @@ const Container = props => {
 // Components
 /******************************************************************************/
 
-function BasicComponent (props) {
+/* eslint-disable indent */
 
-  const InputComponent = this
-  const { label, path, ...rest } = props
+const createBasicButtons = Buttons =>
+  styled(Buttons)`
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
 
-  const { form, value, error } = useForm(path)
+    margin-top: auto;
 
-  return <Container label={label} path={path} error={error}>
-    <InputComponent
-      form={form}
-      value={value}
-      path={path}
-      {...rest}
-    />
-  </Container>
-}
+    button {
+
+      background-color: ${$
+        .prop('theme', 'brand', 'primary').fade(0.75)
+          .or
+        .prop('theme', 'brand', 'bg').fade(0.75)};
+
+      background-color: ${$
+        .ifBranded
+          .set('white')
+        .else
+          .set('inherit')
+      };
+
+      &:not(:last-child) {
+        margin-right: 1px;
+      }
+    }
+  `
+
+const createBasicComponent = Input =>
+
+  props => {
+
+    const { label, path, ...rest } = props
+
+    const form = useForm()
+    const error = useForm.errorAtPath(form, path)
+
+    return <Container
+        label={label}
+        path={path}
+        error={error}>
+
+      <Input
+        path={path}
+        {...rest}
+      />
+
+    </Container>
+  }
 
 const BasicForm = styled.form`
-  max-width: 12em;
+  max-width: 15em;
+  flex-grow: 1;
 `
-
-const BASIC_COMPONENT_MAP = Object.entries(Form.inputMap)
-  .reduce((map, entry) => {
-    const [ name, component ] = entry
-
-    map[name] = component::BasicComponent
-
-    return map
-  }, {})
 
 /******************************************************************************/
 // EXports
 /******************************************************************************/
 
-export default Form.createPreset({
-  Form: BasicForm,
-  ...BASIC_COMPONENT_MAP
-})
+export default createFormPreset(
+  BasicForm::Form,
+  (Input, key) => key === 'Buttons'
+    ? createBasicButtons(Input)
+    : createBasicComponent(Input)
+)

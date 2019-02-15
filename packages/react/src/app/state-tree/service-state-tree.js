@@ -7,7 +7,7 @@ import { wrap, unwrap } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
 import { equals, $$equals, indexOf } from '@benzed/immutable'
 
-import { FormStateTree } from '../../data-form'
+import { FormStateTree } from '../../form'
 import is from 'is-explicit'
 
 // @jsx Schema.createValidator

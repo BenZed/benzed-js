@@ -14,7 +14,7 @@ const TYPE_DELAY = 300 // ms
 // Main
 /******************************************************************************/
 
-const String = props => {
+const Boolean = props => {
 
   const {
     path,
@@ -67,8 +67,4 @@ const String = props => {
 // Exports
 /******************************************************************************/
 
-export default String
-
-export {
-  TYPE_DELAY
-}
+export default Boolean

@@ -2,15 +2,17 @@ import React from 'react'
 import { createGlobalStyle as css, ThemeProvider } from 'styled-components'
 import { createPropTypesFor } from '@benzed/schema'
 
-import { $, Cloner } from '../util'
+import { $ } from '../util'
 
 /******************************************************************************/
-// TEMP
+// Data
 /******************************************************************************/
 
-// This is a temporary way of creating a global style component that responds to
-// themes until the createGlobalStyle api is finished in styled components.
-// It's hacky and ugly, but it works.
+const SELECT_ARROW_SVG = `data:image/svg+xml;utf8,<?xml version="1.0" ` +
+  `encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" ` +
+  `"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg ` +
+  `xmlns="http://www.w3.org/2000/svg" width="14" height="12" version="1">` +
+  `<path d="M4 8L0 4h8z"/></svg>`
 
 /******************************************************************************/
 // Helper
@@ -61,11 +63,15 @@ const GlobalStyle = css`
     display: inherit;
   }
 
-  input, button {
+  input, button, select {
     outline: none;
     border: none;
     background-color: transparent;
     color: inherit;
+
+    &:disabled {
+      opacity: 0.5;
+    }
   }
 
   button {
@@ -73,7 +79,7 @@ const GlobalStyle = css`
     padding: 0.5em;
   }
 
-  input {
+  input, select {
 
     padding: 0.25em;
 
@@ -86,8 +92,38 @@ const GlobalStyle = css`
 
   }
 
+  select {
+    appearance: none;
+
+    &:not([multiple]) {
+      background-image: url('${SELECT_ARROW_SVG}');
+      background-repeat: no-repeat;
+      background-position: right 50%;
+      padding-right: 1.25em;
+    }
+
+    cursor: pointer;
+    border-radius: 0em;
+  }
+
+  ::selection {
+    background: ${$.theme.fg.fade(0.8)};
+  }
+
   ol, ul {
     list-style: none;
+  }
+
+  ul[data-selectable=true] {
+    user-select: none;
+
+    li {
+      cursor: pointer;
+    }
+
+    li[data-selected=true] {
+      text-decoration: underline;
+    }
   }
 
   blockquote, q {

@@ -1,9 +1,17 @@
 import String from './string'
+import Buttons from './buttons'
+import Select from './select'
+import Values from './values'
+import Number from './number'
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export {
-  String
+  Buttons,
+  String,
+  Select,
+  Values,
+  Number
 }

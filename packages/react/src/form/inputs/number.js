@@ -1,13 +1,12 @@
 import React from 'react'
+import String from './string'
 
 /******************************************************************************/
-// Main Component
+// Thing
 /******************************************************************************/
 
-const Number = ({ children, ...props }) =>
-  <div {...props}>
-    number-editor: {props.value}
-  </div>
+const Number = props =>
+  <String {...props} type='number' />
 
 /******************************************************************************/
 // Exports

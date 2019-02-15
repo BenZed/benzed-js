@@ -3,28 +3,32 @@ import React from 'react'
 import FormCurrentContext from './context'
 import * as inputs from './inputs'
 
+import is from 'is-explicit'
+
 /******************************************************************************/
 // Thing
 /******************************************************************************/
 
-const COMPONENT_MAP = {
-  ...inputs
-}
+const createFormPreset = (formComponent, mapOrMapper) => {
 
-const createPreset = inputComponentMap => {
+  for (const key of Object.keys(Form))
+    formComponent[key] = formComponent[key] || Form[key]
 
-  const FormPreset = Form.bind(inputComponentMap.Form || 'form')
+  if (is.func(mapOrMapper))
+    for (const key in inputs)
+      formComponent[key] = mapOrMapper(inputs[key], key, formComponent)
 
-  for (const key in Form)
-    if (key in inputComponentMap === false)
-      FormPreset[key] = Form[key]
+  else {
+    for (const key in mapOrMapper)
+      formComponent[key] = mapOrMapper[key]
 
-  for (const key in inputComponentMap)
-    FormPreset[key] = inputComponentMap[key]
+    for (const key in inputs)
+      if (key in formComponent === false)
+        formComponent[key] = inputs[key]
+  }
 
-  FormPreset.inputMap = { ...inputs, ...inputComponentMap }
+  return formComponent
 
-  return FormPreset
 }
 
 /******************************************************************************/
@@ -54,24 +58,23 @@ function Form (props) {
   return <FormCurrentContext.Provider value={form}>
     <FormComponent onSubmit={handleSubmit} {...rest}>
       {children}
-      {/* <button type='submit'>
-        Save
-      </button> */}
     </FormComponent>
   </FormCurrentContext.Provider>
 
 }
 
 /******************************************************************************/
-// Extend
+// Extends
 /******************************************************************************/
 
 Form.Context = FormCurrentContext
-Form.createPreset = createPreset
-Form.inputMap = inputs
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Form.createPreset(COMPONENT_MAP)
+export default createFormPreset(Form, inputs)
+
+export {
+  createFormPreset
+}

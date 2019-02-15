@@ -22,11 +22,11 @@ import {
   Label
 } from './text'
 
-import {
-  Table, Grid, Virtual
-} from './data-view'
+// import {
+//   Table, Grid, Virtual
+// } from './view'
 
-import Form, { useFormInput } from './data-form'
+import Form, { useForm } from './form'
 
 import {
   Visible, Slide, Fade, ScrollVisible, Write
@@ -83,8 +83,8 @@ export {
   // Text
   Label,
 
-  // DataView
-  Table, Grid, Virtual,
+  // // DataView
+  // Table, Grid, Virtual,
 
   // Effect
   Visible, Slide, Fade, ScrollVisible, Write,
@@ -108,6 +108,6 @@ export {
   useObserveStateTree,
   useStateTree,
   useDelay,
-  useFormInput,
+  useForm,
   useServiceQuery
 }

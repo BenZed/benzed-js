@@ -1,16 +1,18 @@
-import React from 'react'
+import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
+
+/* @jsx Schema.createValidator */
+/* eslint-disable react/react-in-jsx-scope */
 
 /******************************************************************************/
-// Main Component
+// Form
 /******************************************************************************/
 
-const Date = ({ children, ...props }) =>
-  <div {...props}>
-    date-picker: {props.value}
-  </div>
+const exampleSchema = <object plain >
+  <string key='name' />
+</object>
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default Date
+export default exampleSchema

@@ -76,7 +76,7 @@ class FormStateTree extends StateTree {
   upstreamTimestamp = null
 
   @state
-  pushingUpstream = false
+  isPushingUpstream = false
 
   @state
   history = []
@@ -157,18 +157,25 @@ class FormStateTree extends StateTree {
     if (this.hasError)
       this.clearError()
 
-    this.setState(true, 'pushingUpstream', 'triggerPushUpstream')
+    this.setState(true,
+      'isPushingUpstream',
+      'setIsPushingUpstream'
+    )
 
     let upstream
     try {
       upstream = await this::submit(current)
     } catch (e) {
       const { name, message, errors } = e
-      return this.setError({
+      this.setError({
         name,
         message,
         errors
       })
+      return this.setState(false,
+        'isPushingUpstream',
+        'setIsPushingUpstream'
+      )
     }
 
     if (is.defined(upstream)) {
@@ -178,7 +185,7 @@ class FormStateTree extends StateTree {
 
     this.setState({
       ...this.state,
-      pushingUpstream: false,
+      isPushingUpstream: false,
       currentTimestamp: this.state.upstreamTimestamp
     })
   }

@@ -7,7 +7,7 @@ import { wrap } from '@benzed/array'
 // Hooks
 /******************************************************************************/
 
-const useFormContext = () => useContext(FormCurrentContext)
+const useForm = () => useContext(FormCurrentContext)
 
 const useFormValueAtPath = (form, path) => {
 
@@ -25,9 +25,9 @@ const useFormErrorAtPath = (form, path) => {
   return error
 }
 
-const useForm = path => {
+const useFormContextAtPath = path => {
 
-  const form = useFormContext()
+  const form = useForm()
   const error = path && useFormErrorAtPath(form, path)
   const value = path && useFormValueAtPath(form, path)
 
@@ -39,7 +39,8 @@ const useForm = path => {
 // Extend
 /******************************************************************************/
 
-useForm.context = useFormContext
+useForm.context = useForm
+useForm.contextAtPath = useFormContextAtPath
 useForm.valueAtPath = useFormValueAtPath
 useForm.errorAtPath = useFormErrorAtPath
 
