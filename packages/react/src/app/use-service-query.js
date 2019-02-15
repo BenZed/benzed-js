@@ -8,13 +8,17 @@ import { equals } from '@benzed/immutable'
 
 const toId = record => record._id
 
-const fakeEmptyResult = () =>
-  ({
+const fakeEmptyResult = e => {
+
+  console.error(e)
+
+  return {
     data: [],
     limit: 0,
     skip: 0,
     total: 0
-  })
+  }
+}
 
 /******************************************************************************/
 // Main
@@ -48,11 +52,14 @@ const useServiceQuery = service => {
 
     if (!equals(_query, query))
       setQuery(query)
+
   }
 
   useEffect(() => {
 
-    const updateRecords = () => setRecords(result.ids.map(service.get))
+    const updateRecords = () =>
+      setRecords(result.ids.map(service.get))
+
     service.subscribe(updateRecords, ['records'], ['forms'])
 
     return () => service.unsubscribe(updateRecords)

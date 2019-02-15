@@ -148,6 +148,9 @@ async function executeQueryWithData () {
       data: results
     }
 
+  // filter forbidden data
+  results.data = results.data.filter(is.defined)
+
   // create a
   const ids = []
   const changes = []
@@ -168,7 +171,7 @@ async function executeQueryWithData () {
     const updated = records[id] = {
       ...original,
       ...data,
-      _status: STATUSES.Scoped
+      _status: data._status || STATUSES.Scoped
     }
 
     const form = tree.state[$$forms][id]
