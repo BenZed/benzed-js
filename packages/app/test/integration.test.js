@@ -10,98 +10,105 @@ import declareEntity from '../src/declare-entity'
 /* global describe it before after beforeEach afterEach */
 
 const create = {
-  schema: func => func(Schema.createValidator),
-  app: func => func(declareEntity)
+  schema: useJsxFor => useJsxFor(Schema.createValidator),
+  app: useJsxFor => useJsxFor(declareEntity)
 }
 
-const userSchema = create.schema(JSX => <object plain strict>
-  <string key='_id' />
-  <string key='name' />
-  <string key='email' required length={['>', 0]} />
-  <string key='password' required />
-</object>)
+const skip = () => describe('integration tests', () => {
 
-Test.Api(create.app(JSX => <app>
+  const userSchema = create.schema(JSX => <object plain strict>
+    <string key='_id' />
+    <string key='name' />
+    <string key='email' required length={['>', 0]} />
+    <string key='password' required />
+  </object>)
 
-  <express />
+  Test.Api(
+    'in an app',
 
-  <authentication />
+    create.app(JSX => <app>
 
-  <service name='users' multi='create'>
+      <express />
+      <authentication />
 
-    <paginate default={10} max={100} />
+      <service name='users' multi='create'>
 
-    <hooks before all>
-      <authenticate strategy='jwt' />
+        <paginate default={10} max={100} />
 
-      <password-validate length={8} />
-      <password-hash />
+        <hooks before all>
 
-      <schema-validate schema={userSchema} />
-      <dates-write />
-    </hooks>
+          <authenticate strategy='jwt' />
 
-    <hooks after all>
-      <password-protect />
-    </hooks>
+          <password-validate length={8} />
+          <password-hash />
 
-  </service>
+          <schema-validate schema={userSchema} />
+          <dates-write />
 
-  <hooks before all>
-    {ctx => { ctx.app.appLevelHooksCalled = true }}
-  </hooks>
+        </hooks>
 
-  <express-error />
+        <hooks after all>
+          <password-protect />
+        </hooks>
 
-</app>), state => {
+      </service>
 
-  before(() =>
-    state.api.service('users').create([
-      {
-        name: 'james',
-        email: 'admin@email.com',
-        password: 'password',
-        passwordConfirm: 'password'
-      }
-    ])
-  )
+      <hooks before all>
+        {ctx => { ctx.app.appLevelHooksCalled = true }}
+      </hooks>
 
-  it('app level hooks are applies', () => {
-    expect(state.api.appLevelHooksCalled).to.be.equal(true)
-    expect('_hooksToAdd' in state.api).to.be.equal(false)
-  })
+      <express-error />
 
-  it('starts up on correct port', () => {
-    state.address.includes(state.api.get('port'))
-  })
+    </app>), state => {
 
-  it('is a rest app', () => {
-    expect(state.api.rest).to.be.instanceof(Object)
-  })
+      before(() =>
+        state.api.service('users').create([
+          {
+            name: 'james',
+            email: 'admin@email.com',
+            password: 'password',
+            passwordConfirm: 'password'
+          }
+        ])
+      )
 
-  it('requires authentication', async () => {
-    await state.client.service('users').find({})::expectReject('No auth token')
-  })
+      it('app level hooks are applies', () => {
+        expect(state.api.appLevelHooksCalled).to.be.equal(true)
+        expect('_hooksToAdd' in state.api).to.be.equal(false)
+      })
 
-  it('users cant see passwords', async () => {
-    await state.client.authenticate({
-      strategy: 'local',
-      email: 'admin@email.com',
-      password: 'password'
-    })::expectResolve()
+      it('starts up on correct port', () => {
+        state.address.includes(state.api.get('port'))
+      })
 
-    const users = await state.client.service('users').find({})::expectResolve()
+      it('is a rest app', () => {
+        expect(state.api.rest).to.be.instanceof(Object)
+      })
 
-    expect(users.data.every(user => 'password' in user)).to.be.equal(false)
-  })
+      it('requires authentication', async () => {
+        await state.client.service('users').find({})::expectReject('No auth token')
+      })
 
-  it('applies user schema', async () => {
+      it('users cant see passwords', async () => {
+        await state.client.authenticate({
+          strategy: 'local',
+          email: 'admin@email.com',
+          password: 'password'
+        })::expectResolve()
 
-    await state
-      .api
-      .service('users')
-      .create({
-        email: ''
-      })::expectReject('Validation Failed.')
-  })
+        const users = await state.client.service('users').find({})::expectResolve()
+
+        expect(users.data.every(user => 'password' in user)).to.be.equal(false)
+      })
+
+      it('applies user schema', async () => {
+
+        await state
+          .api
+          .service('users')
+          .create({
+            email: ''
+          })::expectReject('Validation Failed.')
+      })
+    })
 })

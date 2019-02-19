@@ -10,6 +10,4 @@ describe('QuickHook', () => {
     expect(QuickHook).to.be.instanceof(Function)
   })
 
-  it('adapt the tests from @benzed/app/src/hooks/hook.test.js')
-
 })

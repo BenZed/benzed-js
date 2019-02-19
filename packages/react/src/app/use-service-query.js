@@ -64,7 +64,7 @@ const useServiceQuery = service => {
 
     return () => service.unsubscribe(updateRecords)
 
-  }, [ service, result.ids ])
+  }, [ service, ...result.ids ])
 
   return {
     fetching,

@@ -26,7 +26,7 @@ const validateConfig = <object
     <oneOf>before after error</oneOf>
   </array>
 
-  <oneOf key='provider' default='any'>rest socketio internal external any</oneOf>
+  <oneOf key='provider'>rest socketio internal external</oneOf>
 
   <func key='exec' required />
 
@@ -93,11 +93,7 @@ const providerMatch = (provider, providerParam) => {
     return true
 
   // hook should only fire for a specific provider (rest or socketio)
-  if (provider === providerParam)
-    return true
-
-  // hook should not fire
-  return false
+  return provider === providerParam
 }
 
 function hook (ctx, ...args) {

@@ -51,9 +51,11 @@ describe('<channels />', () => {
 
   it('throws if given children', () => {
 
-    expect(() => <channels>
-      {() => {}}
-    </channels>).to.throw('channels.children must be empty')
+    expect(() =>
+      <channels>
+        {() => {}}
+      </channels>
+    ).to.throw('channels.children must be empty')
 
   })
 

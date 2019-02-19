@@ -61,10 +61,13 @@ export default new QuickHook({
     if (ctx.isPatch && ctx.isBulk) {
       const result = await service.find({ query: params.query })
       datas = result.data.map(data => merge(data, ctx.data))
+
     } else if (ctx.isPatch) {
       const result = await service.get(ctx.id)
       datas = wrap(merge(result, ctx.data))
-    }
+
+    } else // must be an update or create hook
+      datas = wrap(ctx.data)
 
     // Validate all data
     for (let i = 0; i < datas.length; i++) try {

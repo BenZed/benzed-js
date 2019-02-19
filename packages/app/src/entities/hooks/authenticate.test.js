@@ -8,7 +8,7 @@ import { $$entity } from '../../util'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe('<authenticate/>', () => {
+describe.only('<authenticate/>', () => {
 
   it('can be created by <authenticate/>', () => {
     const authHook = <authenticate strategy='jwt' />
@@ -16,9 +16,7 @@ describe('<authenticate/>', () => {
   })
 
   it('returns an auth hook', () => {
-    const authHookFactory = <authenticate>jwt</authenticate>
-    const authHook = authHookFactory()
-
+    const authHook = <authenticate>jwt</authenticate>
     expect(authHook.toString()).to.include('const app = hook.app')
   })
 

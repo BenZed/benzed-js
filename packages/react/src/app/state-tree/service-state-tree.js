@@ -149,7 +149,9 @@ async function executeQueryWithData () {
     }
 
   // filter forbidden data
-  results.data = results.data.filter(is.defined)
+  results.data = results.data.map(doc => doc || {
+    _status: STATUSES.Forbidden
+  })
 
   // create a
   const ids = []

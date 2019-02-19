@@ -1,5 +1,4 @@
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import hookGeneric from './hook'
 
 /* @jsx Schema.createValidator */
 /* eslint-disable react/react-in-jsx-scope */
@@ -8,7 +7,7 @@ import hookGeneric from './hook'
 // Validation
 /******************************************************************************/
 
-const validateOptions = <object key='remove-password' plain>
+const validateOptions = <object key='remove-password' plain strict>
   <string key='passwordField' default='password' />
 </object>
 
@@ -18,17 +17,10 @@ const validateOptions = <object key='remove-password' plain>
 
 const passwordProtect = props => {
 
-  const { children, ...rest } = props
-
-  const options = validateOptions(rest)
-
+  const { passwordField } = validateOptions(props)
   const { hooks } = require('@feathersjs/authentication-local')
 
-  return hookGeneric({
-    ...options,
-    func: options =>
-      hooks.protect(options.passwordField)
-  })
+  return hooks.protect(passwordField)
 
 }
 
