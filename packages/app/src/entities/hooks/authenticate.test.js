@@ -22,7 +22,7 @@ describe('<authenticate/>', () => {
 
   it('takes a strategy prop or string children')
 
-  it('throws if given any arguments', () => {
+  it.skip('throws if given any arguments', () => {
 
     expect(<service name='users'>
       <authenticate strategy='local' />

@@ -19,7 +19,6 @@ const validateOptions = <object key='hash-password' plain strict>
 const passwordHash = props => {
 
   const { hooks } = require('@feathersjs/authentication-local')
-
   const options = validateOptions(props)
 
   return hooks.hashPassword(options)

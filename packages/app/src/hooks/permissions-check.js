@@ -1,7 +1,7 @@
-function QuickHook () {}
 import { Forbidden } from '@feathersjs/errors'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import is from 'is-explicit'
+import declareEntity from '../declare-entity' // eslint-disable-line no-unused-vars
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope, react/prop-types */
@@ -78,7 +78,7 @@ const toPermissionFunc = input => {
     : noPermission
 }
 
-const PermissionFunction = ({ name }) => <object key='permission'>
+const PermissionFunction = name => <object key='permission'>
   <func
     key={name}
     cast={toPermissionFunc}
@@ -86,20 +86,23 @@ const PermissionFunction = ({ name }) => <object key='permission'>
   />
 </object>
 
+const valiate = PermissionFunction('checker')
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default new QuickHook({
+const permissionsCheck = props => {
 
-  name: 'permissions-check',
+  const { checker } = valiate(props)
 
-  types: 'before',
-  provider: 'external',
+  return declareEntity('hook', {
 
-  setup: <PermissionFunction name='checker' />,
+    name: 'permissions-check',
+    types: 'before',
+    provider: 'external'
 
-  async exec (ctx, { checker, ...rest }) {
+  }, async ctx => {
 
     const { params, method, app, id, service } = ctx
 
@@ -112,10 +115,9 @@ export default new QuickHook({
       return
 
     // Only admins may do anything in bulk
-    if (ctx.isBulk)
-      throw new Forbidden(
-        `cannot bulk ${method} ${getServiceName(app, service)}.`
-      )
+    if (ctx.isMulti) throw new Forbidden(
+      `cannot multi ${method} ${getServiceName(app, service)}.`
+    )
 
     const original = ctx.isCreate || ctx.isFind || ctx.isGet
       ? null
@@ -127,9 +129,14 @@ export default new QuickHook({
       throw new Forbidden(
         `cannot ${method} ${getServiceName(app, service)}.`
       )
-  }
+  })
+}
 
-})
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
+export default permissionsCheck
 
 export {
   PermissionFunction

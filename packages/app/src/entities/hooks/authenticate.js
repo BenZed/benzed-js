@@ -28,8 +28,8 @@ const validateStrategies = <array
 const authenticateHook = props => {
 
   const { children, strategy } = props
-  const { hooks } = require('@feathersjs/authentication')
   const strategies = validateStrategies(children || strategy)
+  const { hooks } = require('@feathersjs/authentication')
 
   return hooks.authenticate(strategies)
 

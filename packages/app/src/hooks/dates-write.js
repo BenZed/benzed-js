@@ -1,5 +1,6 @@
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap, first } from '@benzed/array'
+import { copy } from '@benzed/immutable'
 
 import declareEntity from '../declare-entity'
 
@@ -28,35 +29,28 @@ export default props => {
     {
       name: 'write-date-fields',
       types: 'before',
-      methods: ['patch', 'create', 'update']
+      methods: [ 'patch', 'create' ]
     },
-    async ctx => {
+    ctx => {
 
-      const { id, service, data } = ctx
+      const { data } = ctx
 
       const time = new Date()
 
       // In case this is a bulk create request
-      const asMulti = wrap(data)
-      for (const data of asMulti) {
+      const dataAsArray = wrap(data)
+      for (const data of dataAsArray) {
 
-        if (ctx.isCreate)
-          data[createField] = time
+        if (ctx.isCreate && createField in data === false)
+          data[createField] = copy(time)
 
-        // Update replaces all of the fields in a document, so we have to get
-        // the value of the created Date from the database, and add it to the
-        // supplied data.
-        else if (ctx.isUpdate) {
-          const existing = await service.get(id)
-          data[createField] = existing[createField]
-        }
-
-        data[updateField] = time
+        if (updateField in data === false)
+          data[updateField] = copy(time)
       }
 
       ctx.data = ctx.isMulti && ctx.isCreate
-        ? asMulti
-        : first(asMulti)
+        ? dataAsArray
+        : first(dataAsArray)
 
       return ctx
     })

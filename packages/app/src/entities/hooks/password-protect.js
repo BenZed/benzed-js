@@ -17,8 +17,8 @@ const validateOptions = <object key='remove-password' plain strict>
 
 const passwordProtect = props => {
 
-  const { passwordField } = validateOptions(props)
   const { hooks } = require('@feathersjs/authentication-local')
+  const { passwordField } = validateOptions(props)
 
   return hooks.protect(passwordField)
 

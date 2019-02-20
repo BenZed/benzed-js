@@ -1,11 +1,13 @@
-function QuickHook () {}
-import is from 'is-explicit'
-
 import { BadRequest } from '@feathersjs/errors'
-import { wrap } from '@benzed/array'
+
+import declareEntity from '../declare-entity'
+
+import { wrap, first } from '@benzed/array'
 import { set, merge } from '@benzed/immutable'
 
 import Schema, { isSchema } from '@benzed/schema' // eslint-disable-line no-unused-vars
+
+import is from 'is-explicit'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -33,25 +35,29 @@ const mustBeSchema = value =>
     ? value
     : throw new Error('must be a validator created by @benzed/schema.')
 
+const validate = <object key='validate'>
+  <func key='schema' required validate={mustBeSchema} />
+</object>
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default new QuickHook({
+const schemaValidate = props => {
 
-  name: 'schema-validate',
-  types: 'before',
+  const { schema } = validate(props)
 
-  setup: <object key='validate'>
-    <func key='schema' required validate={mustBeSchema} />
-  </object>,
+  return declareEntity('hook', {
 
-  async exec (ctx, { schema }) {
+    name: 'schema-validate',
+    types: 'before',
+    methods: [ 'patch', 'update', 'create' ]
+
+  }, async ctx => {
 
     const { service, params } = ctx
 
-    const isNonApplicableMethod = ctx.isFind || ctx.isGet || ctx.isRemove
-    if (isNonApplicableMethod || params.$skipValidation)
+    if (params.$skipValidation)
       return
 
     let datas
@@ -79,7 +85,7 @@ export default new QuickHook({
 
       // bulk patches get converted to individual updates, but the id field
       // may not survive validation
-      if (ctx.isPatch && ctx.isBulk && is.defined(id))
+      if (ctx.isPatch && ctx.isMulti && is.defined(id))
         data[service.id] = id
 
     } catch (e) {
@@ -94,21 +100,27 @@ export default new QuickHook({
 
     // if there are errors, throw them
     if (errors) throw new BadRequest('Validation Failed.', {
-      errors: ctx.isBulk ? errors : errors[0]
+      errors: ctx.isMulti ? errors : first(errors)
     })
 
     // patches get converted to updates, since we've already queried all the required
     // documents from the database, and each documents validated data may not
     // necessarily be the same as the ctx.data that was provided
-    else if (ctx.isPatch && ctx.isBulk)
+    else if (ctx.isPatch && ctx.isMulti)
       ctx.result = await service::updateEvery(datas)
     else
-      ctx.data = ctx.isBulk
+      ctx.data = ctx.isMulti
         ? datas
-        : datas[0]
+        : first(datas)
 
     return ctx
 
-  }
+  })
 
-})
+}
+
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
+export default schemaValidate

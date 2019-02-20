@@ -1,8 +1,8 @@
-function QuickHook () {}
 import { NotFound } from '@feathersjs/errors'
 
-import { set } from '@benzed/immutable'
+import declareEntity from '../declare-entity'
 
+import { set } from '@benzed/immutable'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 
 // @jsx Schema.createValidator
@@ -58,23 +58,26 @@ async function throwIfDeleted (hook, { field, disableParam }) {
   return doc
 }
 
+const validate = <object plain>
+  <string key='field' default='deleted'/>
+  <string key='disableParam' default='$disableSoftDelete'/>
+  <bool key='allowClientDisable' default={false} />
+  <func key='setDeleted' default={() => new Date()} />
+</object>
+
 /******************************************************************************/
-// Exports
+// Main
 /******************************************************************************/
 
-export default new QuickHook({
-  name: 'soft-delete',
-  types: 'before',
-  provider: 'external',
+const softDelete = props => {
 
-  setup: <object plain>
-    <string key='field' default='deleted'/>
-    <string key='disableParam' default='$disableSoftDelete'/>
-    <bool key='allowClientDisable' default={false} />
-    <func key='setDeleted' default={() => new Date()} />
-  </object>,
+  const options = validate(props)
 
-  exec: async (ctx, options) => {
+  return declareEntity('hook', {
+    name: 'soft-delete',
+    types: 'before',
+    provider: 'external'
+  }, async ctx => {
 
     const { method, service, params } = ctx
     const { disableParam, setDeleted, field } = options
@@ -126,5 +129,11 @@ export default new QuickHook({
     }
 
     return ctx
-  }
-})
+  })
+}
+
+/******************************************************************************/
+// Exports
+/******************************************************************************/
+
+export default softDelete
