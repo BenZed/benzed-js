@@ -1,4 +1,4 @@
-import { QuickHook } from './util'
+function QuickHook () {}
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { PermissionFunction } from './permissions-check' // eslint-disable-line no-unused-vars
 import { wrap } from '@benzed/array'

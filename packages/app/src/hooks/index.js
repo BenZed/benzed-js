@@ -7,23 +7,19 @@ import schemaValidate from './schema-validate'
 import permissionsCheck from './permissions-check'
 import permissionsFilter from './permissions-filter'
 
-import QuickHook from './util/quick-hook'
-
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default QuickHook
-
 export {
 
-  softDelete,
+  // softDelete,
   writeDateFields,
-
-  schemaValidate,
-  passwordValidate,
-
-  permissionsCheck,
-  permissionsFilter
+  //
+  // schemaValidate,
+  // passwordValidate,
+  //
+  // permissionsCheck,
+  // permissionsFilter
 
 }

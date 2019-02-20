@@ -1,4 +1,4 @@
-import { QuickHook } from './util'
+function QuickHook () {}
 import { NotFound } from '@feathersjs/errors'
 
 import { set } from '@benzed/immutable'

@@ -1,4 +1,4 @@
-import { QuickHook } from './util'
+function QuickHook () {}
 import { Forbidden } from '@feathersjs/errors'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import is from 'is-explicit'

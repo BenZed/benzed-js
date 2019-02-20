@@ -1,4 +1,4 @@
-import { QuickHook } from './util'
+function QuickHook () {}
 import is from 'is-explicit'
 
 import { BadRequest } from '@feathersjs/errors'

@@ -66,24 +66,21 @@ describe('<hook/>', () => {
       for (const hookOption of options)
         for (const contextValue of options)
           it(`'${hookOption}' on hook and '${contextValue}' in context should` +
-            `${hookOption === contextValue ? ' not' : ''}` +
-            ` throw`, () => {
-            const dummyHook = <hook {...{ [prop]: hookOption }}>{() => {}}</hook>
+            `${hookOption === contextValue ? '' : ' not'}` +
+            ` run`, () => {
 
-            let err = null
-            try {
-              dummyHook({
-                params: { provider: 'rest' },
-                [prop.replace('s', '')]: contextValue
-              })
-            } catch (e) {
-              err = e
-            }
+            let ran = false
+            const dummyHook = <hook {...{ [prop]: hookOption }}>{() => { ran = true }}</hook>
 
-            if (hookOption === contextValue)
-              expect(err).to.be.equal(null)
-            else
-              expect(err).to.be.instanceof(Error)
+            dummyHook({
+              params: { provider: 'rest' },
+              method: 'find',
+              type: 'before',
+              id: 0,
+              [prop.replace('s', '')]: contextValue
+            })
+
+            expect(ran).to.be.equal(hookOption === contextValue)
           })
 
     })
@@ -107,7 +104,9 @@ describe('<hook/>', () => {
           dummyHook({
             params: {
               provider: ctxProvider
-            }
+            },
+            method: 'find',
+            type: 'before'
           })
 
           expect(ran).to.be.equal(!!outcome)
@@ -125,7 +124,7 @@ describe('<hook/>', () => {
         it(`is ${result} when calling ${method} method`, () => {
           let multi
 
-          const hook = <hook>{ctx => { multi = ctx.multi }}</hook>
+          const hook = <hook>{ctx => { multi = ctx.isMulti }}</hook>
           hook({ method })
 
           expect(multi).to.be.equal(result)
@@ -139,7 +138,7 @@ describe('<hook/>', () => {
         , () => {
           let multi
 
-          const hook = <hook>{ctx => { multi = ctx.multi }}</hook>
+          const hook = <hook>{ctx => { multi = ctx.isMulti }}</hook>
           hook({ method: 'create', data })
 
           expect(multi).to.be.equal(Array.isArray(data))
@@ -154,7 +153,7 @@ describe('<hook/>', () => {
             : ''} a id`, () => {
             let multi
 
-            const hook = <hook>{ctx => { multi = ctx.multi }}</hook>
+            const hook = <hook>{ctx => { multi = ctx.isMulti }}</hook>
             hook({ method, id })
 
             expect(multi).to.be.equal(result)

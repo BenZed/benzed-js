@@ -11,21 +11,25 @@ import is from 'is-explicit'
 // Helper
 /******************************************************************************/
 
-const checkContext = (ctx, { types, methods, name }) => {
+const checkContext = (ctx, { types, methods, name, provider }) => {
+
+  // this will fail, anyway
+  if (ctx.method === 'update' && !is.defined(ctx.id))
+    return false
 
   if (methods && !methods.includes(ctx.method))
-    throw new Error(`The '${name}' hook can only be used on the '${methods}' service methods.`)
+    return false
 
   if (types && !types.includes(ctx.type))
-    throw new Error(`The '${name}' hook can only be used as a '${types}' hook.`)
+    return false
 
+  if (provider && !providerMatch(ctx, provider))
+    return false
+
+  return true
 }
 
-const providerMatch = (ctx, { provider }) => {
-
-  // any provider
-  if (!provider)
-    return true
+const providerMatch = (ctx, provider) => {
 
   const providerParam = ctx.params.provider
 
@@ -121,16 +125,10 @@ const hook = props => {
 
   const hookWrapped = ctx => {
 
-    checkContext(ctx, options)
-
-    if (!providerMatch(ctx, options))
+    if (!checkContext(ctx, options))
       return
 
     decorateContext(ctx, options)
-
-    // this will fail, anyway
-    if (ctx.method === 'update' && !is.defined(ctx.id))
-      return
 
     return hookLogic(ctx)
   }

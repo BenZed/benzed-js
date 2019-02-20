@@ -36,13 +36,7 @@ const ENTITIES = {
   paginate,
   ...Object.entries(hooks)
     .concat(Object.entries(adapters))
-    .concat(Object.values(quickhooks)
-      .filter((func) => func.name !== 'QuickHook')
-      .map(func => [
-        func.name.replace('build', ''),
-        options => hooks.hook({ ...options, func })
-      ])
-    )
+    .concat(Object.entries(quickhooks))
     .reduce((obj, [k, v]) => set.mut(obj, k::fromCamelCase(), v), {})
 }
 

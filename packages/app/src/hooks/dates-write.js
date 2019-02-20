@@ -1,6 +1,5 @@
-import { QuickHook } from './util'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { wrap } from '@benzed/array'
+import { wrap, first } from '@benzed/array'
 
 import declareEntity from '../declare-entity'
 
@@ -24,45 +23,42 @@ export default props => {
 
   const { createField, updateField } = validate(props)
 
-  return declareEntity('hook', {}, async ctx => {
+  return declareEntity(
+    'hook',
+    {
+      name: 'write-date-fields',
+      types: 'before',
+      methods: ['patch', 'create', 'update']
+    },
+    async ctx => {
 
-    const { id, service, data } = ctx
+      const { id, service, data } = ctx
 
-    const { createField, updateField } = config
+      const time = new Date()
 
-    // Not applicable methods
-    if (ctx.isRemove || ctx.isFind || ctx.isGet)
-      return
+      // In case this is a bulk create request
+      const asMulti = wrap(data)
+      for (const data of asMulti) {
 
-    if (ctx.isBulk && ctx.isUpdate) // This will fail anyway
-      return
+        if (ctx.isCreate)
+          data[createField] = time
 
-    const time = new Date()
+        // Update replaces all of the fields in a document, so we have to get
+        // the value of the created Date from the database, and add it to the
+        // supplied data.
+        else if (ctx.isUpdate) {
+          const existing = await service.get(id)
+          data[createField] = existing[createField]
+        }
 
-    // In case this is a bulk create request
-    const asBulk = wrap(data)
-    for (const data of asBulk) {
-
-      if (ctx.isCreate)
-        data[createField] = time
-
-      // Update replaces all of the fields in a document, so we have to get the
-      // value of the created Date from the database, and add it to the supplied
-      // data.
-      else if (ctx.isUpdate) {
-        const existing = await service.get(id)
-        data[createField] = existing[createField]
+        data[updateField] = time
       }
 
-      data[updateField] = time
+      ctx.data = ctx.isMulti && ctx.isCreate
+        ? asMulti
+        : first(asMulti)
 
-    }
-
-    ctx.data = ctx.isBulk && ctx.isCreate
-      ? asBulk
-      : asBulk[0]
-
-    return ctx
-  })
+      return ctx
+    })
 
 }

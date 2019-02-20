@@ -1,4 +1,3 @@
-import QuickHook from './util/quick-hook'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap } from '@benzed/array'
 
@@ -6,6 +5,8 @@ import { BadRequest } from '@feathersjs/errors'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
+
+function QuickHook () {}
 
 /******************************************************************************/
 // DATA
