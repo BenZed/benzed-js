@@ -1,14 +1,6 @@
 import { $$copy } from './symbols'
 import { namesAndSymbols } from './equals'
 
-console.warn(
-  'TO BEN: Do not publish @benzed/immutable 3.0 yet.\n\n' +
-  '- circular reference resolution for all object types, not just plain objects.\n' +
-  '- default Object $$copy implementation: should it have one or not?\n',
-  '- should objects without prototypes also be copied without prototypes?\n',
-  '- if an input is frozen, sealed or not extendable, should the output be as well?'
-)
-
 /******************************************************************************/
 // Helper
 /******************************************************************************/
@@ -26,9 +18,37 @@ function addToPrototype (copier) {
 
 }
 
-const prototypeIsBaseObjectOrMissing = object => {
+const hasNoPrototype = object => {
   const prototype = Object.getPrototypeOf(object)
-  return prototype === null || prototype.constructor === Object
+  return prototype === null
+}
+
+const resolveCircularReference = (value, refs) => {
+
+  const isObject = value !== null && typeof keyValue === 'object'
+  const hasCircularReference = isObject && refs.has(value)
+
+  const clone = hasCircularReference
+    ? refs.get(value)
+    : copyWithImplementation(value, refs)
+
+  if (isObject && !hasCircularReference)
+    refs.set(value, clone)
+
+  return clone
+}
+
+const copyArrayConsideringCircularRefs = (value, refs) => {
+
+  const clone = new value.constructor(value.length)
+
+  if (refs instanceof WeakMap === false)
+    refs = new WeakMap([ [ value, clone ] ])
+
+  for (let i = 0; i < value.length; i++)
+    clone[i] = resolveCircularReference(value[i], refs)
+
+  return clone
 }
 
 const copyObjectConsideringCircularRefs = (value, refs) => {
@@ -43,39 +63,35 @@ const copyObjectConsideringCircularRefs = (value, refs) => {
     clone = {}
   }
 
-  if (refs instanceof Map === false)
-    refs = new Map([ [ value, clone ] ])
+  if (refs instanceof WeakMap === false)
+    refs = new WeakMap([ [ value, clone ] ])
 
   const keys = namesAndSymbols(value)
-  for (const key of keys) {
-    const keyValue = value[key]
-
-    const isObject = keyValue !== null && typeof keyValue === 'object'
-    const hasCircularReference = isObject && refs.has(keyValue)
-
-    clone[key] = hasCircularReference
-      ? refs.get(keyValue)
-      : copyWithImplementation(keyValue, refs)
-
-    if (isObject && !hasCircularReference)
-      refs.set(keyValue, clone[key])
-
-  }
+  for (const key of keys)
+    clone[key] = resolveCircularReference(value[key], refs)
 
   return clone
 }
 
-const copyWithImplementation = value => {
+const copyWithImplementation = (value, refs) => {
 
-  const isNullOrUndefined = value == null
+  if (refs instanceof WeakMap && refs.has(value))
+    return refs.get(value)
 
-  return !isNullOrUndefined && typeof value[$$copy] === 'function'
-    ? value[$$copy]()
-    : isNullOrUndefined
-      ? value
-      : prototypeIsBaseObjectOrMissing(value)
-        ? copyObjectConsideringCircularRefs(value)
-        : throw new Error(`${value.constructor?.name || 'value'} does not implement $$copy trait.`)
+  if (value == null)
+    return value
+
+  if (typeof value[$$copy] === 'function')
+    return value[$$copy](refs)
+
+  if (hasNoPrototype(value))
+    return copyObjectConsideringCircularRefs(value, refs)
+
+  throw new Error(
+    `${value.constructor?.name || 'value'} does not ` +
+    `implement $$copy trait.`
+  )
+
 }
 
 /******************************************************************************/
@@ -86,28 +102,33 @@ function returnSelf () {
   return this
 }
 
-function copyObject () {
-  return copyObjectConsideringCircularRefs(this)
+function copyObject (refs) {
+  return copyObjectConsideringCircularRefs(this, refs)
 }
 
-function copyArray () {
-  return this.map(copyWithImplementation) // lol
+function copyArray (refs) {
+  return copyArrayConsideringCircularRefs(this, refs)
 }
 
 function copyDate () {
   const Date = this.constructor
+
   return new Date(this.getTime())
 }
 
-function copyIterable () {
+function copyIterable (refs) {
   const Type = this.constructor
 
   const args = []
 
   for (const value of this)
-    args.push(copyWithImplementation(value))
+    args.push(copyWithImplementation(value, refs))
 
   return new Type(args)
+}
+
+function copyBuffer () {
+  return Buffer.from([ ...this ])
 }
 
 /******************************************************************************/
@@ -120,18 +141,20 @@ for (const Primitive of [ String, Number, Boolean ])
 for (const Immutable of [ RegExp, Symbol, Function ])
   Immutable::addToPrototype(returnSelf)
 
-// TODO Should WeakCollections not implement $$copy?
-// for (const WeakCollection of [ WeakSet, WeakMap ])
-//   WeakCollection::addToPrototype(returnSelf)
+for (const WeakCollection of [ WeakSet, WeakMap ])
+  WeakCollection::addToPrototype(returnSelf)
 
 for (const Iterable of [ Set, Map ])
   Iterable::addToPrototype(copyIterable)
 
 // On second thought, we don't want custom types to inherit $$copy functionality
 // unless we explicitly ask them to.
-// Object::addToPrototype(copyObject)
+Object::addToPrototype(copyObject)
 
 Date::addToPrototype(copyDate)
+
+if (typeof Buffer !== 'undefined')
+  Buffer::addToPrototype(copyBuffer) // eslint-disable-line node/no-deprecated-api
 
 for (const ArrayType of [
   // fun fact, copyObject actually works with the standard array type,
@@ -156,22 +179,20 @@ for (const ArrayType of [
 // Main
 /******************************************************************************/
 
-function copy (...args) {
+function copy (value, refs) {
 
-  let value = this !== undefined
-    ? this
-    : args.shift()
+  if (this !== undefined) {
+    refs = value
+    value = this
+  }
 
-  const mutator = args.length > 0
-    ? args.shift()
-    : null
+  if (!copy._warn)
+    copy._warn = !console.warn(
+      'TO BEN: Do not publish @benzed/immutable 3.0 yet.\n\n' +
+      '- default implementations for custom objects needs to be sorted\n'
+    )
 
-  value = copyWithImplementation(value)
-
-  if (typeof mutator === 'function')
-    mutator(value)
-
-  return value
+  return copyWithImplementation(value, refs)
 }
 
 /******************************************************************************/

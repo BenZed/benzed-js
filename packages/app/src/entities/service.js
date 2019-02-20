@@ -107,7 +107,6 @@ const service = props => {
     ]
 
     return applyMutators(mutators, { name, id, multi, whitelist })
-
   }
 
 }

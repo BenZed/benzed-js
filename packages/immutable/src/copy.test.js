@@ -116,12 +116,12 @@ Test.optionallyBindableMethod.only(copy, copier => {
 
     })
 
-    it.skip('resolves circlular references in arrays', () => {
+    it('resolves circlular references in arrays', () => {
       const array = []
       array.push(array)
 
       const array2 = copy(array)
-      expect(array2).to.be.deep.equal([[]])
+      expect(array2).to.be.deep.equal([array2])
       expect(array2[0]).to.be.equal(array2)
     })
 
@@ -276,22 +276,4 @@ Test.optionallyBindableMethod.only(copy, copier => {
     })
   })
 
-  describe('mutator argument', () => {
-
-    let data, data2
-    before(() => {
-      data = {
-        foo: 'bar'
-      }
-
-      data2 = copier(data, data => {
-        data.foo = 'cake'
-      })
-    })
-
-    it('is run on copy result', () => {
-      expect(data2.foo).to.be.equal('cake')
-    })
-
-  })
 })

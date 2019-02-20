@@ -1,5 +1,6 @@
 import { first } from '@benzed/array'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
+import { capitalize } from '@benzed/string'
 
 import is from 'is-explicit'
 
@@ -50,8 +51,12 @@ const decorateContext = (ctx, { name }) => {
   if ('name' in ctx === false && name)
     ctx.name = name
 
+  const methodName = `is${capitalize(ctx.method)}`
+  if (methodName in ctx === false)
+    ctx[methodName] = true
+
   // already been decorated
-  if ('multi' in ctx === false) {
+  if ('isMulti' in ctx === false) {
 
     // is viewing multiple records
     let isMulti = ctx.method === 'find'
@@ -65,7 +70,7 @@ const decorateContext = (ctx, { name }) => {
       ctx.method === 'patch'
     ))
 
-    ctx.multi = isMulti
+    ctx.isMulti = isMulti
   }
 
 }
@@ -122,6 +127,10 @@ const hook = props => {
       return
 
     decorateContext(ctx, options)
+
+    // this will fail, anyway
+    if (ctx.method === 'update' && !is.defined(ctx.id))
+      return
 
     return hookLogic(ctx)
   }

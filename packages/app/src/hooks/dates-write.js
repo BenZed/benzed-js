@@ -2,23 +2,29 @@ import { QuickHook } from './util'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 import { wrap } from '@benzed/array'
 
+import declareEntity from '../declare-entity'
+
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
+
+/******************************************************************************/
+//
+/******************************************************************************/
+
+const validate = <object strict plain default={{}}>
+  <string key='createField' default='created' required />
+  <string key='updateField' default='updated' required />
+</object>
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default new QuickHook({
+export default props => {
 
-  name: 'dates-write',
-  types: 'before',
+  const { createField, updateField } = validate(props)
 
-  setup: <object strict plain default={{}}>
-    <string key='createField' default='created' required />
-    <string key='updateField' default='updated' required />
-  </object>,
-
-  async exec (ctx, config) {
+  return declareEntity('hook', {}, async ctx => {
 
     const { id, service, data } = ctx
 
@@ -57,6 +63,6 @@ export default new QuickHook({
       : asBulk[0]
 
     return ctx
-  }
+  })
 
-})
+}
