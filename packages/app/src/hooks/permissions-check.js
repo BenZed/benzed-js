@@ -114,8 +114,8 @@ const permissionsCheck = props => {
     if (user.permissions?.admin)
       return
 
-    // Only admins may do anything in bulk
-    if (ctx.isMulti) throw new Forbidden(
+    // Aside from finding, Only admins may do anything in bulk
+    if (ctx.isMulti && !ctx.isFind) throw new Forbidden(
       `cannot multi ${method} ${getServiceName(app, service)}.`
     )
 

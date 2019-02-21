@@ -64,7 +64,7 @@ const schemaValidate = props => {
     let errors
 
     // cast data to an array
-    if (ctx.isPatch && ctx.isBulk) {
+    if (ctx.isPatch && ctx.isMulti) {
       const result = await service.find({ query: params.query })
       datas = result.data.map(data => merge(data, ctx.data))
 

@@ -1,33 +1,5 @@
 import { useRef, useEffect } from 'react'
-
-/******************************************************************************/
-// Helper Class
-/******************************************************************************/
-
-class Delay {
-
-  timerId = null
-
-  callback = null
-  delay = null
-
-  constructor (callback, delay = 1000) {
-    this.callback = callback
-    this.delay = delay
-  }
-
-  invoke () {
-    if (this.id !== null)
-      this.cancel()
-    this.id = setTimeout(this.callback, this.delay)
-  }
-
-  cancel () {
-    if (this.id !== null)
-      clearTimeout(this.id)
-  }
-
-}
+import Delay from '../delay'
 
 /******************************************************************************/
 // Main

@@ -7,6 +7,7 @@ import stripProps from './strip-props'
 import nestInComponent from './nest-in-component'
 
 import { Styler, $ } from './styler'
+import Delay from './delay'
 
 import { Cloner, CssCloner } from './cloner'
 import Portal from './portal'
@@ -40,6 +41,7 @@ export {
 
   nestInComponent,
   stripProps,
+  Delay,
 
   Cloner,
   CssCloner,

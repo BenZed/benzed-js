@@ -27,7 +27,7 @@ export default props => {
   return declareEntity(
     'hook',
     {
-      name: 'write-date-fields',
+      name: 'dates-write',
       types: 'before',
       methods: [ 'patch', 'create' ]
     },

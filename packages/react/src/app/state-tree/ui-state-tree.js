@@ -1,13 +1,21 @@
 import StateTree, { state, action } from '@benzed/state-tree'
-import storage from '../../util/storage'
+import { storage, isClient, on, Delay } from '../../util'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { equals, copy, set } from '@benzed/immutable'
+import { unique, equals, copy, set } from '@benzed/immutable'
+import { wrap } from '@benzed/array'
 
 import querystring from 'querystring'
+import is from 'is-explicit'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
+
+/******************************************************************************/
+// Data
+/******************************************************************************/
+
+const DROPZONE_CLEAR_DELAY = 100
 
 /******************************************************************************/
 // Validate
@@ -28,6 +36,36 @@ const validateConfig = <object key='config' plain default={{}}>
 /******************************************************************************/
 
 const { defineProperty } = Object
+
+const getDropzoneNames = e => Array
+  .from(
+    e.dataTransfer.types,
+    name => name.toLowerCase()
+  )
+
+const syncDropTypeChangesToState = tree => {
+
+  if (!isClient())
+    return
+
+  const clearDropzoneDelay = new Delay(
+    () => tree.setState([], 'activeDropzones'),
+    DROPZONE_CLEAR_DELAY
+  )
+
+  const onDragOver = e => {
+    e.preventDefault()
+
+    const activeDropzones = getDropzoneNames(e)
+    if (!equals(activeDropzones, tree.activeDropzones))
+      tree.setState(activeDropzones, 'activeDropzones')
+
+    clearDropzoneDelay.invoke()
+  }
+
+  on(window, 'dragover', onDragOver)
+
+}
 
 const syncHistoryLocationToState = tree => {
   // Sync local location state to history
@@ -156,6 +194,9 @@ class UiStateTree extends StateTree {
   @state
   location = null
 
+  @state
+  activeDropzones = []
+
   navigate = (to, query = {}, state = {}) => {
 
     if (to === this.location.pathname &&
@@ -182,6 +223,7 @@ class UiStateTree extends StateTree {
     })
 
     defineProperty(this, 'config', { value: config, enumerable: true })
+    syncDropTypeChangesToState(this)
     syncHistoryLocationToState(this)
 
   }
