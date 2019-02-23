@@ -48,7 +48,7 @@ class StateTransferContext {
       : this.input
   }
 
-  push (key, input = this.input) {
+  push (key, input) {
 
     const { valuePath, value, inputPath, references } = this
 

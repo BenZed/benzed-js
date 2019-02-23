@@ -17,10 +17,10 @@ import is from 'is-explicit'
 // Data
 /******************************************************************************/
 
-const $$queue = Symbol('query-queue')
 const $$prunable = Symbol('data-is-prunable')
 const $$records = Symbol('records-as-hash-by-id')
 const $$forms = Symbol('forms-by-record-id')
+const $$queue = Symbol('query-queue')
 
 const PARALLEL_QUERIES = 10
 
@@ -102,16 +102,17 @@ class QueryQueue extends PromiseQueue {
 
 }
 
-async function executePatchWithData () {
+async function executeChangeWithData () {
 
   const item = this
   const { id, data, tree } = item.data
 
-  const { client, serviceName: service } = tree.config
+  const { client, serviceName } = tree.config
 
-  const record = await client[$$feathers]
-    .service(service)
-    .patch(id, data)
+  const service = client[$$feathers].service(serviceName)
+  const record = id
+    ? await service.patch(id, data)
+    : await service.create(data)
 
   return filterDataBlacklist(record, tree.config.formDataBlacklist)
 }
@@ -486,6 +487,22 @@ class ServiceStateTree extends StateTree {
 
   }
 
+  create = async data => {
+
+    data = filterDataBlacklist(data, this.config.formDataBlacklist)
+
+    const item = { tree: this, data }
+    const created = await this[$$queue].add(executeChangeWithData, item)
+
+    console.log('CREATE',
+      this.config.serviceName,
+      created
+    )
+
+    return filterDataBlacklist(created, this.config.formDataBlacklist)
+
+  }
+
   patch = async (id, data) => {
 
     if (!is.defined(id))
@@ -499,15 +516,12 @@ class ServiceStateTree extends StateTree {
 
     const item = { id, tree: this, data }
 
-    const patched = await this[$$queue].add(executePatchWithData, item)
+    const patched = await this[$$queue].add(executeChangeWithData, item)
 
     console.log('PATCHED',
       this.config.serviceName,
       id,
-      {
-        input: data,
-        ouput: filterDataBlacklist(patched, this.config.formDataBlacklist)
-      }
+      patched
     )
 
     return filterDataBlacklist(patched, this.config.formDataBlacklist)

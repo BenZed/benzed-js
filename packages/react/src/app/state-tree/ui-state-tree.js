@@ -2,8 +2,7 @@ import StateTree, { state, action } from '@benzed/state-tree'
 import { storage, isClient, on, Delay } from '../../util'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { unique, equals, copy, set } from '@benzed/immutable'
-import { wrap } from '@benzed/array'
+import { equals, copy, set } from '@benzed/immutable'
 
 import querystring from 'querystring'
 import is from 'is-explicit'
@@ -196,6 +195,33 @@ class UiStateTree extends StateTree {
 
   @state
   activeDropzones = []
+
+  @state
+  notifications = []
+
+  @action('notifications')
+  clearNotification = notification => this
+    .notifications
+    .filter(n => !equals(n, notification))
+
+  @action('notifications')
+  addNotification ({ brand = 'primary', delay, ...rest }) {
+
+    const notification = {
+      brand,
+      delay,
+      created: new Date(),
+      ...rest
+    }
+
+    if (is.number(delay))
+      setTimeout(
+        () => this.clearNotification(notification),
+        delay
+      )
+
+    return [ ...this.notifications, notification ]
+  }
 
   navigate = (to, query = {}, state = {}) => {
 

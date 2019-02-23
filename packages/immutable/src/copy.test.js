@@ -125,6 +125,17 @@ Test.optionallyBindableMethod.only(copy, copier => {
       expect(array2[0]).to.be.equal(array2)
     })
 
+    it('array sub-object undefined value bug', () => {
+      const array = [{
+        delay: undefined,
+        brand: 'cool'
+      }]
+
+      const array2 = copy(array)
+      expect(array2).to.be.deep.equal(array)
+      expect(array2).to.not.be.equal(array)
+    })
+
   })
 
   describe('copies iterables', () => {

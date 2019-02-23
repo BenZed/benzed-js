@@ -1,5 +1,6 @@
 
 import fs from 'fs-extra'
+import path from 'path'
 
 import socketio from 'socket.io-client'
 import feathers from '@feathersjs/client'
@@ -53,7 +54,7 @@ function connect () {
   })
 }
 
-async function upload (url, meta, fields = null, target = {}) {
+async function upload (url, meta, target = {}) {
 
   const app = this
 
@@ -64,14 +65,16 @@ async function upload (url, meta, fields = null, target = {}) {
   if (meta === undefined)
     meta = await app
       .service(serviceName)
-      .create({})
-
-  if (fields === null)
-    fields = { 'meta-id': `${meta._id}` }
+      .create({
+        name: path.basename(url),
+        size: fs.statSync(url).size
+      })
 
   const form = new FormData()
-  for (const name in fields)
-    form.append(name, fields[name])
+
+  if (meta._id)
+    form.append('meta-id', meta._id)
+
   form.append('file', read)
 
   const data = {
