@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 import { get } from '@benzed/immutable'
-import { flatten } from '@benzed/array'
 
 /******************************************************************************/
 // Data
@@ -46,7 +45,7 @@ const useObserveStateTree = (tree, ...paths) => {
       tree.unsubscribe(updateListener)
     }
 
-  }, flatten([ tree, paths ]))
+  }, [ tree, ...paths ])
 
   return observer.observed
 
@@ -79,7 +78,7 @@ const useStateTreeAtPath = (tree, path) => {
 
     return () => tree.unsubscribe(mapState)
 
-  }, flatten([ tree, path ]))
+  }, [ tree, path ])
 
   return state
 }
@@ -89,8 +88,8 @@ const useStateTreeAtPath = (tree, path) => {
 /******************************************************************************/
 
 useStateTree.context = useStateTree
-useStateTree.path = useStateTreeAtPath
 useStateTree.observe = useObserveStateTree
+useStateTree.path = useStateTreeAtPath
 
 /******************************************************************************/
 // Exports

@@ -21,6 +21,11 @@ import {
 } from './text'
 
 import {
+  Dropzone,
+  PromiseButton
+} from './input'
+
+import {
 
   Form,
   FormStateTree,
@@ -73,6 +78,9 @@ export {
 
   // Form
   Form, FormStateTree, FormCurrentContext, FormPresets,
+
+  // Inputs
+  Dropzone, PromiseButton,
 
   // Text
   Label,

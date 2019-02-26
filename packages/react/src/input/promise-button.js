@@ -7,7 +7,7 @@ import is from 'is-explicit'
 
 const PromiseButton = props => {
 
-  const { children, onClick, disabled, component = 'button', ...rest } = props
+  const { children, onClick, disabled, ...rest } = props
 
   const [ resolving, setResolving ] = useState(false)
 
@@ -17,15 +17,14 @@ const PromiseButton = props => {
     setResolving(false)
   }
 
-  const Component = component
-
-  return <Component
+  return <button
     onClick={resolveOnClick}
     disabled={resolving || disabled}
+    data-resolving={resolving}
     {...rest}
   >
     {is.func(children) ? children(resolving) : children}
-  </Component>
+  </button>
 }
 
 /******************************************************************************/
