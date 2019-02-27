@@ -8,7 +8,8 @@ import {
   Login,
   Link,
 
-  useServiceQuery
+  useServiceQuery,
+  useServiceRecord
 
 } from './app'
 
@@ -106,5 +107,6 @@ export {
   useStateTree,
   useDelay,
   useForm,
-  useServiceQuery
+  useServiceQuery,
+  useServiceRecord
 }

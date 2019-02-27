@@ -27,7 +27,8 @@ const PARALLEL_QUERIES = 10
 const STATUSES = {
   Scoped: 'scoped',
   Unfetched: 'unfetched',
-  Unscoped: 'unscoped'
+  Unscoped: 'unscoped',
+  Forbidden: 'forbidden'
 }
 
 /******************************************************************************/

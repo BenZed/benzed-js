@@ -10,6 +10,7 @@ import Login from './login'
 import Link from './link'
 
 import useServiceQuery from './use-service-query'
+import useServiceRecord from './use-service-record'
 
 /******************************************************************************/
 // Exports
@@ -24,6 +25,7 @@ export {
   Login,
   Link,
 
-  useServiceQuery
+  useServiceQuery,
+  useServiceRecord
 
 }

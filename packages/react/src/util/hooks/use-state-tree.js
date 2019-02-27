@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 import { get } from '@benzed/immutable'
 
+import is from 'is-explicit'
+
 /******************************************************************************/
 // Data
 /******************************************************************************/
@@ -15,6 +17,16 @@ const OBSERVE_DELAY = 0
 const StateTreeContext = createContext()
 
 /******************************************************************************/
+// Helper
+/******************************************************************************/
+
+const stringifyPaths = value => is.array(value)
+  ? value.map(stringifyPaths).join(',')
+  : is.defined(value)
+    ? value.toString()
+    : `${value}`
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
@@ -24,11 +36,10 @@ const useObserveStateTree = (tree, ...paths) => {
 
   useEffect(() => {
 
-    const updateObserverWithTree = tree =>
+    const updateObserverWithTree = () =>
       setObserver({ observed: tree })
 
-    if (observer.observed !== tree)
-      updateObserverWithTree(tree)
+    updateObserverWithTree()
 
     const updateListener = () => {
       updateObserverWithTree.delayTimerId =
@@ -45,7 +56,7 @@ const useObserveStateTree = (tree, ...paths) => {
       tree.unsubscribe(updateListener)
     }
 
-  }, [ tree, ...paths ])
+  }, [ tree, stringifyPaths(paths) ])
 
   return observer.observed
 
@@ -78,7 +89,7 @@ const useStateTreeAtPath = (tree, path) => {
 
     return () => tree.unsubscribe(mapState)
 
-  }, [ tree, path ])
+  }, [ tree, stringifyPaths(path) ])
 
   return state
 }
