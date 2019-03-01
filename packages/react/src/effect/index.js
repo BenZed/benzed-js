@@ -1,5 +1,5 @@
 import ScrollVisible from './scroll-visible'
-import Visible from './visible'
+import Visible, { useVisibility } from './visible'
 import Fade from './fade'
 import Slide from './slide'
 import Write from './write'
@@ -11,6 +11,7 @@ import Write from './write'
 export {
   ScrollVisible,
   Visible,
+  useVisibility,
   Fade,
   Slide,
   Write

@@ -62,7 +62,7 @@ const useObserveStateTree = (tree, ...paths) => {
 
 }
 
-const useStateTree = (pathFromBase) => {
+const useStateTree = pathFromBase => {
 
   const baseTree = useContext(StateTreeContext)
 

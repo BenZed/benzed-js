@@ -1,4 +1,4 @@
-import React, { Children, createContext } from 'react'
+import React, { Children, createContext, useContext } from 'react'
 import { createPropTypesFor } from '@benzed/schema'
 
 // TODO
@@ -95,6 +95,12 @@ class Visible extends React.Component {
 }
 
 /******************************************************************************/
+// Hook
+/******************************************************************************/
+
+const useVisibility = () => useContext(VisibleContext)
+
+/******************************************************************************/
 // Extend
 /******************************************************************************/
 
@@ -108,7 +114,7 @@ function observe (VisibleEffect, renderHidden) {
   const ObservedVisibleEffect = props =>
     <VisibleContext.Consumer>
       { visibility => renderHidden || visibility !== 'hidden'
-        ? <VisibleEffect visibility={visibility} {...props}/>
+        ? <VisibleEffect visibility={visibility} />
         : null
       }
     </VisibleContext.Consumer>
@@ -131,5 +137,7 @@ export {
   Visible,
   VisibleContext,
 
-  observe
+  observe,
+
+  useVisibility
 }

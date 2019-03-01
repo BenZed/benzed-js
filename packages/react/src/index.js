@@ -38,7 +38,8 @@ import {
 } from './form'
 
 import {
-  Visible, Slide, Fade, ScrollVisible, Write
+  Visible, Slide, Fade, ScrollVisible, Write,
+  useVisibility
 } from './effect'
 
 import {
@@ -108,5 +109,7 @@ export {
   useDelay,
   useForm,
   useServiceQuery,
-  useServiceRecord
+  useServiceRecord,
+  useVisibility
+
 }
