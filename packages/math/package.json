@@ -24,6 +24,6 @@
     "@benzed/dev": "^0.12.12"
   },
   "dependencies": {
-    "@benzed/immutable": "^2.1.0"
+    "@benzed/immutable": "^3.0.0"
   }
 }

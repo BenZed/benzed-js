@@ -153,9 +153,6 @@ class SortedArray extends Array {
     if (comparer)
       this.comparer = comparer
 
-    // so the nested loop doesn't have to call this.comparer
-    comparer = this.comparer
-
     const { length } = this
 
     // prevent extra proxy overhead when setting indexes
@@ -165,7 +162,7 @@ class SortedArray extends Array {
       const item = this[i]
 
       // eslint-disable-next-line no-var
-      for (var ii = i - 1; ii >= 0 && comparer(this[ii], item) > 0; ii--)
+      for (var ii = i - 1; ii >= 0 && this.comparer(this[ii], item) > 0; ii--)
         this[ii + 1] = this[ii]
 
       this[ii + 1] = item

@@ -14,7 +14,7 @@ function wrap (arr) {
   if (this !== undefined)
     arr = this
 
-  return arr instanceof Array
+  return Array.isArray(arr)
     ? arr
     : [ arr ]
 }
@@ -31,7 +31,7 @@ function unwrap (arr) {
   if (this !== undefined)
     arr = this
 
-  return arr instanceof Array
+  return Array.isArray(arr)
     ? arr[0]
     : arr
 }

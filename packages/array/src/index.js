@@ -4,6 +4,8 @@ import unique from './unique'
 import pluck from './pluck'
 import flatten from './flatten'
 import random from './random'
+import ensure from './ensure'
+import remove from './remove'
 
 import { isArrayLike, hasNumericLength } from './is-array-like'
 import isIterable from './is-iterable'
@@ -26,6 +28,9 @@ export {
   pluck,
   flatten,
   random,
+
+  ensure,
+  remove,
 
   first,
   last,
