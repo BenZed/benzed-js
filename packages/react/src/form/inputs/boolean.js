@@ -1,6 +1,13 @@
 import React from 'react'
 
 import useForm from '../use-form'
+import is from 'is-explicit'
+
+/******************************************************************************/
+// Children Render Function
+/******************************************************************************/
+
+const checkOrX = value => value ? '√' : 'x'
 
 /******************************************************************************/
 // Main
@@ -12,6 +19,10 @@ const Boolean = props => {
     path,
 
     onClick,
+
+    children = checkOrX,
+
+    schema, // not used, do not send to dom
 
     ...rest
   } = props
@@ -35,7 +46,13 @@ const Boolean = props => {
 
     {...rest}
 
-  >{value ? '√' : 'x'}</button>
+  >
+    {
+      is.func(children)
+        ? children(value)
+        : children
+    }
+  </button>
 }
 
 /******************************************************************************/

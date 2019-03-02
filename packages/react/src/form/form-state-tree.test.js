@@ -125,8 +125,12 @@ describe.only('FormStateTree', () => {
       expect(() => form.editCurrent()).to.throw('path is required')
     })
 
-    it('value is required', () => {
+    it('value must not be undefined', () => {
       expect(() => form.editCurrent('age')).to.throw('value is required')
+    })
+
+    it('value can be null', () => {
+      expect(() => form.editCurrent('age', null)).to.not.throw('value is required')
     })
 
     it('if supplied value is a function, executes function with existing value at path', () => {

@@ -90,7 +90,7 @@ class FormStateTree extends StateTree {
     if (!is.defined(path))
       throw new Error('path is required')
 
-    if (!is.defined(value))
+    if (value === undefined)
       throw new Error('value is required')
 
     if (is.func(value))

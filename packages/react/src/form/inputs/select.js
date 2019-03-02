@@ -15,6 +15,7 @@ const Select = props => {
     options,
     defaultValue,
     multiple,
+    schema, // not used, do not send to dom
 
     ...rest
   } = props

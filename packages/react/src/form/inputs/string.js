@@ -25,6 +25,8 @@ const String = props => {
     typeDelay = TYPE_DELAY,
     type,
 
+    schema, // not used, do not send to dom
+
     ...rest
   } = props
 

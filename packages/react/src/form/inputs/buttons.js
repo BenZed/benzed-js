@@ -9,6 +9,11 @@ import { useStateTree } from '../../util'
 
 const Buttons = props => {
 
+  const {
+    schema, // not used, do not send to dom
+    ...rest
+  } = props
+
   const form = useForm()
 
   useStateTree.observe(form)
@@ -16,9 +21,10 @@ const Buttons = props => {
   const canSave = form.hasChangesToUpstream && !form.isPushingUpstream
   const canTraverseHistory = form.config.historyMaxCount > 1
 
-  return <div {...props}>
+  return <div {...rest}>
     <button
       type='submit'
+      data-type='save'
       disabled={!canSave}
     >
       {form.isPushingUpstream ? 'Saving' : 'Save'}
@@ -26,6 +32,7 @@ const Buttons = props => {
 
     <button
       disabled={!canSave}
+      data-type='cancel'
       onClick={e => {
         e.preventDefault()
         form.revertToUpstream()
@@ -41,6 +48,7 @@ const Buttons = props => {
       canTraverseHistory
         ? <button
           disabled={!form.canUndoEditCurrent}
+          data-type='undo'
           onClick={e => {
             e.preventDefault()
             form.undoEditCurrent()
@@ -54,6 +62,7 @@ const Buttons = props => {
       canTraverseHistory
         ? <button
           disabled={!form.canRedoEditCurrent}
+          data-type='redo'
           onClick={e => {
             e.preventDefault()
             form.redoEditCurrent()
