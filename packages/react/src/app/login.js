@@ -1,87 +1,55 @@
-// TODO this needs to be updated to work with ClientStateTree
-
-import React, { Children, createElement, cloneElement } from 'react'
-
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
-import { Modal, Flex } from '../layout'
+import { $, useStateTree } from '../util'
+import { Modal } from '../layout'
 import { Slide, Write } from '../effect'
 
-import { createPropTypesFor } from '@benzed/schema'
-import { equals } from '@benzed/immutable'
-
-import { isEvent, useStateTree } from '../util'
-import is from 'is-explicit'
-
 /******************************************************************************/
-// Validation
+// Main Component
 /******************************************************************************/
 
-const mustHaveAuth = value =>
-  value && is.func(value.login)
-    ? value
-    : throw new Error('must have authentication enabled.')
+const Login = styled(({ children, ...props }) => {
 
-/******************************************************************************/
-// Layout Components
-/******************************************************************************/
+  const [ password, setPassword ] = useState('admin000')
+  const [ email, setEmail ] = useState('ben@globalmechanic.com')
 
-const LoginPanel = styled(Flex.Column)`
-  padding: 1em;
-`
+  const client = useStateTree('client')
+  if (!client?.config.auth)
+    throw new Error('Login component must have contextual access to a ClientStateTree with auth enabled')
 
-const Title = styled.strong`
-  margin-bottom: 1em;
-`
+  useStateTree.observe(client, 'host', 'auth')
 
-const ErrorMessage = styled(({ status, ...props }) =>
-  <span {...props}><Write>{status?.message || ''}</Write></span>
-)`
-  color: ${props => `${props.theme?.error || '#ff5c33'}`};
-  margin-left: auto;
-  height: 1em;
-`
+  const visible = !!client.host && !client.auth.userId
+  const error = client.auth.status?.message
 
-const Form = styled.form`
+  return <Modal visible={visible} opacity={error ? 0.75 : 0.5}>
 
-  input {
-    margin-bottom: 0.5em;
-  }
-
-  button {
-    margin-left: auto;
-  }
-
-`
-
-// TODO this needs to be refactored with @benzed inputs, panels, form elements and transition effects
-const LoginModal = ({
-  email, password, setEmail, setPassword, submit, visible, status, ...props
-}) =>
-  <Modal visible={visible}>
-
-    <LoginPanel className={props.className}>
+    <div {...props}>
 
       <Slide from='top'>
-        <Title>{props.title || 'Login'}</Title>
+        <h3>Login</h3>
       </Slide>
 
-      <Form onSubmit={submit}>
-
-        <Slide from='left' to='right'>
-          <input
-            value={email}
-            onChange={setEmail}
-            placeholder='Email'
-          />
-        </Slide>
+      <form onSubmit={e => {
+        e.preventDefault()
+        client.login(email, password)
+      }} >
 
         <Slide from='right' to='left'>
           <input
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder='email'
+          />
+        </Slide>
+
+        <Slide from='left' to='right'>
+          <input
             value={password}
-            onChange={setPassword}
-            placeholder='Password'
+            onChange={e => setPassword(e.target.value)}
             type='password'
+            placeholder='password'
           />
         </Slide>
 
@@ -89,132 +57,53 @@ const LoginModal = ({
           <button type='submit'>Submit</button>
         </Slide>
 
-      </Form>
+      </form>
 
-      <ErrorMessage status={status} />
+      <span>
+        <Write>{error || ''}</Write>
+      </span>
 
-    </LoginPanel>
+    </div>
+
   </Modal>
+})`
 
-/******************************************************************************/
-// Main Component
-/******************************************************************************/
+  display: flex;
 
-class LoginLogic extends React.Component {
-
-  static propTypes = createPropTypesFor(React => <proptypes>
-    <object key='client'
-      required
-      validate={mustHaveAuth}
-    />
-  </proptypes>)
-
-  static defaultProps = {
-    children: LoginModal
+  h3 {
+    margin-bottom: 0.5em;
   }
 
-  state = {
-    email: '',
-    password: '',
-    status: 'disconnected',
-    error: null
+  button, input, span {
+    padding: 0.5em;
   }
 
-  // EVENT HANDLING
+  button {
+    margin: 0.5em 0em 0em auto;
 
-  onClientStoreUpdate = client => {
-    const { host, auth } = client
-    const { status, userId } = auth
-
-    this.setState({
-      status,
-      visible: !!host && !userId
-    })
-  }
-
-  setEmail = e => {
-    const email = isEvent(e)
-      ? e.target.value
-      : e
-    this.setState({ email })
-  }
-
-  setPassword = e => {
-    const password = isEvent(e)
-      ? e.target.value
-      : e
-
-    this.setState({ password })
-  }
-
-  submit = e => {
-    if (isEvent(e))
-      e.preventDefault()
-
-    const { client } = this.props
-    const { email, password } = this.state
-
-    return client.login(email, password)
-  }
-
-  // LIFE-CYCLE
-
-  shouldComponentUpdate (nextProps, nextState) {
-    return !equals(nextState, this.state)
-  }
-
-  componentDidMount () {
-    const { client } = this.props
-    const { onClientStoreUpdate } = this
-
-    client.subscribe(onClientStoreUpdate, 'auth', 'host')
-
-    onClientStoreUpdate(client)
-  }
-
-  componentWillUnmount () {
-    const { client } = this.props
-    const { onClientStoreUpdate } = this
-
-    client.unsubscribe(onClientStoreUpdate)
-  }
-
-  render () {
-
-    const { children, client, ...props } = this.props
-    const { setEmail, setPassword, submit } = this
-
-    const viewProps = {
-      ...props,
-      ...this.state,
-      setEmail,
-      setPassword,
-      submit
+    &:hover {
+      opacity: 0.75;
     }
 
-    return is.func(children)
-      ? createElement(children, viewProps)
-      : cloneElement(Children.only(children), viewProps)
-
+    transition: opacity 250ms;
   }
 
-}
+  span {
+    margin-left: auto;
+    padding: 0.5em;
 
-/******************************************************************************/
-// Shortcuts
-/******************************************************************************/
+    height: 1em;
 
-const Login = props => {
+    color: ${$
+    .prop('theme', 'brand', 'danger').lighten(0.25)
+    .or
+    .set('red')};
+  }
 
-  const client = useStateTree(['client'])
-
-  return <LoginLogic client={client} {...props} />
-}
+`
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
 export default Login
-
-export { LoginLogic, Login }

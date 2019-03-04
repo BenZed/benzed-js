@@ -1,24 +1,27 @@
 
 import styled from 'styled-components'
-import { observe } from './visible'
+import { Visible } from './visible'
 import { CssCloner } from '../util/cloner'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
 
-const fader = props => props.visibility === 'shown'
-  ? 1
-  : 0
+const fader = props =>
+  props.visibility === 'shown'
+    ? 1
+    : 0
 
 /******************************************************************************/
 // Effect
 /******************************************************************************/
 
 const Fade = styled(CssCloner)`
+
   opacity: ${fader};
   transition: opacity 250ms;
-`::observe()
+
+`::Visible.nest(false)
 
 /******************************************************************************/
 // Exports

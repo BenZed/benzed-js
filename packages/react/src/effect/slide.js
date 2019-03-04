@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-import { observe } from './visible'
+import { Visible } from './visible'
 import { CssCloner } from '../util/cloner'
 
 import { createPropTypesFor } from '@benzed/schema'
@@ -64,7 +64,7 @@ const Slide = styled(CssCloner).attrs(props => ({
   style: translateInOut(props)
 }))`
   transition: transform 250ms;
-`::observe()
+`::Visible.nest(false)
 
 Slide.propTypes = createPropTypesFor(React => <proptypes>
   <string key='from' />

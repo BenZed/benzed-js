@@ -19,7 +19,7 @@ const Dropzone = styled(({ handle, handler, children, processor, ...props }) => 
   const [ over, setOver ] = useState(false)
 
   // Props
-  const handling = wrap(handle).filter(::ui.activeDropzones.includes)
+  const handling = wrap(handle).filter(zone => ui.activeDropzones.includes(zone))
 
   const active = handling.length > 0
 

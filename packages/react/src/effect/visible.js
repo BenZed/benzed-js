@@ -111,20 +111,21 @@ function observe (VisibleEffect, renderHidden) {
     VisibleEffect = this
   }
 
-  const ObservedVisibleEffect = props =>
-    <VisibleContext.Consumer>
-      { visibility => renderHidden || visibility !== 'hidden'
-        ? <VisibleEffect visibility={visibility} />
-        : null
-      }
-    </VisibleContext.Consumer>
+  const ObservedVisibleEffect = props => {
+
+    const visibility = useVisibility()
+
+    return renderHidden || visibility !== 'hidden'
+      ? <VisibleEffect {...props} visibility={visibility} />
+      : null
+  }
 
   ObservedVisibleEffect.Wrapped = VisibleEffect
 
   return ObservedVisibleEffect
 }
 
-Visible.observe = observe
+Visible.observe = Visible.nest = observe
 Visible.Context = VisibleContext
 
 /******************************************************************************/
