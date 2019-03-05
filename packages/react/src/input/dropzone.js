@@ -40,6 +40,8 @@ const Dropzone = styled(({ handle, handler, children, processor, ...props }) => 
 
   }
 
+  delete props.bgOpacity
+
   return handler
     ? <div {...props}
       data-active={active}

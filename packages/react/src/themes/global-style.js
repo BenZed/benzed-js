@@ -63,7 +63,7 @@ const GlobalStyle = css`
     display: inherit;
   }
 
-  input, button, select {
+  input, button, select, textarea {
     outline: none;
     border: none;
     background-color: transparent;
@@ -72,6 +72,10 @@ const GlobalStyle = css`
     &:disabled {
       opacity: 0.5;
     }
+  }
+
+  textarea {
+    resize: none;
   }
 
   button {

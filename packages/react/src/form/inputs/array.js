@@ -8,6 +8,8 @@ const Array = props => {
     schema, // not used, do not send to dom
     ...rest
   } = props
+
+  return 'Array'
 }
 
 /******************************************************************************/

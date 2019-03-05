@@ -1,19 +1,15 @@
+import styled from 'styled-components'
 
 /******************************************************************************/
-// Main
+// Main Components
 /******************************************************************************/
 
-const PlainObject = props => {
-  const {
-    schema, // not used, do not send to dom
-    ...rest
-  } = props
+const IconButton = styled.button`
 
-  return 'PlainObject'
-}
+`
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default PlainObject
+export default IconButton

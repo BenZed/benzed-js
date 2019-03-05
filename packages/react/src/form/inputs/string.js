@@ -25,6 +25,8 @@ const String = props => {
     typeDelay = TYPE_DELAY,
     type,
 
+    multiline,
+
     schema, // not used, do not send to dom
 
     ...rest
@@ -35,7 +37,9 @@ const String = props => {
 
   const delay = useDelay(form.pushCurrent, typeDelay)
 
-  return <input
+  const Input = multiline ? 'textarea' : 'input'
+
+  return <Input
 
     onBlur={e => {
       form.pushCurrent()
