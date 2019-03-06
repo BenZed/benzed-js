@@ -97,6 +97,11 @@ Flex.Row = styled(Flex)`
   flex-direction: row;
 `
 
+Flex.Center = styled(Flex)`
+  justify-content: center;
+  align-items: center;
+`
+
 /******************************************************************************/
 // Exports
 /******************************************************************************/

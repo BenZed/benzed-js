@@ -1,46 +1,29 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { FormStateTree, Form, FormPresets } from '../../form'
 import { Flex } from '../../layout'
 
-import { BadRequest } from '@feathersjs/errors'
-
-import { copy } from '@benzed/immutable'
-
-import schema from './schema'
-
-/******************************************************************************/
-// Presets
-/******************************************************************************/
-
-const BasicForm = FormPresets.Basic
+import { IconButton } from '../../input'
 
 /******************************************************************************/
 // Main Component
 /******************************************************************************/
 
-
 const Main = styled(props => {
-
-  const form = new FormStateTree({
-    data: {
-      name: 'Ben',
-      age: 34,
-      gender: 'male'
-    },
-    submit (...args) {
-      return this.current::copy()
-    }
-  })
 
   return <Flex.Column {...props}>
 
-    <h1>Building a Modular Form Component</h1>
+    <h1>Bulding Composable Stylings that can be cast onto logic components</h1>
 
-    <BasicForm form={form} >
-      {}
-    </BasicForm>
+    <Flex.Row items='center'>
+
+      Some buttons:
+      <IconButton $fill $round $brand='primary' disabled>✗</IconButton>
+      <IconButton $round>✗</IconButton>
+      <IconButton $fill $brand='primary'>✓</IconButton>
+      <IconButton $fill $brand='danger'>✗</IconButton>
+
+    </Flex.Row>
 
   </Flex.Column>
 

@@ -1,18 +1,15 @@
-import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-
-/* @jsx Schema.createValidator */
-/* eslint-disable react/react-in-jsx-scope */
+import styled from 'styled-components'
 
 /******************************************************************************/
-// Form
+// Main Components
 /******************************************************************************/
 
-const exampleSchema = <object plain >
-  <string key='name' />
-</object>
+const Button = styled.div`
+
+`
 
 /******************************************************************************/
 // Exports
 /******************************************************************************/
 
-export default exampleSchema
+export default Button

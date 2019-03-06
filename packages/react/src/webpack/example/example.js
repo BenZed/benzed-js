@@ -10,7 +10,10 @@ import Main from './main'
 const exampleTheme = {
   ...branded,
   fg: new Color('#1b3147'),
-  bg: new Color('#e0e1e2')
+  bg: new Color('#e0e1e2'),
+  brand: {
+    primary: new Color('#179128')
+  }
 }
 
 /******************************************************************************/

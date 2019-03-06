@@ -30,7 +30,12 @@ function applyMutator (mutator, value, props) {
 
 function getBrandedValue (_param, value, props) {
 
-  const { brand, theme } = props || value
+  const target = props || value
+
+  const theme = target.theme
+  // TODO only props prefixed with $ should be stylable
+  const brand = target.brand || target.$brand
+
   return brand && theme?.brand?.[brand]
 }
 

@@ -18,12 +18,14 @@ import {
 } from './layout'
 
 import {
-  Label
+  Label, Icon
 } from './text'
 
 import {
   Dropzone,
-  PromiseButton
+  PromiseButton,
+  IconButton
+
 } from './input'
 
 import {
@@ -82,10 +84,10 @@ export {
   Form, FormStateTree, FormCurrentContext, FormPresets,
 
   // Inputs
-  Dropzone, PromiseButton,
+  Dropzone, PromiseButton, IconButton,
 
   // Text
-  Label,
+  Label, Icon,
 
   // Effect
   Visible, Slide, Fade, ScrollVisible, Write,

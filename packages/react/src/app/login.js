@@ -11,7 +11,7 @@ import { Slide, Write } from '../effect'
 
 const Login = styled(({ children, ...props }) => {
 
-  const [ password, setPassword ] = useState('admin000')
+  const [ password, setPassword ] = useState('admin123')
   const [ email, setEmail ] = useState('ben@globalmechanic.com')
 
   const client = useStateTree('client')

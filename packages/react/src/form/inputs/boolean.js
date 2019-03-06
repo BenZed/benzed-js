@@ -7,7 +7,7 @@ import is from 'is-explicit'
 // Children Render Function
 /******************************************************************************/
 
-const checkOrX = value => value ? '√' : 'x'
+const checkOrX = value => value ? '✓' : '✗'
 
 /******************************************************************************/
 // Main
@@ -17,9 +17,7 @@ const Boolean = props => {
 
   const {
     path,
-
     onClick,
-
     children = checkOrX,
 
     schema, // not used, do not send to dom
@@ -33,7 +31,6 @@ const Boolean = props => {
   return <button
 
     onClick={e => {
-
       e.preventDefault()
 
       form.editCurrent(path, !value)

@@ -25,6 +25,7 @@ const String = props => {
     typeDelay = TYPE_DELAY,
     type,
 
+    defaultValue = '',
     multiline,
 
     schema, // not used, do not send to dom
@@ -60,7 +61,7 @@ const String = props => {
         onChange(e)
     }}
 
-    value={value || ''}
+    value={value != null ? value : defaultValue}
 
     type={type}
 

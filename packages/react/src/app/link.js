@@ -14,6 +14,9 @@ const UiLink = ({ children, to, query, ...props }) => {
   const ui = useStateTree.context(['ui'])
   useStateTree.observe(ui, ['location'])
 
+  if (to === undefined)
+    to = ui.location.pathname
+
   const onClick = e => {
     e.preventDefault()
 
