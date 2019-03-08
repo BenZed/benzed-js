@@ -45,6 +45,8 @@ const alsoNeedsUiStateTree = (value, ctx) =>
 const validate = <object key='form' plain strict >
 
   <object key='data' plain required />
+  <string key='id' cast />
+  <string key='_id' cast />
   <object key='state' plain default={{}} />
   <object key='actions' plain default={{}} />
   <number key='historyMaxCount' default={256} />
@@ -166,7 +168,6 @@ class FormStateTree extends StateTree {
     try {
       upstream = await this::submit(current)
     } catch (e) {
-      console.error(e)
       const { name, message, errors } = e
       this.setError({
         name,
@@ -237,14 +238,16 @@ class FormStateTree extends StateTree {
     const { historyStorageKey, ui } = this.config
 
     const { history, historyIndex, current } = ui.session.getItem(historyStorageKey) || {}
+    if (![history, historyIndex, current].every(is.defined))
+      return this.state
 
-    return [history, historyIndex, current].every(is.defined)
-      ? this.state::copy(state => {
-        state.history = history
-        state.current = current
-        state.historyIndex = historyIndex
-      })
-      : this.state
+    const state = this.state::copy()
+
+    state.history = history
+    state.current = current
+    state.historyIndex = historyIndex
+
+    return state
   }
 
   @action('error')
@@ -279,9 +282,15 @@ class FormStateTree extends StateTree {
     return this.historyIndex > 0
   }
 
+  _id = undefined
+
+  get id () {
+    return this._id
+  }
+
   constructor (config = {}) {
 
-    const { data, state, actions, ...rest } = validate(config)
+    const { data, state, actions, id, _id, ...rest } = validate(config)
 
     super({
       current: serialize(data),
@@ -292,6 +301,7 @@ class FormStateTree extends StateTree {
       upstreamTimestamp: new Date()
     })
 
+    this._id = is.defined(id) ? id : _id
     defineProperty(this, 'config', { value: freeze(rest) })
 
     const usingStorage = this.config.ui && this.config.historyStorageKey
@@ -308,6 +318,7 @@ class FormStateTree extends StateTree {
     // TODO write your own @bound decorator
     this.redoEditCurrent = ::this.redoEditCurrent
     this.undoEditCurrent = ::this.undoEditCurrent
+
   }
 
   [copy.$$] () {

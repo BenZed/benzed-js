@@ -24,7 +24,8 @@ import {
 import {
   Dropzone,
   PromiseButton,
-  IconButton
+  IconButton,
+  Button
 
 } from './input'
 
@@ -84,7 +85,7 @@ export {
   Form, FormStateTree, FormCurrentContext, FormPresets,
 
   // Inputs
-  Dropzone, PromiseButton, IconButton,
+  Dropzone, PromiseButton, IconButton, Button,
 
   // Text
   Label, Icon,

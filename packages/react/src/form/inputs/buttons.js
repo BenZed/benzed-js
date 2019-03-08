@@ -10,6 +10,7 @@ import { useStateTree } from '../../util'
 const Buttons = props => {
 
   const {
+    children,
     schema, // not used, do not send to dom
     ...rest
   } = props
@@ -71,6 +72,8 @@ const Buttons = props => {
         </button>
         : null
     }
+
+    { children }
 
   </div>
 }

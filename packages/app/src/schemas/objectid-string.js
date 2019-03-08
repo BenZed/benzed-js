@@ -1,4 +1,4 @@
-import ObjectID from 'objectid'
+import ObjectID from 'bson-objectid'
 import is from 'is-explicit'
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
 

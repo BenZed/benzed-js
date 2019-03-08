@@ -9,6 +9,7 @@ import { equals, $$equals, indexOf } from '@benzed/immutable'
 
 import { FormStateTree } from '../../form'
 import is from 'is-explicit'
+import ObjectID from 'bson-objectid'
 
 // @jsx Schema.createValidator
 /* eslint-disable react/react-in-jsx-scope */
@@ -25,10 +26,24 @@ const $$queue = Symbol('query-queue')
 const PARALLEL_QUERIES = 10
 
 const STATUSES = {
+
+  // Data exists client side only, has not yet been sent to server for creation.
+  PreCreated: 'pre-created',
+
+  // Record is only known by id. Server has not yet been queried for data.
+  // Existance or permissions unknown.
+  PreScoped: 'pre-scoped',
+
+  // Data has been fetched from the server. It exists and we have permission
+  // To See It
   Scoped: 'scoped',
-  Unfetched: 'unfetched',
-  Unscoped: 'unscoped',
+
+  // Fetching from server failed, data could not be found.
+  Missing: 'missing',
+
+  // Fetching form server fail, we do not have permissions to see data
   Forbidden: 'forbidden'
+
 }
 
 /******************************************************************************/
@@ -54,7 +69,7 @@ const ensureRecords = (records, ids) => {
   for (const id of ids)
     if (id in records === false) {
       ensured = ensured || []
-      records[id] = { _status: STATUSES.Unfetched, _id: id }
+      records[id] = { _status: STATUSES.PreScoped, _id: id }
     }
 
   return records
@@ -106,14 +121,12 @@ class QueryQueue extends PromiseQueue {
 async function executeChangeWithData () {
 
   const item = this
-  const { id, data, tree } = item.data
+  const { args, tree, method } = item.data
 
   const { client, serviceName } = tree.config
 
   const service = client[$$feathers].service(serviceName)
-  const record = id
-    ? await service.patch(id, data)
-    : await service.create(data)
+  const record = await service[method](...args)
 
   return filterDataBlacklist(record, tree.config.formDataBlacklist)
 }
@@ -137,6 +150,7 @@ async function executeQueryWithData () {
   try {
     results = await client[$$feathers].service(service)[method](arg)
   } catch (err) {
+    console.log(err)
     throw err
   }
 
@@ -187,7 +201,7 @@ async function executeQueryWithData () {
     const upstream = filterDataBlacklist(updated, tree.config.formDataBlacklist)
     form.setUpstream(upstream)
 
-    // Reset form if it was unscoped and hasn't been touched
+    // Reset form if it was missing and hasn't been touched
     if (original._status !== STATUSES.Scoped &&
       updated._status === STATUSES.Scoped &&
       !hasChanges)
@@ -197,7 +211,7 @@ async function executeQueryWithData () {
 
   if (explicitIds) for (const explicitId of explicitIds)
     if (!ids.includes(explicitId))
-      records[explicitId]._status = STATUSES.Unscoped
+      records[explicitId]._status = STATUSES.Missing
 
   tree.setRecords(records)
   tree.updateTimestamp()
@@ -229,7 +243,7 @@ function requiresFetch (id) {
   const tree = this
   const record = tree.state[$$records][id]
 
-  return !record || record._status === STATUSES.Unfetched
+  return !record || record._status === STATUSES.PreScoped
 }
 
 const getIdsFromQuery = query => {
@@ -280,6 +294,28 @@ const filterDataDifferences = (edit, original) => {
   return differences
 }
 
+const excludeRecordAndForm = (tree, _id, onlyClearRecordIfPreCreated) => {
+  const records = { ...tree.state[$$records] }
+
+  const doDelete = !onlyClearRecordIfPreCreated ||
+    (_id in records && records[_id].status === STATUSES.PreCreated)
+
+  if (doDelete)
+    delete records[_id]
+
+  let forms = tree.state[$$forms]
+  if (_id in forms) {
+    forms = { ...forms }
+    delete forms[_id]
+  }
+
+  tree.setState({
+    ...tree.state,
+    [$$forms]: forms,
+    [$$records]: records
+  }, [], 'deleteRecordAndAssociatedForm')
+}
+
 /******************************************************************************/
 // Validation
 /******************************************************************************/
@@ -295,22 +331,6 @@ const validateConfig = <object key='config' plain strict >
 /******************************************************************************/
 // Setup
 /******************************************************************************/
-
-// const callback = service => {
-//
-//   const record = service.get(id)
-//
-//   const data = { ...record }
-//   delete data._form
-//
-//   const shouldAutoRevert = !form.hasChangesToCurrent
-//
-//   form.setUpstream(data)
-//   if (shouldAutoRevert)
-//     form.revertToUpstream()
-// }
-//
-// this.subscribe(callback, [ $$records, `${id}` ])
 
 function handleEvents ({ client, serviceName }) {
 
@@ -350,20 +370,12 @@ function handleEvents ({ client, serviceName }) {
   }
 
   const onDelete = data => {
+
     if (data._id in this.state[$$records] === false)
       return
 
-    const records = { ...this.state[$$records] }
-    delete records[data._id]
+    excludeRecordAndForm(tree, data._id)
 
-    let forms = this.state[$$forms]
-    if (data._id in forms) {
-      forms = { ...forms }
-      delete forms[data._id]
-      tree.setState(forms, [ $$forms ], 'deleteRecordForm')
-    }
-
-    tree.setRecords(records)
     tree.updateTimestamp()
 
   }
@@ -420,6 +432,17 @@ class ServiceStateTree extends StateTree {
       .values(this.state[$$records])
   }
 
+  @memoize($$records)
+  get preCreatedRecords () {
+    const created = Object
+      .values(this.state[$$records])
+      .filter(r => r._status === STATUSES.PreCreated)
+
+    console.log(...created)
+
+    return created
+  }
+
   @memoize($$forms)
   get forms () {
     return Object
@@ -435,16 +458,21 @@ class ServiceStateTree extends StateTree {
     // Create Form
     if (!is(form, FormStateTree)) {
 
-      const record = this.get(id)
-
       const ui = this.root?.ui
 
-      const data = filterDataBlacklist(record, this.config.formDataBlacklist)
+      const data = filterDataBlacklist(
+        this.get(id),
+        this.config.formDataBlacklist
+      )
 
       form = new FormStateTree({
         ui,
         data,
-        submit: data => this.patch(id, data),
+        id,
+        submit: data =>
+          this.get(id)._status === 'pre-created'
+            ? this.create({ ...data, _id: id })
+            : this.patch(id, data),
         historyStorageKey: ui && `form-${this.config.serviceName}-${id}`
       })
 
@@ -455,6 +483,24 @@ class ServiceStateTree extends StateTree {
   }
 
   getForm = id => this.state[$$forms][id]
+
+  createForm = () => {
+
+    const id = new ObjectID().toString()
+
+    const record = {
+      _id: id,
+      _status: 'pre-created'
+    }
+
+    this.setState(record, [ $$records, id ], 'preCreateRecord')
+
+    return this.useForm(id)
+  }
+
+  clearForm = id => {
+    excludeRecordAndForm(this, id, true)
+  }
 
   /* Feathers Interface */
   find = this::ensureFetching
@@ -490,9 +536,13 @@ class ServiceStateTree extends StateTree {
 
   create = async data => {
 
+    // seperate id just in case blacklist removes it
+    const _id = data._id
+
     data = filterDataBlacklist(data, this.config.formDataBlacklist)
 
-    const item = { tree: this, data }
+    // ensure _id is added back in
+    const item = { tree: this, args: [{ ...data, _id }], method: 'create' }
     const created = await this[$$queue].add(executeChangeWithData, item)
 
     console.log('CREATE',
@@ -510,12 +560,11 @@ class ServiceStateTree extends StateTree {
       throw new Error(`id is required`)
 
     data = filterDataDifferences(data, this.get(id))
-
     // No differences
     if (data === $$prunable)
       return null
 
-    const item = { id, tree: this, data }
+    const item = { tree: this, args: [id, data], method: 'patch' }
 
     const patched = await this[$$queue].add(executeChangeWithData, item)
 
@@ -526,6 +575,26 @@ class ServiceStateTree extends StateTree {
     )
 
     return filterDataBlacklist(patched, this.config.formDataBlacklist)
+  }
+
+  remove = async id => {
+
+    if (!is.defined(id))
+      throw new Error(`id is required`)
+
+    const item = { tree: this, args: [ id ], method: 'remove' }
+
+    const removed = await this[$$queue].add(executeChangeWithData, item)
+
+    console.log('REMOVED',
+      this.config.serviceName,
+      id,
+      removed
+    )
+
+    excludeRecordAndForm(this, id)
+
+    return filterDataBlacklist(removed, this.config.formDataBlacklist)
   }
 
   /* Convenience */
@@ -563,5 +632,7 @@ class ServiceStateTree extends StateTree {
 export default ServiceStateTree
 
 export {
-  $$queue
+  $$queue,
+  $$records,
+  $$feathers
 }

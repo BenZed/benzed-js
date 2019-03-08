@@ -11,7 +11,7 @@ import { BadRequest } from '@feathersjs/errors'
 // eslint-disable-next-line no-unused-vars
 /* global describe it before after beforeEach afterEach */
 
-describe.only('FormStateTree', () => {
+describe('FormStateTree', () => {
 
   it('is a state tree', () => {
     const form = new FormStateTree({

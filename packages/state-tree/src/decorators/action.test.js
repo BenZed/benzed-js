@@ -144,7 +144,7 @@ describe('@action decorator', () => {
         .to.throw('action setInfo returned state with invalid key: \'password\'')
     })
 
-    it('unscoped actions must return a plain object', () => {
+    it('missing actions must return a plain object', () => {
       const user = new User()
       expect(() => user.setInfo(null))
         .to.throw('must return a full state')

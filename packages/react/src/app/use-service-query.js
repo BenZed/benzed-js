@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { equals } from '@benzed/immutable'
+import { equals, copy } from '@benzed/immutable'
+
+import { $$feathers } from './state-tree/service-state-tree'
 
 /******************************************************************************/
 // Helper
@@ -19,6 +21,14 @@ const fakeEmptyResult = e => {
     total: 0
   }
 }
+
+const getFeathersService = ({ config }) =>
+  config.client[$$feathers]
+    .service(config.serviceName)
+
+const hash = query => Object
+  .entries(query)
+  .toString()
 
 /******************************************************************************/
 // Main
@@ -51,10 +61,11 @@ const useServiceQuery = service => {
     setFetching(false)
 
     if (!equals(_query, query))
-      setQuery(query)
+      setQuery(_query)
 
   }
 
+  // ensure query results are synced with patches
   useEffect(() => {
 
     const updateRecords = () =>
@@ -62,9 +73,36 @@ const useServiceQuery = service => {
 
     service.subscribe(updateRecords, ['records'], ['forms'])
 
-    return () => service.unsubscribe(updateRecords)
+    return () => {
+      service.unsubscribe(updateRecords)
+
+    }
 
   }, [ service, result.ids ])
+
+  // ensure query results are synced with creations and removals
+  useEffect(() => {
+
+    const created = data => {
+      if (!result.ids.includes(data._id))
+        fetch(query)
+    }
+
+    const removed = data => {
+      if (result.ids.includes(data._id))
+        fetch(query)
+    }
+
+    const feathers = getFeathersService(service)
+    feathers.on('created', created)
+    feathers.on('removed', removed)
+
+    return () => {
+      feathers.off('created', created)
+      feathers.off('removed', removed)
+    }
+
+  }, [ hash(query), result.ids ])
 
   return {
     fetching,

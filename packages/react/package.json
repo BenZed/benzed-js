@@ -37,7 +37,8 @@
     "normalize.css": "^8.0.1",
     "socket.io-client": "^2.2.0",
     "react-virtualized": "9.21.0",
-    "query-string": "^6.2.0"
+    "query-string": "^6.2.0",
+    "bson-objectid": "^1.2.4"
   },
   "devDependencies": {
     "@benzed/app": "^0.14.4",

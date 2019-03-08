@@ -1,31 +1,11 @@
 import styled, { css } from 'styled-components'
 
 import { $ } from '../util'
+import { roundFillSizeCss } from '../input/button'
 
 /******************************************************************************/
 // Helper
 /******************************************************************************/
-
-const roundFillSizeCss = css`
-
-  background-color: ${$
-    .ifProp('$fill')
-    .branded
-    .or
-    .prop('theme', 'fg').fade(0.5)};
-
-  color: ${$
-    .ifProp('$fill')
-    .prop('theme', 'brandedText')
-    .or
-    .set('white')
-    .else.branded};
-
-  border-radius: ${$
-    .ifProp('$round')
-    .set('50%')};
-
-`
 
 const iconCss = css`
 
@@ -34,8 +14,6 @@ const iconCss = css`
   height: 1.5em;
 
   font-size: ${$.prop('$size').or.set(1 / 1.5)}em;
-
-  ${roundFillSizeCss}
 
   overflow: hidden;
   font-family: ${$
@@ -49,6 +27,12 @@ const iconCss = css`
 
   transform: rotate(${$.prop('$turns').or.set(0).mut(v => v * 90)}deg);
 
+  border-radius: ${$
+    .ifProp('$round')
+    .set('0.25em')
+    .else
+    .set('initial')};
+
 `
 
 /******************************************************************************/
@@ -56,7 +40,10 @@ const iconCss = css`
 /******************************************************************************/
 
 const Icon = styled.span`
+
+  ${roundFillSizeCss}
   ${iconCss}
+
 `
 
 /******************************************************************************/

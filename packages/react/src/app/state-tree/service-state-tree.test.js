@@ -27,7 +27,7 @@ const CLIENT_CONFIG = {
 // Tests
 /******************************************************************************/
 
-describe('Service StateTree', () => {
+describe.only('Service StateTree', () => {
 
   describe('config', () => {
 
@@ -160,7 +160,7 @@ describe('Service StateTree', () => {
 
             let record = messages.get('0')
             expect(record._id).to.be.equal('0')
-            expect(record._status).to.be.equal('unfetched')
+            expect(record._status).to.be.equal('pre-scoped')
 
             await messages.untilFetchingComplete()
 
@@ -174,7 +174,7 @@ describe('Service StateTree', () => {
             let msgs = messages.get([ '0', '1' ])
 
             expect(msgs.map(msg => msg._status))
-              .to.deep.equal([ 'unfetched', 'unfetched' ])
+              .to.deep.equal([ 'pre-scoped', 'pre-scoped' ])
 
             await messages.untilFetchingComplete()
             msgs = messages.get([ '0', '1' ])
@@ -189,12 +189,12 @@ describe('Service StateTree', () => {
             messages.get(['0', '1', '2'])
             expect(queue.items).to.have.length(0)
           })
-          it('unscoped records receive \'unscoped\' status', async () => {
+          it('missing records receive \'missing\' status', async () => {
             let record = messages.get('-1')
             await messages.untilFetchingComplete()
 
             record = messages.get('-1')
-            expect(record._status).to.be.equal('unscoped')
+            expect(record._status).to.be.equal('missing')
           })
         })
       })
@@ -337,6 +337,49 @@ describe('Service StateTree', () => {
 
             expect(messages.forms.filter(f => f === form)).to.have.length(0)
           })
+
+      })
+
+      describe(`creating records in a non-auth ${provider} app`, () => {
+
+        let form, prescoped, scoped
+        before(async () => {
+          form = messages.createForm()
+
+          const id = form._id
+
+          prescoped = messages
+            .records
+            .filter(r => r._status === 'pre-scoped')
+            ::first()
+
+          form.editCurrent(['body'], 'Created by client')
+          await form.pushUpstream()
+
+          scoped = messages
+            .records
+            .filter(r => r._id === id)
+            ::first()
+
+        })
+
+        it('forms for not existing records can be created', () => {
+          expect(form.constructor.name).to.be.equal('FormStateTree')
+        })
+
+        it('an empty record with a pre-scoped status is created', () => {
+          expect(prescoped).to.not.be.equal(undefined)
+        })
+
+        it('once saved, record becomes scoped', () => {
+          expect(scoped).to.be.instanceof(Object)
+          expect(scoped._status).to.be.equal('scoped')
+          expect(scoped._id).to.be.equal(form._id)
+        })
+
+        it('form persists', () => {
+          expect(messages.getForm(form._id)).to.be.equal(form)
+        })
 
       })
     })
