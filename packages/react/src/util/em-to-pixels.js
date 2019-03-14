@@ -11,7 +11,7 @@ let bodyComputedStyle
 // Main
 /******************************************************************************/
 
-function emToPixels (element) {
+const emToPixels = element => {
 
   if (typeof window === 'undefined')
     return DEFAULT_REM

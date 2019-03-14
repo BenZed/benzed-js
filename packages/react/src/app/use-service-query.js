@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-
-import { equals, copy } from '@benzed/immutable'
+import { useEffect, useState } from 'react'
 
 import { $$feathers } from './state-tree/service-state-tree'
+
+import { splice } from '@benzed/immutable'
 
 /******************************************************************************/
 // Helper
@@ -42,6 +42,7 @@ const useServiceQuery = service => {
   const [ result, setResult ] = useState({
     ids: [],
     limit: 0,
+    maxLimit: 0,
     skip: 0,
     total: 0
   })
@@ -50,18 +51,22 @@ const useServiceQuery = service => {
 
     setFetching(true)
 
-    const { data, ...result } = await service
+    const { data, limit, ...stats } = await service
       .find(_query)
       .catch(fakeEmptyResult)
 
     const ids = data.map(toId)
 
-    setResult({ ...result, ids })
+    const maxLimit = limit > result.maxLimit ? limit : result.maxLimit
+
+    setResult({
+      ...stats,
+      maxLimit,
+      ids
+    })
     setRecords(ids.map(service.get))
     setFetching(false)
-
-    if (!equals(_query, query))
-      setQuery(_query)
+    setQuery(_query)
 
   }
 
@@ -80,7 +85,7 @@ const useServiceQuery = service => {
 
   }, [ service, result.ids ])
 
-  // ensure query results are synced with creations and removals
+  // ensure query results are synced with creations
   useEffect(() => {
 
     const created = data => {
@@ -89,8 +94,17 @@ const useServiceQuery = service => {
     }
 
     const removed = data => {
-      if (result.ids.includes(data._id))
-        fetch(query)
+      const index = result.ids.indexOf(data._id)
+      if (index >= 0) {
+
+        const { total, ids, ...rest } = result
+
+        setResult({
+          ...rest,
+          total: total - 1,
+          ids: ids::splice(index, 1)
+        })
+      }
     }
 
     const feathers = getFeathersService(service)

@@ -1,5 +1,6 @@
 import React from 'react'
 import FormCurrentContext from './context'
+import is from 'is-explicit'
 
 /******************************************************************************/
 // Logic
@@ -17,7 +18,9 @@ const Form = props => {
   const handleSubmit = async e => {
     e.preventDefault()
 
-    await form.pushUpstream()
+    const result = await form.pushUpstream().catch(e => e)
+    if (is(result, Error))
+      form.setError(result)
 
     if (onSubmit)
       onSubmit(e)

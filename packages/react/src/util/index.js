@@ -24,6 +24,9 @@ import {
 
   useDelay,
   useStateTree,
+  useInstance,
+  useBounds,
+
   StateTreeContext
 
 } from './hooks'
@@ -56,6 +59,8 @@ export {
   storage,
 
   useDelay,
-  useStateTree
+  useStateTree,
+  useBounds,
+  useInstance
 
 }

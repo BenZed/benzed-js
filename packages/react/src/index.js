@@ -60,7 +60,9 @@ import {
   removeEventListener, off,
 
   useDelay,
-  useStateTree
+  useStateTree,
+  useBounds,
+  useInstance
 
 } from './util'
 
@@ -113,6 +115,8 @@ export {
   useForm,
   useServiceQuery,
   useServiceRecord,
-  useVisibility
+  useVisibility,
+  useBounds,
+  useInstance
 
 }
