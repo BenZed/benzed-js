@@ -1,4 +1,4 @@
-import { first } from '@benzed/array'
+import { first, wrap } from '@benzed/array'
 import { useStateTree } from '../util/hooks'
 
 /******************************************************************************/
@@ -16,9 +16,9 @@ const getRecordsSymbol = service =>
 // Main
 /******************************************************************************/
 
-const useServiceRecord = (tree, id) => {
+const useServiceRecord = (tree, id, path = []) => {
 
-  useStateTree.observe(tree, id && [ getRecordsSymbol(tree), id ])
+  useStateTree.observe(tree, id && [ getRecordsSymbol(tree), id, ...wrap(path) ])
 
   return id && tree.get(id)
 

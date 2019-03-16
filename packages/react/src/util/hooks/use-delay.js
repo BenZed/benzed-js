@@ -1,24 +1,23 @@
-import { useRef, useEffect } from 'react'
+import { useEffect } from 'react'
+import useInstance from './use-instance'
 import Delay from '../delay'
 
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const useDelay = (callback, delay) => {
+const useDelay = (callback, time, data) => {
 
-  const delayRef = useRef()
+  const delay = useInstance(Delay, callback, time)
+  if (delay.callback !== callback)
+    delay.callback = callback // typically this would happen every time this function is run
 
-  useEffect(() => {
+  if (delay.time !== time)
+    delay.time = time
 
-    delayRef.current = new Delay(callback, delay)
+  useEffect(() => () => delay?.cancel(), [])
 
-    return () => {
-      delayRef.current.cancel()
-    }
-  }, [ callback, delay ])
-
-  return delayRef.current
+  return delay
 }
 
 /******************************************************************************/

@@ -1,24 +1,42 @@
 
 /******************************************************************************/
+// Callback with data
+/******************************************************************************/
+
+function callbackWithData () {
+
+  const delay = this
+
+  delay.callback(delay.data)
+
+}
+
+/******************************************************************************/
 // Main
 /******************************************************************************/
 
 class Delay {
 
+  callback = null
+  data = null
+
+  time = null
   timerId = null
 
-  callback = null
-  delay = null
-
-  constructor (callback, delay = 1000) {
+  constructor (callback, time = 1000, data = null) {
     this.callback = callback
-    this.delay = delay
+    this.time = time
+    this.data = data
   }
 
-  invoke () {
+  invoke (data) {
     if (this.timerId !== null)
       this.cancel()
-    this.timerId = setTimeout(this.callback, this.delay)
+
+    if (data != null)
+      this.data = data
+
+    this.timerId = setTimeout(this::callbackWithData, this.time)
   }
 
   cancel () {

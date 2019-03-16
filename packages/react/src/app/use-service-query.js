@@ -26,20 +26,26 @@ const getFeathersService = ({ config }) =>
   config.client[$$feathers]
     .service(config.serviceName)
 
-const hash = query => Object
-  .entries(query)
-  .toString()
+const hash = query => require('util').inspect(query)
 
+const combine = (a, b) => {
+
+  const c = { ...a, ...b }
+  for (const key in c)
+    if (c[key] === null)
+      delete c[key]
+
+  return c
+}
 /******************************************************************************/
 // Main
 /******************************************************************************/
 
-const useServiceQuery = service => {
+const useServiceQuery = (service, inputQuery) => {
 
-  const [ fetching, setFetching ] = useState(false)
-  const [ query, setQuery ] = useState({})
-  const [ records, setRecords ] = useState([])
-  const [ result, setResult ] = useState({
+  const [ querying, setQuerying ] = useState(false)
+  const [ query, setQuery ] = useState(inputQuery)
+  const [ queryResult, setQueryResult ] = useState({
     ids: [],
     limit: 0,
     maxLimit: 0,
@@ -47,9 +53,15 @@ const useServiceQuery = service => {
     total: 0
   })
 
-  const fetch = async (_query = query) => {
+  const applyQuery = async (_query = query) => {
 
-    setFetching(true)
+    setQuerying(true)
+
+    _query = combine(
+      _query,
+      {
+        $limit: Number.MAX_SAFE_INTEGER
+      })
 
     const { data, limit, ...stats } = await service
       .find(_query)
@@ -57,49 +69,34 @@ const useServiceQuery = service => {
 
     const ids = data.map(toId)
 
-    const maxLimit = limit > result.maxLimit ? limit : result.maxLimit
+    const maxLimit = limit > queryResult.maxLimit
+      ? limit
+      : queryResult.maxLimit
 
-    setResult({
+    setQueryResult({
       ...stats,
       maxLimit,
       ids
     })
-    setRecords(ids.map(service.get))
-    setFetching(false)
-    setQuery(_query)
+
+    setQuerying(false)
+
+    if (_query !== query)
+      setQuery(_query)
 
   }
 
-  // ensure query results are synced with patches
-  useEffect(() => {
-
-    const updateRecords = () =>
-      setRecords(result.ids.map(service.get))
-
-    service.subscribe(updateRecords, ['records'], ['forms'])
-
-    return () => {
-      service.unsubscribe(updateRecords)
-
-    }
-
-  }, [ service, result.ids ])
-
+  const queryHash = hash(query)
   // ensure query results are synced with creations
   useEffect(() => {
 
-    const created = data => {
-      if (!result.ids.includes(data._id))
-        fetch(query)
-    }
-
     const removed = data => {
-      const index = result.ids.indexOf(data._id)
+      const index = queryResult.ids.indexOf(data._id)
       if (index >= 0) {
 
-        const { total, ids, ...rest } = result
+        const { total, ids, ...rest } = queryResult
 
-        setResult({
+        setQueryResult({
           ...rest,
           total: total - 1,
           ids: ids::splice(index, 1)
@@ -108,22 +105,21 @@ const useServiceQuery = service => {
     }
 
     const feathers = getFeathersService(service)
-    feathers.on('created', created)
+    feathers.on('created', applyQuery)
     feathers.on('removed', removed)
 
     return () => {
-      feathers.off('created', created)
+      feathers.off('created', applyQuery)
       feathers.off('removed', removed)
     }
 
-  }, [ hash(query), result.ids ])
+  }, [ queryHash, queryResult.ids.join(',') ])
 
-  return {
-    fetching,
-    fetch,
-    records,
-    result
-  }
+  useEffect(() => {
+    applyQuery(combine(query, inputQuery))
+  }, [ hash(inputQuery) ])
+
+  return [ queryResult, applyQuery, querying ]
 
 }
 
