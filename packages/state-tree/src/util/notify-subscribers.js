@@ -106,6 +106,8 @@ const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevState, nextSt
   if (normalizedSubs.size === 0)
     return
 
+  // console.log(...normalizedSubs.keys())
+
   const applyGlobal = updatePath.length === 0
   const finishedPaths = []
 

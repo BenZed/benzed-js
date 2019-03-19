@@ -201,7 +201,7 @@ const ensurePathInState = (state, path) => {
     if (keyExists && is(ref[key], StateTree))
       throw new Error('Cannot set state inside nested State Trees.')
 
-    // if we're here, we'll need to change the state, and it should be frozen
+    // if we're here, we'll need to change the state, as it should be frozen
     if (i === 0) {
       state = { ...state }
       ref = state

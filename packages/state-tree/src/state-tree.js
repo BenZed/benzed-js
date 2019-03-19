@@ -153,6 +153,7 @@ class StateTree {
         previousState,
         nextState
       )
+
     }
 
     return stateChanged
