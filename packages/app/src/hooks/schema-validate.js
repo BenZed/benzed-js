@@ -72,7 +72,7 @@ const schemaValidate = props => {
       const result = await service.get(ctx.id)
       datas = wrap(merge(result, ctx.data))
 
-    } else // must be an update or create hook
+    } else // if (ctx.isCreate || ctx.isUpdate)
       datas = wrap(ctx.data)
 
     // Validate all data
@@ -100,7 +100,9 @@ const schemaValidate = props => {
 
     // if there are errors, throw them
     if (errors) throw new BadRequest('Validation Failed.', {
-      errors: ctx.isMulti ? errors : first(errors)
+      errors: ctx.isMulti
+        ? errors
+        : first(errors)
     })
 
     // patches get converted to updates, since we've already queried all the required

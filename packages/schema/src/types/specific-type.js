@@ -67,7 +67,8 @@ class SpecificType extends Type {
         : value
 
     validator::define({
-      name: `castTo${rootType && rootType.name}`, priority: -80
+      name: `castTo${rootType && rootType.name}`,
+      priority: -80
     })
 
     return {

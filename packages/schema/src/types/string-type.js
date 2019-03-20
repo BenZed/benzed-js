@@ -19,15 +19,18 @@ const formatConfig = propToConfig([
   }
 ])
 
+const hasExtendedToStringImplementation = input =>
+  (is.object(input) || is.func(input)) &&
+  is.func(input.toString) &&
+  input.toString !== Object.prototype.toString
+
 /******************************************************************************/
 // Default Cast
 /******************************************************************************/
 
 const toString = value =>
 
-  is.object(value) &&
-  is.func(value.toString) &&
-  value.toString !== Object.prototype.toString
+  hasExtendedToStringImplementation(value)
 
     ? value.toString()
     : is.primitive(value)

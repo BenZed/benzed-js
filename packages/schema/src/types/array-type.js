@@ -105,7 +105,8 @@ class ArrayType extends Type {
         : value
 
     validator::define({
-      name: 'castToArray', priority: -80
+      name: 'castToArray',
+      priority: -80
     })
 
     return {
