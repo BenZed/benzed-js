@@ -23,7 +23,7 @@ const $$records = Symbol('records-as-hash-by-id')
 const $$forms = Symbol('forms-by-record-id')
 const $$queue = Symbol('query-queue')
 
-const PARALLEL_QUERIES = 10
+const PARALLEL_QUERIES = 20
 
 const STATUSES = {
 
