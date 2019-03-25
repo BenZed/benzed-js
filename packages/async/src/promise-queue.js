@@ -164,6 +164,12 @@ class PromiseQueue {
     return items
   }
 
+  get queuedItems () {
+    return [
+      ...this[$$queue]
+    ]
+  }
+
   // Hooks
 
   onNext () { }

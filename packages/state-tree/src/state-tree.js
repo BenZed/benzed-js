@@ -71,7 +71,6 @@ const subscribeMemoizers = tree => {
   const { memoizers } = tree.constructor[$$internal]
 
   for (const { paths, get, key } of memoizers) {
-
     const getter = tree::get
     const memoizer = () => {
       tree[$$internal].memoized[key] = getter()

@@ -618,4 +618,60 @@ describe('StateTree', () => {
     })
   })
 
+  describe('large state trees update quickly', () => {
+
+    class Body extends StateTree {
+      @state
+      id = null
+
+      @state
+      mass = 0
+
+      @state
+      position = { x: 0, y: 0 }
+
+      @state
+      rotation = 0
+
+      @state
+      tag = ''
+    }
+
+    class System extends StateTree {
+      @state bodies = {}
+
+      tagBody = (id, tag) => {
+
+        const body = this.bodies[id]
+        body.setState(tag, 'tag')
+      }
+
+      @action('bodies')
+      removeBody = id => {
+
+        const bodies = { ...this.bodies }
+        delete bodies[id]
+
+        return bodies
+      }
+    }
+
+    const bodies = {}
+    for (let i = 0; i < 10000; i++)
+      bodies[i] = new Body(
+        {
+          id: i,
+          mass: Math.random() * 1000,
+          position: { x: Math.random() * 10000, y: Math.random() * 10000 },
+          rotation: Math.random() * 360
+        }
+      )
+
+    const system = new System({ bodies })
+
+    it('large single tree updates in less than 50ms', function () {
+      this.timeout(50)
+      system.removeBody(500)
+    })
+  })
 })

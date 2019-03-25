@@ -3,7 +3,7 @@ import StateTree, { state, action, memoize } from '@benzed/state-tree'
 import ClientStateTree, { $$feathers } from './client-state-tree'
 
 import Schema from '@benzed/schema' // eslint-disable-line no-unused-vars
-import { wrap, unwrap } from '@benzed/array'
+import { wrap, unwrap, ensure } from '@benzed/array'
 import { PromiseQueue } from '@benzed/async'
 import { equals, $$equals, indexOf } from '@benzed/immutable'
 
@@ -22,8 +22,9 @@ const $$prunable = Symbol('data-is-prunable')
 const $$records = Symbol('records-as-hash-by-id')
 const $$forms = Symbol('forms-by-record-id')
 const $$queue = Symbol('query-queue')
+const $$merge = Symbol('merge-with-other-queued-find-queries-if-possible')
 
-const PARALLEL_QUERIES = 20
+const PARALLEL_QUERIES = 4
 
 const STATUSES = {
 
@@ -114,7 +115,9 @@ class QueryQueue extends PromiseQueue {
     this.tree.setFetching(this.count > 0)
   }
 
-  onDone = this.onNext
+  onDone () {
+    this.tree.setFetching(this.count > 0)
+  }
 
 }
 
@@ -222,7 +225,6 @@ async function executeQueryWithData () {
 function ensureFetching (query = {}) {
 
   const tree = this
-
   const data = {
     method: 'find',
     arg: { query },
@@ -230,12 +232,36 @@ function ensureFetching (query = {}) {
   }
 
   const queue = tree[$$queue]
-  const { items } = queue
-  const index = items::indexOf(data)
+  let index = queue.items::indexOf(data)
+  if (index > -1)
+    return queue.items[index].complete
 
-  return index > -1
-    ? items[index].complete
-    : queue.add(executeQueryWithData, data)
+  // if this query can be merged, we check in the queue for a yet-to-be-dispatched
+  // query that we can merge with
+  if (query[$$merge])
+    index = queue.queuedItems.reduce((foundIndex, { data }, i) =>
+      foundIndex > -1
+        ? foundIndex
+        : data.arg?.query[$$merge]
+          ? i
+          : -1,
+    -1)
+
+  // if this query can be merged, and we've found a target, we combine the id
+  // of this query into that one
+  if (query[$$merge] && index > -1) {
+    const { query } = queue.queuedItems[index].data.arg
+    const { _id } = data.arg.query
+
+    // if the target query hasn't had any ids merged with it, it's _id field
+    // will still be a string, so we cast it to a { $in } query
+    if (is.string(query._id))
+      query._id = { $in: [query._id] }
+    query._id.$in::ensure(_id)
+    return queue.queuedItems[index].complete
+  }
+
+  return queue.add(executeQueryWithData, data)
 }
 
 function requiresFetch (id) {
@@ -438,8 +464,6 @@ class ServiceStateTree extends StateTree {
       .values(this.state[$$records])
       .filter(r => r._status === STATUSES.PreCreated)
 
-    console.log(...created)
-
     return created
   }
 
@@ -519,12 +543,13 @@ class ServiceStateTree extends StateTree {
         ? { $in: fetchIds }
         : unwrap(fetchIds)
 
-      this::ensureFetching({ _id })
+      this::ensureFetching({ _id, [$$merge]: true })
     }
 
-    if (fetchIds.length > 0) {
+    const notYetUnscopedIds = fetchIds.filter(id => id in this.state[$$records])
+    if (notYetUnscopedIds.length > 0) {
       const records = this.state[$$records]
-      const ensured = ensureRecords(records, fetchIds)
+      const ensured = ensureRecords(records, notYetUnscopedIds)
       this.setRecords(ensured)
     }
 

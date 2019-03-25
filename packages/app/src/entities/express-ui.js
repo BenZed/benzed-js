@@ -224,9 +224,7 @@ const validate = <object key='express-ui' strict>
       ? value
       : throw new Error('must be a react component or stateless component')
   } />
-  {/* <bool key='componentUsesStyles' />
-  <bool key='componentUsesRouting' />
-  <bool key='componentConsumesErrors' /> */}
+  <bool key='serialize-errors' />
 </object>
 
 /******************************************************************************/
@@ -235,7 +233,13 @@ const validate = <object key='express-ui' strict>
 
 const expressUi = config => {
 
-  const { public: _public, html, component, serialize } = validate(config)
+  const {
+    public: _public,
+    html,
+    component,
+    serialize,
+    'serialize-errors': serializeErrors
+  } = validate(config)
 
   const template = new HtmlTemplate(html, component, serialize)
 
@@ -254,7 +258,7 @@ const expressUi = config => {
       template.serve(null, req, res)
     )
 
-    if (component) app.use((err, req, res, next) =>
+    if (serializeErrors) app.use((err, req, res, next) =>
       template.serve(err, req, res)
     )
 
