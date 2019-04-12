@@ -21,7 +21,8 @@ const NODE_CORE = [
 
 const rules = [
   {
-    test: path => /\.js$/.test(path) && !/\.test\.js$/.test(path),
+    test: path => /\.js$/.test(path) &&
+      !/\.test\.js$/.test(path),
     exclude: /node_modules/,
     loader: 'babel-loader'
   },

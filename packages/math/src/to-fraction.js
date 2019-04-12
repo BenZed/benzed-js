@@ -1,4 +1,4 @@
-import { pow, floor } from './index'
+import { pow, floor } from './overrides'
 
 /******************************************************************************/
 // Helper

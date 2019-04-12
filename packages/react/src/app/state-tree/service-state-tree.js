@@ -24,6 +24,8 @@ const $$forms = Symbol('forms-by-record-id')
 const $$queue = Symbol('query-queue')
 const $$merge = Symbol('merge-with-other-queued-find-queries-if-possible')
 
+const TEMP_LIMIT = 50 // TODO gotta have some way of figuring out the actual limit
+
 const PARALLEL_QUERIES = 4
 
 const STATUSES = {
@@ -222,6 +224,21 @@ async function executeQueryWithData () {
   return results
 }
 
+const isMergableQueryOfWithinLimitSize = query => {
+  if (!query || !query[$$merge])
+    return false
+
+  const idsInQuery = is.plainObject(query._id)
+    ? query._id.$in.length
+    : 1
+
+  const limit = '$limit' in query
+    ? query.$limit
+    : TEMP_LIMIT
+
+  return idsInQuery < limit
+}
+
 function ensureFetching (query = {}) {
 
   const tree = this
@@ -242,7 +259,7 @@ function ensureFetching (query = {}) {
     index = queue.queuedItems.reduce((foundIndex, { data }, i) =>
       foundIndex > -1
         ? foundIndex
-        : data.arg?.query[$$merge]
+        : isMergableQueryOfWithinLimitSize(data.arg.query)
           ? i
           : -1,
     -1)
@@ -257,8 +274,11 @@ function ensureFetching (query = {}) {
     // will still be a string, so we cast it to a { $in } query
     if (is.string(query._id))
       query._id = { $in: [query._id] }
+
+    if ('$limit' in query === false)
+      query.$limit = TEMP_LIMIT
+
     query._id.$in::ensure(_id)
-    return queue.queuedItems[index].complete
   }
 
   return queue.add(executeQueryWithData, data)
@@ -546,7 +566,7 @@ class ServiceStateTree extends StateTree {
       this::ensureFetching({ _id, [$$merge]: true })
     }
 
-    const notYetUnscopedIds = fetchIds.filter(id => id in this.state[$$records])
+    const notYetUnscopedIds = fetchIds.filter(id => !this.state[$$records][id])
     if (notYetUnscopedIds.length > 0) {
       const records = this.state[$$records]
       const ensured = ensureRecords(records, notYetUnscopedIds)

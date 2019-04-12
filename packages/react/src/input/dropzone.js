@@ -41,6 +41,8 @@ const Dropzone = styled(({ handle, handler, children, processor, ...props }) => 
   }
 
   delete props.bgOpacity
+  delete props.brand
+  delete props.$brand
 
   return handler
     ? <div {...props}
