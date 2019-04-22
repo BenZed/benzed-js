@@ -17,16 +17,16 @@ const illegal = disallow()
 // Main
 /******************************************************************************/
 
-const DocsService = ({ data }) =>
+const documentation = ({ data }) =>
 
-  <service name='docs'>
+  <service name='docs' multi>
 
     <nedb filename={path.join(data, 'docs.db')} />
     <paginate default={50} max={100} />
 
-    <hooks before all>
+    {/* <hooks before all>
       <authenticate />
-    </hooks>
+    </hooks> */}
 
     <hooks before create update remove>
       {internal}
@@ -42,4 +42,4 @@ const DocsService = ({ data }) =>
 // Exports
 /******************************************************************************/
 
-export default DocsService
+export default documentation

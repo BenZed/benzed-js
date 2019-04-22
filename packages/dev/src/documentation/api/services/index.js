@@ -1,5 +1,5 @@
-import DocsService from './docs'
+import documentation from './docs'
 
 export {
-  DocsService
+  documentation
 }

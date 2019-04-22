@@ -27,6 +27,7 @@ const reloadWebpack = async () => {
   }
 
   const data = await fs.readFile(index)
+
   await fs.writeFile(index, data)
 }
 
@@ -221,7 +222,7 @@ async function hasNoDocs () {
 // Main
 /******************************************************************************/
 
-const DocsGenerate = props => {
+const generateDocumentation = props => {
 
   const rootDir = props.root
 
@@ -243,4 +244,4 @@ const DocsGenerate = props => {
 // Exports
 /******************************************************************************/
 
-export default DocsGenerate
+export default generateDocumentation

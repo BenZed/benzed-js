@@ -15,8 +15,6 @@
     "release:major": "npm version major && npm publish",
     "prepublishOnly": "npm run babel",
     "lint": "eslint src --fix",
-    "generate-docs": "node lib/scripts/generate-docs",
-    "generate-docs:dev": "node lib/scripts/generate-docs-dev",
     "webpack": "NODE_ENV=production webpack",
     "webpack:dev": "NODE_ENV=development webpack-dev-server",
     "serve": "node lib/scripts/serve-docs.js",
