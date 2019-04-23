@@ -63,19 +63,21 @@ const normalizeSubscribers = (parent, prunePath) => {
   return normalizedSubs
 }
 
-// Even if it's a valid path, we have to check to see if the statd
+// Even if it's a valid path, we have to check to see if the state
 // has actually changed at the subscribers sub path:
+
 //    If the state is:
 //      { dessert: 'cake', slices: 8 }
 //    And the entire state was replaced with:
 //      { dessert: 'cake', slices: 7 }
 //    And the subscriber path is:
 //      [ 'dessert' ]
-//    We don't want to invoke the subscriber at that path, because
-//    Even though the entire state object has changed, the value of the
-//    state at the subscriber path has not.
+
+// We don't want to invoke the subscriber at that path, because
+// Even though the entire state object has changed, the value of the
+// state at the subscriber path has not.
 const stateAtSubPathHasChanged = (
-  normalizedSubPath, updatePath, pathFromRoot, prevState, nextState
+  normalizedSubPath, updatePath, prevValue, nextValue
 ) => {
 
   // Optimization: if the listen path is equal or shorter than the
@@ -83,12 +85,12 @@ const stateAtSubPathHasChanged = (
   if (normalizedSubPath.length < updatePath.length)
     return true
 
-  const subPathRelativeToState = normalizedSubPath.slice(pathFromRoot.length)
+  const subPathRelativeToState = normalizedSubPath.slice(updatePath.length)
 
   // otherwise we do a value-equal check at the endpoint of the path
   return !equals(
-    get.mut(prevState, subPathRelativeToState),
-    get.mut(nextState, subPathRelativeToState)
+    get.mut(prevValue, subPathRelativeToState),
+    get.mut(nextValue, subPathRelativeToState)
   )
 
 }
@@ -98,7 +100,7 @@ const stateAtSubPathHasChanged = (
 /******************************************************************************/
 
 // FIXME code-smelly argument count. Hide them in an object like a coward?
-const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevState, nextState) => {
+const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevValue, nextValue) => {
 
   const updatePath = [ ...pathFromRoot, ...actionPath ]
 
@@ -133,9 +135,8 @@ const notifySubscribers = (rootTree, pathFromRoot, actionPath, prevState, nextSt
       if (invokeSubscriptions && stateAtSubPathHasChanged(
         normalizedSubPath,
         updatePath,
-        pathFromRoot,
-        prevState,
-        nextState
+        prevValue,
+        nextValue
       ))
         for (const subscription of subscriptions)
           subscription.callback(

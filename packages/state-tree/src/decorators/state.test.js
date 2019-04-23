@@ -110,7 +110,6 @@ describe('@state decorator', () => {
 
     it('property is read only', () => {
       expect(() => (light.color = 'red')).to.throw('has only a getter')
-      expect(() => (light[$$internal].state.color = 'red')).to.throw('read only')
     })
 
   })

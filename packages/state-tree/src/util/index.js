@@ -10,7 +10,8 @@ import validatePaths from './validate-paths'
 import ensureOwnInternal from './ensure-own-internal'
 
 import {
-  $$internal
+  $$internal,
+  $$delete
 } from './symbols'
 
 /******************************************************************************/
@@ -28,6 +29,7 @@ export {
   validatePaths,
   ensureOwnInternal,
 
-  $$internal
+  $$internal,
+  $$delete
 
 }

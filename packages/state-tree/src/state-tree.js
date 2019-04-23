@@ -8,7 +8,8 @@ import {
   transferState,
   notifySubscribers,
 
-  $$internal
+  $$internal,
+  $$delete
 } from './util'
 
 import * as decorators from './decorators'
@@ -17,8 +18,6 @@ import is from 'is-explicit'
 /******************************************************************************/
 // Helpers
 /******************************************************************************/
-
-const { freeze } = Object
 
 function runAction (...args) {
 
@@ -102,7 +101,7 @@ class StateTree {
   };
 
   [$$internal] = {
-    state: freeze({ }),
+    state: { },
     memoized: { },
     actions: { },
     children: [],
@@ -142,20 +141,42 @@ class StateTree {
     const stateChanged = !equals(get.mut(this.state, actionPath), value)
     if (stateChanged) {
 
-      const [ previousState, nextState ] = transferState(this, actionPath, value)
+      const prevValue = transferState(this, actionPath, value)
       const pathFromRoot = getPathFromRoot(this)
 
       notifySubscribers(
         this.root,
         pathFromRoot,
         actionPath,
-        previousState,
-        nextState
+        prevValue,
+        value
       )
 
     }
 
     return stateChanged
+  }
+
+  deleteState (actionPath = [], actionName = 'deleteState') {
+
+    if (actionPath.length === 0)
+      throw new Error('Cannot delete entire state.')
+
+    actionPath = validatePath(actionPath, this)
+
+    const prevValue = transferState(this, actionPath, $$delete)
+    const pathFromRoot = getPathFromRoot(this)
+
+    notifySubscribers(
+      this.root,
+      pathFromRoot,
+      actionPath,
+      prevValue,
+      undefined
+    )
+
+    return true
+
   }
 
   subscribe (callback, ...paths) {

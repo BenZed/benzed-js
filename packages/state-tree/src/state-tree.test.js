@@ -6,6 +6,7 @@ import { first } from '@benzed/array'
 import { clamp } from '@benzed/math'
 
 import { memoize, state, action } from './decorators'
+import { $$internal } from './util/symbols'
 
 import is from 'is-explicit'
 
@@ -566,26 +567,22 @@ describe('StateTree', () => {
 
   describe('get state()', () => {
 
-    let card
-    before(() => {
-      card = new ScoreCard()
-    })
-
     it('returns the tree\'s state as an object', () => {
       const card = new ScoreCard()
       expect(card.state).to.be.deep.equal({ raised: false, scores: [ ] })
     })
 
-    it('subsequent state updates result in immutable copies', () => {
-      const state = card.state
-      card.addScore(10)
-      card.addScore(15)
-      expect(state).to.not.be.equal(card.state)
-    })
+    // State updates used to be immutable, but that was a performance concern:
+    // it('subsequent state updates result in immutable copies', () => {
+    //   const state = card.state
+    //   card.addScore(10)
+    //   card.addScore(15)
+    //   expect(state).to.not.be.equal(card.state)
+    // })
 
-    it('state is frozen', () => {
-      expect(() => { card.state.raised = false }).to.throw('read only')
-    })
+    // it('state is frozen', () => {
+    //   expect(() => { card.state.raised = false }).to.throw('read only')
+    // })
   })
 
   describe('$$copy', () => {
@@ -620,58 +617,87 @@ describe('StateTree', () => {
 
   describe('large state trees update quickly', () => {
 
-    class Body extends StateTree {
-      @state
-      id = null
+    let system
+    before(() => {
+      class Body extends StateTree {
+        @state
+        id = null
 
-      @state
-      mass = 0
+        @state
+        mass = 0
 
-      @state
-      position = { x: 0, y: 0 }
+        @state
+        position = { x: 0, y: 0 }
 
-      @state
-      rotation = 0
+        @state
+        rotation = 0
 
-      @state
-      tag = ''
-    }
-
-    class System extends StateTree {
-      @state bodies = {}
-
-      tagBody = (id, tag) => {
-
-        const body = this.bodies[id]
-        body.setState(tag, 'tag')
+        @state
+        tag = ''
       }
 
-      @action('bodies')
-      removeBody = id => {
+      class System extends StateTree {
+        @state bodies = {}
 
-        const bodies = { ...this.bodies }
-        delete bodies[id]
+        tagBody = (id, tag) => {
 
-        return bodies
+          const body = this.bodies[id]
+          body.setState(tag, 'tag')
+        }
+
+        replaceBody = (id, body) => {
+
+          if (!body)
+            body = {
+              id,
+              mass: 25 + Math.random() * 975,
+              position: { x: Math.random() * 10000, y: Math.random() * 10000 },
+              rotation: Math.random() * 360
+            }
+
+          if (!is(body, Body))
+            body = new Body(body)
+
+          this.setState(body, [ 'bodies', id ], 'replaceBody')
+        }
+
+        removeBody = id => {
+          this.deleteState([ 'bodies', id ])
+        }
       }
-    }
 
-    const bodies = {}
-    for (let i = 0; i < 10000; i++)
-      bodies[i] = new Body(
-        {
+      const bodies = {}
+      for (let i = 0; i < 10000; i++)
+        bodies[i] = new Body({
           id: i,
-          mass: Math.random() * 1000,
+          mass: 25 + Math.random() * 975,
           position: { x: Math.random() * 10000, y: Math.random() * 10000 },
           rotation: Math.random() * 360
-        }
-      )
+        })
 
-    const system = new System({ bodies })
+      system = new System({ bodies })
+    })
 
-    it('large single tree updates in less than 50ms', function () {
-      this.timeout(50)
-      system.removeBody(500)
+    it('large single tree updates in less than 33ms', function () {
+      this.slow(20)
+      this.timeout(33)
+
+      let fired = 0
+      system.subscribe(() => { fired++ }, [ 'bodies', 500 ])
+      system.replaceBody(500)
+
+      expect(fired).to.be.equal(1)
+    })
+
+    it('child indexes remain ordered', function () {
+      this.slow(20)
+
+      system.removeBody(100)
+      expect(system.children).to.have.length(9999)
+
+      let index = 0
+      for (const child of system.children)
+        expect(child[$$internal].parentIndex).to.be.equal(index++)
     })
   })
 })
